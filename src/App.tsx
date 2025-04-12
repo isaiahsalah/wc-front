@@ -3,13 +3,14 @@ import {
   SidebarProvider,
 } from "./components/ui/sidebar";
 import HomePage from "./pages/HomePage";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/side-bar/app-sidebar";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "./providers/theme-provider";
 
 import Header from "./components/app-header";
 import { Toaster } from "./components/ui/sonner";
 import ExpandidoPage from "./pages/ExpandidoPage";
+import MaquinaPage from "./pages/maquinaPage";
 
 function App() {
   
@@ -25,6 +26,7 @@ function App() {
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/expandido" element={<ExpandidoPage />} />
+                  <Route path="opr/:sector/:proceso/:maquina" element={<MaquinaPage />} />
 
                 </Routes>
               </main>

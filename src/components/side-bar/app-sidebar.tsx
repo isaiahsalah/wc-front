@@ -16,13 +16,14 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { Link } from "react-router-dom";
-import { ModeToggle } from "./mode-toggle";
-import { menuAdmin, menuOper } from "@/utils/const";
+import { ModeToggle } from "../mode-toggle";
+import { menuAdmin } from "@/utils/const";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "./ui/collapsible";
+} from "../ui/collapsible";
+import MenuOpr from "./menu-opr";
 
 const data = {
   title: "InstaData",
@@ -53,19 +54,21 @@ export function AppSidebar() {
           <SidebarMenu className="pl-2 box-border">
             {menuAdmin.items.map((item, index) => (
               <Collapsible
-                key={item.title}
-                defaultOpen={index === 1}
+                key={index}
+                defaultOpen={false}
                 className="group/collapsible"
               >
                 <SidebarMenuItem>
-                  <CollapsibleTrigger asChild 
-                  className={` ${
-                    !item.isActive
-                      ? "pointer-events-none opacity-50"
-                      : ""
-                  }`}>
+                  <CollapsibleTrigger
+                    asChild
+                    className={` ${
+                      !item.items.some((im) => im.isActive === true)
+                        ? "pointer-events-none opacity-50"
+                        : ""
+                    }`}
+                  >
                     <SidebarMenuButton>
-                    <item.icon />
+                      <item.icon />
                       {item.title}{" "}
                       <Plus className="ml-auto group-data-[state=open]/collapsible:hidden" />
                       <Minus className="ml-auto group-data-[state=closed]/collapsible:hidden" />
@@ -81,7 +84,7 @@ export function AppSidebar() {
                                 !it.isActive
                                   ? "pointer-events-none opacity-50"
                                   : ""
-                              }`}
+                              } `}
                               asChild
                               //isActive={!item.isActive}
                             >
@@ -97,56 +100,9 @@ export function AppSidebar() {
             ))}
           </SidebarMenu>
         </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>{menuOper.title}</SidebarGroupLabel>
 
-          <SidebarMenu className="pl-2 box-border">
-            {menuOper.items.map((item, index) => (
-              <Collapsible
-                key={item.title}
-                defaultOpen={index === 1}
-                className="group/collapsible"
-              >
-                <SidebarMenuItem>
-                  <CollapsibleTrigger asChild
-                   className={` ${
-                    !item.isActive
-                      ? "pointer-events-none opacity-50"
-                      : ""
-                  }`}>
-                    <SidebarMenuButton>
-                    <item.icon />
-                      {item.title}{" "}
-                      <Plus className="ml-auto group-data-[state=open]/collapsible:hidden" />
-                      <Minus className="ml-auto group-data-[state=closed]/collapsible:hidden" />
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  {item.items?.length ? (
-                    <CollapsibleContent>
-                      <SidebarMenuSub>
-                        {item.items.map((it) => (
-                          <SidebarMenuSubItem key={it.title}>
-                            <SidebarMenuSubButton
-                              className={` ${
-                                !it.isActive
-                                  ? "pointer-events-none opacity-50"
-                                  : ""
-                              }`}
-                              asChild
-                              //isActive={!it.isActive}
-                            >
-                              <Link to={it.url}>{it.title}</Link>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        ))}
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
-                  ) : null}
-                </SidebarMenuItem>
-              </Collapsible>
-            ))}
-          </SidebarMenu>
-        </SidebarGroup>
+        <MenuOpr />
+        
       </SidebarContent>
 
       <SidebarFooter>

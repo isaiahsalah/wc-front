@@ -4,6 +4,7 @@ export const menuAdmin = {
   title: "Administración",
   url: "#",
   items: [
+    
     {
       title: "Bolsa",
       url: "bolsa",
@@ -32,50 +33,51 @@ export const menuAdmin = {
           title: "Corte",
           url: "bolsa/corte",
           icon: Heater,
-          isActive: false,
+          isActive: true,
         },
       ],
     },
     {
+        title: "Inyeción",
+        url: "inyecion",
+        icon: Bandage,
+        isActive: false,
+        items: [
+          {
+            title: "Termoformado",
+            url: "termoformado",
+            icon: Heater,
+            isActive: false,
+          },
+          {
+            title: "Inyeción",
+            url: "inyecion",
+            icon: Bandage,
+            isActive: false,
+          },
+        ],
+      },
+    {
       title: "Termoformado",
-      url: "termoformado",
+      url: "termo",
       icon: Heater,
       isActive: false,
       items: [
         {
           title: "Termoformado",
-          url: "termoformado",
+          url: "termo/termoformado",
           icon: Heater,
-          isActive: false,
+          isActive: true,
         },
         {
           title: "Inyeción",
-          url: "inyecion",
+          url: "termo/inyecion",
           icon: Bandage,
           isActive: false,
         },
       ],
     },
-    {
-      title: "Inyeción",
-      url: "inyecion",
-      icon: Bandage,
-      isActive: false,
-      items: [
-        {
-          title: "Termoformado",
-          url: "termoformado",
-          icon: Heater,
-          isActive: false,
-        },
-        {
-          title: "Inyeción",
-          url: "inyecion",
-          icon: Bandage,
-          isActive: false,
-        },
-      ],
-    },
+    
     {
       title: "Expandido",
       url: "expandido",
@@ -125,20 +127,81 @@ export const menuOper = {
           url: "bolsa/mezcla",
           icon: Heater,
           isActive: true,
+          items: [
+            {
+              title: "Mezcla 1",
+              url: "bolsa/mezcla",
+              icon: Heater,
+              isActive: true,
+            },
+            {
+              title: "Mezcla 2",
+              url: "bolsa/extrusion",
+              icon: Heater,
+              isActive: true,
+            },
+            {
+              title: "Mezcla 3",
+              url: "bolsa/termoformado",
+              icon: Heater,
+              isActive: true,
+            },
+          ],
         },
         {
           title: "Extrusión",
           url: "bolsa/extrusion",
           icon: Heater,
           isActive: true,
+          items: [
+            {
+              title: "Mezcla 1",
+              url: "bolsa/mezcla",
+              icon: Heater,
+              isActive: true,
+            },
+            {
+              title: "Mezcla 2",
+              url: "bolsa/extrusion",
+              icon: Heater,
+              isActive: true,
+            },
+            {
+              title: "Mezcla 3",
+              url: "bolsa/termoformado",
+              icon: Heater,
+              isActive: true,
+            },
+          ],
         },
         {
           title: "Termofomado",
           url: "bolsa/termoformado",
           icon: Heater,
           isActive: true,
+          items: [
+            {
+              title: "Mezcla 1",
+              url: "bolsa/mezcla",
+              icon: Heater,
+              isActive: true,
+            },
+            {
+              title: "Mezcla 2",
+              url: "bolsa/extrusion",
+              icon: Heater,
+              isActive: true,
+            },
+            {
+              title: "Mezcla 3",
+              url: "bolsa/termoformado",
+              icon: Heater,
+              isActive: true,
+            },
+          ],
         },
       ],
     },
+    
   ],
 };
