@@ -22,9 +22,9 @@ const MenuOpr = () => {
       <SidebarGroupLabel>{menuOper.title}</SidebarGroupLabel>
 
       <SidebarMenu className="pl-2">
-        {menuOper.items.map((item, index) => (
+        {menuOper.items.map((itmi, i) => (
           <Collapsible
-            key={item.title}
+            key={i}
             defaultOpen={false}
             className="group/collapsible"
           >
@@ -32,57 +32,57 @@ const MenuOpr = () => {
               <CollapsibleTrigger
                 asChild
                 className={` ${
-                  !item.isActive ? "pointer-events-none opacity-50" : ""
+                  !itmi.isActive ? "pointer-events-none opacity-50" : ""
                 }`}
               >
                 <SidebarMenuButton>
-                  <item.icon />
-                  {item.title}{" "}
+                  <itmi.icon />
+                  {itmi.title}{" "}
                   <Plus className="ml-auto group-data-[state=open]/collapsible:hidden" />
                   <Minus className="ml-auto group-data-[state=closed]/collapsible:hidden" />
                 </SidebarMenuButton>
               </CollapsibleTrigger>
-              {item.items?.length ? (
-                <CollapsibleContent>
-                  <SidebarMenuSub>
-                    {item.items.map((itm,j) => (
+              {itmi.items?.length ? (
+                <CollapsibleContent >
+                  <SidebarMenuSub className="">
+                    {itmi.items.map((itmj,j) => (
                       <Collapsible
                         key={j}
                         defaultOpen={false}
-                        className="group/collapsible"
+                        className="group/child"
                       >
-                        <SidebarMenuItem>
+                        <SidebarMenuItem className="">
                           <CollapsibleTrigger
                             asChild
                             className={` ${
-                              !itm.items.some((im) => im.isActive === true)
+                              !itmj.items.some((im) => im.isActive === true)
                                 ? "pointer-events-none opacity-50"
                                 : ""
-                            }`}
+                            } `}
                           >
                             <SidebarMenuButton>
-                              <item.icon />
-                              {itm.title}{" "}
-                              <Plus className="ml-auto group-data-[state=open]/collapsible:hidden" />
-                              <Minus className="ml-auto group-data-[state=closed]/collapsible:hidden" />
+                              <itmj.icon />
+                              {itmj.title}{" "}
+                              <Plus className="ml-auto group-data-[state=open]/child:hidden" />
+                              <Minus className="ml-auto group-data-[state=closed]/child:hidden" />
                             </SidebarMenuButton>
                           </CollapsibleTrigger>
-                          {itm.items?.length ? (
+                          {itmj.items?.length ? (
                             <CollapsibleContent>
                                     <SidebarMenuSub>
-                                      {item.items.map((it) => (
-                                        <SidebarMenuSubItem key={it.title}>
+                                      {itmj.items.map((itmk,k) => (
+                                        <SidebarMenuSubItem key={k}>
                                           <SidebarMenuSubButton
                                             className={` ${
-                                              !it.isActive
+                                              !itmk.isActive
                                                 ? "pointer-events-none opacity-50"
                                                 : ""
                                             } `}
                                             asChild
                                             //isActive={!item.isActive}
                                           >
-                                            <Link to={it.url}>
-                                              {it.title}
+                                            <Link to={itmk.url}>
+                                              {itmk.title} 
                                             </Link>
                                           </SidebarMenuSubButton>
                                         </SidebarMenuSubItem>
