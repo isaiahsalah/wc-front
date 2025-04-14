@@ -11,6 +11,7 @@ import Header from "./components/app-header";
 import { Toaster } from "./components/ui/sonner";
 import ExpandidoPage from "./pages/ExpandidoPage";
 import MaquinaPage from "./pages/maquinaPage";
+import ExamplePage from "./pages/ExamplePage";
 
 function App() {
   
@@ -25,6 +26,8 @@ function App() {
               <main>
                 <Routes>
                   <Route path="/" element={<HomePage />} />
+                  <Route path="/example" element={<ExamplePage />} />
+
                   <Route path="/expandido" element={<ExpandidoPage />} />
                   <Route path="opr/:sector/:proceso/:maquina" element={<MaquinaPage />} />
 
