@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,7 +23,8 @@ import {
 } from "@/components/ui/select";
 import TypographyH2 from "@/components/h2-text";
 import { DatePicker } from "@/components/date-picker";
-
+import { EditableDataTable } from "@/components/editableData-table";
+import { makeData } from "@/utils/examples";
 const formSchema = z.object({
   productName: z.string().min(2, {
     message: "El nombre del producto debe tener al menos 2 caracteres.",
@@ -57,13 +57,43 @@ const HomePage = () => {
     console.log(values);
   }
 
+  const [data, setData] = React.useState(() => makeData(10));
+/*
+  const columns = React.useMemo(
+    () => [
+      {
+        header: "Name",
+        columns: [
+          { accessorKey: "firstName", header: "First Name" },
+          { accessorKey: "lastName", header: "Last Name" },
+        ],
+      },
+      {
+        header: "Info",
+        columns: [
+          { accessorKey: "age", header: "Age" },
+          { accessorKey: "visits", header: "Visits" },
+        ],
+      },
+    ],
+    []
+  );*/
+
+  const updateData = (rowIndex: number, columnId: string, value: unknown) => {
+    setData((old) =>
+      old.map((row, index) =>
+        index === rowIndex ? { ...row, [columnId]: value } : row
+      )
+    );
+  };
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="grid grid-cols-12 space-y-4 space-x-4  mx-auto"
+        className="grid grid-cols-16 gap-4 mx-auto "
       >
-        <TypographyH2 className="col-span-12">
+        <TypographyH2 className="col-span-16">
           Registro de producción
         </TypographyH2>
 
@@ -71,7 +101,7 @@ const HomePage = () => {
           control={form.control}
           name="shift"
           render={({ field }) => (
-            <FormItem className="col-span-3">
+            <FormItem className="col-span-8 xl:col-span-4">
               <FormLabel>Turno</FormLabel>
               <FormControl>
                 <Select
@@ -97,59 +127,7 @@ const HomePage = () => {
           control={form.control}
           name="shift"
           render={({ field }) => (
-            <FormItem className="col-span-3">
-              <FormLabel>Operador</FormLabel>
-              <FormControl>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <SelectTrigger disabled className=" w-full">
-                    <SelectValue placeholder="Seleccionar producto" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="morning">op 1</SelectItem>
-                    <SelectItem value="afternoon">op 2</SelectItem>
-                    <SelectItem value="night">op 3</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="shift"
-          render={({ field }) => (
-            <FormItem className="col-span-3">
-              <FormLabel>Ayudante</FormLabel>
-              <FormControl>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <SelectTrigger className=" w-full">
-                    <SelectValue placeholder="Seleccionar producto" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="morning">op 1</SelectItem>
-                    <SelectItem value="afternoon">op 2</SelectItem>
-                    <SelectItem value="night">op 3</SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="shift"
-          render={({ field }) => (
-            <FormItem className="col-span-3">
+            <FormItem className="col-span-8 xl:col-span-4">
               <FormLabel>Maquina</FormLabel>
               <FormControl>
                 <Select
@@ -175,7 +153,110 @@ const HomePage = () => {
           control={form.control}
           name="shift"
           render={({ field }) => (
-            <FormItem className="col-span-12">
+            <FormItem className="col-span-8 xl:col-span-4">
+              <FormLabel>Sector</FormLabel>
+              <FormControl>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <SelectTrigger disabled className=" w-full">
+                    <SelectValue placeholder="Seleccionar turno" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="morning">Mañana</SelectItem>
+                    <SelectItem value="afternoon">Tarde</SelectItem>
+                    <SelectItem value="night">Noche</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="shift"
+          render={({ field }) => (
+            <FormItem className="col-span-8 xl:col-span-4">
+              <FormLabel>Categoria</FormLabel>
+              <FormControl>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <SelectTrigger disabled className=" w-full">
+                    <SelectValue placeholder="Seleccionar turno" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="morning">Mañana</SelectItem>
+                    <SelectItem value="afternoon">Tarde</SelectItem>
+                    <SelectItem value="night">Noche</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="shift"
+          render={({ field }) => (
+            <FormItem className="col-span-8 xl:col-span-4">
+              <FormLabel>Operador</FormLabel>
+              <FormControl>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <SelectTrigger disabled className=" w-full">
+                    <SelectValue placeholder="Seleccionar producto" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="morning">op 1</SelectItem>
+                    <SelectItem value="afternoon">op 2</SelectItem>
+                    <SelectItem value="night">op 3</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="shift"
+          render={({ field }) => (
+            <FormItem className="col-span-8 xl:col-span-4">
+              <FormLabel>Ayudante</FormLabel>
+              <FormControl>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <SelectTrigger className=" w-full">
+                    <SelectValue placeholder="Seleccionar producto" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="morning">op 1</SelectItem>
+                    <SelectItem value="afternoon">op 2</SelectItem>
+                    <SelectItem value="night">op 3</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="shift"
+          render={({ field }) => (
+            <FormItem className="col-span-16 xl:col-span-8">
               <FormLabel>Producción planeada</FormLabel>
               <FormControl>
                 <Select
@@ -196,16 +277,39 @@ const HomePage = () => {
             </FormItem>
           )}
         />
-       
 
         <FormField
           control={form.control}
           name="productionQuantity"
           render={({ field }) => (
-            <FormItem className="col-span-3">
-              <FormLabel>Cantidad Planeada</FormLabel>
+            <FormItem className="col-span-4  xl:col-span-2">
+              <FormLabel>Cant. Planeada</FormLabel>
               <FormControl>
-                <Input disabled type="number" placeholder="Ejemplo: 500" {...field} />
+                <Input
+                  disabled
+                  type="number"
+                  placeholder="Ejemplo: 500"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="productionQuantity"
+          render={({ field }) => (
+            <FormItem className="col-span-4 xl:col-span-2">
+              <FormLabel>Total</FormLabel>
+              <FormControl>
+                <Input
+                  disabled
+                  type="number"
+                  placeholder="Ejemplo: 500"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -215,8 +319,8 @@ const HomePage = () => {
           control={form.control}
           name="productionQuantity"
           render={({ field }) => (
-            <FormItem className="col-span-3">
-              <FormLabel>Cantidad Producida</FormLabel>
+            <FormItem className="col-span-4 xl:col-span-2">
+              <FormLabel>Cant. Producida</FormLabel>
               <FormControl>
                 <Input type="number" placeholder="Ejemplo: 500" {...field} />
               </FormControl>
@@ -226,10 +330,28 @@ const HomePage = () => {
         />
         <FormField
           control={form.control}
+          name="productionQuantity"
+          render={({ field }) => (
+            <FormItem className="col-span-4 xl:col-span-2">
+              <FormLabel>Total</FormLabel>
+              <FormControl>
+                <Input
+                  disabled
+                  type="number"
+                  placeholder="Ejemplo: 500"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name="productionDate"
           render={({ field }) => (
-            <FormItem className="col-span-3">
-              <FormLabel>Hora de Inicio</FormLabel>
+            <FormItem className="col-span-8 xl:col-span-4">
+              <FormLabel>Fecha y Hora de Inicio</FormLabel>
               <FormControl>
                 <DatePicker
                   className="w-full"
@@ -249,17 +371,10 @@ const HomePage = () => {
           control={form.control}
           name="productionDate"
           render={({ field }) => (
-            <FormItem className="col-span-3">
-              <FormLabel>Hora de Finalización</FormLabel>
+            <FormItem className="col-span-8 xl:col-span-4">
+              <FormLabel>Tiempo Estimado (Min)</FormLabel>
               <FormControl>
-                <DatePicker
-                  className="w-full"
-                  value={field.value ? new Date(field.value) : undefined}
-                  onChange={(date) =>
-                    field.onChange(date?.toISOString() || null)
-                  }
-                  placeholder="Selecciona una fecha"
-                />
+                <Input type="number" placeholder="Ejemplo: 500" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -270,7 +385,7 @@ const HomePage = () => {
           control={form.control}
           name="comments"
           render={({ field }) => (
-            <FormItem className="col-span-12">
+            <FormItem className="col-span-16">
               <FormLabel>Comentarios</FormLabel>
               <FormControl>
                 <Textarea placeholder="Notas adicionales" {...field} />
@@ -280,7 +395,15 @@ const HomePage = () => {
           )}
         />
 
-        <Button type="submit" className="w-full bg-primary mt-4 col-span-12">
+        <div className="col-span-16 space-y-2">
+          <FormLabel>Receta</FormLabel>
+          <EditableDataTable 
+            data={data}
+            updateData={updateData}
+          />
+        </div>
+
+        <Button type="submit" className="w-full bg-primary mt-4 col-span-16">
           Guardar Producción
         </Button>
       </form>

@@ -1,12 +1,15 @@
+import clsx from "clsx";
 
 
 interface Props {
-    data: string;
+  children: React.ReactNode; // Define el tipo de children
+    className?: string; // Clase personalizada opcional
 }
- const TypographyH4: React.FC<Props> = ({ data })=>  {
+
+ const TypographyH4: React.FC<Props> = ({ children, className })=>  {
     return (
-      <h4 className="scroll-m-20 text-xl font-semibold tracking-tight capitalize">
-        {data}
+      <h4 className={clsx("scroll-m-20 text-xl font-semibold tracking-tight capitalize",className)}>
+        {children}
       </h4>
     )
   }

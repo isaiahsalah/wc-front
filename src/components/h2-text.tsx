@@ -4,8 +4,8 @@ import clsx from "clsx";
 interface Props {
   children: React.ReactNode; // Define el tipo de children
   className?: string; // Clase personalizada opcional
-
 }
+
  const TypographyH2: React.FC<Props> = ({ children, className })=>  {
     return (
       <h2  className={clsx(

@@ -6,11 +6,11 @@ interface Props {
     className?: string; // Clase personalizada opcional
 }
 
- const TypographyH5: React.FC<Props> = ({ children, className })=>  {
+ const TypographyP: React.FC<Props> = ({ children, className })=>  {
     return (
-      <h5 className={clsx("scroll-m-20 text-l font-semibold tracking-tight capitalize", className)}>
+      <h5 className={clsx("scroll-m-20 text-sm font-normal tracking-tight capitalize", className)}>
         {children}
       </h5>
     )
   }
-  export default TypographyH5
+  export default TypographyP

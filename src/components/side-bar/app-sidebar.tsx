@@ -26,7 +26,7 @@ import {
 import MenuOpr from "./menu-opr";
 
 const data = {
-  title: "InstaData",
+  title: "PreWorkCorp",
   versions: ["0.0.1", "0.0.2", "0.0.3"],
 };
 
