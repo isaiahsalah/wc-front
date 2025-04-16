@@ -27,12 +27,22 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  MinusIcon,
+  PlusIcon,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import { createColumnsFromData } from "@/utils/table.func";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 
-type DataTableProps<T> = { 
-  data: [];
+ 
+
+type DataTableProps<T> = {
+  data: T[];
   updateData?: (rowIndex: number, columnId: string, value: unknown) => void;
 };
 
@@ -42,14 +52,14 @@ function useSkipper() {
     shouldSkipRef.current = false;
   }, []);
 
-  React.useEffect(() => { 
+  React.useEffect(() => {
     shouldSkipRef.current = true;
   });
 
   return [shouldSkipRef.current, skip] as const;
 }
 
-export function EditableDataTable<T extends RowData>({ 
+export function EditableDataTable<T extends RowData>({
   data,
   updateData,
 }: DataTableProps<T>) {
@@ -73,7 +83,7 @@ export function EditableDataTable<T extends RowData>({
         }, [initialValue]);
 
         return (
-          <input
+          <Input
             value={value as string}
             onChange={(e) => setValue(e.target.value)}
             onBlur={onBlur}
@@ -97,9 +107,11 @@ export function EditableDataTable<T extends RowData>({
   const endRow = Math.min((pageIndex + 1) * pageSize, totalRows); // Fin del rango
 
   return (
-    <div className=" w-full c">
+    <div className="rounded-md border w-full ">
+     
+
       <Table>
-        <TableHeader >
+        <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
@@ -170,7 +182,7 @@ export function EditableDataTable<T extends RowData>({
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
-               
+
                 <div className="space-x-2 flex  items-center">
                   <div className="text-sm">
                     {startRow}-{endRow} de {totalRows}

@@ -1,123 +1,96 @@
-import { ChartBarStacked, Minus, Plus } from "lucide-react";
+import {
+  AudioWaveform, 
+  Command, 
+} from "lucide-react";
 
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
+  SidebarFooter, 
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
+  SidebarMenu, 
+  SidebarMenuItem, 
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { Link } from "react-router-dom";
-import { ModeToggle } from "../mode-toggle";
-import { menuAdmin } from "@/utils/const";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "../ui/collapsible";
-import MenuOpr from "./menu-opr";
+ 
+import NavOpr from "./nav-opr";
+import clsx from "clsx";
+import { NavUser } from "./nav-user";
+import NavAdm from "./nav-adm";
+import {  SectionSwitcher } from "./section-swicher";
+import { SectorSwitcher } from "./sector-swicher";
 
-const data = {
-  title: "PreWorkCorp",
-  versions: ["0.0.1", "0.0.2", "0.0.3"],
-};
+interface Props {
+  className?: string; // Clase personalizada opcional
+}
 
-export function AppSidebar() {
+export const AppSidebar: React.FC<Props> = ({ className }) => {
   return (
-    <Sidebar>
+    <Sidebar className={clsx("animate-fadeIn", className)}>
       <SidebarHeader>
-        <SidebarMenuItem className="flex items-center justify-between gap-2 m-2  ">
-          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-            <ChartBarStacked className="size-4" />
-          </div>
-          <div className="flex flex-col gap-0.5 leading-none">
-            <span className="font-semibold">{data.title}</span>
-            <span className="">v{data.versions[0]}</span>
-          </div>
-          <div className="ml-auto">
-            <ModeToggle />
-          </div>
-        </SidebarMenuItem>
+        <SidebarMenu className="flex ">
+          <SidebarMenuItem >
+            <SectionSwitcher items={section} />  
+
+          </SidebarMenuItem>
+          <SidebarMenuItem  className=""> 
+            <SectorSwitcher items={sector} /> 
+
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>{menuAdmin.title}</SidebarGroupLabel>
+      <SidebarSeparator className=" m-0" />
 
-          <SidebarMenu className="pl-2 box-border">
-            {menuAdmin.items.map((item, index) => (
-              <Collapsible
-                key={index}
-                defaultOpen={false}
-                className="group/collapsible"
-              >
-                <SidebarMenuItem>
-                  <CollapsibleTrigger
-                    asChild
-                    className={` ${
-                      !item.items.some((im) => im.isActive === true)
-                        ? "pointer-events-none opacity-50"
-                        : ""
-                    }`}
-                  >
-                    <SidebarMenuButton>
-                      <item.icon />
-                      {item.title}{" "}
-                      <Plus className="ml-auto group-data-[state=open]/collapsible:hidden" />
-                      <Minus className="ml-auto group-data-[state=closed]/collapsible:hidden" />
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  {item.items?.length ? (
-                    <CollapsibleContent>
-                      <SidebarMenuSub>
-                        {item.items.map((it) => (
-                          <SidebarMenuSubItem key={it.title}>
-                            <SidebarMenuSubButton
-                              className={` ${
-                                !it.isActive
-                                  ? "pointer-events-none opacity-50"
-                                  : ""
-                              } `}
-                              asChild
-                              //isActive={!item.isActive}
-                            >
-                              <Link to={it.url}>{it.title}</Link>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        ))}
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
-                  ) : null}
-                </SidebarMenuItem>
-              </Collapsible>
-            ))}
-          </SidebarMenu>
-        </SidebarGroup>
-
-        <MenuOpr />
-        
+      <SidebarContent className="scrollbar-thin">
+        <NavAdm />
+        <NavOpr />
       </SidebarContent>
-
+      <SidebarSeparator className=" m-0" />
       <SidebarFooter>
-        <SidebarGroupContent>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <div className="flex items-center justify-between">
-                  Plástico Carmen
-                </div>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroupContent>
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   );
-}
+};
+
+const user = {
+  name: "Isaias",
+  user: "45781245",
+  avatar: "/avatars/shadcn.jpg",
+};
+
+const section = [
+  {
+    name: "Bolsas",
+    logo: Command,
+    plan: "Enterprise",
+  },
+  {
+    name: "Extrucción",
+    logo: AudioWaveform,
+    plan: "Startup",
+  },
+  {
+    name: "Termoformado",
+    logo: Command,
+    plan: "Free",
+  },
+];
+
+const sector = [
+  {
+    name: "Mezcla",
+    logo: Command,
+    plan: "Enterprise",
+  },
+  {
+    name: "Extrución",
+    logo: AudioWaveform,
+    plan: "Startup",
+  },
+  {
+    name: "Corte",
+    logo: Command,
+    plan: "Free",
+  },
+];

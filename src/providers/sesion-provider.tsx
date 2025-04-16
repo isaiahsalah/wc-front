@@ -1,21 +1,19 @@
 import { SesionInterface } from "@/utils/interfaces";
 import React, { createContext, JSX } from "react";
- 
- 
 
 type contextProps = {
-  sesion: SesionInterface
-  setSesion: React.Dispatch<React.SetStateAction<SesionInterface>>;
-}
+  sesion: SesionInterface | null;
+  setSesion: React.Dispatch<React.SetStateAction<SesionInterface | null>>;
+};
 
 export const SesionContext = createContext<contextProps>({} as contextProps);
 
 interface props {
-  children: JSX.Element | JSX.Element[]
+  children: JSX.Element | JSX.Element[];
 }
 
 export const SesionProvider = ({ children }: props) => {
-  const [sesion, setSesion] = React.useState<SesionInterface>({ token: "", usuario: {}  });
+  const [sesion, setSesion] = React.useState<SesionInterface | null>(null);
 
   return (
     <SesionContext.Provider value={{ sesion, setSesion }}>

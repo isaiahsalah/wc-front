@@ -4,30 +4,29 @@ export const menuAdmin = {
   title: "Administración",
   url: "#",
   items: [
-    
     {
-      title: "Bolsa",
+      title: "Mezcla",
       url: "bolsa",
       icon: Heater,
-      isActive: false,
+      isActive: true,
       items: [
         {
           title: "Mezcla",
           url: "bolsa/mezcla",
           icon: Heater,
-          isActive: false,
+          isActive: true,
         },
         {
           title: "Extrusión",
           url: "bolsa/extrusion",
           icon: Heater,
-          isActive: false,
+          isActive: true,
         },
         {
           title: "Impresión",
           url: "bolsa/impresion",
           icon: Heater,
-          isActive: false,
+          isActive: true,
         },
         {
           title: "Corte",
@@ -38,48 +37,156 @@ export const menuAdmin = {
       ],
     },
     {
-        title: "Inyeción",
-        url: "inyecion",
-        icon: Bandage,
-        isActive: false,
-        items: [
-          {
-            title: "Termoformado",
-            url: "termoformado",
-            icon: Heater,
-            isActive: false,
-          },
-          {
-            title: "Inyeción",
-            url: "inyecion",
-            icon: Bandage,
-            isActive: false,
-          },
-        ],
-      },
-    {
-      title: "Termoformado",
-      url: "termo",
-      icon: Heater,
-      isActive: false,
+      title: "Extrusión",
+      url: "inyecion",
+      icon: Bandage,
+      isActive: true,
       items: [
         {
           title: "Termoformado",
-          url: "termo/termoformado",
+          url: "termoformado",
           icon: Heater,
           isActive: true,
         },
         {
           title: "Inyeción",
-          url: "termo/inyecion",
+          url: "inyecion",
           icon: Bandage,
-          isActive: false,
+          isActive: true,
         },
       ],
     },
-    
     {
-      title: "Expandido",
+      title: "Corte",
+      url: "termo",
+      icon: Heater,
+      isActive: true,
+      items: [
+        {
+          title: "Cortadora 1 ",
+          url: "termo/termoformado",
+          icon: Heater,
+          isActive: true,
+        },
+        {
+          title: "Cortadora 2",
+          url: "termo/inyecion",
+          icon: Bandage,
+          isActive: true,
+        },
+        {
+          title: "Cortadora 2",
+          url: "termo/inyecion",
+          icon: Bandage,
+          isActive: true,
+        },
+        {
+          title: "Cortadora 2",
+          url: "termo/inyecion",
+          icon: Bandage,
+          isActive: true,
+        },
+        {
+          title: "Cortadora 2",
+          url: "termo/inyecion",
+          icon: Bandage,
+          isActive: true,
+        },
+        {
+          title: "Cortadora 2",
+          url: "termo/inyecion",
+          icon: Bandage,
+          isActive: true,
+        },
+        {
+          title: "Cortadora 2",
+          url: "termo/inyecion",
+          icon: Bandage,
+          isActive: true,
+        },
+        {
+          title: "Cortadora 2",
+          url: "termo/inyecion",
+          icon: Bandage,
+          isActive: true,
+        },
+        {
+          title: "Cortadora 2",
+          url: "termo/inyecion",
+          icon: Bandage,
+          isActive: true,
+        },
+        {
+          title: "Cortadora 2",
+          url: "termo/inyecion",
+          icon: Bandage,
+          isActive: true,
+        },
+        {
+          title: "Cortadora 2",
+          url: "termo/inyecion",
+          icon: Bandage,
+          isActive: true,
+        },
+        {
+          title: "Cortadora 2",
+          url: "termo/inyecion",
+          icon: Bandage,
+          isActive: true,
+        },
+        {
+          title: "Cortadora 2",
+          url: "termo/inyecion",
+          icon: Bandage,
+          isActive: true,
+        },
+        {
+          title: "Cortadora 2",
+          url: "termo/inyecion",
+          icon: Bandage,
+          isActive: true,
+        },
+        {
+          title: "Cortadora 2",
+          url: "termo/inyecion",
+          icon: Bandage,
+          isActive: true,
+        },
+        {
+          title: "Cortadora 2",
+          url: "termo/inyecion",
+          icon: Bandage,
+          isActive: true,
+        },
+        {
+          title: "Cortadora 2",
+          url: "termo/inyecion",
+          icon: Bandage,
+          isActive: true,
+        },
+        {
+          title: "Cortadora 2",
+          url: "termo/inyecion",
+          icon: Bandage,
+          isActive: true,
+        },
+        {
+          title: "Cortadora 2",
+          url: "termo/inyecion",
+          icon: Bandage,
+          isActive: true,
+        },
+        {
+          title: "Cortadora 20",
+          url: "termo/inyecion",
+          icon: Bandage,
+          isActive: true,
+        },
+      ],
+    },
+
+    {
+      title: "Empaquetado",
       url: "expandido",
       icon: Soup,
       isActive: true,
@@ -107,15 +214,10 @@ export const menuAdmin = {
   ],
 };
 
-
-
-
-
 export const menuOper = {
   title: "Operario",
   url: "#",
   items: [
-  
     {
       title: "Expandido",
       url: "expandido",
@@ -202,6 +304,5 @@ export const menuOper = {
         },
       ],
     },
-    
   ],
 };

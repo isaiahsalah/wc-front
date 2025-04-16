@@ -1,5 +1,4 @@
 import { SidebarInset, SidebarProvider } from "./components/ui/sidebar";
-import HomePage from "./pages/HomePage";
 import { AppSidebar } from "@/components/side-bar/app-sidebar";
 import {
   BrowserRouter,
@@ -12,61 +11,98 @@ import { ThemeProvider } from "./providers/theme-provider";
 
 import Header from "./components/app-header";
 import { Toaster } from "./components/ui/sonner";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { SesionContext, SesionProvider } from "./providers/sesion-provider";
 import LoginPage from "./pages/LoginPage";
-import ExamplePage from "./pages/ExamplePage";
-import ExpandidoPage from "./pages/ExpandidoPage";
-import MaquinaPage from "./pages/MaquinaPage";
+import HomePage from "./pages/HomePage";
+import { getCheckToken } from "./api/login.api";
+import { SesionInterface } from "./utils/interfaces";
 
 function App() {
   const PrivateRoutes = () => {
-    const context = useContext(SesionContext);
+    const { setSesion } = useContext(SesionContext);
+    const [loading, setLoading] = useState(true);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    if (context === undefined) {
-      return <Navigate to="/login" />;
-    } else {
-      return <Outlet />;
-    }
+    useEffect(() => {
+      const checkToken = async () => {
+        const rawToken = window.localStorage.getItem("token");
+
+        if (!rawToken) {
+          setIsAuthenticated(false);
+          setLoading(false);
+          return;
+        }
+
+        const savedtoken = JSON.parse(rawToken).toString();
+
+        try {
+          const response = await getCheckToken(savedtoken);
+
+          if (response.status === 200) {
+            setSesion({
+              token: savedtoken,
+              params: response.sesion.params,
+            } as SesionInterface);
+            setIsAuthenticated(true);
+          } else {
+            setIsAuthenticated(false);
+          }
+        } catch (error) {
+          console.error("Error al verificar el token:", error);
+          setIsAuthenticated(false);
+        } finally {
+          setLoading(false);
+        }
+      };
+      //tiempo para que el loading se vea
+      setTimeout(() => {
+        checkToken();
+      }, 1050);
+    }, [setSesion]);
+
+    if (loading)
+      return (
+        <div className="flex w-full h-screen items-center justify-center animate-fadeOutInfinite">
+          <div className="w-24 h-24 bg-blue-500 absolute animate-dropDown"></div>
+        </div>
+      );
+
+    return isAuthenticated ? (
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <Header />
+          <div className="flex flex-1 flex-col gap-4 p-4 animate-fadeIn ">
+            <main className="h-full ">
+              <Outlet />
+            </main>
+          </div>
+          <Toaster />
+        </SidebarInset>
+      </SidebarProvider>
+    ) : (
+      <Navigate to="/login" />
+    );
   };
 
   return (
-    <SesionProvider>
-      <BrowserRouter>
-        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-          <SidebarProvider>
-            <AppSidebar />
-            <SidebarInset>
-              <Header />
-              <div className="flex flex-1 flex-col gap-4 p-4 ">
-                <main className=" h-full">
-                  <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/example" element={<ExamplePage />} />
-
-                    <Route path="/expandido" element={<ExpandidoPage />} />
-                    <Route
-                      path="opr/:sector/:proceso/:maquina"
-                      element={<MaquinaPage />}
-                    />
-                    <Route path="/login" element={<LoginPage />} />
-
-                    {/*
-                    <Route element={<PrivateRoutes />}>
-                      <Route path="/*" element={<HomePage />} />
-                    </Route>
-                    <Route path="/login" element={<LoginPage />} />
-
-                    */}
-                  </Routes>
-                </main>
-              </div>
-              <Toaster />
-            </SidebarInset>
-          </SidebarProvider>
-        </ThemeProvider>
-      </BrowserRouter>
-    </SesionProvider>
+    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+      <SesionProvider>
+        <BrowserRouter>
+          <main className=" flex h-[100vh] animate-fadeIn ">
+            <Routes>
+              <Route element={<PrivateRoutes />}>
+                <Route path="/*" element={<HomePage />} />
+              </Route>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="*" element={<Navigate to="/login" />} />
+            </Routes>
+          </main>
+          <Toaster />
+        </BrowserRouter>
+      </SesionProvider>
+    </ThemeProvider>
   );
 }
 

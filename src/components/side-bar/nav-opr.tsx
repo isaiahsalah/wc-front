@@ -16,7 +16,7 @@ import {
 } from "../ui/collapsible";
 import { Minus, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
-const MenuOpr = () => {
+const NavOpr = () => {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{menuOper.title}</SidebarGroupLabel>
@@ -104,4 +104,4 @@ const MenuOpr = () => {
   );
 };
 
-export default MenuOpr;
+export default NavOpr;

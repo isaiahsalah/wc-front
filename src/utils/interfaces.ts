@@ -1,5 +1,5 @@
 export interface SesionInterface {
-    usuario: UsuarioInterface;
+    params: string;
     token: string;
   }
 
