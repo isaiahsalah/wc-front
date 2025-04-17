@@ -37,7 +37,7 @@ items: {
     <SidebarMenu className=" ">
       <SidebarMenuItem >
         <DropdownMenu >
-          <DropdownMenuLabel> Sector</DropdownMenuLabel>
+          <DropdownMenuLabel className="text-sidebar-foreground/70"> Sector</DropdownMenuLabel>
           <DropdownMenuTrigger asChild >
 
             <SidebarMenuButton size="lg" asChild>

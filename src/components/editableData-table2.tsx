@@ -32,6 +32,7 @@ import {
   ChevronLeft,
   ChevronRight,
   MinusIcon,
+  Plus,
   PlusIcon,
 } from "lucide-react";
 import { Button } from "./ui/button";
@@ -39,11 +40,13 @@ import { createColumnsFromData } from "@/utils/table.func";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
- 
-
 type DataTableProps<T> = {
-  data: T[];
-  updateData?: (rowIndex: number, columnId: string, value: unknown) => void;
+  data?: T[] | null;
+  updateData?: (
+    rowIndex: number,
+    columnId: string,
+    value: unknown
+  ) => void | null;
 };
 
 function useSkipper() {
@@ -59,19 +62,32 @@ function useSkipper() {
   return [shouldSkipRef.current, skip] as const;
 }
 
-export function EditableDataTable<T extends RowData>({
+export function EditableDataTable2<T extends RowData>({
   data,
-  updateData,
 }: DataTableProps<T>) {
   const [autoResetPageIndex, skipAutoResetPageIndex] = useSkipper();
+
+  const [newData, setDataNew] = useState(data); // Estado local de los datos
+
   const columns = createColumnsFromData(data);
 
-  
+  const addRow = () => {
+    const newRow = Object.fromEntries(
+      Object.keys(data[0] || {}).map((key) => [key, ""])
+    );
+    setDataNew((prevData) => [newRow, ...prevData]);
+  };
 
-
+  const updateData = (rowIndex: number, columnId: string, value: unknown) => {
+    setDataNew((prevData) =>
+      prevData.map((row, index) =>
+        index === rowIndex ? { ...row, [columnId]: value } : row
+      )
+    );
+  };
 
   const table = useReactTable({
-    data,
+    data: newData,
     columns,
     defaultColumn: {
       cell: ({ getValue, row: { index }, column: { id }, table }) => {
@@ -88,6 +104,7 @@ export function EditableDataTable<T extends RowData>({
 
         return (
           <Input
+            className="h-8 bg-yellow-50"
             value={value as string}
             onChange={(e) => setValue(e.target.value)}
             onBlur={onBlur}
@@ -117,8 +134,6 @@ export function EditableDataTable<T extends RowData>({
 
   return (
     <div className="rounded-md border w-full ">
-     
-
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -170,7 +185,7 @@ export function EditableDataTable<T extends RowData>({
         <TableFooter>
           <TableRow>
             <TableCell colSpan={columns.length * 2}>
-              <div className="flex items-center justify-end ">
+              <div className="flex items-center justify-end gap-4">
                 <div className="flex items-center space-x-2 mr-auto">
                   <span className="text-sm">Mostrar:</span>
                   <DropdownMenu>
@@ -214,75 +229,21 @@ export function EditableDataTable<T extends RowData>({
                     <ChevronRight />
                   </Button>
                 </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  type="button"
+                  onClick={addRow}
+                >
+                  Añadir
+                  <Plus />
+                </Button>
               </div>
             </TableCell>
           </TableRow>
         </TableFooter>
       </Table>
-      {/* <div className="p-2">
-      <table>
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id} colSpan={header.colSpan}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>
-                  {flexRender(
-                    cell.column.columnDef.cell,
-                    cell.getContext()
-                  )}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div className="flex items-center gap-2">
-        <button
-          onClick={() => table.setPageIndex(0)}
-          disabled={!table.getCanPreviousPage()}
-        >
-          {"<<"}
-        </button>
-        <button
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          {"<"}
-        </button>
-        <button
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          {">"}
-        </button>
-        <button
-          onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-          disabled={!table.getCanNextPage()}
-        >
-          {">>"}
-        </button>
-        <span>
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
-        </span>
-      </div>
-    </div>*/}
     </div>
   );
 }

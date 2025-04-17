@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -19,12 +19,13 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  SelectContent,
+  SelectContent, 
 } from "@/components/ui/select";
 import TypographyH2 from "@/components/h2-text";
 import { DatePicker } from "@/components/date-picker";
 import { EditableDataTable } from "@/components/editableData-table";
 import { makeData } from "@/utils/examples";
+import { TitleContext } from "@/providers/title-provider";
 
 const formSchema = z.object({
   productName: z.string().min(2, {
@@ -43,7 +44,9 @@ const formSchema = z.object({
 });
 
 //Componente
-const RegisterPage = () => {
+const RegisterProductionPage = () => {
+    const { setTitle } = useContext(TitleContext);
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -61,6 +64,10 @@ const RegisterPage = () => {
 
   const [data, setData] = useState(() => makeData(10));
 
+    useEffect(() => {
+      setTitle("Registrar Producción");
+    }, [])
+
   const updateData = (rowIndex: number, columnId: string, value: unknown) => {
     setData((old) =>
       old.map((row, index) =>
@@ -74,10 +81,7 @@ const RegisterPage = () => {
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="grid grid-cols-16 gap-4 mx-auto "
-      >
-        <TypographyH2 className="col-span-16">
-          Registro de producción
-        </TypographyH2>
+      > 
 
         <FormField
           control={form.control}
@@ -162,7 +166,7 @@ const RegisterPage = () => {
           name="shift"
           render={({ field }) => (
             <FormItem className="col-span-8 xl:col-span-4">
-              <FormLabel>Categoria</FormLabel>
+              <FormLabel>Sección</FormLabel>
               <FormControl>
                 <Select
                   onValueChange={field.onChange}
@@ -390,4 +394,4 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+export default RegisterProductionPage;

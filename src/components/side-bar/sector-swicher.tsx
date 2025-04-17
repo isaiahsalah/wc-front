@@ -18,7 +18,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-export function SectorSwitcher({
+export function ProcesoSwitcher({
   items,
 }: {
   items: {
@@ -37,7 +37,7 @@ export function SectorSwitcher({
     <SidebarMenu className="  ">
       <SidebarMenuItem>
         <DropdownMenu>
-        <DropdownMenuLabel> Sección</DropdownMenuLabel>
+        <DropdownMenuLabel className="text-sidebar-foreground/70">Proceso</DropdownMenuLabel>
           <DropdownMenuTrigger asChild>
             
 

@@ -1,24 +1,21 @@
-import {
-  AudioWaveform, 
-  Command, 
-} from "lucide-react";
+import { AudioWaveform, Command } from "lucide-react";
 
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter, 
+  SidebarFooter,
   SidebarHeader,
-  SidebarMenu, 
-  SidebarMenuItem, 
+  SidebarMenu,
+  SidebarMenuItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
- 
+
 import NavOpr from "./nav-opr";
 import clsx from "clsx";
 import { NavUser } from "./nav-user";
 import NavAdm from "./nav-adm";
-import {  SectionSwitcher } from "./section-swicher";
-import { SectorSwitcher } from "./sector-swicher";
+import { SectionSwitcher } from "./section-swicher";
+import { ProcesoSwitcher } from "./sector-swicher";
 
 interface Props {
   className?: string; // Clase personalizada opcional
@@ -29,13 +26,11 @@ export const AppSidebar: React.FC<Props> = ({ className }) => {
     <Sidebar className={clsx("animate-fadeIn", className)}>
       <SidebarHeader>
         <SidebarMenu className="flex ">
-          <SidebarMenuItem >
-            <SectionSwitcher items={section} />  
-
+          <SidebarMenuItem>
+            <SectionSwitcher items={section} />
           </SidebarMenuItem>
-          <SidebarMenuItem  className=""> 
-            <SectorSwitcher items={sector} /> 
-
+          <SidebarMenuItem className="">
+            <ProcesoSwitcher items={sector} />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

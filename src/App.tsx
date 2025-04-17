@@ -17,6 +17,8 @@ import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
 import { getCheckToken } from "./api/login.api";
 import { SesionInterface } from "./utils/interfaces";
+import LoadingPage from "./pages/LoadingPage";
+import { TitleProvider } from "./providers/title-provider";
 
 function App() {
   const PrivateRoutes = () => {
@@ -55,18 +57,10 @@ function App() {
           setLoading(false);
         }
       };
-      //tiempo para que el loading se vea
-      setTimeout(() => {
-        checkToken();
-      }, 1050);
+      checkToken();
     }, [setSesion]);
 
-    if (loading)
-      return (
-        <div className="flex w-full h-screen items-center justify-center animate-fadeOutInfinite">
-          <div className="w-24 h-24 bg-blue-500 absolute animate-dropDown"></div>
-        </div>
-      );
+    if (loading) return <LoadingPage />;
 
     return isAuthenticated ? (
       <SidebarProvider>
@@ -88,20 +82,22 @@ function App() {
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-      <SesionProvider>
-        <BrowserRouter>
-          <main className=" flex h-[100vh] animate-fadeIn ">
-            <Routes>
-              <Route element={<PrivateRoutes />}>
-                <Route path="/*" element={<HomePage />} />
-              </Route>
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="*" element={<Navigate to="/login" />} />
-            </Routes>
-          </main>
-          <Toaster />
-        </BrowserRouter>
-      </SesionProvider>
+      <TitleProvider>
+        <SesionProvider>
+          <BrowserRouter>
+            <main className=" flex h-[100vh] animate-fadeIn ">
+              <Routes>
+                <Route element={<PrivateRoutes />}>
+                  <Route path="/*" element={<HomePage />} />
+                </Route>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="*" element={<Navigate to="/login" />} />
+              </Routes>
+            </main>
+            <Toaster />
+          </BrowserRouter>
+        </SesionProvider>
+      </TitleProvider>
     </ThemeProvider>
   );
 }
