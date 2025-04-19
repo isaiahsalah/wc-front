@@ -45,7 +45,6 @@ const formSchema = z.object({
 
 //Componente
 const RegisterProductionPage = () => {
-    const { setTitle } = useContext(TitleContext);
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -63,6 +62,7 @@ const RegisterProductionPage = () => {
   }
 
   const [data, setData] = useState(() => makeData(10));
+  const { setTitle } = useContext(TitleContext);
 
     useEffect(() => {
       setTitle("Registrar Producción");

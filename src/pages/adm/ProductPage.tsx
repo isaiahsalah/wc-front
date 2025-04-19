@@ -7,13 +7,21 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Plus, TrendingUpIcon } from "lucide-react";
-import React from "react";
+import React, { useContext, useEffect } from "react";
 import { DataTable } from "../ExamplePage";
 import { dataExample } from "@/utils/examples";
+import { TitleContext } from "@/providers/title-provider";
 
-const ProductionPage = () => {
+
+
+const ProductPage = () => {
+  const { setTitle } = useContext(TitleContext);
+
+  useEffect(() => {
+    setTitle(" Producción");
+  }, [])
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-3 gap-4 ">
       <Card className="@container/card">
         <CardHeader className="relative">
           <CardDescription>Total Revenue</CardDescription>
@@ -89,4 +97,4 @@ const ProductionPage = () => {
   );
 };
 
-export default ProductionPage;
+export default ProductPage;

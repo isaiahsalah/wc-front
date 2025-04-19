@@ -67,7 +67,7 @@ function App() {
         <AppSidebar />
         <SidebarInset>
           <Header />
-          <div className="flex flex-1 flex-col gap-4 p-4 animate-fadeIn ">
+          <div className="flex flex-1 flex-col gap-4 p-4 animate-fadeIn mx-4">
             <main className="h-full ">
               <Outlet />
             </main>

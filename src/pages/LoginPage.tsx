@@ -97,15 +97,15 @@ export const LoginPage = ({
   }
 
   return (
-    <div className="p-10 flex w-full ">
+    <div className="p-10 flex flex-col w-full min-h-svh  items-center justify-center ">
       <div
         className={cn(
-          " grid grid-cols-2 rounded-md border overflow-hidden  h-full  w-full ",
+          "max-w-md md:max-w-3xl grid grid-cols-2 rounded-md border overflow-hidden    w-full ",
           className
         )}
         {...props}
       >
-        <div className="hidden md:flex xl:col-span-1  border-r bg-card p-10  flex-col justify-between ">
+        <div className=" hidden md:flex xl:col-span-1  border-r  bg-muted p-10  flex-col justify-between ">
           <TypographyH3>Plásticos Carmen</TypographyH3>
 
           <TypographyP className="text-muted-foreground text-right">
@@ -114,7 +114,7 @@ export const LoginPage = ({
             ever since the 1500s.
           </TypographyP>
         </div>
-        <div className="col-span-2 md:col-span-1   p-10 flex flex-col justify-center relative">
+        <div className="  col-span-2 md:col-span-1   px-10 py-30 flex flex-col justify-center relative">
           <div className="ml-auto absolute top-10 right-10">
             <ModeToggle />
           </div>
@@ -153,16 +153,22 @@ export const LoginPage = ({
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem
-                              value="genencial"
+                              value="gerencial"
                               className=" justify-center"
                             >
                               Gerencial
                             </SelectItem>
                             <SelectItem
+                              value="admini"
+                              className=" justify-center"
+                            >
+                              Administrativa
+                            </SelectItem>
+                            <SelectItem
                               value="fabric"
                               className=" justify-center"
                             >
-                              Fabrica
+                              Fabricación
                             </SelectItem>
                           </SelectContent>
                         </Select>
