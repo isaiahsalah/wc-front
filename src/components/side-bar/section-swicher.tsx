@@ -18,7 +18,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-export function SectionSwitcher({
+export function Switcher({
   items,
 }: {
 items: {
@@ -63,8 +63,8 @@ items: {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-64 rounded-lg"
-            align="center"
-            side="bottom"
+            align="start"
+            side="right"
             sideOffset={4}
           >
             <DropdownMenuLabel className="text-xs text-muted-foreground">

@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export interface SesionInterface {
     params: string;
     token: string;
@@ -21,3 +23,13 @@ export interface UsuarioInterface {
     createdAt?: Date | null;
     updatedAt?: Date | null;
   }
+
+  export const ProductSchema = z.object({
+    id: z.number(),
+    header: z.string(),
+    type: z.string(),
+    status: z.string(),
+    target: z.string(),
+    limit: z.string(),
+    reviewer: z.string(),
+  });

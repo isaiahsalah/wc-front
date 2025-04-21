@@ -8,7 +8,7 @@ interface Props {
 
  const TypographyH4: React.FC<Props> = ({ children, className })=>  {
     return (
-      <h4 className={clsx("scroll-m-20 text-xl font-semibold tracking-tight capitalize",className)}>
+      <h4 className={clsx("scroll-m-20 text-xl font-semibold tracking-tight ",className)}>
         {children}
       </h4>
     )

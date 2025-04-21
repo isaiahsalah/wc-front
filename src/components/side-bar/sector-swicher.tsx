@@ -37,10 +37,10 @@ export function ProcesoSwitcher({
     <SidebarMenu className="  ">
       <SidebarMenuItem>
         <DropdownMenu>
-        <DropdownMenuLabel className="text-sidebar-foreground/70">Proceso</DropdownMenuLabel>
+          <DropdownMenuLabel className="text-sidebar-foreground/70">
+            Proceso
+          </DropdownMenuLabel>
           <DropdownMenuTrigger asChild>
-            
-
             <SidebarMenuButton size="default" asChild>
               <a href="#">
                 <div className="flex aspect-square size-6 items-center justify-center rounded-sm border   text-sidebar-primary-foreground">
@@ -65,8 +65,8 @@ export function ProcesoSwitcher({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-64 rounded-lg"
-            align="center"
-            side="bottom"
+            align="start"
+            side="right"
             sideOffset={4}
           >
             <DropdownMenuLabel className="text-xs text-muted-foreground">

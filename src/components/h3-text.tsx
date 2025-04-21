@@ -9,7 +9,7 @@ interface Props {
  const TypographyH3: React.FC<Props> = ({ children, className })=>  {
     return (
       <h3 className={clsx(
-        "scroll-m-20 text-2xl font-semibold tracking-tight capitalize",
+        "scroll-m-20 text-2xl font-semibold tracking-tight ",
         className)}>
         {children}
       </h3>

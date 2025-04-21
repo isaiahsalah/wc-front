@@ -1,5 +1,4 @@
-"use client"
-
+ 
 import * as React from "react"
 import {
   DndContext,
@@ -137,7 +136,7 @@ function DragHandle({ id }: { id: number }) {
   )
 }
 
-const columns: ColumnDef<z.infer<typeof schema>>[] = [
+export const columns: ColumnDef<z.infer<typeof schema>>[] = [
   {
     id: "drag",
     header: () => null,

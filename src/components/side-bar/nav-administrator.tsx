@@ -17,59 +17,31 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../ui/collapsible";
-const NavAdm = () => {
+const NavAdministrator = () => {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{menuAdmin.title}</SidebarGroupLabel>
 
       <SidebarMenu className="pl-2 box-border">
-        {menuAdmin.items.map((item, i) => (
-          <Collapsible
-            key={i}
-            defaultOpen={false}
-            className="group/collapsible"
-          >
-            <SidebarMenuItem>
-              <CollapsibleTrigger
-                asChild
-                className={` ${
-                  !item.items.some((im) => im.isActive === true)
-                    ? "pointer-events-none opacity-50"
-                    : ""
-                }`}
-              >
-                <SidebarMenuButton>
+        {menuAdmin.items.map((item, i) => ( 
+              <SidebarMenuItem key={i}>
+                <SidebarMenuButton
+                  className={` ${
+                    !item.isActive ? "pointer-events-none opacity-50" : ""
+                  } `}
+                  asChild
+                  //isActive={!item.isActive}
+                >
+                  <Link to={item.url}>
                   <item.icon />
                   {item.title}{" "}
-                  <ChevronDown className="ml-auto group-data-[state=open]/collapsible:hidden opacity-80"  />
-                  <ChevronUp className="ml-auto group-data-[state=closed]/collapsible:hidden opacity-80" />
+                  </Link>
                 </SidebarMenuButton>
-              </CollapsibleTrigger>
-              {item.items?.length ? (
-                <CollapsibleContent>
-                  <SidebarMenuSub>
-                    {item.items.map((it,j) => (
-                      <SidebarMenuSubItem key={j}>
-                        <SidebarMenuSubButton
-                          className={` ${
-                            !it.isActive ? "pointer-events-none opacity-50" : ""
-                          } `}
-                          asChild
-                          //isActive={!item.isActive}
-                        >
-                          <Link to={it.url}>{it.title}</Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    ))}
-                  </SidebarMenuSub>
-                </CollapsibleContent>
-              ) : null}
-            </SidebarMenuItem>
-          </Collapsible>
+              </SidebarMenuItem> 
         ))}
       </SidebarMenu>
     </SidebarGroup>
   );
 };
 
-export default NavAdm;
+export default NavAdministrator;

@@ -13,7 +13,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -30,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { is } from "date-fns/locale";
 
 const formSchema = z.object({
   area: z.string().min(2, {
@@ -146,30 +146,23 @@ export const LoginPage = ({
                           <SelectTrigger className="w-full">
                             <div className="w-full ml-5">
                               <SelectValue
-                                placeholder="Area"
+                                placeholder="Módulo"
                                 className="w-full ml-7 "
                               />
                             </div>
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem
-                              value="gerencial"
+                            {modulSelect.map((item, index) => (
+                              <SelectItem
+                              value={item.value}
                               className=" justify-center"
+                              key={index}
+                              disabled={!item.isActive}
                             >
-                              Gerencial
+                              {item.title}
                             </SelectItem>
-                            <SelectItem
-                              value="admini"
-                              className=" justify-center"
-                            >
-                              Administrativa
-                            </SelectItem>
-                            <SelectItem
-                              value="fabric"
-                              className=" justify-center"
-                            >
-                              Fabricación
-                            </SelectItem>
+                            ))}
+                           
                           </SelectContent>
                         </Select>
                       </FormControl>
@@ -243,3 +236,31 @@ export const LoginPage = ({
 };
 
 export default LoginPage;
+
+const modulSelect = [
+  {
+    title:"Producción e Inventarios",
+    value:"produccion",
+    isActive: true,
+  },
+  {
+    title:"Ventas y Logística",
+    value:"ventas",
+    isActive: false,
+  },
+  {
+    title:"Costos y Calidad",
+    value:"calidad",
+    isActive: false,
+  },
+  {
+    title:"Administración y Usuarios",
+    value:"administracion",
+    isActive: false,
+  },
+  {
+    title:"Reportes y Análisis",
+    value:"reportes",
+    isActive: false,
+  }
+];

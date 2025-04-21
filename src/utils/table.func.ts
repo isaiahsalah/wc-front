@@ -11,3 +11,5 @@ export const createColumnsFromData = (data: Data[]): ColumnDef<Data>[] => {
       header: key.charAt(0).toUpperCase() + key.slice(1), // Capitalizar la cabecera
     }));
   };
+
+ 

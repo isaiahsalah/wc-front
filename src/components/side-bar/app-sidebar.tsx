@@ -14,8 +14,7 @@ import NavOpr from "./nav-opr";
 import clsx from "clsx";
 import { NavUser } from "./nav-user";
 import NavAdm from "./nav-administrator";
-import { SectionSwitcher } from "./section-swicher";
-import { ProcesoSwitcher } from "./sector-swicher";
+import { Switcher } from "./section-swicher";
 
 interface Props {
   className?: string; // Clase personalizada opcional
@@ -27,11 +26,13 @@ export const AppSidebar: React.FC<Props> = ({ className }) => {
       <SidebarHeader>
         <SidebarMenu className="flex ">
           <SidebarMenuItem>
-            <SectionSwitcher items={section} />
+            <Switcher items={section} />
           </SidebarMenuItem>
-          <SidebarMenuItem className="">
+         {/*
+         <SidebarMenuItem className="">
             <ProcesoSwitcher items={sector} />
           </SidebarMenuItem>
+         */} 
         </SidebarMenu>
       </SidebarHeader>
       <SidebarSeparator className=" m-0" />
@@ -55,6 +56,11 @@ const user = {
 };
 
 const section = [
+  {
+    name: "Todos",
+    logo: Command,
+    plan: "all",
+  },
   {
     name: "Bolsas",
     logo: Command,
