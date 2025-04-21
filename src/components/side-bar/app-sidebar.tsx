@@ -13,7 +13,7 @@ import {
 import NavOpr from "./nav-opr";
 import clsx from "clsx";
 import { NavUser } from "./nav-user";
-import NavAdm from "./nav-adm";
+import NavAdm from "./nav-administrator";
 import { SectionSwitcher } from "./section-swicher";
 import { ProcesoSwitcher } from "./sector-swicher";
 

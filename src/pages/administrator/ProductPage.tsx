@@ -22,6 +22,7 @@ const ProductPage = () => {
   }, [])
   return (
     <div className="grid grid-cols-3 gap-4 ">
+      
       <Card className="@container/card">
         <CardHeader className="relative">
           <CardDescription>Total Revenue</CardDescription>

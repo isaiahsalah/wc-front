@@ -5,7 +5,7 @@ export const menuAdmin = {
   url: "#",
   items: [
     {
-      title: "Mezcla",
+      title: "Productos",
       url: "bolsa",
       icon: Heater,
       isActive: true,
@@ -37,7 +37,7 @@ export const menuAdmin = {
       ],
     },
     {
-      title: "Extrusión",
+      title: "Producción",	
       url: "inyecion",
       icon: Bandage,
       isActive: true,
@@ -57,7 +57,7 @@ export const menuAdmin = {
       ],
     },
     {
-      title: "Corte",
+      title: "Procesos",
       url: "termo",
       icon: Heater,
       isActive: true,
@@ -104,89 +104,12 @@ export const menuAdmin = {
           icon: Bandage,
           isActive: true,
         },
-        {
-          title: "Cortadora 2",
-          url: "termo/inyecion",
-          icon: Bandage,
-          isActive: true,
-        },
-        {
-          title: "Cortadora 2",
-          url: "termo/inyecion",
-          icon: Bandage,
-          isActive: true,
-        },
-        {
-          title: "Cortadora 2",
-          url: "termo/inyecion",
-          icon: Bandage,
-          isActive: true,
-        },
-        {
-          title: "Cortadora 2",
-          url: "termo/inyecion",
-          icon: Bandage,
-          isActive: true,
-        },
-        {
-          title: "Cortadora 2",
-          url: "termo/inyecion",
-          icon: Bandage,
-          isActive: true,
-        },
-        {
-          title: "Cortadora 2",
-          url: "termo/inyecion",
-          icon: Bandage,
-          isActive: true,
-        },
-        {
-          title: "Cortadora 2",
-          url: "termo/inyecion",
-          icon: Bandage,
-          isActive: true,
-        },
-        {
-          title: "Cortadora 2",
-          url: "termo/inyecion",
-          icon: Bandage,
-          isActive: true,
-        },
-        {
-          title: "Cortadora 2",
-          url: "termo/inyecion",
-          icon: Bandage,
-          isActive: true,
-        },
-        {
-          title: "Cortadora 2",
-          url: "termo/inyecion",
-          icon: Bandage,
-          isActive: true,
-        },
-        {
-          title: "Cortadora 2",
-          url: "termo/inyecion",
-          icon: Bandage,
-          isActive: true,
-        },
-        {
-          title: "Cortadora 2",
-          url: "termo/inyecion",
-          icon: Bandage,
-          isActive: true,
-        },
-        {
-          title: "Cortadora 20",
-          url: "termo/inyecion",
-          icon: Bandage,
-          isActive: true,
-        },
+      
       ],
     },
 
     {
-      title: "Empaquetado",
+      title: "Inventario",
       url: "expandido",
       icon: Soup,
       isActive: true,

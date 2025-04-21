@@ -9,7 +9,7 @@ import {
 import { Plus, TrendingUpIcon } from "lucide-react";
 import React from "react";
 import { DataTable } from "./ExamplePage";
-import ProductPage from "./adm/ProductPage";
+import ProductPage from "./administrator/ProductPage";
 
 const HomePage = () => {
   return (
