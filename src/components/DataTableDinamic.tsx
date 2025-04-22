@@ -1,25 +1,5 @@
-"use client";
-
-import * as React from "react";
 import {
-  DndContext,
-  KeyboardSensor,
-  MouseSensor,
-  TouchSensor,
-  closestCenter,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-  type UniqueIdentifier,
-} from "@dnd-kit/core";
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import {
-  SortableContext,
-  arrayMove,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import {
+  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -31,10 +11,12 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import {
+  ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronsLeftIcon,
   ChevronsRightIcon,
+  ColumnsIcon,
   PlusIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -46,25 +28,39 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ColorTableColumns } from "./ColorTableColums";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { z } from "zod";
+import { GeneralSchema } from "@/utils/interfaces";
+import { useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
-const ColorTable = () => {
-  const [data, setData] = React.useState(() => [
-    { id: 1, name: "Blue", popularity: "High" },
-    { id: 2, name: "Red", popularity: "Medium" },
-    { id: 3, name: "Green", popularity: "Low" },
-  ]);
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [pagination, setPagination] = React.useState({
+interface Props {
+  data: z.infer<typeof GeneralSchema>[];
+  columns: ColumnDef<z.infer<typeof GeneralSchema>>[];
+  //children: React.ReactNode; // Define el tipo de children
+}
+
+const DataTableDinamic: React.FC<Props> = ({ data, columns }) => {
+  const [rowSelection, setRowSelection] = useState({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
   });
-
-  const columns = ColorTableColumns;
 
   const table = useReactTable({
     data,
@@ -90,7 +86,48 @@ const ColorTable = () => {
   });
 
   return (
-    <div>
+    <div className="flex flex-col gap-2">
+
+        
+      <div className="flex items-center justify-end gap-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild >
+            <Button variant="outline" size={"sm"}>
+              <ColumnsIcon />
+              <span className="hidden lg:inline">Personalizar Columnas</span>
+              <span className="lg:hidden">Columnas</span>
+              <ChevronDownIcon />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            {table
+              .getAllColumns()
+              .filter(
+                (column) =>
+                  typeof column.accessorFn !== "undefined" &&
+                  column.getCanHide()
+              )
+              .map((column) => {
+                return (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className="capitalize"
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }
+                  >
+                    {column.id}
+                  </DropdownMenuCheckboxItem>
+                );
+              })}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <Button variant="outline" size={"sm"}>
+          <PlusIcon />
+          <span className="hidden lg:inline">Agregar</span>
+        </Button>
+      </div>
       <div className="overflow-hidden rounded-lg border">
         <Table>
           <TableHeader className="sticky top-0 z-10 bg-muted">
@@ -100,7 +137,10 @@ const ColorTable = () => {
                   <TableHead key={header.id} colSpan={header.colSpan}>
                     {header.isPlaceholder
                       ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -109,18 +149,27 @@ const ColorTable = () => {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  No hay resultados.
                 </TableCell>
               </TableRow>
             )}
@@ -135,7 +184,7 @@ const ColorTable = () => {
         <div className="flex w-full items-center gap-8 lg:w-fit">
           <div className="hidden items-center gap-2 lg:flex">
             <Label htmlFor="rows-per-page" className="text-sm font-medium">
-              Rows per page
+              Mostrar
             </Label>
             <Select
               value={`${table.getState().pagination.pageSize}`}
@@ -144,7 +193,9 @@ const ColorTable = () => {
               }}
             >
               <SelectTrigger className="w-20" id="rows-per-page">
-                <SelectValue placeholder={table.getState().pagination.pageSize} />
+                <SelectValue
+                  placeholder={table.getState().pagination.pageSize}
+                />
               </SelectTrigger>
               <SelectContent side="top">
                 {[10, 20, 30, 40, 50].map((pageSize) => (
@@ -156,7 +207,8 @@ const ColorTable = () => {
             </Select>
           </div>
           <div className="flex w-fit items-center justify-center text-sm font-medium">
-            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+            Página {table.getState().pagination.pageIndex + 1} of{" "}
+            {table.getPageCount()}
           </div>
           <div className="ml-auto flex items-center gap-2 lg:ml-0">
             <Button
@@ -165,7 +217,7 @@ const ColorTable = () => {
               onClick={() => table.setPageIndex(0)}
               disabled={!table.getCanPreviousPage()}
             >
-              <span className="sr-only">Go to first page</span>
+              <span className="sr-only">Ir a la primer página</span>
               <ChevronsLeftIcon />
             </Button>
             <Button
@@ -175,7 +227,7 @@ const ColorTable = () => {
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
             >
-              <span className="sr-only">Go to previous page</span>
+              <span className="sr-only">I a la pagina anterior</span>
               <ChevronLeftIcon />
             </Button>
             <Button
@@ -185,7 +237,7 @@ const ColorTable = () => {
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >
-              <span className="sr-only">Go to next page</span>
+              <span className="sr-only">Ir a la siguiente página</span>
               <ChevronRightIcon />
             </Button>
             <Button
@@ -195,7 +247,7 @@ const ColorTable = () => {
               onClick={() => table.setPageIndex(table.getPageCount() - 1)}
               disabled={!table.getCanNextPage()}
             >
-              <span className="sr-only">Go to last page</span>
+              <span className="sr-only">Ir a la última pagina</span>
               <ChevronsRightIcon />
             </Button>
           </div>
@@ -205,4 +257,4 @@ const ColorTable = () => {
   );
 };
 
-export default ColorTable;
+export default DataTableDinamic;

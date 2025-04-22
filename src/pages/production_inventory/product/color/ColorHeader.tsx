@@ -1,16 +1,21 @@
-import   { useContext, useEffect } from "react";
- import {
+import { useContext, useEffect } from "react";
+import {
   Card,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { TrendingUpIcon } from "lucide-react";
+import { Tally5, TrendingDownIcon, TrendingUpIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TitleContext } from "@/providers/title-provider";
+import { z } from "zod";
 
-const ColorHeader = () => {
+interface Props {
+  initialData: z.infer<typeof GeneralSchema>[];
+}
+
+const ColorHeader: React.FC<Props> = ({ initialData }) => {
   const { setTitle } = useContext(TitleContext);
 
   useEffect(() => {
@@ -18,34 +23,35 @@ const ColorHeader = () => {
   }, []);
 
   return (
-    <div className="grid grid-cols-3 gap-4">
-      <Card className="@container/card">
+    <div className="grid grid-cols-6 gap-4">
+      <Card className="@container/card col-span-6 lg:col-span-2">
         <CardHeader className="relative">
-          <CardDescription>Total Colors</CardDescription>
+          <CardDescription>Colores registrados</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            25 Colors
+            {initialData.length} Colores
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
               <TrendingUpIcon className="size-3" />
-              +5 New
+              +5 este mes
             </Badge>
           </div>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Trending colors this month <TrendingUpIcon className="size-4" />
+            Total acumulado en el sistema
+            <Tally5 className="size-4" />
           </div>
           <div className="text-muted-foreground">
-            Popular colors for the last 6 months
+            Mantén actualizada esta cantidad para un registro preciso.
           </div>
         </CardFooter>
       </Card>
 
-      <Card className="@container/card">
+      <Card className="@container/card col-span-6 sm:col-span-3 lg:col-span-2">
         <CardHeader className="relative">
-          <CardDescription>Most Popular Color</CardDescription>
-          <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
+        <CardDescription>Color más producido</CardDescription>
+        <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
             Blue
           </CardTitle>
           <div className="absolute right-4 top-4">
@@ -57,33 +63,31 @@ const ColorHeader = () => {
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Trending up this month <TrendingUpIcon className="size-4" />
+          Incremento en la producción este mes <TrendingUpIcon className="size-4" />
           </div>
-          <div className="text-muted-foreground">
-            Based on user preferences
+          <div className="text-muted-foreground">      Basado en los datos de producción actuales
           </div>
         </CardFooter>
       </Card>
 
-      <Card className="@container/card">
+      <Card className="@container/card col-span-6 sm:col-span-3 lg:col-span-2">
         <CardHeader className="relative">
-          <CardDescription>Least Popular Color</CardDescription>
-          <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
+        <CardDescription>Color menos producido</CardDescription>
+        <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
             Brown
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-              <TrendingUpIcon className="size-3" />
+              <TrendingDownIcon className="size-3" />
               -2%
             </Badge>
           </div>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Declining this month <TrendingUpIcon className="size-4" />
+          Disminución este mes <TrendingDownIcon className="size-4" />
           </div>
-          <div className="text-muted-foreground">
-            Based on user preferences
+          <div className="text-muted-foreground">      Basado en los datos de producción actuales
           </div>
         </CardFooter>
       </Card>

@@ -33,3 +33,20 @@ export interface UsuarioInterface {
     limit: z.string(),
     reviewer: z.string(),
   });
+
+
+  export const GeneralSchema = z.object({
+    id: z.number(),
+    name: z.string().min(2, {
+      message: "El nombre del color debe tener al menos 2 caracteres.",
+    }),
+    description: z.string(),
+    state: z.boolean(),
+  });
+
+  export interface GeneralInterfaces{
+    id:number,
+    name: string,
+    description:string,
+    state:boolean,
+  };

@@ -60,7 +60,7 @@ const ProductActions = () => {
                         }
                       >
                         {column.id}
-                      </DropdownMenuCheckboxItem>
+                      </DropdownMenuCheckboxItem> 
                     );
                   })}
               </DropdownMenuContent>*/}

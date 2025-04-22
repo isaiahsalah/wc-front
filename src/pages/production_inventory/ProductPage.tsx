@@ -1,39 +1,52 @@
-import  { useEffect, useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ProductHeader from "./product/product/ProductHeader";
-import {
-  SelectContent,
-  SelectItem,
-  Select,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import ProductActions from "./product/product/ProductActions";
+import { useEffect, useState } from "react";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import ProductTable from "./product/product/ProductTable";
 import ColorHeader from "./product/color/ColorHeader";
 import ColorActions from "./product/color/ColorActions";
-import ColorTable from "./product/color/ColorTable";
 import { getColors } from "@/api/color.api";
+import { GeneralInterfaces } from "@/utils/interfaces";
+import { ColorTableColumns } from "./product/color/ColorTableColums";
+import DataTableDinamic from "@/components/DataTableDinamic";
+import SelectorTabPage from "@/components/SelectorTabPage";
+import RegisterProductionPage from "@/trash/operator/production/RegisterProductionPage";
 
 const ProductPage = () => {
   const [activeTab, setActiveTab] = useState(tabData[0]?.id || "");
-
-  const [colors, setColors] = useState([]);
+  const [data, setData] = useState<GeneralInterfaces[] | never[]>([]);
+  const [loading, setLoading] = useState(false); // Estado de carga
 
   useEffect(() => {
-    const fetchColors = async () => {
-      try {
-        const data = await getColors();
-        console.log("Colores:", data);
-        setColors(data);
-      } catch (error) {
-        console.error("Error al cargar los colores:", error);
-      }
-    };
+    console.log("Data:", data);
+  }, [data]);
 
-    fetchColors();
-  }, []);
+  useEffect(() => {
+    updateView();
+  }, [activeTab]);
+/*
+  const fetchColors = async () => {
+    setLoading(true); // Inicia la carga
+    try {
+      const colorData = await getColors();
+      console.log("Colores:", colorData);
+      await setData(colorData);
+    } catch (error) {
+      console.error("Error al cargar los colores:", error);
+    } finally {
+      setLoading(false); // Finaliza la carga
+    }
+  };*/
+
+  const updateView = async () => {
+    setLoading(true); // Inicia la carga
+    try {
+      if (activeTab === "color") setData(await getColors());
+      else setData([]);
+    } catch (error) {
+      console.error("Error al cargar datos:", error);
+    } finally {
+      setLoading(false); // Finaliza la carga
+    }
+  };
 
   return (
     <Tabs
@@ -41,50 +54,35 @@ const ProductPage = () => {
       onValueChange={(value) => setActiveTab(value)}
       className="flex w-full flex-col justify-start gap-4"
     >
-      {tabData.map((tab) => (
-        <TabsContent key={tab.id} value={tab.id}>
-          {tab.header}
-        </TabsContent>
-      ))}
+      <SelectorTabPage
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        tabData={tabData}
+      />
       <Separator />
-      <div className="flex items-center justify-between ">
-        <Select
-          value={activeTab}
-          onValueChange={(value) => setActiveTab(value)}
-        >
-          <SelectTrigger className="xl:hidden flex w-fit" id="view-selector">
-            <SelectValue placeholder="Select a view" />
-          </SelectTrigger>
-          <SelectContent>
-            {tabData.map((tab) => (
-              <SelectItem key={tab.id} value={tab.id}>
-                {tab.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <TabsList className="xl:flex hidden">
-          {tabData.map((tab) => (
-            <TabsTrigger key={tab.id} value={tab.id}>
-              {tab.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-
-        {tabData.map((tab) => (
-          <TabsContent key={tab.id} value={tab.id}>
-            {tab.actions}
-          </TabsContent>
-        ))}
-      </div>
+      {tabData.map((tab) => (
+        <TabsContent key={tab.id} value={tab.id}>
+          {loading ? ( // Muestra un indicador de carga mientras se obtienen los datos
+            <div>Cargando datos...</div>
+          ) : (
+            <tab.header initialData={data} />
+          )}
+        </TabsContent>
+      ))}
 
       {tabData.map((tab) => (
         <TabsContent key={tab.id} value={tab.id}>
-          {tab.content}
+          {loading ? ( // Muestra un indicador de carga mientras se obtienen los datos
+            <div>Cargando datos...</div>
+          ) : (
+            <DataTableDinamic
+              data={data}
+              columns={tab.columns({ updateView })}
+            />
+          )}
         </TabsContent>
       ))}
-     {/* <DataTable data={dataExample} />*/}
+      {/* <DataTable data={dataExample} />*/}
     </Tabs>
   );
 };
@@ -95,36 +93,36 @@ const tabData = [
   {
     id: "tab1",
     label: "Producto",
-    header: <ProductHeader />,
-    actions: <ProductActions />,
-    content: <ProductTable />,
+    header: ColorHeader,
+    actions: ColorActions,
+    columns: ColorTableColumns,
   },
   {
     id: "tab2",
     label: "Modelo",
-    header: <ProductHeader />,
-    actions: <ProductActions />,
-    content: <ProductTable />,
+    header: ColorHeader,
+    actions: ColorActions,
+    columns: ColorTableColumns,
   },
   {
     id: "tab3",
     label: "Unidad de Medida",
-    header: <ProductHeader />,
-    actions: <ProductActions />,
-    content: <ProductTable />,
+    header: ColorHeader,
+    actions: ColorActions,
+    columns: ColorTableColumns,
   },
   {
-    id: "tab4",
+    id: "color",
     label: "Color",
-    header: <ColorHeader />,
-    actions: <ColorActions />,
-    content: <ColorTable />,
+    header: ColorHeader,
+    actions: ColorActions,
+    columns: ColorTableColumns,
   },
   {
     id: "tab5",
     label: "Fórmula",
-    header: <ProductHeader />,
-    actions: <ProductActions />,
-    content: <ProductTable />,
+    header: ColorHeader,
+    actions: ColorActions,
+    columns: ColorTableColumns,
   },
 ];

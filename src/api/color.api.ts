@@ -1,7 +1,6 @@
-
-
-
-import {apiClient} from "./axiosConfig";
+import { Description } from "@radix-ui/react-dialog";
+import { apiClient } from "./axiosConfig";
+import { GeneralInterfaces } from "@/utils/interfaces";
 
 export const getColors = async () => {
   try {
@@ -13,42 +12,44 @@ export const getColors = async () => {
   }
 };
 
-export const getColorById = async (id: string) => {
-    try {
-      const response = await apiClient.get(`/pr/color/${id}`);
-      return response.data; // Devuelve el color encontrado
-    } catch (error) {
-      console.error(`Error al obtener el color con ID ${id}:`, error);
-      throw error;
-    }
-  };
+export const getColorById = async (id: number) => {
+  try {
+    const response = await apiClient.get(`/pr/color/${id}`);
+    return response.data; // Devuelve el color encontrado
+  } catch (error) {
+    console.error(`Error al obtener el color con ID ${id}:`, error);
+    throw error;
+  }
+};
 
-  export const createColor = async (name: string, hexCode: string) => {
-    try {
-      const response = await apiClient.post("/pr/color/", { name, hexCode });
-      return response.data; // Devuelve el color creado
-    } catch (error) {
-      console.error("Error al crear el color:", error);
-      throw error;
-    }
-  };
+export const createColor = async (name: string, hexCode: string) => {
+  try {
+    const response = await apiClient.post("/pr/color/", { name, hexCode });
+    return response.data; // Devuelve el color creado
+  } catch (error) {
+    console.error("Error al crear el color:", error);
+    throw error;
+  }
+};
 
-  export const updateColor = async (id: string, name: string, hexCode: string) => {
-    try {
-      const response = await apiClient.put(`/pr/color/${id}`, { name, hexCode });
-      return response.data; // Devuelve el color actualizado
-    } catch (error) {
-      console.error(`Error al actualizar el color con ID ${id}:`, error);
-      throw error;
-    }
-  };
+export const updateColor = async (
+ {data}: {data:GeneralInterfaces}
+) => {
+  try {
+    const response = await apiClient.put(`/pr/color/${data.id}`, data );
+    return response.data; // Devuelve el color actualizado
+  } catch (error) {
+    console.error(`Error al actualizar el color con ID ${data.id}:`, error);
+    throw error;
+  }
+};
 
-  export const deleteColor = async (id: string) => {
-    try {
-      const response = await apiClient.delete(`/pr/color/${id}`);
-      return response.data; // Devuelve el mensaje de éxito
-    } catch (error) {
-      console.error(`Error al eliminar el color con ID ${id}:`, error);
-      throw error;
-    }
-  };
+export const deleteColor = async (id: string) => {
+  try {
+    const response = await apiClient.delete(`/pr/color/${id}`);
+    return response.data; // Devuelve el mensaje de éxito
+  } catch (error) {
+    console.error(`Error al eliminar el color con ID ${id}:`, error);
+    throw error;
+  }
+};

@@ -72,7 +72,6 @@ function App() {
               <Outlet />
             </main>
           </div>
-          <Toaster />
         </SidebarInset>
       </SidebarProvider>
     ) : (
