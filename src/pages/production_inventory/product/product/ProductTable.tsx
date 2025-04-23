@@ -175,8 +175,8 @@ const ProductTable = () => {
        
           <Table>
             <TableHeader className="sticky top-0 z-10 bg-muted">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
+              {table.getHeaderGroups().map((headerGroup,i) => (
+                <TableRow key={i}>
                   {headerGroup.headers.map((header) => {
                     return (
                       <TableHead key={header.id} colSpan={header.colSpan}>
@@ -198,8 +198,9 @@ const ProductTable = () => {
                   items={dataIds}
                   strategy={verticalListSortingStrategy}
                 >
-                  {table.getRowModel().rows.map((row) => (
+                  {table.getRowModel().rows.map((row,i) => (
                     <TableRow
+                    key={i}
                       data-state={row.getIsSelected() && "selected"}
                       className="relative z-0 data-[dragging=true]:z-10 data-[dragging=true]:opacity-80"
                     >
