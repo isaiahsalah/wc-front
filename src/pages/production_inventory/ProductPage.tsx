@@ -3,10 +3,10 @@ import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import ColorHeader from "./product/color/ColorHeader";
 import ColorActions from "./product/color/ColorActions";
-import { getColors } from "@/api/color.api";
+import { getAllColors, getColors } from "@/api/color.api";
 import { GeneralInterfaces } from "@/utils/interfaces";
 import { ColorTableColumns } from "./product/color/ColorTableColums";
-import DataTableDinamic from "@/components/DataTableDinamic";
+import DataTableDinamic from "@/components/table/DataTableDinamic";
 import SelectorTabPage from "@/components/SelectorTabPage";
 import RegisterProductionPage from "@/trash/operator/production/RegisterProductionPage";
 
@@ -22,7 +22,7 @@ const ProductPage = () => {
   useEffect(() => {
     updateView();
   }, [activeTab]);
-/*
+  /*
   const fetchColors = async () => {
     setLoading(true); // Inicia la carga
     try {
@@ -39,7 +39,7 @@ const ProductPage = () => {
   const updateView = async () => {
     setLoading(true); // Inicia la carga
     try {
-      if (activeTab === "color") setData(await getColors());
+      if (activeTab === "color") setData(await getAllColors());
       else setData([]);
     } catch (error) {
       console.error("Error al cargar datos:", error);
@@ -75,10 +75,7 @@ const ProductPage = () => {
           {loading ? ( // Muestra un indicador de carga mientras se obtienen los datos
             <div>Cargando datos...</div>
           ) : (
-            <DataTableDinamic
-              data={data}
-              columns={tab.columns({ updateView })}
-            />
+            <DataTableDinamic data={data} columns={tab.columns(updateView)} />
           )}
         </TabsContent>
       ))}

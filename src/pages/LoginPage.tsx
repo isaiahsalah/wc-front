@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
 import { CardDescription, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import TypographyH3 from "@/components/h3-text";
-import TypographyP from "@/components/p-text";
+import TypographyH3 from "@/components/text/h3-text";
+import TypographyP from "@/components/text/p-text";
 
 import { useForm } from "react-hook-form";
 import { z } from "zod";

@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
-import { getColorById, updateColor } from "@/api/color.api";
+import { deleteColor, getColorById, updateColor } from "@/api/color.api";
 import { toast } from "sonner";
 
 interface Props {
@@ -33,7 +33,7 @@ interface Props {
   updateView: () => void; // Define the type as a function that returns void
 }
 
-const ColorViewer: React.FC<Props> = ({ children, id, updateView }) => {
+const ColorSheet: React.FC<Props> = ({ children, id, updateView }) => {
   //const [data, setData] = useState<GeneralInterfaces | never>();
   const [loading, setLoading] = useState(false); // Estado de carga
 
@@ -53,11 +53,6 @@ const ColorViewer: React.FC<Props> = ({ children, id, updateView }) => {
         console.log("Color actualizado:", updatedColor);
 
         toast("El color se actualizó correctamente.", {
-          id: "id-unico",
-          onDismiss: () => {
-            console.log("hola");
-          },
-          duration: 100000,
           action: {
             label: "OK",
             onClick: () => console.log("Undo"),
@@ -99,11 +94,43 @@ const ColorViewer: React.FC<Props> = ({ children, id, updateView }) => {
     }
   };
 
+  function onDelete(id: number): void {
+    setLoading(true); // Inicia la carga
+    deleteColor(id)
+      .then((deleteColor) => {
+        console.log("Color eliminado:", deleteColor);
+
+        toast("El color se eliminó correctamente.", {
+          action: {
+            label: "OK",
+            onClick: () => console.log("Undo"),
+          },
+        });
+
+        updateView();
+      })
+      .catch((error) => {
+        console.error("Error al eliminar el color:", error);
+        toast("Hubo un error al eliminar el color.", {
+          action: {
+            label: "OK",
+            onClick: () => console.log("Undo"),
+          },
+        });
+      })
+      .finally(() => {
+        setLoading(false); // Finaliza la carga
+      });
+  }
+
   return (
-    <Sheet>
-      <SheetTrigger asChild onClick={fetchColors}>
+    <Sheet >
+
+      <Capsul>
+      <SheetTrigger  asChild onClick={fetchColors}>
         {children}
       </SheetTrigger>
+      </Capsul>
       <SheetContent side="right" className=" flex flex-col p-4">
         <div className=" mb-17  flex flex-1 flex-col gap-4 overflow-y-auto py-4 text-sm">
           <SheetTitle>
@@ -170,13 +197,20 @@ const ColorViewer: React.FC<Props> = ({ children, id, updateView }) => {
                 />
 
                 <div className="grid grid-cols-6 col-span-6 gap-2 absolute bottom-0 right-0 left-0 m-4 mb-6">
-                  <Button type="submit" className="col-span-2" disabled={!form.formState.isDirty}>
+                  <Button
+                    type="submit"
+                    className="col-span-3"
+                    disabled={!form.formState.isDirty}
+                  >
                     Guardar
                   </Button>
-                  <Button type="button" className="col-span-2"  >
-                    Desactivar
-                  </Button>
-                  <Button type="button" className="col-span-2" variant={"destructive"}>
+
+                  <Button
+                    type="button"
+                    className="col-span-3"
+                    variant={"destructive"}
+                    onClick={() => onDelete(form.getValues().id)}
+                  >
                     Eliminar
                   </Button>
                   <SheetClose asChild className="col-span-6">
@@ -194,4 +228,4 @@ const ColorViewer: React.FC<Props> = ({ children, id, updateView }) => {
   );
 };
 
-export default ColorViewer;
+export default ColorSheet;
