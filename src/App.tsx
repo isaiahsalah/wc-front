@@ -1,5 +1,5 @@
 import { SidebarInset, SidebarProvider } from "./components/ui/sidebar";
-import { AppSidebar } from "@/components/side-bar/app-sidebar";
+import { AppSidebar } from "@/components/nav/app-sidebar";
 import {
   BrowserRouter,
   Routes,
@@ -9,7 +9,7 @@ import {
 } from "react-router-dom";
 import { ThemeProvider } from "./providers/theme-provider";
 
-import Header from "./components/app-header";
+import Header from "./components/nav/app-header";
 import { Toaster } from "./components/ui/sonner";
 import { useContext, useEffect, useState } from "react";
 import { SesionContext, SesionProvider } from "./providers/sesion-provider";

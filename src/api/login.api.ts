@@ -10,7 +10,7 @@ export const getLogin = async ({
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({ status: 200, sesion: { token: "1234567890", params: "" } });
-    }, 2000);
+    }, 200);
   });
 };
 
@@ -24,6 +24,6 @@ export const getCheckToken = async ({
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({ status: 200, sesion: { token: "1234567890", params: "" } });
-    }, 2000);
+    }, 200);
   });
 };

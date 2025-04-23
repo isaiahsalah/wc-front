@@ -1,4 +1,9 @@
-import { ColumnDef } from "@tanstack/react-table";
+import DataTableDinamic from "@/components/table/DataTableDinamic";
+import { GeneralSchema } from "@/utils/interfaces";
+import React, { useState } from "react";
+import { z } from "zod";
+
+import { ColumnDef, ColumnFiltersState } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -13,22 +18,21 @@ import { Button } from "@/components/ui/button";
 import {
   MoreVerticalIcon,
   CheckCircle2Icon,
-  LoaderIcon,
-  CircleCheck,
   CircleX,
 } from "lucide-react";
-import { GeneralSchema } from "@/utils/interfaces";
-import { z } from "zod";
 import ColorViewer from "./ColorSheet";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import { deleteColor } from "@/api/color.api";
-import ColorSheet from "./ColorSheet";
 
-export const ColorTableColumns = (
-  updateView: () => void
-): ColumnDef<z.infer<typeof GeneralSchema>>[] => {
-  return [
+interface Props {
+  data: z.infer<typeof GeneralSchema>[];
+  updateView:()=>void;
+  //children: React.ReactNode; // Define el tipo de children
+}
+
+const ColorTable: React.FC<Props> = ({ data,updateView }) => {
+
+
+  const columns: ColumnDef<z.infer<typeof GeneralSchema>>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -62,33 +66,29 @@ export const ColorTableColumns = (
       header: "Nombre",
       cell: ({ row }) => {
         return (
-          <div className={row.original.deletedAt ? "pointer-events-none" : ""}>
-            <ColorViewer
-              updateView={updateView}
-              children={
-                <Button
-                  variant="link"
-                  className=" w-fit px-0 text-left text-foreground"
-                >
-                  {row.original.name}
-                </Button>
-              }
-              id={row.original.id}
-            />
-          </div>
+          <ColorViewer
+            updateView={updateView}
+            children={
+              <Button
+                variant="link"
+                className=" w-fit px-0 text-left text-foreground"
+              >
+                {row.original.name}
+              </Button>
+            }
+            id={row.original.id}
+          />
         );
       },
       enableHiding: false,
     },
     {
-      accessorKey: "description",
-      header: "Descripción",
-      cell: ({ row }) => (
-        <div className=" text-muted-foreground">{row.original.description}</div>
-      ),
+      accessorKey: "decription",
+      
+       cell: info => info.getValue(),
     },
     {
-      accessorKey: "deletedAt",
+      accessorKey: "deleteAt",
       header: "Eliminado",
       cell: ({ row }) => (
         <Badge
@@ -98,7 +98,7 @@ export const ColorTableColumns = (
           {row.original.deletedAt ? (
             <>
               <CircleX className="text-red-500 dark:text-red-400" />
-              {new Date(row.original.deletedAt).toLocaleString()}
+              Eliminado
             </>
           ) : (
             <>
@@ -108,19 +108,6 @@ export const ColorTableColumns = (
           )}
         </Badge>
       ),
-      meta: {
-        filterVariant: "select", // Indica que el filtro será un selector
-      },
-      filterFn: (row, columnId, filterValue) => {
-        const deletedAt = row.getValue<Date | null>(columnId);
-        if (filterValue === "Eliminado") {
-          return !!deletedAt;
-        }
-        if (filterValue === "Vigente") {
-          return !deletedAt;
-        }
-        return true;
-      },
     },
     {
       id: "actions",
@@ -138,10 +125,13 @@ export const ColorTableColumns = (
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-32">
-              <ColorSheet
+              <ColorViewer
                 updateView={updateView}
                 children={
                   <DropdownMenuItem
+                    onSelect={(event) => {
+                      event.preventDefault(); // Evita que el DropdownMenu se cierre
+                    }}
                   >
                     Editar
                   </DropdownMenuItem>
@@ -153,9 +143,7 @@ export const ColorTableColumns = (
               {row.original.deletedAt ? (
                 <DropdownMenuItem>Recuperar</DropdownMenuItem>
               ) : (
-                <DropdownMenuItem onClick={() => deleteColor(row.original.id)}>
-                  Eliminar
-                </DropdownMenuItem>
+                <DropdownMenuItem>Eliminar</DropdownMenuItem>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -164,4 +152,8 @@ export const ColorTableColumns = (
       enableHiding: false,
     },
   ];
+
+  return <DataTableDinamic data={data} columns={columns} />;
 };
+
+export default ColorTable;
