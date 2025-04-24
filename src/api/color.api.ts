@@ -1,6 +1,7 @@
 import { Description } from "@radix-ui/react-dialog";
 import { apiClient } from "./axiosConfig";
 import { GeneralInterfaces } from "@/utils/interfaces";
+import { toast } from "sonner";
 
 export const getColors = async () => {
   try {
@@ -32,9 +33,7 @@ export const getColorById = async (id: number) => {
   }
 };
 
-export const createColor = async (
-  {data}: {data:GeneralInterfaces}
- ) => {
+export const createColor = async ({ data }: { data: GeneralInterfaces }) => {
   try {
     const response = await apiClient.post("/pr/color/", data);
     return response.data; // Devuelve el color creado
@@ -44,11 +43,9 @@ export const createColor = async (
   }
 };
 
-export const updateColor = async (
- {data}: {data:GeneralInterfaces}
-) => {
+export const updateColor = async ({ data }: { data: GeneralInterfaces }) => {
   try {
-    const response = await apiClient.put(`/pr/color/${data.id}`, data );
+    const response = await apiClient.put(`/pr/color/${data.id}`, data);
     return response.data; // Devuelve el color actualizado
   } catch (error) {
     console.error(`Error al actualizar el color con ID ${data.id}:`, error);
@@ -57,24 +54,59 @@ export const updateColor = async (
 };
 
 export const deleteColor = async (id: number) => {
+  toast("Se está procesando la petición", {
+    action: {
+      label: "OK",
+      onClick: () => console.log("Undo"),
+    },
+  });
   try {
     const response = await apiClient.delete(`/pr/color/${id}`);
+    toast("El color se eliminó correctamente.", {
+      action: {
+        label: "OK",
+        onClick: () => console.log("Undo"),
+      },
+    });
     return response.data; // Devuelve el mensaje de éxito
   } catch (error) {
-    console.error(`Error al eliminar el color con ID ${id}:`, error);
+    toast(`Error al eliminar el color con ID ${id}: ${error}`, {
+      action: {
+        label: "OK",
+        onClick: () => console.log("Undo"),
+      },
+    });
     throw error;
   }
 };
 
 export const recoverColor = async (id: number) => {
+  toast("Se está procesando la petición", {
+    action: {
+      label: "OK",
+      onClick: () => console.log("Undo"),
+    },
+  });
   try {
     // Realiza una solicitud PATCH o PUT al endpoint correspondiente
     const response = await apiClient.patch(`/pr/color/${id}`, {
       deletedAt: null, // Cambia el campo `deletedAt` a null para recuperar el dato
     });
+
+    toast("El color se recuperó correctamente.", {
+      action: {
+        label: "OK",
+        onClick: () => console.log("Undo"),
+      },
+    });
     return response.data; // Devuelve el dato actualizado o el mensaje de éxito
   } catch (error) {
-    console.error(`Error al recuperar el color con ID ${id}:`, error);
+    toast(`Error al recuperar el color con ID ${id}: ${error}`, {
+      action: {
+        label: "OK",
+        onClick: () => console.log("Undo"),
+      },
+    });
     throw error;
   }
 };

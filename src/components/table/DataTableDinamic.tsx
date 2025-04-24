@@ -43,7 +43,7 @@ import {
 } from "@/components/ui/table";
 import { z } from "zod";
 import { GeneralSchema } from "@/utils/interfaces";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -92,6 +92,11 @@ const DataTableDinamic: React.FC<Props> = ({ data, columns }) => {
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
+
+  useEffect(() => {
+    console.log("El componente se ha renderizado");
+  });
+  
 
   return (
     <div className="flex flex-col gap-4">
@@ -191,29 +196,7 @@ const DataTableDinamic: React.FC<Props> = ({ data, columns }) => {
               </TableRow>
             ))}
 
-            {/*table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder ? null : (
-                      <div
-                        className={`${
-                          header.column.getCanSort() ? "cursor-pointer" : ""
-                        }`}
-                        onClick={header.column.getToggleSortingHandler()}
-                      >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
-                        {header.column.getIsSorted()
-                          ? header.column.getIsSorted() === "asc"
-                            ? " 🔼"
-                            : " 🔽"
-                          : null}
-                      </div>
-                    )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))*/}
+         
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows.length ? (

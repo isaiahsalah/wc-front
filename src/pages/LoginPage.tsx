@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { ModeToggle } from "@/components/mode-toggle";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { SesionContext } from "@/providers/sesion-provider";
 import { getLogin } from "@/api/login.api";
 import { SesionInterface } from "@/utils/interfaces";
@@ -60,6 +60,8 @@ export const LoginPage = ({
       pass: "",
     },
   });
+
+ 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);

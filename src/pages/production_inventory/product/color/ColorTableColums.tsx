@@ -13,16 +13,12 @@ import { Button } from "@/components/ui/button";
 import {
   MoreVerticalIcon,
   CheckCircle2Icon,
-  LoaderIcon,
-  CircleCheck,
   CircleX,
 } from "lucide-react";
 import { GeneralSchema } from "@/utils/interfaces";
 import { z } from "zod";
 import ColorViewer from "./ColorSheet";
-import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import { deleteColor } from "@/api/color.api";
+import { deleteColor, recoverColor } from "@/api/color.api";
 import ColorSheet from "./ColorSheet";
 
 export const ColorTableColumns = (
@@ -126,7 +122,8 @@ export const ColorTableColumns = (
       id: "actions",
       cell: ({ row }) => {
         return (
-          <DropdownMenu key={row.original.id}>
+          <DropdownMenu key={row.original.id} 
+          >
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
@@ -140,20 +137,19 @@ export const ColorTableColumns = (
             <DropdownMenuContent align="end" className="w-32">
               <ColorSheet
                 updateView={updateView}
-                children={
-                  <DropdownMenuItem
-                  >
-                    Editar
-                  </DropdownMenuItem>
-                }
+                children={<DropdownMenuItem 
+                  onSelect={(event) => {
+                    event.preventDefault(); // Evita el cierre automático 
+                  }}
+                >Editar</DropdownMenuItem>}
                 id={row.original.id}
               />
 
               <DropdownMenuSeparator />
               {row.original.deletedAt ? (
-                <DropdownMenuItem>Recuperar</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => recoverColor(row.original.id).then(()=>updateView())}>Recuperar</DropdownMenuItem>
               ) : (
-                <DropdownMenuItem onClick={() => deleteColor(row.original.id)}>
+                <DropdownMenuItem onClick={() => deleteColor(row.original.id).then(()=>updateView())}>
                   Eliminar
                 </DropdownMenuItem>
               )}

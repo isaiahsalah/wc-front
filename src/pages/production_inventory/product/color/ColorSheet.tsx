@@ -4,6 +4,7 @@ import {
   SheetContent,
   SheetClose,
   SheetTitle,
+  SheetDescription,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -45,6 +47,8 @@ const ColorSheet: React.FC<Props> = ({ children, id, updateView }) => {
       description: "",
     },
   });
+
+  
 
   function onSubmit(values: z.infer<typeof GeneralSchema>) {
     setLoading(true); // Inicia la carga
@@ -75,7 +79,7 @@ const ColorSheet: React.FC<Props> = ({ children, id, updateView }) => {
       });
   }
 
-  const fetchColors = async () => {
+  const fetchColor = async () => {
     setLoading(true); // Inicia la carga
     try {
       const colorData = await getColorById(id);
@@ -85,7 +89,6 @@ const ColorSheet: React.FC<Props> = ({ children, id, updateView }) => {
         id: colorData.id,
         name: colorData.name,
         description: colorData.description,
-        state: true,
       });
     } catch (error) {
       console.error("Error al cargar los colores:", error);
@@ -95,6 +98,7 @@ const ColorSheet: React.FC<Props> = ({ children, id, updateView }) => {
   };
 
   function onDelete(id: number): void {
+    console.log("Color eliminado:");
     setLoading(true); // Inicia la carga
     deleteColor(id)
       .then((deleteColor) => {
@@ -124,24 +128,18 @@ const ColorSheet: React.FC<Props> = ({ children, id, updateView }) => {
   }
 
   return (
-    <Sheet >
-
-      <Capsul>
-      <SheetTrigger  asChild onClick={fetchColors}>
-        {children}
-      </SheetTrigger>
-      </Capsul>
+    <Sheet>
+      <SheetTrigger asChild onClick={fetchColor}>{children}</SheetTrigger>
       <SheetContent side="right" className=" flex flex-col p-4">
         <div className=" mb-17  flex flex-1 flex-col gap-4 overflow-y-auto py-4 text-sm">
-          <SheetTitle>
-            <div className="flex gap-2 font-medium leading-none">
-              Gestión de color
-            </div>
-            <div className="text-muted-foreground">
-              Mostrando datos relacionados con el color.
-            </div>
-          </SheetTitle>
+          <SheetTitle>Gestión de color</SheetTitle>
+
+          <SheetDescription>
+            Mostrando datos relacionados con el color.
+          </SheetDescription>
+
           <Separator />
+
           {loading ? null : (
             <Form {...form}>
               <form
@@ -200,7 +198,7 @@ const ColorSheet: React.FC<Props> = ({ children, id, updateView }) => {
                   <Button
                     type="submit"
                     className="col-span-3"
-                    disabled={!form.formState.isDirty}
+                    disabled={!form.formState.isDirty || loading}
                   >
                     Guardar
                   </Button>

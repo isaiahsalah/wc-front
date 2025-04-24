@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import ColorHeader from "./product/color/ColorHeader";
 import ColorActions from "./product/color/ColorActions";
-import { getAllColors, getColors } from "@/api/color.api";
+import { getAllColors } from "@/api/color.api";
 import { GeneralInterfaces } from "@/utils/interfaces";
 import { ColorTableColumns } from "./product/color/ColorTableColums";
 import DataTableDinamic from "@/components/table/DataTableDinamic";
-import SelectorTabPage from "@/components/SelectorTabPage";
-import RegisterProductionPage from "@/trash/operator/production/RegisterProductionPage";
+import SelectorTabPage from "@/components/SelectorTabPage"; 
+import ColorTable from "./product/color/ColorTable";
 
 const ProductPage = () => {
   const [activeTab, setActiveTab] = useState(tabData[0]?.id || "");
@@ -18,6 +18,10 @@ const ProductPage = () => {
   useEffect(() => {
     console.log("Data:", data);
   }, [data]);
+
+  useEffect(() => {
+    console.log("cargandooo");
+  }, [loading]);
 
   useEffect(() => {
     updateView();
@@ -36,17 +40,18 @@ const ProductPage = () => {
     }
   };*/
 
-  const updateView = async () => {
-    setLoading(true); // Inicia la carga
+  const updateView = useCallback(async () => {
+    setLoading(true);
+    console.log("se actualizaron los datos");
     try {
       if (activeTab === "color") setData(await getAllColors());
       else setData([]);
     } catch (error) {
       console.error("Error al cargar datos:", error);
     } finally {
-      setLoading(false); // Finaliza la carga
+      setLoading(false);
     }
-  };
+  }, [activeTab]);
 
   return (
     <Tabs
@@ -75,7 +80,7 @@ const ProductPage = () => {
           {loading ? ( // Muestra un indicador de carga mientras se obtienen los datos
             <div>Cargando datos...</div>
           ) : (
-            <DataTableDinamic data={data} columns={tab.columns(updateView)} />
+            <ColorTable data={data} updateView={updateView}/>
           )}
         </TabsContent>
       ))}
