@@ -1,10 +1,9 @@
-import ProductPage from "./production_inventory/ProductPage";
-
+import ProductTabPage from "./production_inventory/ProducTabPage";
 
 const HomePage = () => {
   return (
     <div className="">
-      <ProductPage/>
+      <ProductTabPage/>
     </div>
   );
 };

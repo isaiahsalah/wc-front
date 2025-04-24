@@ -67,7 +67,7 @@ function App() {
         <AppSidebar />
         <SidebarInset>
           <Header />
-          <div className="flex flex-1 flex-col gap-4 p-4 animate-fadeIn mx-4">
+          <div className=" @container/main flex flex-1 flex-col gap-4 p-4 animate-fadeIn mx-4">
             <main className="h-full ">
               <Outlet />
             </main>
@@ -84,7 +84,7 @@ function App() {
       <TitleProvider>
         <SesionProvider>
           <BrowserRouter>
-            <main className=" flex h-[100vh] animate-fadeIn ">
+            <div className=" flex h-[100vh] animate-fadeIn ">
               <Routes>
                 <Route element={<PrivateRoutes />}>
                   <Route path="/*" element={<HomePage />} />
@@ -92,7 +92,7 @@ function App() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="*" element={<Navigate to="/login" />} />
               </Routes>
-            </main>
+            </div>
             <Toaster />
           </BrowserRouter>
         </SesionProvider>

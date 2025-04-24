@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import TypographyH2 from "@/components/text/h2-text";
 import { DatePicker } from "@/components/date-picker";
-import { EditableDataTable } from "@/components/table/editableData-table";
+import { EditableDataTable } from "@/trash/editableData-table";
 import { makeData } from "@/utils/examples";
 import { TitleContext } from "@/providers/title-provider";
 

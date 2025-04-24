@@ -47,10 +47,7 @@ export const GeneralSchema = z.object({
 
 export const GeneralSchema = z.object({
   id: z
-    .number()
-    .int("El ID debe ser un número entero.")
-    .positive("El ID debe ser un número positivo.")
-    .min(1, "El ID debe ser mayor o igual a 1."),
+    .number().nullable().optional(),
   name: z
     .string()
     .min(3, "El nombre debe tener al menos 3 caracteres.")

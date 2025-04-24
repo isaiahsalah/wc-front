@@ -51,13 +51,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Filter } from "./dataTableFilters";
+import { Badge } from "../ui/badge";
 
 interface Props {
   data: z.infer<typeof GeneralSchema>[];
   columns: ColumnDef<z.infer<typeof GeneralSchema>>[];
+  actions: React.ReactNode;
 }
 
-const DataTableDinamic: React.FC<Props> = ({ data, columns }) => {
+const DataTableDinamic: React.FC<Props> = ({ data, columns, actions }) => {
   const [rowSelection, setRowSelection] = useState({});
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -92,11 +94,6 @@ const DataTableDinamic: React.FC<Props> = ({ data, columns }) => {
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
-
-  useEffect(() => {
-    console.log("El componente se ha renderizado");
-  });
-  
 
   return (
     <div className="flex flex-col gap-4">
@@ -134,10 +131,8 @@ const DataTableDinamic: React.FC<Props> = ({ data, columns }) => {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button variant="outline" size="sm">
-            <PlusIcon />
-            <span className="ml-2 hidden lg:inline">Agregar</span>
-          </Button>
+
+          {actions}
         </div>
       </div>
 
@@ -170,23 +165,20 @@ const DataTableDinamic: React.FC<Props> = ({ data, columns }) => {
                           ) : null}
 
                           {header.column.getCanSort() && ( // Verifica si la columna puede ordenarse
-                            <Button
-                              variant={"link"}
-                              size={"sm"}
+                            <div
                               {...{
-                                className:
-                                  "cursor-pointer select-none flex gap-2 my-auto",
+                                className: "  flex cursor-pointer mr-auto  my-auto   ",
                                 onClick:
                                   header.column.getToggleSortingHandler(),
                               }}
                             >
                               {{
-                                asc: <ChevronDown className="h-4 my-auto" />,
-                                desc: <ChevronUp className="h-4" />,
+                                asc: <ChevronDown className="h-4 w-4  " />,
+                                desc: <ChevronUp className="h-4 w-4 " />,
                               }[header.column.getIsSorted() as string] ?? (
-                                <ChevronsUpDown className="h-4" />
+                                <ChevronsUpDown className="h-4 w-4  " />
                               )}
-                            </Button>
+                            </div>
                           )}
                         </div>
                       )}
@@ -195,8 +187,6 @@ const DataTableDinamic: React.FC<Props> = ({ data, columns }) => {
                 })}
               </TableRow>
             ))}
-
-         
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows.length ? (
@@ -227,48 +217,81 @@ const DataTableDinamic: React.FC<Props> = ({ data, columns }) => {
       </div>
 
       {/* Controles de paginación */}
-      <div className="flex justify-between items-center">
-        <div className="hidden lg:block">
-          {table.getFilteredSelectedRowModel().rows.length} de{" "}
-          {table.getFilteredRowModel().rows.length} fila(s) seleccionadas.
+      <div className="flex items-center justify-between px-4">
+        <div className="hidden flex-1 text-sm text-muted-foreground lg:flex">
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.setPageIndex(0)}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <ChevronsLeftIcon />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <ChevronLeftIcon />
-          </Button>
-          <span>
-            Página {table.getState().pagination.pageIndex + 1} de{" "}
+        <div className="flex w-full items-center gap-8 lg:w-fit">
+          <div className="hidden items-center gap-2 lg:flex">
+            <Label htmlFor="rows-per-page" className="text-sm font-medium">
+              Rows per page
+            </Label>
+            <Select
+              value={`${table.getState().pagination.pageSize}`}
+              onValueChange={(value) => {
+                table.setPageSize(Number(value));
+              }}
+            >
+              <SelectTrigger className="w-20" id="rows-per-page">
+                <SelectValue
+                  placeholder={table.getState().pagination.pageSize}
+                />
+              </SelectTrigger>
+              <SelectContent side="top">
+                {[5, 10, 20, 30, 40, 50].map((pageSize) => (
+                  <SelectItem key={pageSize} value={`${pageSize}`}>
+                    {pageSize}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex w-fit items-center justify-center text-sm font-medium">
+            Page {table.getState().pagination.pageIndex + 1} of{" "}
             {table.getPageCount()}
-          </span>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            <ChevronRightIcon />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-            disabled={!table.getCanNextPage()}
-          >
-            <ChevronsRightIcon />
-          </Button>
+          </div>
+          <div className="ml-auto flex items-center gap-2 lg:ml-0">
+            <Button
+              variant="outline"
+              className="hidden h-8 w-8 p-0 lg:flex"
+              onClick={() => table.setPageIndex(0)}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <span className="sr-only">Go to first page</span>
+              <ChevronsLeftIcon />
+            </Button>
+            <Button
+              variant="outline"
+              className="size-8"
+              size="icon"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <span className="sr-only">Go to previous page</span>
+              <ChevronLeftIcon />
+            </Button>
+            <Button
+              variant="outline"
+              className="size-8"
+              size="icon"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <span className="sr-only">Go to next page</span>
+              <ChevronRightIcon />
+            </Button>
+            <Button
+              variant="outline"
+              className="hidden size-8 lg:flex"
+              size="icon"
+              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+              disabled={!table.getCanNextPage()}
+            >
+              <span className="sr-only">Go to last page</span>
+              <ChevronsRightIcon />
+            </Button>
+          </div>
         </div>
       </div>
     </div>

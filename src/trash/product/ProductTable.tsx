@@ -101,7 +101,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DraggableRow } from "@/components/table/DraggableRow";
+import { DraggableRow } from "@/trash/DraggableRow";
 import { dataExample } from "@/utils/examples";
 import { createColumnsFromData } from "@/utils/table.func";
 import { columnsProduct } from "@/utils/table-product";

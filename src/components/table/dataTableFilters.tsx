@@ -8,8 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Search } from "lucide-react";
-
+import { ListFilterPlus, Search } from "lucide-react";
+import DateRangePicker from "../DataRangePicker";
 interface FilterProps {
   column: Column<any, unknown>;
   options?: { value: string; label: string }[]; // Nueva prop para opciones dinámicas
@@ -19,6 +19,7 @@ interface FilterProps {
 export function Filter({ column, options, placeholder }: FilterProps) {
   const columnFilterValue = column.getFilterValue();
   const filterVariant = column.columnDef.meta?.filterVariant;
+
 
   return filterVariant === "range" ? (
     <div>
@@ -44,6 +45,15 @@ export function Filter({ column, options, placeholder }: FilterProps) {
           className="w-24 border shadow rounded"
         />
       </div>
+    </div>
+  ) : filterVariant === "date-range" ? (
+    <div className="flex space-x-2">
+      <DateRangePicker
+
+        dateRange={columnFilterValue || undefined}
+        setRange={(newRange) => column.setFilterValue(newRange)}
+        placeholder={placeholder}
+      />
     </div>
   ) : filterVariant === "select" ? (
     <Select
@@ -79,10 +89,10 @@ interface DebouncedInputProps
   debounce?: number;
 }
 
-export function DebouncedInput({
+function DebouncedInput({
   value: initialValue,
   onChange,
-  debounce = 500,
+  debounce = 250,
   ...props
 }: DebouncedInputProps) {
   const [value, setValue] = useState(initialValue);
@@ -92,21 +102,29 @@ export function DebouncedInput({
   }, [initialValue]);
 
   useEffect(() => {
-    const timeout = setTimeout(() => onChange(value), debounce);
+    // Evita ejecutar onChange si el valor no ha cambiado
+    const timeout = setTimeout(() => {
+      if (value !== initialValue) {
+        onChange(value);
+      }
+    }, debounce);
+
+    // Limpia el timeout al desmontar o cambiar dependencias
     return () => clearTimeout(timeout);
-  }, [value, debounce, onChange]);
+  }, [value, debounce, onChange, initialValue]);
 
   return (
     <div className="flex gap-2 relative w-full">
-     
       <Input
         {...props}
-        className="h-8 text-sm px-2 py-1 pr-8"
-        
+        className="h-8 text-sm px-2 py-1 pr-8 min-w-15"
         value={value}
         onChange={(e) => setValue(e.target.value)}
       />
-       <Search className="h-3.5 my-auto absolute right-1 top-2.5 " />
+      <Search className="h-3.5 my-auto absolute right-1 top-2.5 text-muted-foreground" />
     </div>
   );
 }
+
+
+ 

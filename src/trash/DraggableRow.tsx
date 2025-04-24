@@ -1,11 +1,11 @@
 import { useSortable } from "@dnd-kit/sortable"
-import { TableCell, TableRow } from "../ui/table"
+import { TableCell, TableRow } from "../components/ui/table"
 import { z } from "zod"
 import { ColumnDef, flexRender, Row } from "@tanstack/react-table"
 
 import { CSS } from "@dnd-kit/utilities"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu"
-import { Button } from "../ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "../components/ui/dropdown-menu"
+import { Button } from "../components/ui/button"
 import { MoreVerticalIcon } from "lucide-react"
 
 

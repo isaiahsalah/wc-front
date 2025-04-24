@@ -23,11 +23,11 @@ import {
 } from "@/components/ui/select";
 import TypographyH2 from "@/components/text/h2-text";
 import { DatePicker } from "@/components/date-picker";
-import { EditableDataTable } from "@/components/table/editableData-table";
+import { EditableDataTable } from "@/trash/editableData-table";
 import { makeData } from "@/utils/examples";
 import TypographyP from "@/components/text/p-text";
 import { TitleContext } from "@/providers/title-provider";
-import { EditableDataTable2 } from "@/components/table/editableData-table2";
+import { EditableDataTable2 } from "@/trash/editableData-table2";
 const formSchema = z.object({
   productName: z.string().min(2, {
     message: "El nombre del producto debe tener al menos 2 caracteres.",

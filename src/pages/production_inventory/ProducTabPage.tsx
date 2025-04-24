@@ -1,31 +1,24 @@
 import { useCallback, useEffect, useState } from "react";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import ColorHeader from "./product/color/ColorHeader";
-import ColorActions from "./product/color/ColorActions";
 import { getAllColors } from "@/api/color.api";
 import { GeneralInterfaces } from "@/utils/interfaces";
-import { ColorTableColumns } from "./product/color/ColorTableColums";
-import DataTableDinamic from "@/components/table/DataTableDinamic";
-import SelectorTabPage from "@/components/SelectorTabPage"; 
-import ColorTable from "./product/color/ColorTable";
+import SelectorTabPage from "@/components/SelectorTabPage";
+import ColorPage from "./product/ColorPage";
+import ModelPage from "./product/ModelPage";
+import UnityPage from "./product/UnityPage";
+import FormulaPage from "./product/FormulaPage";
+import ProductPage from "./product/ProductPage";
 
-const ProductPage = () => {
+const ProductTabPage = () => {
   const [activeTab, setActiveTab] = useState(tabData[0]?.id || "");
   const [data, setData] = useState<GeneralInterfaces[] | never[]>([]);
   const [loading, setLoading] = useState(false); // Estado de carga
 
   useEffect(() => {
-    console.log("Data:", data);
-  }, [data]);
-
-  useEffect(() => {
-    console.log("cargandooo");
-  }, [loading]);
-
-  useEffect(() => {
     updateView();
   }, [activeTab]);
+
   /*
   const fetchColors = async () => {
     setLoading(true); // Inicia la carga
@@ -42,7 +35,7 @@ const ProductPage = () => {
 
   const updateView = useCallback(async () => {
     setLoading(true);
-    console.log("se actualizaron los datos");
+    //console.log("se actualizaron los datos");
     try {
       if (activeTab === "color") setData(await getAllColors());
       else setData([]);
@@ -70,61 +63,40 @@ const ProductPage = () => {
           {loading ? ( // Muestra un indicador de carga mientras se obtienen los datos
             <div>Cargando datos...</div>
           ) : (
-            <tab.header initialData={data} />
+            <tab.content data={data} updateView={updateView} />
           )}
         </TabsContent>
       ))}
-
-      {tabData.map((tab) => (
-        <TabsContent key={tab.id} value={tab.id}>
-          {loading ? ( // Muestra un indicador de carga mientras se obtienen los datos
-            <div>Cargando datos...</div>
-          ) : (
-            <ColorTable data={data} updateView={updateView}/>
-          )}
-        </TabsContent>
-      ))}
-      {/* <DataTable data={dataExample} />*/}
     </Tabs>
   );
 };
 
-export default ProductPage;
+export default ProductTabPage;
 
 const tabData = [
   {
     id: "tab1",
     label: "Producto",
-    header: ColorHeader,
-    actions: ColorActions,
-    columns: ColorTableColumns,
+    content: ProductPage,
   },
   {
     id: "tab2",
     label: "Modelo",
-    header: ColorHeader,
-    actions: ColorActions,
-    columns: ColorTableColumns,
+    content: ModelPage,
   },
   {
     id: "tab3",
     label: "Unidad de Medida",
-    header: ColorHeader,
-    actions: ColorActions,
-    columns: ColorTableColumns,
+    content: UnityPage,
   },
   {
     id: "color",
     label: "Color",
-    header: ColorHeader,
-    actions: ColorActions,
-    columns: ColorTableColumns,
+    content: ColorPage,
   },
   {
     id: "tab5",
     label: "Fórmula",
-    header: ColorHeader,
-    actions: ColorActions,
-    columns: ColorTableColumns,
+    content: FormulaPage,
   },
 ];

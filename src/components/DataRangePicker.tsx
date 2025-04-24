@@ -15,9 +15,10 @@ import { DateRange } from "react-day-picker";
 interface Props {
   dateRange: DateRange | undefined;
   setRange: (dateRange: DateRange | undefined) => void;
+  placeholder:string
 }
 
-const RangeDatePicker: React.FC<Props> = ({ dateRange, setRange }) => {
+const DateRangePicker: React.FC<Props> = ({ dateRange, setRange,placeholder }) => {
   //const { dateRange, setRange } = useContext(DateRangeContext);
 
   /*const [date, setDate] = useState<DateRange | undefined>({
@@ -27,10 +28,11 @@ const RangeDatePicker: React.FC<Props> = ({ dateRange, setRange }) => {
 
   return (
     <div className="grid gap-2">
-      <Popover>
+      <Popover >
         <PopoverTrigger asChild>
           <Button
             id="date"
+            size={"sm"}
             variant={"outline"}
             className={cn(
               "w-auto justify-start text-left font-normal",
@@ -41,19 +43,18 @@ const RangeDatePicker: React.FC<Props> = ({ dateRange, setRange }) => {
             {dateRange?.from ? (
               dateRange.to ? (
                 <>
-                  {format(dateRange.from, "dd, LLL-y", { locale: es })} /{" "}
-                  {format(dateRange.to, "dd, LLL-y", { locale: es })}
+                  {format(dateRange.from, "dd/LL/yy", { locale: es })} -{" "}
+                  {format(dateRange.to, "dd/LL/yy", { locale: es })}
                 </>
               ) : (
-                format(dateRange.from, "dd, LLL-y", { locale: es })
+                format(dateRange.from, "dd/LL/yy", { locale: es })
               )
             ) : (
-              <span>Seleciona el rango de fechas</span>
+              <span>{placeholder}</span>
             )}
           </Button>
-         
         </PopoverTrigger>
-        
+
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
             locale={es}
@@ -71,4 +72,4 @@ const RangeDatePicker: React.FC<Props> = ({ dateRange, setRange }) => {
     </div>
   );
 };
-export default RangeDatePicker;
+export default DateRangePicker;

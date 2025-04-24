@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { is } from "date-fns/locale";
+import LoadingCircle from "@/components/LoadingCircle";
 
 const formSchema = z.object({
   area: z.string().min(2, {
@@ -60,8 +61,6 @@ export const LoginPage = ({
       pass: "",
     },
   });
-
- 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
@@ -156,15 +155,14 @@ export const LoginPage = ({
                           <SelectContent>
                             {modulSelect.map((item, index) => (
                               <SelectItem
-                              value={item.value}
-                              className=" justify-center"
-                              key={index}
-                              disabled={!item.isActive}
-                            >
-                              {item.title}
-                            </SelectItem>
+                                value={item.value}
+                                className=" justify-center"
+                                key={index}
+                                disabled={!item.isActive}
+                              >
+                                {item.title}
+                              </SelectItem>
                             ))}
-                           
                           </SelectContent>
                         </Select>
                       </FormControl>
@@ -214,11 +212,7 @@ export const LoginPage = ({
                   className="w-full bg-primary mt-4 "
                   disabled={loadingLogin}
                 >
-                  {loadingLogin ? (
-                    <div className=" border-gray-300 border-t-gray-900   rounded-full h-4 w-4 animate-spin border-4" />
-                  ) : (
-                    "Login"
-                  )}
+                  {loadingLogin ? <LoadingCircle /> : "Login"}
                 </Button>
 
                 <div className="mt-4 text-center text-sm">
@@ -241,28 +235,28 @@ export default LoginPage;
 
 const modulSelect = [
   {
-    title:"Producción e Inventarios",
-    value:"produccion",
+    title: "Producción e Inventarios",
+    value: "produccion",
     isActive: true,
   },
   {
-    title:"Ventas y Logística",
-    value:"ventas",
+    title: "Ventas y Logística",
+    value: "ventas",
     isActive: false,
   },
   {
-    title:"Costos y Calidad",
-    value:"calidad",
+    title: "Costos y Calidad",
+    value: "calidad",
     isActive: false,
   },
   {
-    title:"Administración y Usuarios",
-    value:"administracion",
+    title: "Administración y Usuarios",
+    value: "administracion",
     isActive: false,
   },
   {
-    title:"Reportes y Análisis",
-    value:"reportes",
+    title: "Reportes y Análisis",
+    value: "reportes",
     isActive: false,
-  }
+  },
 ];

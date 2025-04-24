@@ -26,37 +26,49 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
-import { deleteColor, getColorById, updateColor } from "@/api/color.api";
+import {
+  createColor,
+  deleteColor,
+  getColorById,
+  updateColor,
+} from "@/api/color.api";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import LoadingCircle from "@/components/LoadingCircle";
 
 interface Props {
   children: React.ReactNode; // Define el tipo de children
-  id: number; // Clase personalizada opcional
   updateView: () => void; // Define the type as a function that returns void
 }
 
-const ColorSheet: React.FC<Props> = ({ children, id, updateView }) => {
+const CreateColorDialog: React.FC<Props> = ({ children, updateView }) => {
   //const [data, setData] = useState<GeneralInterfaces | never>();
-  const [loading, setLoading] = useState(false); // Estado de carga
+  const [loadingSave, setLoadingSave] = useState(false); // Estado de carga
 
   const form = useForm<z.infer<typeof GeneralSchema>>({
     resolver: zodResolver(GeneralSchema),
     defaultValues: {
-      id: 0,
       name: "",
       description: "",
     },
   });
 
-  
-
   function onSubmit(values: z.infer<typeof GeneralSchema>) {
-    setLoading(true); // Inicia la carga
-    updateColor({ data: values })
+    setLoadingSave(true); // Inicia la carga
+    createColor({ data: values })
       .then((updatedColor) => {
-        console.log("Color actualizado:", updatedColor);
+        console.log("Color creado:", updatedColor);
 
-        toast("El color se actualizó correctamente.", {
+        toast("El color se creó correctamente.", {
           action: {
             label: "OK",
             onClick: () => console.log("Undo"),
@@ -66,8 +78,8 @@ const ColorSheet: React.FC<Props> = ({ children, id, updateView }) => {
         updateView();
       })
       .catch((error) => {
-        console.error("Error al actualizar el color:", error);
-        toast("Hubo un error al actualizar el color.", {
+        console.error("Error al crear el color:", error);
+        toast("Hubo un error al crear el color.", {
           action: {
             label: "OK",
             onClick: () => console.log("Undo"),
@@ -75,61 +87,86 @@ const ColorSheet: React.FC<Props> = ({ children, id, updateView }) => {
         });
       })
       .finally(() => {
-        setLoading(false); // Finaliza la carga
-      });
-  }
-
-  const fetchColor = async () => {
-    setLoading(true); // Inicia la carga
-    try {
-      const colorData = await getColorById(id);
-      console.log("Colores:", colorData);
-      //setData(colorData);
-      form.reset({
-        id: colorData.id,
-        name: colorData.name,
-        description: colorData.description,
-      });
-    } catch (error) {
-      console.error("Error al cargar los colores:", error);
-    } finally {
-      setLoading(false); // Finaliza la carga
-    }
-  };
-
-  function onDelete(id: number): void {
-    console.log("Color eliminado:");
-    setLoading(true); // Inicia la carga
-    deleteColor(id)
-      .then((deleteColor) => {
-        console.log("Color eliminado:", deleteColor);
-
-        toast("El color se eliminó correctamente.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
-
-        updateView();
-      })
-      .catch((error) => {
-        console.error("Error al eliminar el color:", error);
-        toast("Hubo un error al eliminar el color.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
-      })
-      .finally(() => {
-        setLoading(false); // Finaliza la carga
+        setLoadingSave(false); // Finaliza la carga
       });
   }
 
   return (
+    <Dialog>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Gestión de color</DialogTitle>
+          <DialogDescription>
+            Mostrando datos relacionados con el color.
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className=" grid grid-cols-6 gap-4 "
+          >
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem className="col-span-6">
+                  <FormLabel>Nombre</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Nombre" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem className="col-span-6">
+                  <FormLabel>Descripción</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="Notas adicionales" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <DialogFooter className=" grid grid-cols-6 col-span-6">
+              <Button
+                type="submit"
+                className="col-span-3"
+                disabled={!form.formState.isDirty || loadingSave}
+              >
+                {loadingSave ? <LoadingCircle /> : "Guardar"}
+              </Button>
+              <DialogClose asChild className="col-span-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  disabled={loadingSave}
+                >
+                  Cerrar
+                </Button>
+              </DialogClose>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default CreateColorDialog;
+
+/*
     <Sheet>
-      <SheetTrigger asChild onClick={fetchColor}>{children}</SheetTrigger>
+      <SheetTrigger asChild onClick={fetchColor}>
+        {children}
+      </SheetTrigger>
       <SheetContent side="right" className=" flex flex-col p-4">
         <div className=" mb-17  flex flex-1 flex-col gap-4 overflow-y-auto py-4 text-sm">
           <SheetTitle>Gestión de color</SheetTitle>
@@ -147,15 +184,17 @@ const ColorSheet: React.FC<Props> = ({ children, id, updateView }) => {
                 className=" grid grid-cols-6 gap-4 "
               >
                 <FormField
+                
                   control={form.control}
                   name="id"
                   render={({ field }) => (
-                    <FormItem className="col-span-6">
+                    <FormItem  className={id?"col-span-6":"hidden"}   >
                       <FormLabel>Id</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
-                          placeholder="Id"
+                          placeholder="Id" 
+                          disabled
                           onChange={(event) =>
                             field.onChange(Number(event.target.value))
                           }
@@ -222,8 +261,4 @@ const ColorSheet: React.FC<Props> = ({ children, id, updateView }) => {
           )}
         </div>
       </SheetContent>
-    </Sheet>
-  );
-};
-
-export default ColorSheet;
+    </Sheet>*/

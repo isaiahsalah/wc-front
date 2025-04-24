@@ -16,10 +16,9 @@ import {
   CircleX,
 } from "lucide-react";
 import { GeneralSchema } from "@/utils/interfaces";
-import { z } from "zod";
-import ColorViewer from "./ColorSheet";
-import { deleteColor, recoverColor } from "@/api/color.api";
-import ColorSheet from "./ColorSheet";
+import { z } from "zod"; 
+import { deleteColor, recoverColor } from "@/api/color.api"; 
+import EditColorDialog from "@/components/dialog/color/EditColorDialog";
 
 export const ColorTableColumns = (
   updateView: () => void
@@ -59,7 +58,7 @@ export const ColorTableColumns = (
       cell: ({ row }) => {
         return (
           <div className={row.original.deletedAt ? "pointer-events-none" : ""}>
-            <ColorViewer
+            <EditColorDialog
               updateView={updateView}
               children={
                 <Button
@@ -135,7 +134,7 @@ export const ColorTableColumns = (
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-32">
-              <ColorSheet
+              <EditColorDialog
                 updateView={updateView}
                 children={<DropdownMenuItem 
                   onSelect={(event) => {
