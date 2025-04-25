@@ -1,7 +1,7 @@
  import { z } from "zod";
 import { GeneralSchema } from "@/utils/interfaces";
-import ModelCards from "@/components/cards/ModelCards";
-import ModelTable from "@/components/tables/ModelTable";
+import ModelCards from "@/components/cards/product/ModelCards";
+import ModelTable from "@/components/tables/product/ModelTable";
 
 interface Props {
   data: z.infer<typeof GeneralSchema>[];

@@ -1,7 +1,7 @@
  import { z } from "zod";
 import { GeneralSchema } from "@/utils/interfaces";
-import UnityCards from "@/components/cards/UnityCards";
-import UnityTable from "@/components/tables/UnityTable";
+import UnityCards from "@/components/cards/product/UnityCards";
+import UnityTable from "@/components/tables/product/UnityTable";
 
 interface Props {
   data: z.infer<typeof GeneralSchema>[];

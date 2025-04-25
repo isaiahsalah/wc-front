@@ -1,20 +1,14 @@
-import { useCallback, useEffect, useState } from "react";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
-import { getAllColors } from "@/api/product/color.api";
-import { GeneralInterfaces } from "@/utils/interfaces";
-import SelectorTabPage from "@/components/SelectorTabPage";
-import ColorPage from "./product/ColorPage";
-import ModelPage from "./product/ModelPage";
-import UnityPage from "./product/UnityPage";
-import FormulaPage from "./product/FormulaPage";
-import ProductPage from "./product/ProductPage";
-import { getAllProducts } from "@/api/product/product.api";
-import { getAllModels } from "@/api/product/model.api";
-import { getAllUnities } from "@/api/product/unity.api";
-import { getAllFormulas } from "@/api/product/formula.api";
+ import SelectorTabPage from '@/components/SelectorTabPage';
+import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
+import React, { useCallback, useEffect, useState } from 'react'
+ import { getAllProducts } from '@/api/product/product.api';
+import ProductPage from './product/ProductPage';
+import { GeneralInterfaces } from '@/utils/interfaces';
+import OrderPage from './production/OrderPage';
+import { getAllOrders } from '@/api/production/order.api';
 
-const ProductTabPage = () => {
+const ProductionTabPage = () => {
   const [activeTab, setActiveTab] = useState(tabData[0]);
   const [data, setData] = useState<GeneralInterfaces[] | never[]>([]);
   const [loading, setLoading] = useState(false); // Estado de carga
@@ -66,39 +60,21 @@ const ProductTabPage = () => {
       ))}
     </Tabs>
   );
-};
+}
 
-export default ProductTabPage;
+export default ProductionTabPage
+
 
 const tabData = [
   {
     id: "tab1",
-    label: "Producto",
+    label: "Producción",
     content: ProductPage,
     get: getAllProducts
   },
   {
     id: "tab2",
-    label: "Modelo",
-    content: ModelPage,
-    get: getAllModels
-  },
-  {
-    id: "tab3",
-    label: "Unidad de Medida",
-    content: UnityPage,
-    get: getAllUnities
-  },
-  {
-    id: "color",
-    label: "Color",
-    content: ColorPage,
-    get: getAllColors
-  },
-  {
-    id: "tab5",
-    label: "Fórmula",
-    content: FormulaPage,
-    get: getAllFormulas
-  },
+    label: "Orden",
+    content: OrderPage,
+    get: getAllOrders}
 ];

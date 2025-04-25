@@ -13,8 +13,8 @@ import {
 import NavOpr from "./nav-opr";
 import clsx from "clsx";
 import { NavUser } from "./nav-user";
-import NavAdm from "./nav-administrator";
-import { Switcher } from "./section-swicher";
+ import { Switcher } from "./section-swicher";
+import NavProductionInventory from "./NavProductionInventory";
 
 interface Props {
   className?: string; // Clase personalizada opcional
@@ -38,8 +38,7 @@ export const AppSidebar: React.FC<Props> = ({ className }) => {
       <SidebarSeparator className=" m-0" />
 
       <SidebarContent className="scrollbar-thin">
-        <NavAdm />
-        <NavOpr />
+        <NavProductionInventory />
       </SidebarContent>
       <SidebarSeparator className=" m-0" />
       <SidebarFooter>
@@ -77,21 +76,4 @@ const section = [
     plan: "Free",
   },
 ];
-
-const sector = [
-  {
-    name: "Mezcla",
-    logo: Command,
-    plan: "Enterprise",
-  },
-  {
-    name: "Extrución",
-    logo: AudioWaveform,
-    plan: "Startup",
-  },
-  {
-    name: "Corte",
-    logo: Command,
-    plan: "Free",
-  },
-];
+ 

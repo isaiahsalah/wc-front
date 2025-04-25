@@ -1,43 +1,43 @@
 import { Bandage, Heater, Soup } from "lucide-react";
 
 export const menuAdmin = {
-  title: "Administración",
+  title: "Producción e Inventarios",
   url: "#",
   items: [
     {
       title: "Productos",
-      url: "bolsa",
+      url: "product",
       icon: Heater,
       isActive: true,
     },
     {
       title: "Producción",	
-      url: "inyecion",
+      url: "production",
       icon: Bandage,
       isActive: true,
     },
     {
       title: "Procesos",
-      url: "termo",
+      url: "process",
       icon: Heater,
       isActive: true,
     },
 
     {
       title: "Inventario",
-      url: "expandido",
+      url: "inventory",
       icon: Soup,
       isActive: true,
     },
     {
       title: "Parametros",
-      url: "expandido",
+      url: "params",
       icon: Soup,
       isActive: true,
     },
     {
       title: "Seguridad",
-      url: "expandido",
+      url: "security",
       icon: Soup,
       isActive: true,
     },

@@ -19,6 +19,12 @@ import { getCheckToken } from "./api/login.api";
 import { SesionInterface } from "./utils/interfaces";
 import LoadingPage from "./pages/LoadingPage";
 import { TitleProvider } from "./providers/title-provider";
+import ProductTabPage from "./pages/production_inventory/ProducTabPage";
+import ProcessTabPage from "./pages/production_inventory/ProcessTabPage";
+import InventoryTabPage from "./pages/production_inventory/InventoryTabPage";
+import ParamsTabPage from "./pages/production_inventory/ParamsTabPage";
+import SecurityTabPage from "./pages/production_inventory/SecurityTabPage";
+import ProductionTabPage from "./pages/production_inventory/ProductionTabPage";
 
 function App() {
   const PrivateRoutes = () => {
@@ -87,10 +93,16 @@ function App() {
             <div className=" flex h-[100vh] animate-fadeIn ">
               <Routes>
                 <Route element={<PrivateRoutes />}>
+                  <Route path="/product" element={<ProductTabPage />} />
+                  <Route path="/production" element={<ProductionTabPage  />} />
+                  <Route path="/process" element={<ProcessTabPage />} />
+                  <Route path="/inventory" element={<InventoryTabPage />} />
+                  <Route path="/params" element={<ParamsTabPage />} />
+                  <Route path="/security" element={<SecurityTabPage />} />
                   <Route path="/*" element={<HomePage />} />
                 </Route>
                 <Route path="/login" element={<LoginPage />} />
-                <Route path="*" element={<Navigate to="/login" />} />
+                {/*<Route path="*" element={<Navigate to="/login" />} />*/}
               </Routes>
             </div>
             <Toaster />
