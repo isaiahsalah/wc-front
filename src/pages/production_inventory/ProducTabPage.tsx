@@ -13,7 +13,8 @@ import { getAllProducts } from "@/api/product/product.api";
 import { getAllModels } from "@/api/product/model.api";
 import { getAllUnities } from "@/api/product/unity.api";
 import { getAllFormulas } from "@/api/product/formula.api";
-
+import DataTable from "@/components/table/DataTable";
+  
 const ProductTabPage = () => {
   const [activeTab, setActiveTab] = useState(tabData[0]);
   const [data, setData] = useState<GeneralInterfaces[] | never[]>([]);
@@ -63,7 +64,7 @@ const ProductTabPage = () => {
             <tab.content data={data} updateView={updateView} />
           )}
         </TabsContent>
-      ))}
+      ))} 
     </Tabs>
   );
 };

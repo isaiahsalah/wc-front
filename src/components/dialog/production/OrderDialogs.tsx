@@ -30,6 +30,7 @@ import {
   createOrder,
   deleteOrder,
   getOrderById,
+  recoverOrder,
   updateOrder,
 } from "@/api/production/order.api";
 import { toast } from "sonner";
@@ -358,6 +359,165 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({
             </form>
           </Form>
         )}
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+interface PropsDelete {
+  children: React.ReactNode; // Define el tipo de children
+  id: number; // Clase personalizada opcional
+  updateView: () => void; // Define el tipo como una función que retorna void
+  onOpenChange?: (open: boolean) => void;
+}
+
+// Componente para eliminar una orden
+export const DeleteOrderDialog: React.FC<PropsDelete> = ({
+  children,
+  id,
+  updateView,
+  onOpenChange,
+}) => {
+  const [loadingDelete, setLoadingDelete] = useState(false); // Estado de carga
+
+  function onDelete(): void {
+    setLoadingDelete(true); // Inicia la carga
+    deleteOrder(id)
+      .then((deletedOrder) => {
+        console.log("Orden eliminada:", deletedOrder);
+        toast("La orden se eliminó correctamente.", {
+          action: {
+            label: "OK",
+            onClick: () => console.log("Undo"),
+          },
+        });
+        updateView();
+      })
+      .catch((error) => {
+        console.error("Error al eliminar la orden:", error);
+        toast("Hubo un error al eliminar la orden.", {
+          action: {
+            label: "OK",
+            onClick: () => console.log("Undo"),
+          },
+        });
+      })
+      .finally(() => {
+        setLoadingDelete(false); // Finaliza la carga
+      });
+  }
+
+  return (
+    <Dialog onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Eliminar orden</DialogTitle>
+          <DialogDescription>
+            ¿Está seguro de eliminar esta orden?
+          </DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter className="grid grid-cols-6 col-span-6">
+          <Button
+            type="submit"
+            disabled={loadingDelete}
+            className="col-span-3"
+            variant={"destructive"}
+            onClick={onDelete}
+          >
+            {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+          </Button>
+          <DialogClose className="col-span-3" asChild>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={loadingDelete}
+            >
+              Cerrar
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+interface PropsRecover {
+  children: React.ReactNode; // Define el tipo de children
+  id: number; // Clase personalizada opcional
+  updateView: () => void; // Define el tipo como una función que retorna void
+  onOpenChange?: (open: boolean) => void;
+}
+
+// Componente para recuperar una orden
+export const RecoverOrderDialog: React.FC<PropsRecover> = ({
+  children,
+  id,
+  updateView,
+  onOpenChange,
+}) => {
+  const [loadingRecover, setLoadingRecover] = useState(false); // Estado de carga
+
+  function onRecover(): void {
+    setLoadingRecover(true); // Inicia la carga
+    recoverOrder(id)
+      .then((recoveredOrder) => {
+        console.log("Orden recuperada:", recoveredOrder);
+        toast("La orden se recuperó correctamente.", {
+          action: {
+            label: "OK",
+            onClick: () => console.log("Undo"),
+          },
+        });
+        updateView();
+      })
+      .catch((error) => {
+        console.error("Error al recuperar la orden:", error);
+        toast("Hubo un error al recuperar la orden.", {
+          action: {
+            label: "OK",
+            onClick: () => console.log("Undo"),
+          },
+        });
+      })
+      .finally(() => {
+        setLoadingRecover(false); // Finaliza la carga
+      });
+  }
+
+  return (
+    <Dialog onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Recuperar orden</DialogTitle>
+          <DialogDescription>
+            ¿Está seguro de recuperar esta orden?
+          </DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter className="grid grid-cols-6 col-span-6">
+          <Button
+            type="submit"
+            disabled={loadingRecover}
+            className="col-span-3"
+            onClick={onRecover}
+          >
+            {loadingRecover ? <LoadingCircle /> : "Recuperar"}
+          </Button>
+          <DialogClose className="col-span-3" asChild>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={loadingRecover}
+            >
+              Cerrar
+            </Button>
+          </DialogClose>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

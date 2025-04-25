@@ -21,6 +21,7 @@ import {
   createProduct,
   deleteProduct,
   getProductById,
+  recoverProduct,
   updateProduct,
 } from "@/api/product/product.api";
 import { toast } from "sonner";
@@ -349,6 +350,165 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
             </form>
           </Form>
         )}
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+interface PropsDelete {
+  children: React.ReactNode; // Define el tipo de children
+  id: number; // Clase personalizada opcional
+  updateView: () => void; // Define el tipo como una función que retorna void
+  onOpenChange?: (open: boolean) => void;
+}
+
+// Componente para eliminar un producto
+export const DeleteProductDialog: React.FC<PropsDelete> = ({
+  children,
+  id,
+  updateView,
+  onOpenChange,
+}) => {
+  const [loadingDelete, setLoadingDelete] = useState(false); // Estado de carga
+
+  function onDelete(): void {
+    setLoadingDelete(true); // Inicia la carga
+    deleteProduct(id)
+      .then((deletedProduct) => {
+        console.log("Producto eliminado:", deletedProduct);
+        toast("El producto se eliminó correctamente.", {
+          action: {
+            label: "OK",
+            onClick: () => console.log("Undo"),
+          },
+        });
+        updateView();
+      })
+      .catch((error) => {
+        console.error("Error al eliminar el producto:", error);
+        toast("Hubo un error al eliminar el producto.", {
+          action: {
+            label: "OK",
+            onClick: () => console.log("Undo"),
+          },
+        });
+      })
+      .finally(() => {
+        setLoadingDelete(false); // Finaliza la carga
+      });
+  }
+
+  return (
+    <Dialog onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Eliminar producto</DialogTitle>
+          <DialogDescription>
+            ¿Está seguro de eliminar este producto?
+          </DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter className="grid grid-cols-6 col-span-6">
+          <Button
+            type="submit"
+            disabled={loadingDelete}
+            className="col-span-3"
+            variant={"destructive"}
+            onClick={onDelete}
+          >
+            {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+          </Button>
+          <DialogClose className="col-span-3" asChild>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={loadingDelete}
+            >
+              Cerrar
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+interface PropsRecover {
+  children: React.ReactNode; // Define el tipo de children
+  id: number; // Clase personalizada opcional
+  updateView: () => void; // Define el tipo como una función que retorna void
+  onOpenChange?: (open: boolean) => void;
+}
+
+// Componente para recuperar un producto
+export const RecoverProductDialog: React.FC<PropsRecover> = ({
+  children,
+  id,
+  updateView,
+  onOpenChange,
+}) => {
+  const [loadingRecover, setLoadingRecover] = useState(false); // Estado de carga
+
+  function onRecover(): void {
+    setLoadingRecover(true); // Inicia la carga
+    recoverProduct(id)
+      .then((recoveredProduct) => {
+        console.log("Producto recuperado:", recoveredProduct);
+        toast("El producto se recuperó correctamente.", {
+          action: {
+            label: "OK",
+            onClick: () => console.log("Undo"),
+          },
+        });
+        updateView();
+      })
+      .catch((error) => {
+        console.error("Error al recuperar el producto:", error);
+        toast("Hubo un error al recuperar el producto.", {
+          action: {
+            label: "OK",
+            onClick: () => console.log("Undo"),
+          },
+        });
+      })
+      .finally(() => {
+        setLoadingRecover(false); // Finaliza la carga
+      });
+  }
+
+  return (
+    <Dialog onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Recuperar producto</DialogTitle>
+          <DialogDescription>
+            ¿Está seguro de recuperar este producto?
+          </DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter className="grid grid-cols-6 col-span-6">
+          <Button
+            type="submit"
+            disabled={loadingRecover}
+            className="col-span-3"
+            onClick={onRecover}
+          >
+            {loadingRecover ? <LoadingCircle /> : "Recuperar"}
+          </Button>
+          <DialogClose className="col-span-3" asChild>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={loadingRecover}
+            >
+              Cerrar
+            </Button>
+          </DialogClose>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

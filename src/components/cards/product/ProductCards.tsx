@@ -26,7 +26,7 @@ const ProductCards: React.FC<Props> = ({ initialData }) => {
 
   return (
     <div className="grid grid-cols-6 gap-4">
-      <Card className="@container/card col-span-6 lg:col-span-2">
+      <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader className="relative">
           <CardDescription>Productos registrados</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">

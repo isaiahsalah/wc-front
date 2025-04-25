@@ -25,7 +25,7 @@ import { Dialog } from "../../ui/dialog";
 import { CreateColorDialog, EditColorDialog } from "../../dialog/product/ColorDialogs";
 
 interface Props {
-  data: z.infer<typeof GeneralSchema>[];
+  data: z.infer<typeof GeneralSchema>[] ;
   updateView: () => void;
 }
 

@@ -30,6 +30,7 @@ import {
   createFormula,
   deleteFormula,
   getFormulaById,
+  recoverFormula,
   updateFormula,
 } from "@/api/product/formula.api";
 import { toast } from "sonner";
@@ -358,6 +359,144 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
             </form>
           </Form>
         )}
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+
+interface PropsDelete {
+  children: React.ReactNode; // Define el tipo de children
+  id: number; // Clase personalizada opcional
+  updateView: () => void; // Define the type as a function that returns void
+  onOpenChange?: (open: boolean) => void;
+}
+
+// Componente para eliminar una fórmula
+export const DeleteFormulaDialog: React.FC<PropsDelete> = ({
+  children,
+  id,
+  updateView,
+  onOpenChange,
+}) => {
+  const [loadingDelete, setLoadingDelete] = useState(false); // Estado de carga
+
+  function onDelete(): void {
+    setLoadingDelete(true); // Inicia la carga
+    deleteFormula(id)
+      .then((deletedFormula) => {
+        console.log("Fórmula eliminada:", deletedFormula);
+        updateView();
+      })
+      .catch((error) => {
+        console.error("Error al eliminar la fórmula:", error);
+      })
+      .finally(() => {
+        setLoadingDelete(false); // Finaliza la carga
+      });
+  }
+
+  return (
+    <Dialog onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Eliminar fórmula</DialogTitle>
+          <DialogDescription>
+            ¿Está seguro de eliminar esta fórmula?
+          </DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter className="grid grid-cols-6 col-span-6">
+          <Button
+            type="submit"
+            disabled={loadingDelete}
+            className="col-span-3"
+            variant={"destructive"}
+            onClick={onDelete}
+          >
+            {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+          </Button>
+          <DialogClose className="col-span-3" asChild>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={loadingDelete}
+            >
+              Cerrar
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+
+interface PropsRecover {
+  children: React.ReactNode; // Define el tipo de children
+  id: number; // Clase personalizada opcional
+  updateView: () => void; // Define the type as a function that returns void
+  onOpenChange?: (open: boolean) => void;
+}
+
+
+// Componente para recuperar una fórmula
+export const RecoverFormulaDialog: React.FC<PropsRecover> = ({
+  children,
+  id,
+  updateView,
+  onOpenChange,
+}) => {
+  const [loadingRecover, setLoadingRecover] = useState(false); // Estado de carga
+
+  function onRecover(): void {
+    setLoadingRecover(true); // Inicia la carga
+    recoverFormula(id)
+      .then((recoveredFormula) => {
+        console.log("Fórmula recuperada:", recoveredFormula);
+        updateView();
+      })
+      .catch((error) => {
+        console.error("Error al recuperar la fórmula:", error);
+      })
+      .finally(() => {
+        setLoadingRecover(false); // Finaliza la carga
+      });
+  }
+
+  return (
+    <Dialog onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Recuperar fórmula</DialogTitle>
+          <DialogDescription>
+            ¿Está seguro de recuperar esta fórmula?
+          </DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter className="grid grid-cols-6 col-span-6">
+          <Button
+            type="submit"
+            disabled={loadingRecover}
+            className="col-span-3"
+            onClick={onRecover}
+          >
+            {loadingRecover ? <LoadingCircle /> : "Recuperar"}
+          </Button>
+          <DialogClose className="col-span-3" asChild>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={loadingRecover}
+            >
+              Cerrar
+            </Button>
+          </DialogClose>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

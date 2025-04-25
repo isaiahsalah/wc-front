@@ -30,6 +30,7 @@ import {
   createModel,
   deleteModel,
   getModelById,
+  recoverModel,
   updateModel,
 } from "@/api/product/model.api";
 import { toast } from "sonner";
@@ -358,6 +359,141 @@ export const EditModelDialog: React.FC<PropsEdit> = ({
             </form>
           </Form>
         )}
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+interface PropsDelete {
+  children: React.ReactNode; // Define el tipo de children
+  id: number; // Clase personalizada opcional
+  updateView: () => void; // Define el tipo como una función que retorna void
+  onOpenChange?: (open: boolean) => void;
+}
+
+// Componente para eliminar un modelo
+export const DeleteModelDialog: React.FC<PropsDelete> = ({
+  children,
+  id,
+  updateView,
+  onOpenChange,
+}) => {
+  const [loadingDelete, setLoadingDelete] = useState(false); // Estado de carga
+
+  function onDelete(): void {
+    setLoadingDelete(true); // Inicia la carga
+    deleteModel(id)
+      .then((deletedModel) => {
+        console.log("Modelo eliminado:", deletedModel);
+        updateView();
+      })
+      .catch((error) => {
+        console.error("Error al eliminar el modelo:", error);
+      })
+      .finally(() => {
+        setLoadingDelete(false); // Finaliza la carga
+      });
+  }
+
+  return (
+    <Dialog onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Eliminar modelo</DialogTitle>
+          <DialogDescription>
+            ¿Está seguro de eliminar este modelo?
+          </DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter className="grid grid-cols-6 col-span-6">
+          <Button
+            type="submit"
+            disabled={loadingDelete}
+            className="col-span-3"
+            variant={"destructive"}
+            onClick={onDelete}
+          >
+            {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+          </Button>
+          <DialogClose className="col-span-3" asChild>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={loadingDelete}
+            >
+              Cerrar
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+interface PropsRecover {
+  children: React.ReactNode; // Define el tipo de children
+  id: number; // Clase personalizada opcional
+  updateView: () => void; // Define el tipo como una función que retorna void
+  onOpenChange?: (open: boolean) => void;
+}
+
+// Componente para recuperar un modelo
+export const RecoverModelDialog: React.FC<PropsRecover> = ({
+  children,
+  id,
+  updateView,
+  onOpenChange,
+}) => {
+  const [loadingRecover, setLoadingRecover] = useState(false); // Estado de carga
+
+  function onRecover(): void {
+    setLoadingRecover(true); // Inicia la carga
+    recoverModel(id)
+      .then((recoveredModel) => {
+        console.log("Modelo recuperado:", recoveredModel);
+        updateView();
+      })
+      .catch((error) => {
+        console.error("Error al recuperar el modelo:", error);
+      })
+      .finally(() => {
+        setLoadingRecover(false); // Finaliza la carga
+      });
+  }
+
+  return (
+    <Dialog onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Recuperar modelo</DialogTitle>
+          <DialogDescription>
+            ¿Está seguro de recuperar este modelo?
+          </DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter className="grid grid-cols-6 col-span-6">
+          <Button
+            type="submit"
+            disabled={loadingRecover}
+            className="col-span-3"
+            onClick={onRecover}
+          >
+            {loadingRecover ? <LoadingCircle /> : "Recuperar"}
+          </Button>
+          <DialogClose className="col-span-3" asChild>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={loadingRecover}
+            >
+              Cerrar
+            </Button>
+          </DialogClose>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

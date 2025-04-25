@@ -24,9 +24,11 @@ const UnityCards: React.FC<Props> = ({ initialData }) => {
     setTitle("Unidades");
   }, []);
 
+  
+
   return (
     <div className="grid grid-cols-6 gap-4">
-      <Card className="@container/card col-span-6 lg:col-span-2">
+      <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader className="relative">
           <CardDescription>Unidades registrados</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">

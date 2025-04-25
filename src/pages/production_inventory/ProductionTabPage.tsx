@@ -7,6 +7,8 @@ import ProductPage from './product/ProductPage';
 import { GeneralInterfaces } from '@/utils/interfaces';
 import OrderPage from './production/OrderPage';
 import { getAllOrders } from '@/api/production/order.api';
+import { getAllProductions } from '@/api/production/production.api';
+import ProductionPage from './production/ProductionPage';
 
 const ProductionTabPage = () => {
   const [activeTab, setActiveTab] = useState(tabData[0]);
@@ -69,8 +71,8 @@ const tabData = [
   {
     id: "tab1",
     label: "Producción",
-    content: ProductPage,
-    get: getAllProducts
+    content: ProductionPage,
+    get: getAllProductions
   },
   {
     id: "tab2",

@@ -30,6 +30,7 @@ import {
   createProduction,
   deleteProduction,
   getProductionById,
+  recoverProduction,
   updateProduction,
 } from "@/api/production/production.api";
 import { toast } from "sonner";
@@ -358,6 +359,165 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
             </form>
           </Form>
         )}
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+interface PropsDelete {
+  children: React.ReactNode; // Define el tipo de children
+  id: number; // Clase personalizada opcional
+  updateView: () => void; // Define el tipo como una función que retorna void
+  onOpenChange?: (open: boolean) => void;
+}
+
+// Componente para eliminar una producción
+export const DeleteProductionDialog: React.FC<PropsDelete> = ({
+  children,
+  id,
+  updateView,
+  onOpenChange,
+}) => {
+  const [loadingDelete, setLoadingDelete] = useState(false); // Estado de carga
+
+  function onDelete(): void {
+    setLoadingDelete(true); // Inicia la carga
+    deleteProduction(id)
+      .then((deletedProduction) => {
+        console.log("Producción eliminada:", deletedProduction);
+        toast("La producción se eliminó correctamente.", {
+          action: {
+            label: "OK",
+            onClick: () => console.log("Undo"),
+          },
+        });
+        updateView();
+      })
+      .catch((error) => {
+        console.error("Error al eliminar la producción:", error);
+        toast("Hubo un error al eliminar la producción.", {
+          action: {
+            label: "OK",
+            onClick: () => console.log("Undo"),
+          },
+        });
+      })
+      .finally(() => {
+        setLoadingDelete(false); // Finaliza la carga
+      });
+  }
+
+  return (
+    <Dialog onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Eliminar producción</DialogTitle>
+          <DialogDescription>
+            ¿Está seguro de eliminar esta producción?
+          </DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter className="grid grid-cols-6 col-span-6">
+          <Button
+            type="submit"
+            disabled={loadingDelete}
+            className="col-span-3"
+            variant={"destructive"}
+            onClick={onDelete}
+          >
+            {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+          </Button>
+          <DialogClose className="col-span-3" asChild>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={loadingDelete}
+            >
+              Cerrar
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+interface PropsRecover {
+  children: React.ReactNode; // Define el tipo de children
+  id: number; // Clase personalizada opcional
+  updateView: () => void; // Define el tipo como una función que retorna void
+  onOpenChange?: (open: boolean) => void;
+}
+
+// Componente para recuperar una producción
+export const RecoverProductionDialog: React.FC<PropsRecover> = ({
+  children,
+  id,
+  updateView,
+  onOpenChange,
+}) => {
+  const [loadingRecover, setLoadingRecover] = useState(false); // Estado de carga
+
+  function onRecover(): void {
+    setLoadingRecover(true); // Inicia la carga
+    recoverProduction(id)
+      .then((recoveredProduction) => {
+        console.log("Producción recuperada:", recoveredProduction);
+        toast("La producción se recuperó correctamente.", {
+          action: {
+            label: "OK",
+            onClick: () => console.log("Undo"),
+          },
+        });
+        updateView();
+      })
+      .catch((error) => {
+        console.error("Error al recuperar la producción:", error);
+        toast("Hubo un error al recuperar la producción.", {
+          action: {
+            label: "OK",
+            onClick: () => console.log("Undo"),
+          },
+        });
+      })
+      .finally(() => {
+        setLoadingRecover(false); // Finaliza la carga
+      });
+  }
+
+  return (
+    <Dialog onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Recuperar producción</DialogTitle>
+          <DialogDescription>
+            ¿Está seguro de recuperar esta producción?
+          </DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter className="grid grid-cols-6 col-span-6">
+          <Button
+            type="submit"
+            disabled={loadingRecover}
+            className="col-span-3"
+            onClick={onRecover}
+          >
+            {loadingRecover ? <LoadingCircle /> : "Recuperar"}
+          </Button>
+          <DialogClose className="col-span-3" asChild>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={loadingRecover}
+            >
+              Cerrar
+            </Button>
+          </DialogClose>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
