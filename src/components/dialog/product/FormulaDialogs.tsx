@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { FormulaSchema } from "@/utils/interfaces";
+import { FormulaSchema, ProductInterfaces } from "@/utils/interfaces";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
@@ -21,7 +21,6 @@ import {
   FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
@@ -44,21 +43,36 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import LoadingCircle from "@/components/LoadingCircle";
+import LoadingCircle from "@/components/LoadingCircle"; 
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"; 
+import { getProducts } from "@/api/product/product.api";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
   updateView: () => void; // Define the type as a function that returns void
 }
 
-export const CreateFormulaDialog: React.FC<PropsCreate> = ({ children, updateView }) => {
+export const CreateFormulaDialog: React.FC<PropsCreate> = ({
+  children,
+  updateView,
+}) => {
   const [loadingSave, setLoadingSave] = useState(false);
+  const [loadingInit, setLoadingInit] = useState(false);
+  const [products, setProducts] = useState<ProductInterfaces[]>();
 
   const form = useForm<z.infer<typeof FormulaSchema>>({
     resolver: zodResolver(FormulaSchema),
     defaultValues: {
       name: "",
-      description: "",
+      active: true,
+      id_product: 0, 
     },
   });
 
@@ -91,70 +105,123 @@ export const CreateFormulaDialog: React.FC<PropsCreate> = ({ children, updateVie
       });
   }
 
+  const fetchData = async () => {
+    setLoadingInit(true);
+    try {
+      const ProductsData = await getProducts();
+      setProducts(ProductsData);
+    } catch (error) {
+      console.error("Error al cargar los datos:", error);
+    } finally {
+      setLoadingInit(false);
+    }
+  };
+
   return (
     <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger asChild onClick={fetchData}>
+        {children}
+      </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Gestión de fórmula</DialogTitle>
+          <DialogTitle>Registro de fórmula</DialogTitle>
           <DialogDescription>
             Mostrando datos relacionados con la fórmula.
           </DialogDescription>
         </DialogHeader>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className=" grid grid-cols-6 gap-4 "
-          >
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem className="col-span-6">
-                  <FormLabel>Nombre</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Nombre" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        {loadingInit ? null : (
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className=" grid  gap-4 "
+            >
+              <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem className="col-span-6">
+                      <FormDescription>Nombre</FormDescription>
+                      <FormControl>
+                        <Input placeholder="Nombre" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="active"
+                  render={({ field }) => (
+                    <FormItem className="col-span-2  ">
+                      <FormDescription>Activa</FormDescription>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          className="w-full h-8"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem className="col-span-6">
-                  <FormLabel>Descripción</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="Notas adicionales" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <DialogFooter className=" grid grid-cols-6 col-span-6">
-              <Button
-                type="submit"
-                className="col-span-3"
-                disabled={!form.formState.isDirty || loadingSave}
-              >
-                {loadingSave ? <LoadingCircle /> : "Guardar"}
-              </Button>
-              <DialogClose asChild className="col-span-3">
+                <FormField
+                  control={form.control}
+                  name="id_product"
+                  render={({ field }) => (
+                    <FormItem className="col-span-4 ">
+                      <FormDescription>Producto</FormDescription>
+                      <FormControl>
+                        <Select
+                          onValueChange={(value) =>
+                            field.onChange(Number(value))
+                          } // Convertir el valor a número
+                          defaultValue={field.value.toString()}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Seleccionar producto" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {products?.map((product: ProductInterfaces) => (
+                              <SelectItem
+                                key={product.id}
+                                value={(product.id ?? "").toString()}
+                              >
+                                {product.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <DialogFooter className=" grid grid-cols-6 ">
                 <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  disabled={loadingSave}
+                  type="submit"
+                  className="col-span-3"
+                  disabled={!form.formState.isDirty || loadingSave}
                 >
-                  Cerrar
+                  {loadingSave ? <LoadingCircle /> : "Guardar"}
                 </Button>
-              </DialogClose>
-            </DialogFooter>
-          </form>
-        </Form>
+                <DialogClose asChild className="col-span-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    disabled={loadingSave}
+                  >
+                    Cerrar
+                  </Button>
+                </DialogClose>
+              </DialogFooter>
+            </form>
+          </Form>
+        )}
       </DialogContent>
     </Dialog>
   );
@@ -176,13 +243,15 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
+  const [products, setProducts] = useState<ProductInterfaces[]>();
 
   const form = useForm<z.infer<typeof FormulaSchema>>({
     resolver: zodResolver(FormulaSchema),
     defaultValues: {
       id: 0,
       name: "",
-      description: "",
+      active: true,
+      id_product: 0,
     },
   });
 
@@ -220,10 +289,13 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
     try {
       const formulaData = await getFormulaById(id);
       console.log("Fórmulas:", formulaData);
+      const ProductsData = await getProducts();
+      setProducts(ProductsData);
       form.reset({
         id: formulaData.id,
         name: formulaData.name,
-        description: formulaData.description,
+        active: formulaData.active,
+        id_product: formulaData.id_product,
       });
     } catch (error) {
       console.error("Error al cargar las fórmulas:", error);
@@ -268,7 +340,7 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Gestión de fórmula</DialogTitle>
+          <DialogTitle>Edición de fórmula</DialogTitle>
           <DialogDescription>
             Mostrando datos relacionados con la fórmula.
           </DialogDescription>
@@ -277,58 +349,97 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className=" grid grid-cols-6 gap-4 "
+              className=" grid  gap-4 "
             >
-              <FormField
-                control={form.control}
-                name="id"
-                render={({ field }) => (
-                  <FormItem className={"col-span-6"}>
-                    <FormLabel>Id</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="Id"
-                        disabled
-                        onChange={(event) =>
-                          field.onChange(Number(event.target.value))
-                        }
-                        defaultValue={field.value ?? ""}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem className="col-span-6">
-                    <FormLabel>Nombre</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Nombre" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
+                <FormField
+                  control={form.control}
+                  name="id"
+                  render={({ field }) => (
+                    <FormItem className={"col-span-2"}>
+                      <FormDescription>Id</FormDescription>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="Id"
+                          disabled
+                          onChange={(event) =>
+                            field.onChange(Number(event.target.value))
+                          }
+                          defaultValue={field.value ?? ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem className="col-span-4 ">
+                      <FormDescription>Nombre</FormDescription>
+                      <FormControl>
+                        <Input placeholder="Nombre" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem className="col-span-6">
-                    <FormLabel>Descripción</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="Notas adicionales" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="active"
+                  render={({ field }) => (
+                    <FormItem className="col-span-2  ">
+                      <FormDescription>Activa</FormDescription>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          className="w-full h-8"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <DialogFooter className=" grid grid-cols-6 col-span-6">
+                <FormField
+                  control={form.control}
+                  name="id_product"
+                  render={({ field }) => (
+                    <FormItem className="col-span-4 ">
+                      <FormDescription>Producto</FormDescription>
+                      <FormControl>
+                        <Select
+                          onValueChange={(value) =>
+                            field.onChange(Number(value))
+                          } // Convertir el valor a número
+                          defaultValue={field.value.toString()}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Seleccionar producto" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {products?.map((product: ProductInterfaces) => (
+                              <SelectItem
+                                key={product.id}
+                                value={(product.id ?? "").toString()}
+                              >
+                                {product.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <DialogFooter className="grid grid-cols-6 ">
                 <Button
                   type="submit"
                   className="col-span-3"
@@ -363,7 +474,6 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
     </Dialog>
   );
 };
-
 
 interface PropsDelete {
   children: React.ReactNode; // Define el tipo de children
@@ -433,14 +543,12 @@ export const DeleteFormulaDialog: React.FC<PropsDelete> = ({
   );
 };
 
-
 interface PropsRecover {
   children: React.ReactNode; // Define el tipo de children
   id: number; // Clase personalizada opcional
   updateView: () => void; // Define the type as a function that returns void
   onOpenChange?: (open: boolean) => void;
 }
-
 
 // Componente para recuperar una fórmula
 export const RecoverFormulaDialog: React.FC<PropsRecover> = ({

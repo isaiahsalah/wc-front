@@ -128,6 +128,7 @@ export const ProductSchema = z.object({
   description: z.string(),
   cost: z.number(),
   price: z.number(),
+  amount:z.number(),
   id_unity: z.number(),
   unity: UnitySchema.nullable().optional(),
   id_color: z.number(),

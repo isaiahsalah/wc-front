@@ -20,7 +20,7 @@ import {
   EditColorDialog,
   RecoverColorDialog,
 } from "@/components/dialog/product/ColorDialogs";
-import { Row } from "@tanstack/react-table";
+import { CellContext, Row } from "@tanstack/react-table";
 import {
   DropdownMenu,
   DropdownMenuContent, 
@@ -48,7 +48,7 @@ const ColorPage: React.FC<Props> = ({ data, updateView }) => {
       ...Object.keys(data[0]).map((key) => ({
         accessorKey: key,
         header: key.replace(/_/g, " ").toUpperCase(),
-        cell: (info: any) => info.getValue(),
+        cell: (info: CellContext<ColorInterfaces, unknown>) => info.getValue(),
       })),
       {
         id: "actions",
@@ -76,7 +76,7 @@ const ColorPage: React.FC<Props> = ({ data, updateView }) => {
                         updateView={updateView}
                       >
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          Editar{" "}
+                         <Edit/> Editar{" "}
                         </DropdownMenuItem>
                       </EditColorDialog>
                       <DropdownMenuSeparator />
@@ -85,7 +85,7 @@ const ColorPage: React.FC<Props> = ({ data, updateView }) => {
                         updateView={updateView}
                       >
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          Eliminar{" "}
+                         <Delete/> Eliminar{" "}
                         </DropdownMenuItem>
                       </DeleteColorDialog>
                     </>
@@ -95,7 +95,7 @@ const ColorPage: React.FC<Props> = ({ data, updateView }) => {
                       updateView={updateView}
                     >
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        Recuperar{" "}
+                       <ArchiveRestore/> Recuperar{" "}
                       </DropdownMenuItem>
                     </RecoverColorDialog>
                   )}

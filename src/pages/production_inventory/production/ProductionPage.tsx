@@ -1,17 +1,24 @@
 import { z } from "zod";
-import { GeneralSchema } from "@/utils/interfaces";
+import {  ProductionInterfaces } from "@/utils/interfaces";
 import ProductionTable from "@/components/tables/production/ProductionTable";
 import ProductionCards from "@/components/cards/production/ProductionCards";
-import { Row } from "@tanstack/react-table";
+import { CellContext, Row } from "@tanstack/react-table";
 import { useContext, useEffect, useMemo } from "react";
 import { TitleContext } from "@/providers/title-provider";
 import DataTable from "@/components/table/DataTable";
 import { Button } from "@/components/ui/button";
-import { ArchiveRestoreIcon, Delete, Edit, PlusIcon } from "lucide-react";
+import { ArchiveRestore , Delete, Edit, MoreVerticalIcon, PlusIcon } from "lucide-react";
 import { CreateProductionDialog, DeleteProductionDialog, EditProductionDialog, RecoverProductionDialog } from "@/components/dialog/production/ProductionDialogs";
+import {
+  DropdownMenu,
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Props {
-  data: z.infer<typeof GeneralSchema>[];
+  data: ProductionInterfaces[];
   updateView: () => void;
 }
 
@@ -26,55 +33,67 @@ const ProductionPage: React.FC<Props> =  (({ data, updateView }) => {
   const columns = useMemo(() => {
     if (data.length === 0) return [];
     return [
+       
+      ...Object.keys(data[0]).map((key) => ({
+        accessorKey: key,
+        header: key.replace(/_/g, " ").toUpperCase(),
+        cell: (info: CellContext<ProductionInterfaces, unknown>) => info.getValue(),
+      })),
       {
-        accessorKey: "actions",
+        id: "actions",
         header: "",
-        cell: ({ row }: { row: Row<any> }) => {
-          if (row.original.deletedAt) {
-            return (
-              <div className="flex    ">
-                <RecoverProductionDialog
-                  id={row.original.id}
-                  updateView={updateView}
-                  children={
-                    <Button variant={"outline"} className="w-full">
-                      <ArchiveRestoreIcon />
-                    </Button>
-                  }
-                />
-              </div>
-            );
-          }
-
+        enableHiding: false,
+        cell: ({ row }: { row: Row<ProductionInterfaces> }) => {
           return (
-            <div className="flex gap-2   ">
-              <EditProductionDialog
-                id={row.original.id}
-                updateView={updateView}
-                children={
-                  <Button variant={"outline"}>
-                    <Edit />
+            <div className="flex gap-2  justify-end  ">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
+                    size="icon"
+                  >
+                    {" "}
+                    <MoreVerticalIcon />
                   </Button>
-                }
-              />
-              <DeleteProductionDialog
-                id={row.original.id}
-                updateView={updateView}
-                children={
-                  <Button variant={"outline"}>
-                    <Delete />
-                  </Button>
-                }
-              />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-32">
+                  {!row.original.deletedAt ? (
+                    <>
+                      <EditProductionDialog
+                        id={row.original.id ?? 0}
+                        updateView={updateView}
+                      >
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                         <Edit/> Editar{" "}
+                        </DropdownMenuItem>
+                      </EditProductionDialog>
+                      <DropdownMenuSeparator />
+                      <DeleteProductionDialog
+                        id={row.original.id ?? 0}
+                        updateView={updateView}
+                      >
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                         <Delete/> Eliminar{" "}
+                        </DropdownMenuItem>
+                      </DeleteProductionDialog>
+                    </>
+                  ) : (
+                    <RecoverProductionDialog
+                      id={row.original.id ?? 0}
+                      updateView={updateView}
+                    >
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                       <ArchiveRestore/> Recuperar{" "}
+                      </DropdownMenuItem>
+                    </RecoverProductionDialog>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           );
         },
       },
-      ...Object.keys(data[0]).map((key) => ({
-        accessorKey: key,
-        header: key.replace(/_/g, " ").toUpperCase(),
-        cell: (info: any) => info.getValue(),
-      })),
     ];
   }, [data]);
   return (

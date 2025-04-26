@@ -4,7 +4,7 @@ import ProductCards from "@/components/cards/product/ProductCards";
 import ProductTable from "@/components/tables/product/ProductTable";
 import DataTable from "@/components/table/DataTable";
 import { CreateProductDialog, DeleteProductDialog, EditProductDialog, RecoverProductDialog } from "@/components/dialog/product/ProductDialogs";
- import { ArchiveRestoreIcon, Delete, Edit, MoreVerticalIcon, PlusIcon } from "lucide-react";
+ import { ArchiveRestore, ArchiveRestoreIcon, Delete, Edit, MoreVerticalIcon, PlusIcon } from "lucide-react";
 import { Row } from "@tanstack/react-table";
 import { useContext, useEffect, useMemo } from "react";
 import { TitleContext } from "@/providers/title-provider";
@@ -64,7 +64,7 @@ const ProductPage: React.FC<Props> =  (({ data, updateView }) => {
                         updateView={updateView}
                       >
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          Editar{" "}
+                        <Edit/> Editar{" "}
                         </DropdownMenuItem>
                       </EditProductDialog>
                       <DropdownMenuSeparator />
@@ -73,7 +73,7 @@ const ProductPage: React.FC<Props> =  (({ data, updateView }) => {
                         updateView={updateView}
                       >
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          Eliminar{" "}
+                        <Delete/> Eliminar{" "}
                         </DropdownMenuItem>
                       </DeleteProductDialog>
                     </>
@@ -83,7 +83,7 @@ const ProductPage: React.FC<Props> =  (({ data, updateView }) => {
                       updateView={updateView}
                     >
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        Recuperar{" "}
+                      <ArchiveRestore/> Recuperar{" "}
                       </DropdownMenuItem>
                     </RecoverProductDialog>
                   )}

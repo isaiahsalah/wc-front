@@ -14,6 +14,7 @@ import {
 } from "@/components/dialog/product/FormulaDialogs";
 import { Button } from "@/components/ui/button";
 import {
+  ArchiveRestore,
   ArchiveRestoreIcon,
   Delete,
   Edit,
@@ -78,7 +79,7 @@ const FormulaPage: React.FC<Props> = ({ data, updateView }) => {
                         updateView={updateView}
                       >
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          Editar{" "}
+                        <Edit/> Editar{" "}
                         </DropdownMenuItem>
                       </EditFormulaDialog>
                       <DropdownMenuSeparator />
@@ -87,7 +88,7 @@ const FormulaPage: React.FC<Props> = ({ data, updateView }) => {
                         updateView={updateView}
                       >
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          Eliminar{" "}
+                        <Delete/> Eliminar{" "}
                         </DropdownMenuItem>
                       </DeleteFormulaDialog>
                     </>
@@ -97,7 +98,7 @@ const FormulaPage: React.FC<Props> = ({ data, updateView }) => {
                       updateView={updateView}
                     >
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        Recuperar{" "}
+                      <ArchiveRestore/> Recuperar{" "}
                       </DropdownMenuItem>
                     </RecoverFormulaDialog>
                   )}

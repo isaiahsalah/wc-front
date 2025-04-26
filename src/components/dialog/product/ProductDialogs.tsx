@@ -1,15 +1,21 @@
- 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
- 
+
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { ProductSchema } from "@/utils/interfaces";
+import {
+  ColorInterfaces,
+  ModelInterfaces,
+  ProductInterfaces,
+  ProductSchema,
+  UnityInterfaces,
+} from "@/utils/interfaces";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
   Form,
-  FormControl, 
+  FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -36,24 +42,46 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
+import { getColors } from "@/api/product/color.api";
+import { getModels } from "@/api/product/model.api";
+import { getUnities } from "@/api/product/unity.api";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
   updateView: () => void; // Define the type as a function that returns void
 }
 
-export const CreateProductDialog: React.FC<PropsCreate> = ({ children, updateView }) => {
+export const CreateProductDialog: React.FC<PropsCreate> = ({
+  children,
+  updateView,
+}) => {
   const [loadingSave, setLoadingSave] = useState(false);
+  const [loadingInit, setLoadingInit] = useState(false);
+  const [colors, setColors] = useState<ColorInterfaces[]>();
+  const [models, setModels] = useState<ModelInterfaces[]>();
+  const [unities, setUnities] = useState<UnityInterfaces[]>();
 
-  const form = useForm<z.infer<typeof ProductSchema>>({
+  const form = useForm<ProductInterfaces>({
     resolver: zodResolver(ProductSchema),
     defaultValues: {
       name: "",
       description: "",
+      id_color: 0,
+      id_model: 0,
+      id_unity: 0,
+      price: 0,
+      cost: 0,
     },
   });
 
-  function onSubmit(values: z.infer<typeof ProductSchema>) {
+  function onSubmit(values: ProductInterfaces) {
     setLoadingSave(true);
     createProduct({ data: values })
       .then((updatedProduct) => {
@@ -82,70 +110,248 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({ children, updateVie
       });
   }
 
+  const fetchData = async () => {
+    setLoadingInit(true);
+    try {
+      const ColorsData = await getColors();
+      const ModelsData = await getModels();
+      const UnitiesData = await getUnities();
+
+      setColors(ColorsData);
+      setModels(ModelsData);
+      setUnities(UnitiesData);
+    } catch (error) {
+      console.error("Error al cargar los datos:", error);
+    } finally {
+      setLoadingInit(false);
+    }
+  };
+
   return (
     <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger asChild onClick={fetchData}>
+        {children}
+      </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Gestión de producto</DialogTitle>
+          <DialogTitle>Registro de producto</DialogTitle>
           <DialogDescription>
             Mostrando datos relacionados con el producto.
           </DialogDescription>
         </DialogHeader>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className=" grid grid-cols-6 gap-4 "
-          >
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem className="col-span-6">
-                  <FormLabel>Nombre</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Nombre" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        {loadingInit ? null : (
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className=" grid  gap-4 "
+            >
+              <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem className="col-span-6">
+                      <FormDescription>Nombre</FormDescription>
+                      <FormControl>
+                        <Input placeholder="Nombre" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem className="col-span-6">
-                  <FormLabel>Descripción</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="Notas adicionales" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem className="col-span-6">
+                      <FormDescription>Descripción</FormDescription>
+                      <FormControl>
+                        <Textarea placeholder="Notas adicionales" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <DialogFooter className=" grid grid-cols-6 col-span-6">
-              <Button
-                type="submit"
-                className="col-span-3"
-                disabled={!form.formState.isDirty || loadingSave}
-              >
-                {loadingSave ? <LoadingCircle /> : "Guardar"}
-              </Button>
-              <DialogClose asChild className="col-span-3">
+                <FormField
+                  control={form.control}
+                  name="id_color"
+                  render={({ field }) => (
+                    <FormItem className="col-span-3 ">
+                      <FormDescription>Color</FormDescription>
+                      <FormControl>
+                        <Select
+                          onValueChange={(value) =>
+                            field.onChange(Number(value))
+                          } // Convertir el valor a número
+                          defaultValue={field.value.toString()}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Seleccionar producto" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {colors?.map((product: ColorInterfaces) => (
+                              <SelectItem
+                                key={product.id}
+                                value={(product.id ?? "").toString()}
+                              >
+                                {product.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="id_model"
+                  render={({ field }) => (
+                    <FormItem className="col-span-3 ">
+                      <FormDescription>Modelo</FormDescription>
+                      <FormControl>
+                        <Select
+                          onValueChange={(value) =>
+                            field.onChange(Number(value))
+                          } // Convertir el valor a número
+                          defaultValue={field.value.toString()}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Seleccionar producto" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {models?.map((product: ModelInterfaces) => (
+                              <SelectItem
+                                key={product.id}
+                                value={(product.id ?? "").toString()}
+                              >
+                                {product.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="id_unity"
+                  render={({ field }) => (
+                    <FormItem className="col-span-3 ">
+                      <FormDescription>Unidad</FormDescription>
+                      <FormControl>
+                        <Select
+                          onValueChange={(value) =>
+                            field.onChange(Number(value))
+                          } // Convertir el valor a número
+                          defaultValue={field.value.toString()}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Seleccionar producto" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {unities?.map((product: UnityInterfaces) => (
+                              <SelectItem
+                                key={product.id}
+                                value={(product.id ?? "").toString()}
+                              >
+                                {product.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="amount"
+                  render={({ field }) => (
+                    <FormItem className="col-span-3">
+                      <FormDescription>Cantidad</FormDescription>
+                      <FormControl>
+                        <Input
+                          placeholder="Cantidad"
+                          type="number"
+                          {...field}   onChange={(event) =>
+                            field.onChange(Number(event.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="cost"
+                  render={({ field }) => (
+                    <FormItem className="col-span-3">
+                      <FormDescription>Costo</FormDescription>
+                      <FormControl>
+                        <Input
+                          placeholder="Costo" type="number"
+                          {...field}   onChange={(event) =>
+                            field.onChange(Number(event.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem className="col-span-3">
+                      <FormDescription>Precio</FormDescription>
+                      <FormControl>
+                        <Input
+                          placeholder="Precio" type="number"
+                          {...field}
+                          onChange={(event) =>
+                            field.onChange(Number(event.target.value))
+                          } // Convertir el valor a número
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <DialogFooter className=" grid grid-cols-6 ">
                 <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  disabled={loadingSave}
+                  type="submit"
+                  className="col-span-3"
+                  disabled={!form.formState.isDirty || loadingSave}
                 >
-                  Cerrar
+                  {loadingSave ? <LoadingCircle /> : "Guardar"}
                 </Button>
-              </DialogClose>
-            </DialogFooter>
-          </form>
-        </Form>
+                <DialogClose asChild className="col-span-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    disabled={loadingSave}
+                  >
+                    Cerrar
+                  </Button>
+                </DialogClose>
+              </DialogFooter>
+            </form>
+          </Form>
+        )}
       </DialogContent>
     </Dialog>
   );
@@ -168,7 +374,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
 
-  const form = useForm<z.infer<typeof ProductSchema>>({
+  const form = useForm<ProductInterfaces>({
     resolver: zodResolver(ProductSchema),
     defaultValues: {
       id: 0,
@@ -177,7 +383,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
     },
   });
 
-  function onSubmit(values: z.infer<typeof ProductSchema>) {
+  function onSubmit(values: ProductInterfaces) {
     setLoadingSave(true);
     updateProduct({ data: values })
       .then((updatedProduct) => {

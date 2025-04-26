@@ -4,7 +4,7 @@ import ModelCards from "@/components/cards/product/ModelCards";
 import ModelTable from "@/components/tables/product/ModelTable";
 import { CreateModelDialog, DeleteModelDialog, EditModelDialog, RecoverModelDialog } from "@/components/dialog/product/ModelDialogs";
 import { Button } from "@/components/ui/button";
-import { ArchiveRestoreIcon, Delete, Edit, MoreVerticalIcon, PlusIcon } from "lucide-react";
+import { ArchiveRestore, ArchiveRestoreIcon, Delete, Edit, MoreVerticalIcon, PlusIcon } from "lucide-react";
 import DataTable from "@/components/table/DataTable";
 import { useContext, useEffect, useMemo } from "react";
 import { TitleContext } from "@/providers/title-provider";
@@ -64,7 +64,7 @@ const ModelPage: React.FC<Props> = ({ data, updateView }) => {
                         updateView={updateView}
                       >
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          Editar{" "}
+                        <Edit/> Editar{" "}
                         </DropdownMenuItem>
                       </EditModelDialog>
                       <DropdownMenuSeparator />
@@ -73,7 +73,7 @@ const ModelPage: React.FC<Props> = ({ data, updateView }) => {
                         updateView={updateView}
                       >
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          Eliminar{" "}
+                        <Delete/> Eliminar{" "}
                         </DropdownMenuItem>
                       </DeleteModelDialog>
                     </>
@@ -83,7 +83,7 @@ const ModelPage: React.FC<Props> = ({ data, updateView }) => {
                       updateView={updateView}
                     >
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        Recuperar{" "}
+                      <ArchiveRestore/> Recuperar{" "}
                       </DropdownMenuItem>
                     </RecoverModelDialog>
                   )}

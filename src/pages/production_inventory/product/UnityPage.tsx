@@ -17,7 +17,7 @@ import { TitleContext } from "@/providers/title-provider";
 import DataTable from "@/components/table/DataTable";
 import { Button } from "@/components/ui/button";
 import {
-  ArchiveRestoreIcon,
+  ArchiveRestore, 
   Delete,
   Edit,
   MoreVerticalIcon,
@@ -25,9 +25,9 @@ import {
 } from "lucide-react";
 import {
   DropdownMenu,
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuSeparator, 
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 interface Props {
@@ -77,7 +77,7 @@ const UnityPage: React.FC<Props> = ({ data, updateView }) => {
                         updateView={updateView}
                       >
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          Editar{" "}
+                          <Edit /> Editar{" "}
                         </DropdownMenuItem>
                       </EditUnityDialog>
                       <DropdownMenuSeparator />
@@ -86,7 +86,7 @@ const UnityPage: React.FC<Props> = ({ data, updateView }) => {
                         updateView={updateView}
                       >
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          Eliminar{" "}
+                          <Delete /> Eliminar{" "}
                         </DropdownMenuItem>
                       </DeleteUnityDialog>
                     </>
@@ -96,7 +96,7 @@ const UnityPage: React.FC<Props> = ({ data, updateView }) => {
                       updateView={updateView}
                     >
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        Recuperar{" "}
+                        <ArchiveRestore /> Recuperar{" "}
                       </DropdownMenuItem>
                     </RecoverUnityDialog>
                   )}
