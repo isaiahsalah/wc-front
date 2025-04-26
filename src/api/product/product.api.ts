@@ -1,5 +1,5 @@
 import { apiClient } from "../axiosConfig";
-import { GeneralInterfaces } from "@/utils/interfaces";
+import { ProductInterfaces } from "@/utils/interfaces";
 import { toast } from "sonner";
 
 export const getProducts = async () => {
@@ -32,7 +32,7 @@ export const getProductById = async (id: number) => {
   }
 };
 
-export const createProduct = async ({ data }: { data: GeneralInterfaces }) => {
+export const createProduct = async ({ data }: { data: ProductInterfaces }) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",
@@ -59,7 +59,7 @@ export const createProduct = async ({ data }: { data: GeneralInterfaces }) => {
   }
 };
 
-export const updateProduct = async ({ data }: { data: GeneralInterfaces }) => {
+export const updateProduct = async ({ data }: { data: ProductInterfaces }) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",

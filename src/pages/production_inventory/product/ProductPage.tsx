@@ -1,17 +1,23 @@
  import { z } from "zod";
-import { GeneralSchema } from "@/utils/interfaces";
+import { GeneralSchema, ProductInterfaces, ProductSchema } from "@/utils/interfaces";
 import ProductCards from "@/components/cards/product/ProductCards";
 import ProductTable from "@/components/tables/product/ProductTable";
 import DataTable from "@/components/table/DataTable";
 import { CreateProductDialog, DeleteProductDialog, EditProductDialog, RecoverProductDialog } from "@/components/dialog/product/ProductDialogs";
- import { ArchiveRestoreIcon, Delete, Edit, PlusIcon } from "lucide-react";
+ import { ArchiveRestoreIcon, Delete, Edit, MoreVerticalIcon, PlusIcon } from "lucide-react";
 import { Row } from "@tanstack/react-table";
 import { useContext, useEffect, useMemo } from "react";
 import { TitleContext } from "@/providers/title-provider";
 import { Button } from "@/components/ui/button";
-
+import {
+  DropdownMenu,
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 interface Props {
-  data: z.infer<typeof GeneralSchema>[];
+  data: ProductInterfaces[];
   updateView: () => void;
 }
 
@@ -26,55 +32,67 @@ const ProductPage: React.FC<Props> =  (({ data, updateView }) => {
   const columns = useMemo(() => {
     if (data.length === 0) return [];
     return [
-      {
-        accessorKey: "actions",
-        header: "",
-        cell: ({ row }: { row: Row<any> }) => {
-          if (row.original.deletedAt) {
-            return (
-              <div className="flex    ">
-                <RecoverProductDialog
-                  id={row.original.id}
-                  updateView={updateView}
-                  children={
-                    <Button variant={"outline"} className="w-full">
-                      <ArchiveRestoreIcon />
-                    </Button>
-                  }
-                />
-              </div>
-            );
-          }
-
-          return (
-            <div className="flex gap-2   ">
-              <EditProductDialog
-                id={row.original.id}
-                updateView={updateView}
-                children={
-                  <Button variant={"outline"}>
-                    <Edit />
-                  </Button>
-                }
-              />
-              <DeleteProductDialog
-                id={row.original.id}
-                updateView={updateView}
-                children={
-                  <Button variant={"outline"}>
-                    <Delete />
-                  </Button>
-                }
-              />
-            </div>
-          );
-        },
-      },
+      
       ...Object.keys(data[0]).map((key) => ({
         accessorKey: key,
         header: key.replace(/_/g, " ").toUpperCase(),
         cell: (info: any) => info.getValue(),
       })),
+      {
+        id: "actions",
+        header: "",
+        enableHiding: false,
+        cell: ({ row }: { row: Row<ProductInterfaces> }) => {
+          return (
+            <div className="flex gap-2  justify-end  ">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
+                    size="icon"
+                  >
+                    {" "}
+                    <MoreVerticalIcon />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-32">
+                  {!row.original.deletedAt ? (
+                    <>
+                      <EditProductDialog
+                        id={row.original.id ?? 0}
+                        updateView={updateView}
+                      >
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                          Editar{" "}
+                        </DropdownMenuItem>
+                      </EditProductDialog>
+                      <DropdownMenuSeparator />
+                      <DeleteProductDialog
+                        id={row.original.id ?? 0}
+                        updateView={updateView}
+                      >
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                          Eliminar{" "}
+                        </DropdownMenuItem>
+                      </DeleteProductDialog>
+                    </>
+                  ) : (
+                    <RecoverProductDialog
+                      id={row.original.id ?? 0}
+                      updateView={updateView}
+                    >
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        Recuperar{" "}
+                      </DropdownMenuItem>
+                    </RecoverProductDialog>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          );
+        },
+      },
     ];
   }, [data]);
   return (

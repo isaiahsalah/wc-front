@@ -12,7 +12,7 @@ import ProductionPage from './production/ProductionPage';
 
 const ProductionTabPage = () => {
   const [activeTab, setActiveTab] = useState(tabData[0]);
-  const [data, setData] = useState<GeneralInterfaces[] | never[]>([]);
+  const [data, setData] = useState<GeneralInterfaces[]  >([]);
   const [loading, setLoading] = useState(false); // Estado de carga
 
   useEffect(() => {

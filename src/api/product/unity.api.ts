@@ -1,5 +1,5 @@
 import { apiClient } from "../axiosConfig";
-import { GeneralInterfaces } from "@/utils/interfaces";
+import { UnityInterfaces } from "@/utils/interfaces";
 import { toast } from "sonner";
 
 export const getUnities = async () => {
@@ -32,7 +32,7 @@ export const getUnityById = async (id: number) => {
   }
 };
 
-export const createUnity = async ({ data }: { data: GeneralInterfaces }) => {
+export const createUnity = async ({ data }: { data: UnityInterfaces }) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",
@@ -59,7 +59,7 @@ export const createUnity = async ({ data }: { data: GeneralInterfaces }) => {
   }
 };
 
-export const updateUnity = async ({ data }: { data: GeneralInterfaces }) => {
+export const updateUnity = async ({ data }: { data: UnityInterfaces }) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",

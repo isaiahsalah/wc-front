@@ -1,21 +1,41 @@
- import { z } from "zod";
-import { GeneralSchema } from "@/utils/interfaces";
+import { z } from "zod";
+import {
+  GeneralSchema,
+  UnityInterfaces,
+  UnitySchema,
+} from "@/utils/interfaces";
 import UnityCards from "@/components/cards/product/UnityCards";
-import UnityTable from "@/components/tables/product/UnityTable";
-import { CreateUnityDialog, DeleteUnityDialog, EditUnityDialog, RecoverUnityDialog } from "@/components/dialog/product/UnityDialogs";
-import { Row } from "@tanstack/react-table";
+import {
+  CreateUnityDialog,
+  DeleteUnityDialog,
+  EditUnityDialog,
+  RecoverUnityDialog,
+} from "@/components/dialog/product/UnityDialogs";
+import { CellContext, ColumnDef, Row } from "@tanstack/react-table";
 import { useContext, useEffect, useMemo } from "react";
 import { TitleContext } from "@/providers/title-provider";
 import DataTable from "@/components/table/DataTable";
 import { Button } from "@/components/ui/button";
-import { ArchiveRestoreIcon, Delete, Edit, PlusIcon } from "lucide-react";
-
+import {
+  ArchiveRestoreIcon,
+  Delete,
+  Edit,
+  MoreVerticalIcon,
+  PlusIcon,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 interface Props {
-  data: z.infer<typeof GeneralSchema>[];
+  data: UnityInterfaces[];
   updateView: () => void;
 }
 
-const UnityPage: React.FC<Props> =  (({ data, updateView }) => {
+const UnityPage: React.FC<Props> = ({ data, updateView }) => {
   const { setTitle } = useContext(TitleContext);
 
   useEffect(() => {
@@ -23,58 +43,69 @@ const UnityPage: React.FC<Props> =  (({ data, updateView }) => {
   }, []);
 
   // Generar columnas dinámicamente
-  const columns = useMemo(() => {
+  const columns: ColumnDef<UnityInterfaces>[] = useMemo(() => {
     if (data.length === 0) return [];
     return [
+      ...Object.keys(data[0] as UnityInterfaces).map((key) => ({
+        accessorKey: key,
+        header: key.replace(/_/g, " ").toUpperCase(),
+        cell: (info: CellContext<UnityInterfaces, unknown>) => info.getValue(),
+      })),
       {
-        accessorKey: "actions",
+        id: "actions",
         header: "",
-        cell: ({ row }: { row: Row<any> }) => {
-          if (row.original.deletedAt) {
-            return (
-              <div className="flex    ">
-                <RecoverUnityDialog
-                  id={row.original.id}
-                  updateView={updateView}
-                  children={
-                    <Button variant={"outline"} className="w-full">
-                      <ArchiveRestoreIcon />
-                    </Button>
-                  }
-                />
-              </div>
-            );
-          }
-
+        enableHiding: false,
+        cell: ({ row }: { row: Row<UnityInterfaces> }) => {
           return (
-            <div className="flex gap-2   ">
-              <EditUnityDialog
-                id={row.original.id}
-                updateView={updateView}
-                children={
-                  <Button variant={"outline"}>
-                    <Edit />
+            <div className="flex gap-2  justify-end  ">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
+                    size="icon"
+                  >
+                    {" "}
+                    <MoreVerticalIcon />
                   </Button>
-                }
-              />
-              <DeleteUnityDialog
-                id={row.original.id}
-                updateView={updateView}
-                children={
-                  <Button variant={"outline"}>
-                    <Delete />
-                  </Button>
-                }
-              />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-32">
+                  {!row.original.deletedAt ? (
+                    <>
+                      <EditUnityDialog
+                        id={row.original.id ?? 0}
+                        updateView={updateView}
+                      >
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                          Editar{" "}
+                        </DropdownMenuItem>
+                      </EditUnityDialog>
+                      <DropdownMenuSeparator />
+                      <DeleteUnityDialog
+                        id={row.original.id ?? 0}
+                        updateView={updateView}
+                      >
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                          Eliminar{" "}
+                        </DropdownMenuItem>
+                      </DeleteUnityDialog>
+                    </>
+                  ) : (
+                    <RecoverUnityDialog
+                      id={row.original.id ?? 0}
+                      updateView={updateView}
+                    >
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        Recuperar{" "}
+                      </DropdownMenuItem>
+                    </RecoverUnityDialog>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           );
         },
       },
-      ...Object.keys(data[0]).map((key) => ({
-        accessorKey: key,
-        header: key.replace(/_/g, " ").toUpperCase(),
-        cell: (info: any) => info.getValue(),
-      })),
     ];
   }, [data]);
   return (
@@ -103,7 +134,32 @@ const UnityPage: React.FC<Props> =  (({ data, updateView }) => {
       />
     </div>
   );
-});
+};
 
 export default UnityPage;
 //      <UnityTable data={data} updateView={updateView} />
+
+/**
+ * 
+ * 
+ * <div className="flex gap-2   ">
+              <EditUnityDialog
+                id={row.original.id ?? 0}
+                updateView={updateView}
+                children={
+                  <Button variant={"outline"}>
+                    <Edit />
+                  </Button>
+                }
+              />
+              <DeleteUnityDialog
+                id={row.original.id ?? 0}
+                updateView={updateView}
+                children={
+                  <Button variant={"outline"}>
+                    <Delete />
+                  </Button>
+                }
+              />
+            </div>
+ */

@@ -6,15 +6,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tally5, TrendingDownIcon, TrendingUpIcon } from "lucide-react";
+import { Tally5,   TrendingUpIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TitleContext } from "@/providers/title-provider";
 import { z } from "zod";
-import { GeneralSchema } from "@/utils/interfaces";
+import { UnitySchema } from "@/utils/interfaces";
 import { countCurrentMonth } from "@/utils/funtions";
 
 interface Props {
-  initialData: z.infer<typeof GeneralSchema>[];
+  initialData: z.infer<typeof UnitySchema>[];
 }
 
 const UnityCards: React.FC<Props> = ({ initialData }) => {

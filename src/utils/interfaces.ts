@@ -4,7 +4,7 @@ export interface SesionInterface {
   params: string;
   token: string;
 }
-
+/*
 export interface UsuarioInterface {
   id?: number | null;
   name: string;
@@ -39,9 +39,8 @@ export const GeneralSchema = z.object({
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
 });
-
-export type GeneralInterfaces = z.infer<typeof GeneralSchema>;
-
+*/
+ 
 // Tabla: Color
 export const ColorSchema = z.object({
   id: z.number().nullable().optional(),
@@ -261,7 +260,7 @@ export const ProductionDetailSchema = z.object({
 
 export type ColorInterfaces = z.infer<typeof ColorSchema>;
 export type FormulaDetailInterfaces = z.infer<typeof FormulaDetailSchema>;
-export type FomulaInterfaces = z.infer<typeof FormulaSchema>;
+export type FormulaInterfaces = z.infer<typeof FormulaSchema>;
 export type InventoryInterfaces = z.infer<typeof InventorySchema>;
 export type LoteInterfaces = z.infer<typeof LoteSchema>;
 export type MachineInterfaces = z.infer<typeof MachineSchema>;
@@ -276,3 +275,8 @@ export type ProductionInterfaces = z.infer<typeof ProductionSchema>;
 export type SectorInterfaces = z.infer<typeof SectorSchema>;
 export type UnityInterfaces = z.infer<typeof UnitySchema>;
 export type UserInterfaces = z.infer<typeof UserSchema>;
+
+
+export type GeneralInterfaces = z.infer<
+  typeof UnitySchema | typeof ColorSchema | typeof ModelSchema | typeof FormulaSchema | typeof ProductSchema
+>;

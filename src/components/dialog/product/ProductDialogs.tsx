@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
  
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { GeneralSchema } from "@/utils/interfaces";
+import { ProductSchema } from "@/utils/interfaces";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
@@ -45,15 +45,15 @@ interface PropsCreate {
 export const CreateProductDialog: React.FC<PropsCreate> = ({ children, updateView }) => {
   const [loadingSave, setLoadingSave] = useState(false);
 
-  const form = useForm<z.infer<typeof GeneralSchema>>({
-    resolver: zodResolver(GeneralSchema),
+  const form = useForm<z.infer<typeof ProductSchema>>({
+    resolver: zodResolver(ProductSchema),
     defaultValues: {
       name: "",
       description: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof GeneralSchema>) {
+  function onSubmit(values: z.infer<typeof ProductSchema>) {
     setLoadingSave(true);
     createProduct({ data: values })
       .then((updatedProduct) => {
@@ -168,8 +168,8 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
 
-  const form = useForm<z.infer<typeof GeneralSchema>>({
-    resolver: zodResolver(GeneralSchema),
+  const form = useForm<z.infer<typeof ProductSchema>>({
+    resolver: zodResolver(ProductSchema),
     defaultValues: {
       id: 0,
       name: "",
@@ -177,7 +177,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
     },
   });
 
-  function onSubmit(values: z.infer<typeof GeneralSchema>) {
+  function onSubmit(values: z.infer<typeof ProductSchema>) {
     setLoadingSave(true);
     updateProduct({ data: values })
       .then((updatedProduct) => {

@@ -1,5 +1,5 @@
 import { apiClient } from "../axiosConfig";
-import { GeneralInterfaces } from "@/utils/interfaces";
+import { ColorInterfaces } from "@/utils/interfaces";
 import { toast } from "sonner";
 
 export const getColors = async () => {
@@ -32,7 +32,7 @@ export const getColorById = async (id: number) => {
   }
 };
 
-export const createColor = async ({ data }: { data: GeneralInterfaces }) => {
+export const createColor = async ({ data }: { data: ColorInterfaces }) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",
@@ -59,7 +59,7 @@ export const createColor = async ({ data }: { data: GeneralInterfaces }) => {
   }
 };
 
-export const updateColor = async ({ data }: { data: GeneralInterfaces }) => {
+export const updateColor = async ({ data }: { data: ColorInterfaces }) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",

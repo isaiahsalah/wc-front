@@ -20,7 +20,6 @@ import { SesionInterface } from "./utils/interfaces";
 import LoadingPage from "./pages/LoadingPage";
 import { TitleProvider } from "./providers/title-provider";
 import ProductTabPage from "./pages/production_inventory/ProducTabPage";
-import ProcessTabPage from "./pages/production_inventory/ProcessTabPage";
 import InventoryTabPage from "./pages/production_inventory/InventoryTabPage";
 import ParamsTabPage from "./pages/production_inventory/ParamsTabPage";
 import SecurityTabPage from "./pages/production_inventory/SecurityTabPage";
@@ -95,7 +94,6 @@ function App() {
                 <Route element={<PrivateRoutes />}>
                   <Route path="/product" element={<ProductTabPage />} />
                   <Route path="/production" element={<ProductionTabPage  />} />
-                  <Route path="/process" element={<ProcessTabPage />} />
                   <Route path="/inventory" element={<InventoryTabPage />} />
                   <Route path="/params" element={<ParamsTabPage />} />
                   <Route path="/security" element={<SecurityTabPage />} />

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ColorSchema, GeneralSchema } from "@/utils/interfaces";
+import { ColorInterfaces, ColorSchema, GeneralSchema } from "@/utils/interfaces";
 import ColorCards from "@/components/cards/product/ColorCards";
 import ColorTable from "@/components/tables/product/ColorTable";
 import { useContext, useEffect, useMemo } from "react";
@@ -11,6 +11,7 @@ import {
   ArchiveRestoreIcon,
   Delete,
   Edit,
+  MoreVerticalIcon,
   PlusIcon,
 } from "lucide-react";
 import {
@@ -20,9 +21,15 @@ import {
   RecoverColorDialog,
 } from "@/components/dialog/product/ColorDialogs";
 import { Row } from "@tanstack/react-table";
-
+import {
+  DropdownMenu,
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 interface Props {
-  data: z.infer<typeof ColorSchema>[];
+  data: ColorInterfaces[];
   updateView: () => void;
 }
 
@@ -37,55 +44,67 @@ const ColorPage: React.FC<Props> = ({ data, updateView }) => {
   const columns = useMemo(() => {
     if (data.length === 0) return [];
     return [
-      {
-        accessorKey: "actions",
-        header: "",
-        cell: ({ row }: { row: Row<any> }) => {
-          if (row.original.deletedAt) {
-            return (
-              <div className="flex    ">
-                <RecoverColorDialog
-                  id={row.original.id}
-                  updateView={updateView}
-                  children={
-                    <Button variant={"outline"} className="w-full">
-                      <ArchiveRestoreIcon />
-                    </Button>
-                  }
-                />
-              </div>
-            );
-          }
-
-          return (
-            <div className="flex gap-2   ">
-              <EditColorDialog
-                id={row.original.id}
-                updateView={updateView}
-                children={
-                  <Button variant={"outline"}>
-                    <Edit />
-                  </Button>
-                }
-              />
-              <DeleteColorDialog
-                id={row.original.id}
-                updateView={updateView}
-                children={
-                  <Button variant={"outline"}>
-                    <Delete />
-                  </Button>
-                }
-              />
-            </div>
-          );
-        },
-      },
+       
       ...Object.keys(data[0]).map((key) => ({
         accessorKey: key,
         header: key.replace(/_/g, " ").toUpperCase(),
         cell: (info: any) => info.getValue(),
       })),
+      {
+        id: "actions",
+        header: "",
+        enableHiding: false,
+        cell: ({ row }: { row: Row<ColorInterfaces> }) => {
+          return (
+            <div className="flex gap-2  justify-end  ">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
+                    size="icon"
+                  >
+                    {" "}
+                    <MoreVerticalIcon />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-32">
+                  {!row.original.deletedAt ? (
+                    <>
+                      <EditColorDialog
+                        id={row.original.id ?? 0}
+                        updateView={updateView}
+                      >
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                          Editar{" "}
+                        </DropdownMenuItem>
+                      </EditColorDialog>
+                      <DropdownMenuSeparator />
+                      <DeleteColorDialog
+                        id={row.original.id ?? 0}
+                        updateView={updateView}
+                      >
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                          Eliminar{" "}
+                        </DropdownMenuItem>
+                      </DeleteColorDialog>
+                    </>
+                  ) : (
+                    <RecoverColorDialog
+                      id={row.original.id ?? 0}
+                      updateView={updateView}
+                    >
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        Recuperar{" "}
+                      </DropdownMenuItem>
+                    </RecoverColorDialog>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          );
+        },
+      },
     ];
   }, [data]);
 

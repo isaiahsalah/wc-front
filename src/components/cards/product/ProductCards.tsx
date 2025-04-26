@@ -10,11 +10,11 @@ import { Tally5, TrendingDownIcon, TrendingUpIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TitleContext } from "@/providers/title-provider";
 import { z } from "zod";
-import { GeneralSchema } from "@/utils/interfaces";
+import { GeneralSchema, ProductSchema } from "@/utils/interfaces";
 import { countCurrentMonth } from "@/utils/funtions";
 
 interface Props {
-  initialData: z.infer<typeof GeneralSchema>[];
+  initialData: z.infer<typeof ProductSchema>[];
 }
 
 const ProductCards: React.FC<Props> = ({ initialData }) => {

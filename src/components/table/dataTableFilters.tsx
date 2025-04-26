@@ -10,6 +10,7 @@ import {
 } from "../ui/select";
 import { ListFilterPlus, Search } from "lucide-react";
 import DateRangePicker from "../DataRangePicker";
+
 interface FilterProps {
   column: Column<any, unknown>;
   options?: { value: string; label: string }[]; // Nueva prop para opciones dinámicas

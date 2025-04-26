@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { getAllColors } from "@/api/product/color.api";
-import { GeneralInterfaces } from "@/utils/interfaces";
+import { GeneralInterfaces, ProductInterfaces } from "@/utils/interfaces";
 import SelectorTabPage from "@/components/SelectorTabPage";
 import ColorPage from "./product/ColorPage";
 import ModelPage from "./product/ModelPage";
@@ -17,7 +17,7 @@ import DataTable from "@/components/table/DataTable";
   
 const ProductTabPage = () => {
   const [activeTab, setActiveTab] = useState(tabData[0]);
-  const [data, setData] = useState<GeneralInterfaces[] | never[]>([]);
+  const [data, setData] = useState<GeneralInterfaces[] >([]);
   const [loading, setLoading] = useState(false); // Estado de carga
 
   useEffect(() => {

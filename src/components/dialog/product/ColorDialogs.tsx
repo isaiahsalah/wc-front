@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { GeneralSchema } from "@/utils/interfaces";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
@@ -45,6 +44,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
+import { ColorSchema } from "@/utils/interfaces";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -58,15 +58,15 @@ export const CreateColorDialog: React.FC<PropsCreate> = ({
   //const [data, setData] = useState<GeneralInterfaces | never>();
   const [loadingSave, setLoadingSave] = useState(false); // Estado de carga
 
-  const form = useForm<z.infer<typeof GeneralSchema>>({
-    resolver: zodResolver(GeneralSchema),
+  const form = useForm<z.infer<typeof ColorSchema>>({
+    resolver: zodResolver(ColorSchema),
     defaultValues: {
       name: "",
       description: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof GeneralSchema>) {
+  function onSubmit(values: z.infer<typeof ColorSchema>) {
     setLoadingSave(true); // Inicia la carga
     createColor({ data: values })
       .then((updatedColor) => {
@@ -105,10 +105,10 @@ export const CreateColorDialog: React.FC<PropsCreate> = ({
             Mostrando datos relacionados con el color.
           </DialogDescription>
         </DialogHeader>
-        <Form {...form}>
+        <Form {...form} >
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className=" grid grid-cols-6 gap-4 "
+            className=" grid grid-cols-6 gap-4 " 
           >
             <FormField
               control={form.control}
@@ -183,8 +183,8 @@ export const EditColorDialog: React.FC<PropsEdit> = ({
 
   const [loadingInit, setLoadingInit] = useState(false); // Estado de carga
 
-  const form = useForm<z.infer<typeof GeneralSchema>>({
-    resolver: zodResolver(GeneralSchema),
+  const form = useForm<z.infer<typeof ColorSchema>>({
+    resolver: zodResolver(ColorSchema),
     defaultValues: {
       id: 0,
       name: "",
@@ -192,7 +192,7 @@ export const EditColorDialog: React.FC<PropsEdit> = ({
     },
   });
 
-  function onSubmit(values: z.infer<typeof GeneralSchema>) {
+  function onSubmit(values: z.infer<typeof ColorSchema>) {
     setLoadingSave(true); // Inicia la carga
     updateColor({ data: values })
       .then((updatedColor) => {

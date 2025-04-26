@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
  
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { GeneralSchema } from "@/utils/interfaces";
+import { UnitySchema } from "@/utils/interfaces";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
@@ -48,15 +48,15 @@ export const CreateUnityDialog: React.FC<PropsCreate> = ({
 }) => {
   const [loadingSave, setLoadingSave] = useState(false);
 
-  const form = useForm<z.infer<typeof GeneralSchema>>({
-    resolver: zodResolver(GeneralSchema),
+  const form = useForm<z.infer<typeof UnitySchema>>({
+    resolver: zodResolver(UnitySchema),
     defaultValues: {
       name: "",
-      description: "",
+      shortname: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof GeneralSchema>) {
+  function onSubmit(values: z.infer<typeof UnitySchema>) {
     setLoadingSave(true);
     createUnity({ data: values })
       .then((updatedUnity) => {
@@ -116,7 +116,7 @@ export const CreateUnityDialog: React.FC<PropsCreate> = ({
 
             <FormField
               control={form.control}
-              name="description"
+              name="shortname"
               render={({ field }) => (
                 <FormItem className="col-span-6">
                   <FormLabel>Descripción</FormLabel>
@@ -171,16 +171,16 @@ export const EditUnityDialog: React.FC<PropsEdit> = ({
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
 
-  const form = useForm<z.infer<typeof GeneralSchema>>({
-    resolver: zodResolver(GeneralSchema),
+  const form = useForm<z.infer<typeof UnitySchema>>({
+    resolver: zodResolver(UnitySchema),
     defaultValues: {
       id: 0,
       name: "",
-      description: "",
+      shortname: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof GeneralSchema>) {
+  function onSubmit(values: z.infer<typeof UnitySchema>) {
     setLoadingSave(true);
     updateUnity({ data: values })
       .then((updatedUnity) => {
@@ -217,7 +217,7 @@ export const EditUnityDialog: React.FC<PropsEdit> = ({
       form.reset({
         id: unityData.id,
         name: unityData.name,
-        description: unityData.description,
+        shortname: unityData.shortname,
       });
     } catch (error) {
       console.error("Error al cargar la unidad:", error);
@@ -310,7 +310,7 @@ export const EditUnityDialog: React.FC<PropsEdit> = ({
 
               <FormField
                 control={form.control}
-                name="description"
+                name="shortname"
                 render={({ field }) => (
                   <FormItem className="col-span-6">
                     <FormLabel>Descripción</FormLabel>
