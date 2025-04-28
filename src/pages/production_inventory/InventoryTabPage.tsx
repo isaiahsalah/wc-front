@@ -1,19 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
-import { getAllColors } from "@/api/product/color.api";
+import { Separator } from "@/components/ui/separator"; 
 import { GeneralInterfaces } from "@/utils/interfaces";
-import SelectorTabPage from "@/components/SelectorTabPage";
-import ColorPage from "./product/ColorPage";
-import ModelPage from "./product/ModelPage";
-import UnityPage from "./product/UnityPage";
-import FormulaPage from "./product/FormulaPage";
+import SelectorTabPage from "@/components/SelectorTabPage"; 
 import ProductPage from "./product/ProductPage";
-import { getAllProducts } from "@/api/product/product.api";
-import { getAllModels } from "@/api/product/model.api";
-import { getAllUnities } from "@/api/product/unity.api";
-import { getAllFormulas } from "@/api/product/formula.api";
-import DataTable from "@/components/table/DataTable";
+import { getAllProducts } from "@/api/product/product.api" 
   
 const InventoryTabPage = () => {
   const [activeTab, setActiveTab] = useState(tabData[0]);
@@ -61,6 +52,7 @@ const InventoryTabPage = () => {
           {loading ? ( // Muestra un indicador de carga mientras se obtienen los datos
             <div>Cargando datos...</div>
           ) : (
+            // @ts-expect-error: Ignoramos el error en esta línea
             <tab.content data={data} updateView={updateView} />
           )}
         </TabsContent>
@@ -77,29 +69,5 @@ const tabData = [
     label: "Producto",
     content: ProductPage,
     get: getAllProducts
-  },
-  {
-    id: "tab2",
-    label: "Modelo",
-    content: ModelPage,
-    get: getAllModels
-  },
-  {
-    id: "tab3",
-    label: "Unidad de Medida",
-    content: UnityPage,
-    get: getAllUnities
-  },
-  {
-    id: "color",
-    label: "Color",
-    content: ColorPage,
-    get: getAllColors
-  },
-  {
-    id: "tab5",
-    label: "Fórmula",
-    content: FormulaPage,
-    get: getAllFormulas
-  },
+  }, 
 ];

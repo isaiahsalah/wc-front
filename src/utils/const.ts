@@ -1,4 +1,24 @@
-import { Bandage, Heater, Soup } from "lucide-react";
+import {
+  Blend,
+  Heater,
+  Package,
+  PackagePlus,
+  PackageSearch, 
+  Soup, 
+  UserLockIcon,
+} from "lucide-react";
+
+export const typeModel = [
+  { id: 1, name: "Terminado" },
+  { id: 2, name: "En proceso" },
+  { id: 3, name: "Materia Prima" },
+];
+
+export const typeQuality = [
+  { id: 1, name: "Buena" },
+  { id: 2, name: "Mala" },
+  { id: 3, name: "Desecho" },
+];
 
 export const menuAdmin = {
   title: "Producción e Inventarios",
@@ -7,39 +27,33 @@ export const menuAdmin = {
     {
       title: "Productos",
       url: "product",
-      icon: Heater,
+      icon: Package,
       isActive: true,
     },
     {
-      title: "Producción",	
+      title: "Producción",
       url: "production",
-      icon: Bandage,
-      isActive: true,
-    },
-    {
-      title: "Procesos",
-      url: "process",
-      icon: Heater,
+      icon: PackagePlus,
       isActive: true,
     },
 
     {
       title: "Inventario",
       url: "inventory",
-      icon: Soup,
-      isActive: true,
+      icon: PackageSearch,
+      isActive: false,
     },
     {
       title: "Parametros",
       url: "params",
-      icon: Soup,
+      icon: Blend,
       isActive: true,
     },
     {
       title: "Seguridad",
       url: "security",
-      icon: Soup,
-      isActive: true,
+      icon: UserLockIcon,
+      isActive: false,
     },
   ],
 };

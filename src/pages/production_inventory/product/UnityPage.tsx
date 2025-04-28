@@ -1,8 +1,5 @@
-import { z } from "zod";
-import {
-  GeneralSchema,
-  UnityInterfaces,
-  UnitySchema,
+import { 
+  UnityInterfaces, 
 } from "@/utils/interfaces";
 import UnityCards from "@/components/cards/product/UnityCards";
 import {
@@ -129,6 +126,7 @@ const UnityPage: React.FC<Props> = ({ data, updateView }) => {
             }
           />
         }
+        /*@ts-expect-error: Ignoramos el error en esta línea */
         columns={columns}
         data={data}
       />

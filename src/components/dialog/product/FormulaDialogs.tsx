@@ -1,18 +1,8 @@
-import {
-  Sheet,
-  SheetTrigger,
-  SheetContent,
-  SheetClose,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { Separator } from "@/components/ui/separator";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { FormulaSchema, ProductInterfaces } from "@/utils/interfaces";
+ import { FormulaInterfaces, FormulaSchema, ProductInterfaces } from "@/utils/interfaces";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
@@ -23,7 +13,6 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import {
   createFormula,
@@ -43,7 +32,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import LoadingCircle from "@/components/LoadingCircle"; 
+import LoadingCircle from "@/components/LoadingCircle";
 import { Switch } from "@/components/ui/switch";
 import {
   Select,
@@ -51,7 +40,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"; 
+} from "@/components/ui/select";
 import { getProducts } from "@/api/product/product.api";
 
 interface PropsCreate {
@@ -67,16 +56,16 @@ export const CreateFormulaDialog: React.FC<PropsCreate> = ({
   const [loadingInit, setLoadingInit] = useState(false);
   const [products, setProducts] = useState<ProductInterfaces[]>();
 
-  const form = useForm<z.infer<typeof FormulaSchema>>({
+  const form = useForm<FormulaInterfaces>({
     resolver: zodResolver(FormulaSchema),
     defaultValues: {
       name: "",
       active: true,
-      id_product: 0, 
+      id_product: 0,
     },
   });
 
-  function onSubmit(values: z.infer<typeof FormulaSchema>) {
+  function onSubmit(values: FormulaInterfaces) {
     setLoadingSave(true);
     createFormula({ data: values })
       .then((updatedFormula) => {
@@ -122,7 +111,7 @@ export const CreateFormulaDialog: React.FC<PropsCreate> = ({
       <DialogTrigger asChild onClick={fetchData}>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Registro de fórmula</DialogTitle>
           <DialogDescription>
@@ -245,7 +234,7 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
   const [loadingInit, setLoadingInit] = useState(false);
   const [products, setProducts] = useState<ProductInterfaces[]>();
 
-  const form = useForm<z.infer<typeof FormulaSchema>>({
+  const form = useForm<FormulaInterfaces>({
     resolver: zodResolver(FormulaSchema),
     defaultValues: {
       id: 0,
@@ -255,7 +244,7 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
     },
   });
 
-  function onSubmit(values: z.infer<typeof FormulaSchema>) {
+  function onSubmit(values: FormulaInterfaces) {
     setLoadingSave(true);
     updateFormula({ data: values })
       .then((updatedFormula) => {
@@ -338,7 +327,7 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
       <DialogTrigger asChild onClick={fetchFormula}>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Edición de fórmula</DialogTitle>
           <DialogDescription>
@@ -509,7 +498,7 @@ export const DeleteFormulaDialog: React.FC<PropsDelete> = ({
   return (
     <Dialog onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Eliminar fórmula</DialogTitle>
           <DialogDescription>
@@ -577,7 +566,7 @@ export const RecoverFormulaDialog: React.FC<PropsRecover> = ({
   return (
     <Dialog onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Recuperar fórmula</DialogTitle>
           <DialogDescription>

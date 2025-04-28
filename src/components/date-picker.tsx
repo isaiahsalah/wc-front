@@ -12,6 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { es } from "date-fns/locale";
 
 interface Props {
   value?: Date | undefined; // Valor actual
@@ -41,11 +42,12 @@ export const DatePicker: React.FC<Props> = ({
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {value ? format(value, "PPP") : <span>{placeholder}</span>}
+          {value ?  format(value, "dd / LLL / y ", { locale: es }) : <span>{placeholder}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
         <Calendar
+         locale={es}
           mode="single"
           selected={value}
           onSelect={onChange}

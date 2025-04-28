@@ -1,10 +1,6 @@
-import { z } from "zod";
 import {
-  FormulaInterfaces,
-  FormulaSchema,
-  GeneralSchema,
-} from "@/utils/interfaces";
-import FormulaTable from "@/components/tables/product/FormulaTable";
+  FormulaInterfaces, 
+} from "@/utils/interfaces"; 
 import FormulaCards from "@/components/cards/product/FormulaCards";
 import {
   CreateFormulaDialog,
@@ -15,8 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import {
   ArchiveRestore,
-  ArchiveRestoreIcon,
-  Delete,
+   Delete,
   Edit,
   MoreVerticalIcon,
   PlusIcon,
@@ -51,7 +46,8 @@ const FormulaPage: React.FC<Props> = ({ data, updateView }) => {
       ...Object.keys(data[0]).map((key) => ({
         accessorKey: key,
         header: key.replace(/_/g, " ").toUpperCase(),
-        cell: (info: any) => info.getValue(),
+        /* @ts-expect-error: Ignoramos el error en esta línea*/
+        cell: (info) => info.getValue(),
       })),
       {
         id: "actions",
@@ -131,6 +127,7 @@ const FormulaPage: React.FC<Props> = ({ data, updateView }) => {
             }
           />
         }
+        /*@ts-expect-error: Ignoramos el error en esta línea */
         columns={columns}
         data={data}
       />

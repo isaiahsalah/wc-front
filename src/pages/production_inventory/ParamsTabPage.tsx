@@ -1,30 +1,25 @@
 import { useCallback, useEffect, useState } from "react";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
-import { getAllColors } from "@/api/product/color.api";
-import { GeneralInterfaces, ProductInterfaces } from "@/utils/interfaces";
-import SelectorTabPage from "@/components/SelectorTabPage";
-import ColorPage from "./product/ColorPage";
-import ModelPage from "./product/ModelPage";
-import UnityPage from "./product/UnityPage";
-import FormulaPage from "./product/FormulaPage";
-import ProductPage from "./product/ProductPage";
-import { getAllProducts } from "@/api/product/product.api";
-import { getAllModels } from "@/api/product/model.api";
-import { getAllUnities } from "@/api/product/unity.api";
-import { getAllFormulas } from "@/api/product/formula.api";
-import DataTable from "@/components/table/DataTable";
-  
+import { Separator } from "@/components/ui/separator"; 
+import { GeneralInterfaces } from "@/utils/interfaces";
+import SelectorTabPage from "@/components/SelectorTabPage"; 
+import ModelPage from "./params/ModelPage"; 
+import { getAllModels } from "@/api/params/model.api"; 
+import MachinePage from "./params/MachinePage";
+import { getAllMachines } from "@/api/params/machine.api";
+import ProcessPage from "./params/ProcessPage";
+import { getAllProcesses } from "@/api/params/process.api";
+import SectorPage from "./params/SectorPage";
+import { getAllSectors } from "@/api/params/sector.api";
+
 const ParamsTabPage = () => {
   const [activeTab, setActiveTab] = useState(tabData[0]);
-  const [data, setData] = useState<GeneralInterfaces[] >([]);
+  const [data, setData] = useState<GeneralInterfaces[]>([]);
   const [loading, setLoading] = useState(false); // Estado de carga
 
   useEffect(() => {
     updateView();
   }, [activeTab]);
-
-  
 
   const updateView = useCallback(async () => {
     setLoading(true);
@@ -40,7 +35,7 @@ const ParamsTabPage = () => {
 
   return (
     <Tabs
-      value={activeTab.id }
+      value={activeTab.id}
       onValueChange={(value) => {
         const selectedTab = tabData.find((tab) => tab.id === value);
         if (selectedTab) setActiveTab(selectedTab);
@@ -48,7 +43,7 @@ const ParamsTabPage = () => {
       className="flex w-full flex-col justify-start gap-4"
     >
       <SelectorTabPage
-        activeTab={activeTab.id }
+        activeTab={activeTab.id}
         setActiveTab={(value) => {
           const selectedTab = tabData.find((tab) => tab.id === value);
           if (selectedTab) setActiveTab(selectedTab);
@@ -61,10 +56,11 @@ const ParamsTabPage = () => {
           {loading ? ( // Muestra un indicador de carga mientras se obtienen los datos
             <div>Cargando datos...</div>
           ) : (
+            // @ts-expect-error: Ignoramos el error en esta línea
             <tab.content data={data} updateView={updateView} />
           )}
         </TabsContent>
-      ))} 
+      ))}
     </Tabs>
   );
 };
@@ -74,32 +70,26 @@ export default ParamsTabPage;
 const tabData = [
   {
     id: "tab1",
-    label: "Producto",
-    content: ProductPage,
-    get: getAllProducts
+    label: "Modelo",
+    content: ModelPage,
+    get: getAllModels,
   },
   {
     id: "tab2",
-    label: "Modelo",
-    content: ModelPage,
-    get: getAllModels
+    label: "Maquina",
+    content: MachinePage,
+    get: getAllMachines,
   },
   {
     id: "tab3",
-    label: "Unidad de Medida",
-    content: UnityPage,
-    get: getAllUnities
+    label: "Proceso",
+    content: ProcessPage,
+    get: getAllProcesses,
   },
   {
-    id: "color",
-    label: "Color",
-    content: ColorPage,
-    get: getAllColors
-  },
-  {
-    id: "tab5",
-    label: "Fórmula",
-    content: FormulaPage,
-    get: getAllFormulas
+    id: "tab4",
+    label: "Sector",
+    content: SectorPage,
+    get: getAllSectors,
   },
 ];

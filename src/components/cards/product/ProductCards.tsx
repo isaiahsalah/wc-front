@@ -6,11 +6,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tally5, TrendingDownIcon, TrendingUpIcon } from "lucide-react";
+import { Tally5,  TrendingUpIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TitleContext } from "@/providers/title-provider";
 import { z } from "zod";
-import { GeneralSchema, ProductSchema } from "@/utils/interfaces";
+import {   ProductSchema } from "@/utils/interfaces";
 import { countCurrentMonth } from "@/utils/funtions";
 
 interface Props {

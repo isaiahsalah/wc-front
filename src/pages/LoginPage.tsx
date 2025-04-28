@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { ModeToggle } from "@/components/mode-toggle";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { SesionContext } from "@/providers/sesion-provider";
 import { getLogin } from "@/api/login.api";
 import { SesionInterface } from "@/utils/interfaces";
@@ -29,7 +29,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { is } from "date-fns/locale";
 import LoadingCircle from "@/components/LoadingCircle";
 
 const formSchema = z.object({

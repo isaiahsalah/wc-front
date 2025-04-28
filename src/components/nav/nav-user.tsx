@@ -1,14 +1,9 @@
-"use client";
+ 
 
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
+import { 
   LogOut,
   ScanFace,
-  Settings,
-  Sparkles,
+  Settings, 
   SquareAsterisk,
   UserPen,
 } from "lucide-react";
@@ -45,7 +40,7 @@ export function NavUser({
   const { isMobile } = useSidebar();
 
   const navigate = useNavigate(); // Obtienes la función navigate
-  const { sesion, setSesion } = useContext(SesionContext);
+  const {  setSesion } = useContext(SesionContext);
 
   const onLogOut = () => {
     window.localStorage.removeItem("token");

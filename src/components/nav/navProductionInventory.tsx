@@ -1,4 +1,3 @@
-import { ChevronDown, ChevronUp } from "lucide-react";
 
 import {
   SidebarGroup,
@@ -6,17 +5,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { Link } from "react-router-dom";
 import { menuAdmin } from "@/utils/const";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "../ui/collapsible";
 const NavProductionInventory = () => {
   return (
     <SidebarGroup>

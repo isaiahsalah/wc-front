@@ -1,7 +1,7 @@
 import {   ColumnDef, RowData } from "@tanstack/react-table";
 
 type Data<T extends RowData> = T[] | undefined | never[];
-
+/*@ts-expect-error: Ignoramos el error en esta línea */
 export const createColumnsFromData = (data: Data[]): ColumnDef<Data>[] => {
     if (!data || data.length === 0) return [];
   

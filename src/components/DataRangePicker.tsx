@@ -31,7 +31,7 @@ const DateRangePicker: React.FC<Props> = ({ dateRange, setRange,placeholder }) =
       <Popover >
         <PopoverTrigger asChild>
           <Button
-            id="date"
+            id="date" 
             size={"sm"}
             variant={"outline"}
             className={cn(

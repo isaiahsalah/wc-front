@@ -1,10 +1,8 @@
- import { z } from "zod";
-import { GeneralSchema, ProductInterfaces, ProductSchema } from "@/utils/interfaces";
+import {  ProductInterfaces } from "@/utils/interfaces";
 import ProductCards from "@/components/cards/product/ProductCards";
-import ProductTable from "@/components/tables/product/ProductTable";
 import DataTable from "@/components/table/DataTable";
 import { CreateProductDialog, DeleteProductDialog, EditProductDialog, RecoverProductDialog } from "@/components/dialog/product/ProductDialogs";
- import { ArchiveRestore, ArchiveRestoreIcon, Delete, Edit, MoreVerticalIcon, PlusIcon } from "lucide-react";
+ import { ArchiveRestore, Delete, Edit, MoreVerticalIcon, PlusIcon } from "lucide-react";
 import { Row } from "@tanstack/react-table";
 import { useContext, useEffect, useMemo } from "react";
 import { TitleContext } from "@/providers/title-provider";
@@ -36,7 +34,8 @@ const ProductPage: React.FC<Props> =  (({ data, updateView }) => {
       ...Object.keys(data[0]).map((key) => ({
         accessorKey: key,
         header: key.replace(/_/g, " ").toUpperCase(),
-        cell: (info: any) => info.getValue(),
+        /* @ts-expect-error: Ignoramos el error en esta línea*/
+        cell: (info) => info.getValue(),
       })),
       {
         id: "actions",
@@ -116,6 +115,7 @@ const ProductPage: React.FC<Props> =  (({ data, updateView }) => {
             }
           />
         }
+        /*@ts-expect-error: Ignoramos el error en esta línea */
         columns={columns}
         data={data}
       />

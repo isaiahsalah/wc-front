@@ -88,7 +88,7 @@ export const CreateUnityDialog: React.FC<PropsCreate> = ({
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent >
         <DialogHeader>
           <DialogTitle>Gestión de unidad</DialogTitle>
           <DialogDescription>
@@ -260,7 +260,7 @@ export const EditUnityDialog: React.FC<PropsEdit> = ({
       <DialogTrigger asChild onClick={fetchUnity}>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent >
         <DialogHeader>
           <DialogTitle>Gestión de unidad</DialogTitle>
           <DialogDescription>
@@ -404,7 +404,7 @@ export const DeleteUnityDialog: React.FC<PropsDelete> = ({
   return (
     <Dialog onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent >
         <DialogHeader>
           <DialogTitle>Eliminar unidad</DialogTitle>
           <DialogDescription>
@@ -484,7 +484,7 @@ export const RecoverUnityDialog: React.FC<PropsRecover> = ({
   return (
     <Dialog onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent >
         <DialogHeader>
           <DialogTitle>Recuperar unidad</DialogTitle>
           <DialogDescription>

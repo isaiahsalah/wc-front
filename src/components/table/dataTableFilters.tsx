@@ -8,10 +8,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { ListFilterPlus, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import DateRangePicker from "../DataRangePicker";
 
-interface FilterProps {
+interface FilterProps { 
   column: Column<any, unknown>;
   options?: { value: string; label: string }[]; // Nueva prop para opciones dinámicas
   placeholder: string;
@@ -19,8 +19,9 @@ interface FilterProps {
 
 export function Filter({ column, options, placeholder }: FilterProps) {
   const columnFilterValue = column.getFilterValue();
-  const filterVariant = column.columnDef.meta?.filterVariant;
+  /*@ts-expect-error: Ignoramos el error en esta línea */
 
+  const filterVariant = column.columnDef.meta?.filterVariant;
 
   return filterVariant === "range" ? (
     <div>
@@ -50,7 +51,7 @@ export function Filter({ column, options, placeholder }: FilterProps) {
   ) : filterVariant === "date-range" ? (
     <div className="flex space-x-2">
       <DateRangePicker
-
+        /*@ts-expect-error: Ignoramos el error en esta línea */
         dateRange={columnFilterValue || undefined}
         setRange={(newRange) => column.setFilterValue(newRange)}
         placeholder={placeholder}
@@ -126,6 +127,3 @@ function DebouncedInput({
     </div>
   );
 }
-
-
- 

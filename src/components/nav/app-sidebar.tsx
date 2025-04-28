@@ -9,12 +9,11 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-
-import NavOpr from "./nav-opr";
+ 
 import clsx from "clsx";
 import { NavUser } from "./nav-user";
- import { Switcher } from "./section-swicher";
-import NavProductionInventory from "./NavProductionInventory";
+ import { Switcher } from "./section-swicher"; 
+import NavProductionInventory from "./navProductionInventory";
 
 interface Props {
   className?: string; // Clase personalizada opcional

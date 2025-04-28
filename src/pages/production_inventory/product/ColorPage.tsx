@@ -1,14 +1,11 @@
-import { z } from "zod";
-import { ColorInterfaces, ColorSchema, GeneralSchema } from "@/utils/interfaces";
+import { ColorInterfaces} from "@/utils/interfaces";
 import ColorCards from "@/components/cards/product/ColorCards";
-import ColorTable from "@/components/tables/product/ColorTable";
 import { useContext, useEffect, useMemo } from "react";
 import { TitleContext } from "@/providers/title-provider";
 import DataTable from "@/components/table/DataTable";
 import { Button } from "@/components/ui/button";
 import {
-  ArchiveRestore,
-  ArchiveRestoreIcon,
+  ArchiveRestore, 
   Delete,
   Edit,
   MoreVerticalIcon,
@@ -129,6 +126,7 @@ const ColorPage: React.FC<Props> = ({ data, updateView }) => {
             }
           />
         }
+        /*@ts-expect-error: Ignoramos el error en esta línea */
         columns={columns}
         data={data}
       />

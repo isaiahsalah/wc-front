@@ -1,13 +1,12 @@
 import {
   Table,
-  TableBody,
-  TableCaption,
+  TableBody, 
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ColumnDef, flexRender, Row, RowData } from "@tanstack/react-table";
+import { ColumnDef, flexRender  } from "@tanstack/react-table";
 import {
   ColumnFiltersState,
   getCoreRowModel,
@@ -43,15 +42,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { SchemaType } from "@/utils/interfaces";
+import { GeneralInterfaces } from "@/utils/interfaces";
 
 interface Props {
-  data: SchemaType[];
+  data: GeneralInterfaces[];
   actions: React.ReactNode;
-  columns: ColumnDef<SchemaType>[];
+  columns: ColumnDef<GeneralInterfaces>[];
+  options?: boolean;
+  isPaginated?:boolean;
 }
 
-const DataTable: React.FC<Props> = ({ data, actions, columns }) => {
+const DataTable: React.FC<Props> = ({
+  data,
+  actions,
+  columns,
+  options = true,
+  isPaginated=true,
+}) => {
   const [rowSelection, setRowSelection] = useState({});
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     createdAt: false,
@@ -62,7 +69,7 @@ const DataTable: React.FC<Props> = ({ data, actions, columns }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 5,
+    pageSize: isPaginated?5:100,
   });
   const [globalFilter, setGlobalFilter] = useState("");
 
@@ -96,45 +103,48 @@ const DataTable: React.FC<Props> = ({ data, actions, columns }) => {
   return (
     <div className="flex flex-col gap-4">
       {/* Barra superior con filtros y opciones */}
-      <div className="flex items-center justify-between gap-4">
-        <Filter
-          placeholder="Busqueda General"
-          column={{
-            getFilterValue: () => globalFilter,
-            setFilterValue: setGlobalFilter,
-            columnDef: {
-              meta: { filterVariant: "text" },
-            },
-          }}
-        />
-        <div className="flex gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <ColumnsIcon />
-                <span className="ml-2 hidden lg:inline">
-                  Personalizar Columnas
-                </span>
-                <ChevronDownIcon className="ml-1" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {table.getAllColumns().map((column) => (
-                <DropdownMenuCheckboxItem
-                  key={column.id}
-                  checked={column.getIsVisible()}
-                  onCheckedChange={(value) => column.toggleVisibility(value)}
-                  disabled={!column.getCanHide()}
-                >
-                  {column.id}
-                </DropdownMenuCheckboxItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+      {!options ? null : (
+        <div className="flex items-center justify-between gap-4">
+          <Filter
+            placeholder="Busqueda General"
+            column={{
+              getFilterValue: () => globalFilter,
+              setFilterValue: setGlobalFilter,
+              /* @ts-expect-error: Ignoramos el error en esta línea*/
+              columnDef: {
+                meta: { filterVariant: "text" },
+              },
+            }}
+          />
+          <div className="flex gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <ColumnsIcon />
+                  <span className="ml-2 hidden lg:inline">
+                    Personalizar Columnas
+                  </span>
+                  <ChevronDownIcon className="ml-1" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {table.getAllColumns().map((column) => (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) => column.toggleVisibility(value)}
+                    disabled={!column.getCanHide()}
+                  >
+                    {column.id}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-          {actions}
+            {actions}
+          </div>
         </div>
-      </div>
+      )}
       <div className="overflow-hidden rounded-lg border">
         <Table>
           <TableHeader className="bg-muted">
@@ -159,9 +169,9 @@ const DataTable: React.FC<Props> = ({ data, actions, columns }) => {
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
+              table.getRowModel().rows.map((row,i) => (
                 <TableRow
-                  key={row.id}
+                  key={i}
                   data-state={row.getIsSelected() && "selected"}
                   className={row.original.deletedAt ? "text-red-400" : ""}
                 >
@@ -178,7 +188,7 @@ const DataTable: React.FC<Props> = ({ data, actions, columns }) => {
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="text-center">
-                  No hay resultados.
+                  No hay datos.
                 </TableCell>
               </TableRow>
             )}
@@ -186,6 +196,7 @@ const DataTable: React.FC<Props> = ({ data, actions, columns }) => {
         </Table>
       </div>
       {/* Controles de paginación */}
+      {!isPaginated?null:
       <div className="flex items-center justify-between px-4">
         <div className="hidden flex-1 text-sm text-muted-foreground lg:flex">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
@@ -262,7 +273,7 @@ const DataTable: React.FC<Props> = ({ data, actions, columns }) => {
             </Button>
           </div>
         </div>
-      </div>
+      </div>}
     </div>
   );
 };

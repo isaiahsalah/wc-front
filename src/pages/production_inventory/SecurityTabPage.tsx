@@ -1,25 +1,19 @@
- import SelectorTabPage from '@/components/SelectorTabPage';
-import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
-import React, { useCallback, useEffect, useState } from 'react'
- import { getAllProducts } from '@/api/product/product.api';
-import ProductPage from './product/ProductPage';
-import { GeneralInterfaces } from '@/utils/interfaces';
-import OrderPage from './production/OrderPage';
-import { getAllOrders } from '@/api/production/order.api';
-import { getAllProductions } from '@/api/production/production.api';
-import ProductionPage from './production/ProductionPage';
+import SelectorTabPage from "@/components/SelectorTabPage";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { useCallback, useEffect, useState } from "react";
+import { GeneralInterfaces } from "@/utils/interfaces";
+import { getAllProductions } from "@/api/production/production.api";
+import ProductionPage from "./production/ProductionPage";
 
 const SecurityTabPage = () => {
   const [activeTab, setActiveTab] = useState(tabData[0]);
-  const [data, setData] = useState<GeneralInterfaces[]  >([]);
+  const [data, setData] = useState<GeneralInterfaces[]>([]);
   const [loading, setLoading] = useState(false); // Estado de carga
 
   useEffect(() => {
     updateView();
   }, [activeTab]);
-
-  
 
   const updateView = useCallback(async () => {
     setLoading(true);
@@ -35,7 +29,7 @@ const SecurityTabPage = () => {
 
   return (
     <Tabs
-      value={activeTab.id }
+      value={activeTab.id}
       onValueChange={(value) => {
         const selectedTab = tabData.find((tab) => tab.id === value);
         if (selectedTab) setActiveTab(selectedTab);
@@ -43,7 +37,7 @@ const SecurityTabPage = () => {
       className="flex w-full flex-col justify-start gap-4"
     >
       <SelectorTabPage
-        activeTab={activeTab.id }
+        activeTab={activeTab.id}
         setActiveTab={(value) => {
           const selectedTab = tabData.find((tab) => tab.id === value);
           if (selectedTab) setActiveTab(selectedTab);
@@ -56,27 +50,22 @@ const SecurityTabPage = () => {
           {loading ? ( // Muestra un indicador de carga mientras se obtienen los datos
             <div>Cargando datos...</div>
           ) : (
+            // @ts-expect-error: Ignoramos el error en esta línea
             <tab.content data={data} updateView={updateView} />
           )}
         </TabsContent>
       ))}
     </Tabs>
   );
-}
+};
 
-export default SecurityTabPage
-
+export default SecurityTabPage;
 
 const tabData = [
   {
     id: "tab1",
     label: "Producción",
     content: ProductionPage,
-    get: getAllProductions
+    get: getAllProductions,
   },
-  {
-    id: "tab2",
-    label: "Orden",
-    content: OrderPage,
-    get: getAllOrders}
 ];

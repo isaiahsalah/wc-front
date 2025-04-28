@@ -1,17 +1,7 @@
-import {
-  Sheet,
-  SheetTrigger,
-  SheetContent,
-  SheetClose,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import { Separator } from "@/components/ui/separator";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
@@ -20,7 +10,6 @@ import {
   FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
@@ -44,7 +33,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
-import { ColorSchema } from "@/utils/interfaces";
+import { ColorInterfaces, ColorSchema } from "@/utils/interfaces";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -58,7 +47,7 @@ export const CreateColorDialog: React.FC<PropsCreate> = ({
   //const [data, setData] = useState<GeneralInterfaces | never>();
   const [loadingSave, setLoadingSave] = useState(false); // Estado de carga
 
-  const form = useForm<z.infer<typeof ColorSchema>>({
+  const form = useForm<ColorInterfaces>({
     resolver: zodResolver(ColorSchema),
     defaultValues: {
       name: "",
@@ -66,7 +55,7 @@ export const CreateColorDialog: React.FC<PropsCreate> = ({
     },
   });
 
-  function onSubmit(values: z.infer<typeof ColorSchema>) {
+  function onSubmit(values: ColorInterfaces) {
     setLoadingSave(true); // Inicia la carga
     createColor({ data: values })
       .then((updatedColor) => {
@@ -98,24 +87,24 @@ export const CreateColorDialog: React.FC<PropsCreate> = ({
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Gestión de color</DialogTitle>
           <DialogDescription>
             Mostrando datos relacionados con el color.
           </DialogDescription>
         </DialogHeader>
-        <Form {...form} >
+        <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className=" grid grid-cols-6 gap-4 " 
+            className=" grid grid-cols-6 gap-4 "
           >
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem className="col-span-6">
-                  <FormLabel>Nombre</FormLabel>
+                  <FormDescription>Nombre</FormDescription>
                   <FormControl>
                     <Input placeholder="Nombre" {...field} />
                   </FormControl>
@@ -129,7 +118,7 @@ export const CreateColorDialog: React.FC<PropsCreate> = ({
               name="description"
               render={({ field }) => (
                 <FormItem className="col-span-6">
-                  <FormLabel>Descripción</FormLabel>
+                  <FormDescription>Descripción</FormDescription>
                   <FormControl>
                     <Textarea placeholder="Notas adicionales" {...field} />
                   </FormControl>
@@ -183,7 +172,7 @@ export const EditColorDialog: React.FC<PropsEdit> = ({
 
   const [loadingInit, setLoadingInit] = useState(false); // Estado de carga
 
-  const form = useForm<z.infer<typeof ColorSchema>>({
+  const form = useForm<ColorInterfaces>({
     resolver: zodResolver(ColorSchema),
     defaultValues: {
       id: 0,
@@ -192,7 +181,7 @@ export const EditColorDialog: React.FC<PropsEdit> = ({
     },
   });
 
-  function onSubmit(values: z.infer<typeof ColorSchema>) {
+  function onSubmit(values: ColorInterfaces) {
     setLoadingSave(true); // Inicia la carga
     updateColor({ data: values })
       .then((updatedColor) => {
@@ -274,7 +263,7 @@ export const EditColorDialog: React.FC<PropsEdit> = ({
       <DialogTrigger asChild onClick={fetchColor}>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Gestión de color</DialogTitle>
           <DialogDescription>
@@ -291,8 +280,8 @@ export const EditColorDialog: React.FC<PropsEdit> = ({
                 control={form.control}
                 name="id"
                 render={({ field }) => (
-                  <FormItem className={"col-span-6"}>
-                    <FormLabel>Id</FormLabel>
+                  <FormItem className={"col-span-2"}>
+                    <FormDescription>Id</FormDescription>
                     <FormControl>
                       <Input
                         type="number"
@@ -312,8 +301,8 @@ export const EditColorDialog: React.FC<PropsEdit> = ({
                 control={form.control}
                 name="name"
                 render={({ field }) => (
-                  <FormItem className="col-span-6">
-                    <FormLabel>Nombre</FormLabel>
+                  <FormItem className="col-span-4">
+                    <FormDescription>Nombre</FormDescription>
                     <FormControl>
                       <Input placeholder="Nombre" {...field} />
                     </FormControl>
@@ -327,7 +316,7 @@ export const EditColorDialog: React.FC<PropsEdit> = ({
                 name="description"
                 render={({ field }) => (
                   <FormItem className="col-span-6">
-                    <FormLabel>Descripción</FormLabel>
+                    <FormDescription>Descripción</FormDescription>
                     <FormControl>
                       <Textarea placeholder="Notas adicionales" {...field} />
                     </FormControl>
@@ -406,7 +395,7 @@ export const DeleteColorDialog: React.FC<PropsDelete> = ({
   return (
     <Dialog onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Eliminar color</DialogTitle>
           <DialogDescription>
@@ -474,7 +463,7 @@ export const RecoverColorDialog: React.FC<PropsRecover> = ({
   return (
     <Dialog onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Recuperar color</DialogTitle>
           <DialogDescription>

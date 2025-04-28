@@ -1,5 +1,5 @@
 import { apiClient } from "../axiosConfig";
-import { GeneralInterfaces } from "@/utils/interfaces";
+import {   ProductionInterfaces,  } from "@/utils/interfaces";
 import { toast } from "sonner";
 
 export const getProductions = async () => {
@@ -32,7 +32,7 @@ export const getProductionById = async (id: number) => {
   }
 };
 
-export const createProduction = async ({ data }: { data: GeneralInterfaces }) => {
+export const createProduction = async ({ data }: { data: ProductionInterfaces }) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",
@@ -59,7 +59,7 @@ export const createProduction = async ({ data }: { data: GeneralInterfaces }) =>
   }
 };
 
-export const updateProduction = async ({ data }: { data: GeneralInterfaces }) => {
+export const updateProduction = async ({ data }: { data: ProductionInterfaces }) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",
@@ -135,6 +135,35 @@ export const recoverProduction = async (id: number) => {
     return response.data; // Devuelve el dato actualizado o el mensaje de éxito
   } catch (error) {
     toast(`Error al recuperar la producción con ID ${id}: ${error}`, {
+      action: {
+        label: "OK",
+        onClick: () => console.log("Undo"),
+      },
+    });
+    throw error;
+  }
+};
+
+////////////////////////////////////////////////////////////////////////
+
+export const createProductions = async ({ data }: { data: ProductionInterfaces[] }) => {
+  toast("Se está procesando la petición", {
+    action: {
+      label: "OK",
+      onClick: () => console.log("Undo"),
+    },
+  });
+  try {
+    const response = await apiClient.post("/pr/production/bulk", data);
+    toast("Las producciones se creó correctamente.", {
+      action: {
+        label: "OK",
+        onClick: () => console.log("Undo"),
+      },
+    });
+    return response.data; // Devuelve la producción creada
+  } catch (error) {
+    toast(`Error al crear las ${data.length} producciones: ${error}`, {
       action: {
         label: "OK",
         onClick: () => console.log("Undo"),

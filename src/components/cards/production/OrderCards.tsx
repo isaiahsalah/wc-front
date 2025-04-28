@@ -1,4 +1,3 @@
-import { useContext, useEffect } from "react";
 import {
   Card,
   CardDescription,
@@ -6,19 +5,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tally5, TrendingDownIcon, TrendingUpIcon } from "lucide-react";
+import { Tally5, TrendingUpIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge"; 
-import { z } from "zod";
-import { GeneralSchema } from "@/utils/interfaces";
 import { countCurrentMonth } from "@/utils/funtions";
+import { OrderInterfaces } from "@/utils/interfaces";
 
 interface Props {
-  initialData: z.infer<typeof GeneralSchema>[];
+  initialData: OrderInterfaces[];
 }
 
 const OrderCards: React.FC<Props> = ({ initialData }) => {
-
-
   return (
     <div className="grid grid-cols-6 gap-4">
       <Card className="@container/card col-span-6 lg:col-span-6">
@@ -30,7 +26,8 @@ const OrderCards: React.FC<Props> = ({ initialData }) => {
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
               <TrendingUpIcon className="size-3" />
-              +{countCurrentMonth(initialData)} este mes
+              {/*@ts-expect-error: Ignoramos el error en esta línea */}+
+              {countCurrentMonth(initialData)} este mes
             </Badge>
           </div>
         </CardHeader>

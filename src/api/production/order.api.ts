@@ -1,5 +1,5 @@
 import { apiClient } from "../axiosConfig";
-import { GeneralInterfaces } from "@/utils/interfaces";
+import { OrderDetailInterfaces, OrderInterfaces } from "@/utils/interfaces";
 import { toast } from "sonner";
 
 export const getOrders = async () => {
@@ -32,7 +32,7 @@ export const getOrderById = async (id: number) => {
   }
 };
 
-export const createOrder = async ({ data }: { data: GeneralInterfaces }) => {
+export const createOrder = async ({ data }: { data: OrderInterfaces }) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",
@@ -59,7 +59,7 @@ export const createOrder = async ({ data }: { data: GeneralInterfaces }) => {
   }
 };
 
-export const updateOrder = async ({ data }: { data: GeneralInterfaces }) => {
+export const updateOrder = async ({ data }: { data: OrderInterfaces }) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",
@@ -135,6 +135,35 @@ export const recoverOrder = async (id: number) => {
     return response.data; // Devuelve el dato actualizado o el mensaje de éxito
   } catch (error) {
     toast(`Error al recuperar la orden con ID ${id}: ${error}`, {
+      action: {
+        label: "OK",
+        onClick: () => console.log("Undo"),
+      },
+    });
+    throw error;
+  }
+};
+
+////////////////////////////////////////////////////////////////////////
+
+export const createOrderWithDetail = async ({ order,orderDetails }: { order: OrderInterfaces, orderDetails:OrderDetailInterfaces[] }) => {
+  toast("Se está procesando la petición", {
+    action: {
+      label: "OK",
+      onClick: () => console.log("Undo"),
+    },
+  });
+  try {
+    const response = await apiClient.post("/pr/order/withdetails", { order,orderDetails });
+    toast("La orden se creó correctamente.", {
+      action: {
+        label: "OK",
+      onClick: () => console.log("Undo"),
+      },
+    });
+    return response.data; // Devuelve la orden creada
+  } catch (error) {
+    toast(`Error al crear la orden: ${error}`, {
       action: {
         label: "OK",
         onClick: () => console.log("Undo"),
