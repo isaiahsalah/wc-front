@@ -41,7 +41,7 @@ import {
 import { getMachines } from "@/api/params/machine.api";
 import { typeQuality } from "@/utils/const";
 import { z } from "zod";
-import { printTag } from "@/utils/printTag";
+import { generateQR, printTag } from "@/utils/printTag";
 import { DateTimePicker } from "@/components/DateTimePicker";
 
 const ProductionOrderSchema = z.object({
@@ -106,7 +106,9 @@ export const CreateProductionOrderDialog: React.FC<PropsCreate> = ({
     createProductions({ data: productions })
       .then((updatedProduction) => {
         console.log("Producciones creada:", updatedProduction);
-        printTag({ productions: updatedProduction });
+        generateQR({ productions: updatedProduction }).then((QRs) => {
+          printTag({ productions: updatedProduction, QRs: QRs });
+        });
         updateView();
       })
       .catch((error) => {

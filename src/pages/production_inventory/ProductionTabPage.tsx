@@ -11,6 +11,7 @@ const ProductionTabPage = () => {
   const { setTitle } = useContext(TitleContext);
 
   useEffect(() => {
+    
     setTitle(activeTab.label); 
   }, [activeTab]);
 

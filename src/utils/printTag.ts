@@ -2,13 +2,55 @@ import jsPDF from "jspdf";
 import { ProductionInterfaces } from "./interfaces";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
- 
- 
 
-export const printTag = ({
+import QRCode from "qrcode"; // Asegúrate de importar correctamente tu biblioteca
+
+export const generateQR = async ({
   productions,
 }: {
   productions: ProductionInterfaces[];
+}): Promise<string[]> => {
+  try {
+    // Verificar que la lista de productos no esté vacía
+    if (!productions || productions.length === 0) {
+      throw new Error("No se proporcionaron productos.");
+    }
+
+    // Lista para almacenar los códigos QR generados en formato base64
+    const qrCodes: string[] = [];
+
+    // Iterar sobre los productos para generar el QR para cada uno
+    for (const production of productions) {
+      const qrText = `${production.lote?.name}-${production.id}`; // Puedes poner cualquier URL o texto que desees
+
+      QRCode.toDataURL(qrText, {
+        width: 256, // Ancho de la imagen en píxeles (aumenta para mayor resolución)
+      })
+        .then((url) => {
+          //console.log(url);
+          qrCodes.push(url);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+
+      //console.log(`Código QR generado para: ${qrText}`);
+    }
+
+    // Retornar los QR Codes generados
+    return qrCodes;
+  } catch (error) {
+    console.error("❌ Error al generar los códigos QR:", error);
+    return [];
+  }
+};
+
+export const printTag = ({
+  productions,
+  QRs,
+}: {
+  productions: ProductionInterfaces[];
+  QRs: string[];
 }) => {
   // Crear una instancia de jsPDF
   const doc = new jsPDF({
@@ -21,18 +63,18 @@ export const printTag = ({
     // Dibujar un borde opcional
     doc.setDrawColor(0); // Negro
     doc.setLineWidth(0.5); // Grosor
-    doc.roundedRect(1, 1, 48, 28, 2, 2); // Rectángulo con bordes redondeados, radio de 5
-    doc.line(1, 24, 49, 24); // Rectángulo de 1mm de margen
 
     // Configuración de fuente y tamaño
     doc.setFont("helvetica", "normal");
     doc.setFontSize(5);
     // Colocar el texto en la mitad derecha (desplazamos a la derecha)
 
-    doc.text(`Id:`, 25, 5);
-    doc.text(`Nombre:`, 25, 10);
-    doc.text(`Fecha:`, 25, 15);
-    doc.text(`Unidad:`, 25, 20);
+    doc.addImage(QRs[index], "PNG", 1, 1, 23, 23);
+
+    doc.text(`Id:`, 24, 5);
+    doc.text(`Nombre:`, 24, 10);
+    doc.text(`Fecha:`, 24, 15);
+    doc.text(`Unidad:`, 24, 20);
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(6);
@@ -43,19 +85,23 @@ export const printTag = ({
     );
     const qrData = `${production.lote?.name}-${production.id}`; // Puedes poner cualquier URL o texto que desees
 
-    doc.text(`${qrData}`, 25, 7);
-    doc.text(`${production.order_detail?.product?.name}`, 25, 12);
-    doc.text(`${formattedDate}`, 25, 17);
+    doc.text(`${qrData}`, 24, 7);
+    doc.text(`${production.order_detail?.product?.name}`, 24, 12);
+    doc.text(`${formattedDate}`, 24, 17);
     doc.text(
       `${production.order_detail?.product?.amount} ${production.order_detail?.product?.unity?.shortname}.`,
-      25,
+      24,
       22
     );
     doc.setFont("helvetica", "bold"); // Usamos Helvetica y negrita
 
-    doc.text(`PLÁSTICOS CARMEN`, 14, 27);
+    console.log("Type✔️✔️",production.order_detail?.product?.model?.type)
+    if (production.order_detail?.product?.model?.type === 1)
+      doc.text(`PLÁSTICOS CARMEN`, 14, 27);
+    else doc.text(`PRODUCTO EN PROCESO`, 12, 27);
 
-   
+    doc.roundedRect(1, 1, 48, 28, 2, 2); // Rectángulo con bordes redondeados, radio de 5
+    doc.line(1, 24, 49, 24); // Rectángulo de 1mm de margen
 
     // Agregar una nueva página para el siguiente elemento (excepto el último)
     if (index < productions.length - 1) {
