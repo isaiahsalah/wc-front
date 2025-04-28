@@ -40,7 +40,7 @@ export const GeneralSchema = z.object({
   deletedAt: z.date().nullable().optional(),
 });
 */
- 
+
 // Tabla: Color
 export const ColorSchema = z.object({
   id: z.number().nullable().optional(),
@@ -129,7 +129,7 @@ export const ProductSchema = z.object({
   description: z.string(),
   cost: z.number(),
   price: z.number(),
-  amount:z.number(),
+  amount: z.number(),
   id_unity: z.number(),
   unity: UnitySchema.nullable().optional(),
   id_color: z.number(),
@@ -233,7 +233,7 @@ export const ProductionSchema = z.object({
   id: z.number().nullable().optional(),
   description: z.string(),
   date: z.date(),
-  duration: z.number(), 
+  duration: z.number(),
   id_machine: z.number(),
   machine: MachineSchema.nullable().optional(),
   id_lote: z.number(),
@@ -279,7 +279,21 @@ export type SectorInterfaces = z.infer<typeof SectorSchema>;
 export type UnityInterfaces = z.infer<typeof UnitySchema>;
 export type UserInterfaces = z.infer<typeof UserSchema>;
 
-
-export type GeneralInterfaces = z.infer<
-  typeof UnitySchema | typeof ColorSchema | typeof ModelSchema | typeof FormulaSchema | typeof ProductSchema
->;
+export type GeneralInterfaces =
+  | ColorInterfaces
+  | FormulaDetailInterfaces
+  | FormulaInterfaces
+  | InventoryInterfaces
+  | LoteInterfaces
+  | MachineInterfaces
+  | ModelInterfaces
+  | OrderDetailInterfaces
+  | OrderInterfaces
+  | PermissionInterfaces
+  | ProcessInterfaces
+  | ProductInterfaces
+  | ProductionDetailInterfaces
+  | ProductionInterfaces
+  | SectorInterfaces
+  | UnityInterfaces
+  | UserInterfaces;

@@ -5,18 +5,13 @@ import {
   ProductInterfaces,
   ProductionInterfaces,
   SectorInterfaces,
-} from "@/utils/interfaces"; 
+} from "@/utils/interfaces";
 import { CellContext, ColumnDef, Row } from "@tanstack/react-table";
-import {   useEffect, useMemo, useState } from "react"; 
+import { useEffect, useMemo, useState } from "react";
 import DataTable from "@/components/table/DataTable";
 import { Button } from "@/components/ui/button";
+import { ArchiveRestore, Delete, Edit, MoreVerticalIcon } from "lucide-react";
 import {
-  ArchiveRestore, 
-  Delete,
-  Edit,
-  MoreVerticalIcon, 
-} from "lucide-react";
-import { 
   DeleteProductionDialog,
   EditProductionDialog,
   RecoverProductionDialog,
@@ -36,7 +31,7 @@ import { CreateProductionOrderDialog } from "@/components/dialog/production/Prod
 import {
   Card,
   CardContent,
-  CardDescription, 
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -284,13 +279,14 @@ const ProductionPage = () => {
     <div className="grid grid-cols-6 gap-4">
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardContent className=" flex flex-col gap-2">
-          <CardDescription>Ordenes de producción pendientes</CardDescription>
-          <div className="flex gap-2">
+          <CardDescription>Selecciona el sector y proceso</CardDescription>
+          <div className="grid grid-cols-6 gap-2">
             <Select
+            
               onValueChange={(value) => setSector(Number(value))} // Convertir el valor a número
             >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Seleccionar Sector" />
+              <SelectTrigger className="w-full col-span-3">
+                <SelectValue placeholder="Sector" />
               </SelectTrigger>
               <SelectContent>
                 {sectors?.map((sector: SectorInterfaces) => (
@@ -306,8 +302,8 @@ const ProductionPage = () => {
             <Select
               onValueChange={(value) => setProcess(Number(value))} // Convertir el valor a número
             >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Seleccionar Proceso" />
+              <SelectTrigger className="w-full col-span-3">
+                <SelectValue placeholder="Proceso" />
               </SelectTrigger>
               <SelectContent>
                 {processes?.map((process: ProcessInterfaces) => (

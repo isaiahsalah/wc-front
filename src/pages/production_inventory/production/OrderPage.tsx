@@ -127,7 +127,7 @@ const OrderPage = () => {
         },
       },
     ];
-  }, [orders]);
+  }, [orders]); 
   return (
     <div className="grid grid-cols-6 gap-4">
       <Card className="@container/card col-span-6 lg:col-span-6">
