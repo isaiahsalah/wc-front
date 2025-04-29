@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export interface SesionInterface {
-  params: string;
+  user: UserInterfaces;
   token: string;
 }
 /*
@@ -280,9 +280,9 @@ export type UnityInterfaces = z.infer<typeof UnitySchema>;
 export type UserInterfaces = z.infer<typeof UserSchema>;
 
 export type GeneralInterfaces =
+  | FormulaInterfaces
   | ColorInterfaces
   | FormulaDetailInterfaces
-  | FormulaInterfaces
   | InventoryInterfaces
   | LoteInterfaces
   | MachineInterfaces

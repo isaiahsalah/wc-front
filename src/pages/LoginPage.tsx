@@ -20,7 +20,6 @@ import { useContext, useState } from "react";
 import { SesionContext } from "@/providers/sesion-provider";
 import { getLogin } from "@/api/login.api";
 import { SesionInterface } from "@/utils/interfaces";
-import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Select } from "@radix-ui/react-select";
 import {
@@ -32,8 +31,8 @@ import {
 import LoadingCircle from "@/components/LoadingCircle";
 
 const formSchema = z.object({
-  area: z.string().min(2, {
-    message: "Por favor, selecciona un área.",
+  module: z.string().min(1, {
+    message: "Selecciones un modulo",
   }),
   user: z.string().min(2, {
     message: "El campo de usuario es obligatorio.",
@@ -55,45 +54,34 @@ export const LoginPage = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      area: "",
+      module: "",
       user: "",
       pass: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
     setLoadingLogin(true);
 
-    const responde = await getLogin({ user: values.user, pass: values.pass });
-    if (responde.status === 200) {
-      window.localStorage.setItem(
-        "token",
-        JSON.stringify(responde.sesion.token)
-      );
-      setSesion(responde.sesion as SesionInterface);
+    // Realiza la solicitud al API para iniciar sesión
+    getLogin({ user: values.user, pass: values.pass,module:parseInt(values.module)  })
+      .then((response) => {
+       
 
-      navigate("/home"); // Redirige a la ruta deseada después de iniciar sesión
+        if ( response.token) { 
+          // Almacena el token en localStorage
+          window.localStorage.setItem(
+            "token",
+            JSON.stringify(response.token)
+          ); 
+          // Actualiza la sesión en el estado
+          setSesion(response.sesion as SesionInterface);
 
-      toast("Inicio de sesión exitoso", {
-        description:
-          "Bienvenido(a) de nuevo. Has ingresado correctamente a tu cuenta.",
-        action: {
-          label: "OK",
-          onClick: () => console.log("Undo"),
-        },
-      });
-    } else {
-      toast("Error de autenticación", {
-        description:
-          "Las credenciales ingresadas no son válidas. Por favor, verifica tu usuario y contraseña.",
-        action: {
-          label: "OK",
-          onClick: () => console.log("Undo"),
-        },
-      });
-      setLoadingLogin(false);
-    }
+          // Navega a la ruta deseada después de iniciar sesión
+          navigate("/home");
+        }
+      })
+      .finally(() => setLoadingLogin(false));
   }
 
   return (
@@ -135,7 +123,7 @@ export const LoginPage = ({
               >
                 <FormField
                   control={form.control}
-                  name="area"
+                  name="module"
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
@@ -152,9 +140,9 @@ export const LoginPage = ({
                             </div>
                           </SelectTrigger>
                           <SelectContent>
-                            {modulSelect.map((item, index) => (
+                            {moduleSelect.map((item, index) => (
                               <SelectItem
-                                value={item.value}
+                                value={item.value.toString()}
                                 className=" justify-center"
                                 key={index}
                                 disabled={!item.isActive}
@@ -232,30 +220,30 @@ export const LoginPage = ({
 
 export default LoginPage;
 
-const modulSelect = [
+const moduleSelect = [
   {
     title: "Producción e Inventarios",
-    value: "produccion",
+    value: 1,
     isActive: true,
   },
   {
     title: "Ventas y Logística",
-    value: "ventas",
+    value: 2,
     isActive: false,
   },
   {
     title: "Costos y Calidad",
-    value: "calidad",
+    value: 3,
     isActive: false,
   },
   {
     title: "Administración y Usuarios",
-    value: "administracion",
+    value: 4,
     isActive: false,
   },
   {
     title: "Reportes y Análisis",
-    value: "reportes",
+    value: 5,
     isActive: false,
   },
 ];

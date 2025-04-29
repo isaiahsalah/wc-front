@@ -98,9 +98,8 @@ const ProductionPage = () => {
     }
   };
 
-  // Generar columnas dinámicamente
-  // @ts-expect-error: Ignoramos el error en esta línea
-  const columnsProduction: ColumnDef<ProductionInterfaces> = useMemo(() => {
+  // Generar columnas dinámicamente 
+  const columnsProduction: ColumnDef<ProductionInterfaces>[] = useMemo(() => {
     if (productions.length === 0) return [];
     return [
       ...Object.keys(productions[0]).map((key) => ({
@@ -327,11 +326,9 @@ const ProductionPage = () => {
         <CardContent>
           {loading ? null : (
             <DataTable
-              options={false}
+              hasOptions={false}
               actions={<></>}
-              /*@ts-expect-error: Ignoramos el error en esta línea */
               columns={columnsOrderDetails}
-              /*@ts-expect-error: Ignoramos el error en esta línea */
               data={orderDetails}
             />
           )}
@@ -347,9 +344,7 @@ const ProductionPage = () => {
           {loading ? null : (
             <DataTable
               actions={<></>}
-              // @ts-expect-error: Ignoramos el error en esta línea
               columns={columnsProduction}
-              /*@ts-expect-error: Ignoramos el error en esta línea */
               data={productions}
             />
           )}

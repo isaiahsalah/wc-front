@@ -1,23 +1,23 @@
 import { ModelInterfaces } from "@/utils/interfaces";
-import ModelCards from "@/components/cards/params/ModelCards";
+import { useEffect, useMemo, useState } from "react";
+import DataTable from "@/components/table/DataTable";
+import { Button } from "@/components/ui/button";
+import {
+  ArchiveRestore,
+  Delete,
+  Edit,
+  MoreVerticalIcon,
+  PlusIcon,
+  Tally5,
+  TrendingUpIcon,
+} from "lucide-react";
 import {
   CreateModelDialog,
   DeleteModelDialog,
   EditModelDialog,
   RecoverModelDialog,
 } from "@/components/dialog/params/ModelDialogs";
-import { Button } from "@/components/ui/button";
-import {
-  ArchiveRestore, 
-  Delete,
-  Edit,
-  MoreVerticalIcon,
-  PlusIcon,
-} from "lucide-react";
-import DataTable from "@/components/table/DataTable";
-import { useContext, useEffect, useMemo } from "react";
-import { TitleContext } from "@/providers/title-provider";
-import { CellContext, Row } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,34 +25,55 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-interface Props {
-  data: ModelInterfaces[];
-  updateView: () => void;
-}
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { getAllModels } from "@/api/params/model.api";
+import { Badge } from "@/components/ui/badge";
+import { countCurrentMonth } from "@/utils/funtions";
 
-const ModelPage: React.FC<Props> = ({ data, updateView }) => {
-  const { setTitle } = useContext(TitleContext);
+const ModelPage = () => {
+  const [models, setModels] = useState<ModelInterfaces[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setTitle("Modelos");
-  }, [setTitle]);
+    updateView();
+  }, []);
 
-  // Generar columnas dinámicamente
-  const columns = useMemo(() => {
-    if (data.length === 0) return [];
+  const updateView = async () => {
+    setLoading(true);
+    try {
+      const modelsData = await getAllModels();
+      setModels(modelsData);
+    } catch (error) {
+      console.error("Error al cargar los datos:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const columnsModel: ColumnDef<ModelInterfaces>[] = useMemo(() => {
+    if (models.length === 0) return [];
     return [
-      ...Object.keys(data[0]).map((key) => ({
+      ...Object.keys(models[0]).map((key) => ({
         accessorKey: key,
         header: key.replace(/_/g, " ").toUpperCase(),
-        cell: (info: CellContext<ModelInterfaces, unknown>) => info.getValue(),
+        /* @ts-expect-error: Ignoramos el error en esta línea*/
+        cell: (info) => info.getValue(),
       })),
+
       {
         id: "actions",
         header: "",
         enableHiding: false,
         cell: ({ row }: { row: Row<ModelInterfaces> }) => {
           return (
-            <div className="flex gap-2  justify-end  ">
+            <div className="flex gap-2 justify-end">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -60,7 +81,6 @@ const ModelPage: React.FC<Props> = ({ data, updateView }) => {
                     className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
                     size="icon"
                   >
-                    {" "}
                     <MoreVerticalIcon />
                   </Button>
                 </DropdownMenuTrigger>
@@ -72,7 +92,7 @@ const ModelPage: React.FC<Props> = ({ data, updateView }) => {
                         updateView={updateView}
                       >
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Edit /> Editar{" "}
+                          <Edit /> Editar
                         </DropdownMenuItem>
                       </EditModelDialog>
                       <DropdownMenuSeparator />
@@ -81,7 +101,7 @@ const ModelPage: React.FC<Props> = ({ data, updateView }) => {
                         updateView={updateView}
                       >
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Delete /> Eliminar{" "}
+                          <Delete /> Eliminar
                         </DropdownMenuItem>
                       </DeleteModelDialog>
                     </>
@@ -91,7 +111,7 @@ const ModelPage: React.FC<Props> = ({ data, updateView }) => {
                       updateView={updateView}
                     >
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        <ArchiveRestore /> Recuperar{" "}
+                        <ArchiveRestore /> Recuperar
                       </DropdownMenuItem>
                     </RecoverModelDialog>
                   )}
@@ -102,35 +122,67 @@ const ModelPage: React.FC<Props> = ({ data, updateView }) => {
         },
       },
     ];
-  }, [data, updateView]);
+  }, [models]);
+
   return (
     <div className="flex flex-col gap-4">
-      <ModelCards initialData={data} />
-      <DataTable
-        actions={
-          <CreateModelDialog
-            updateView={updateView}
-            children={
-              <Button
-                variant="outline"
-                size="sm"
-                onSelect={(event) => {
-                  event.preventDefault(); // Evita el cierre automático
-                }}
-              >
-                <PlusIcon />
-                <span className="ml-2 hidden lg:inline">Agregar</span>
-              </Button>
-            }
-          />
-        }
-        /*@ts-expect-error: Ignoramos el error en esta línea */
-        columns={columns}
-        data={data}
-      />
+      <Card className="@container/card col-span-6 lg:col-span-6">
+        <CardHeader className="relative">
+          <CardDescription>Modelos registrados</CardDescription>
+          <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
+            {models.length} Modelos
+          </CardTitle>
+          <div className="absolute right-4 top-4">
+            <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
+              <TrendingUpIcon className="size-3" />+
+              {countCurrentMonth(models)} este mes
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardFooter className="flex-col items-start gap-1 text-sm">
+          <div className="line-clamp-1 flex gap-2 font-medium">
+            Total acumulado en el sistema
+            <Tally5 className="size-4" />
+          </div>
+          <div className="text-muted-foreground">
+            Mantén actualizada esta cantidad para un registro preciso.
+          </div>
+        </CardFooter>
+      </Card>
+
+      <Card className="@container/card col-span-6 lg:col-span-6">
+        <CardHeader>
+          <CardTitle>Producción</CardTitle>
+          <CardDescription>Producción registrada</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loading ? null : (
+            <DataTable
+              actions={
+                <CreateModelDialog
+                  updateView={updateView}
+                  children={
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onSelect={(event) => {
+                        event.preventDefault();
+                      }}
+                    >
+                      <PlusIcon />
+                      <span className="ml-2 hidden lg:inline">Agregar</span>
+                    </Button>
+                  }
+                />
+              }
+              columns={columnsModel}
+              data={models}
+            />
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
 
 export default ModelPage;
-//      <ModelTable data={data} updateView={updateView} />

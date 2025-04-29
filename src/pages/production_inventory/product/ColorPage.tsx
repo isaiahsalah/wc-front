@@ -1,11 +1,9 @@
-import { ColorInterfaces} from "@/utils/interfaces";
-import ColorCards from "@/components/cards/product/ColorCards";
-import { useContext, useEffect, useMemo, useState } from "react";
-import { TitleContext } from "@/providers/title-provider";
+import { ColorInterfaces } from "@/utils/interfaces";
+import { useEffect, useMemo, useState } from "react";
 import DataTable from "@/components/table/DataTable";
 import { Button } from "@/components/ui/button";
 import {
-  ArchiveRestore, 
+  ArchiveRestore,
   Delete,
   Edit,
   MoreVerticalIcon,
@@ -19,12 +17,12 @@ import {
   EditColorDialog,
   RecoverColorDialog,
 } from "@/components/dialog/product/ColorDialogs";
-import { CellContext, ColumnDef, Row } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import {
   DropdownMenu,
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuSeparator, 
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -39,18 +37,15 @@ import { getAllColors } from "@/api/product/color.api";
 import { Badge } from "@/components/ui/badge";
 import { countCurrentMonth } from "@/utils/funtions";
 
-
 // interface Props {
 //   data: ColorInterfaces[];
 //   updateView: () => void;
 // }
 
-const ColorPage  = ( ) => {
+const ColorPage = () => {
+  const [colors, setColors] = useState<ColorInterfaces[]>([]);
+  const [loading, setLoading] = useState(false); // Estado de carga
 
-    const [colors, setColors] = useState<ColorInterfaces[]>([]);
-    const [loading, setLoading] = useState(false); // Estado de carga
-
-  
   useEffect(() => {
     updateView();
   }, []);
@@ -68,10 +63,9 @@ const ColorPage  = ( ) => {
   };
 
   // Generar columnas dinámicamente
-  const columns: ColumnDef<ColorInterfaces>[] = useMemo(() => {
+  const columnsColor: ColumnDef<ColorInterfaces>[] = useMemo(() => {
     if (colors.length === 0) return [];
     return [
-       
       {
         accessorKey: "id",
         header: "Id",
@@ -87,7 +81,7 @@ const ColorPage  = ( ) => {
         header: "Descripción",
         cell: (info) => info.getValue(),
       },
-      
+
       {
         id: "actions",
         header: "",
@@ -114,7 +108,7 @@ const ColorPage  = ( ) => {
                         updateView={updateView}
                       >
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                         <Edit/> Editar{" "}
+                          <Edit /> Editar{" "}
                         </DropdownMenuItem>
                       </EditColorDialog>
                       <DropdownMenuSeparator />
@@ -123,7 +117,7 @@ const ColorPage  = ( ) => {
                         updateView={updateView}
                       >
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                         <Delete/> Eliminar{" "}
+                          <Delete /> Eliminar{" "}
                         </DropdownMenuItem>
                       </DeleteColorDialog>
                     </>
@@ -133,7 +127,7 @@ const ColorPage  = ( ) => {
                       updateView={updateView}
                     >
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                       <ArchiveRestore/> Recuperar{" "}
+                        <ArchiveRestore /> Recuperar{" "}
                       </DropdownMenuItem>
                     </RecoverColorDialog>
                   )}
@@ -156,8 +150,8 @@ const ColorPage  = ( ) => {
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-              <TrendingUpIcon className="size-3" />+
-              {countCurrentMonth(colors)} este mes
+              <TrendingUpIcon className="size-3" />+{countCurrentMonth(colors)}{" "}
+              este mes
             </Badge>
           </div>
         </CardHeader>
@@ -180,30 +174,29 @@ const ColorPage  = ( ) => {
         <CardContent>
           {loading ? null : (
             <DataTable
-            actions={
-              <CreateColorDialog
-                updateView={updateView}
-                children={
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onSelect={(event) => {
-                      event.preventDefault(); // Evita el cierre automático
-                    }}
-                  >
-                    <PlusIcon />
-                    <span className="ml-2 hidden lg:inline">Agregar</span>
-                  </Button>
-                }
-              />
-            } 
-            columns={columns}
-            data={colors}
-          />
+              actions={
+                <CreateColorDialog
+                  updateView={updateView}
+                  children={
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onSelect={(event) => {
+                        event.preventDefault(); // Evita el cierre automático
+                      }}
+                    >
+                      <PlusIcon />
+                      <span className="ml-2 hidden lg:inline">Agregar</span>
+                    </Button>
+                  }
+                />
+              }
+              columns={columnsColor}
+              data={colors}
+            />
           )}
         </CardContent>
       </Card>
-      
     </div>
   );
 };

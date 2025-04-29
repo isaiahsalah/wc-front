@@ -60,9 +60,8 @@ const OrderPage = () => {
     }
   };
 
-  // Generar columnas dinámicamente
-  /* @ts-expect-error: Ignoramos el error en esta línea*/
-  const columnsOrder: ColumnDef<OrderInterfaces> = useMemo(() => {
+  // Generar columnas dinámicamente 
+  const columnsOrder: ColumnDef<OrderInterfaces>[] = useMemo(() => {
     if (orders.length === 0) return [];
     return [
       ...Object.keys(orders[0]).map((key) => ({
@@ -180,9 +179,7 @@ const OrderPage = () => {
                   }
                 />
               }
-              /* @ts-expect-error: Ignoramos el error en esta línea*/
               columns={columnsOrder}
-              /*@ts-expect-error: Ignoramos el error en esta línea */
               data={orders}
             />
           )}

@@ -1,0 +1,83 @@
+ 
+ 
+/* Deshabilitar los spin buttons */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0; /* Elimina el espacio reservado para los botones */
+}
+
+input[type="number"] {
+  appearance: textfield; /* Asegura la compatibilidad en navegadores */
+}
+
+
+/*Animación  */
+@keyframes dropDown {
+  0% {
+    top: -100px;
+  }
+  100% {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+/* Animación personalizada */
+@keyframes fadeOutInfinite {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+
+@layer utilities {
+  .animate-dropDown {
+    animation: dropDown 750ms ease forwards;
+  }
+  .animate-fadeOutInfinite {
+    animation: fadeOutInfinite 2s ease-in 0.5s infinite;
+  }
+  .animate-fadeIn {
+    animation: fadeIn 250ms ease-in forwards;
+  }
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none; /* Para navegadores basados en WebKit */
+  }
+  .scrollbar-hidden {
+    -ms-overflow-style: none; /* Para Internet Explorer */
+    scrollbar-width: none; /* Para Firefox */
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 3px; /* Ancho de la barra vertical */
+    height: 3px; /* Altura de la barra horizontal */
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(100, 100, 100, 0.5); /* Color del thumb */
+    border-radius: 9999px; /* Redondeo */
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background-color: rgba(200, 200, 200, 0.2); /* Color de fondo del track */
+  }
+}
+
+ 
+ 

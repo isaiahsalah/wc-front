@@ -1,11 +1,9 @@
 import {  ProductInterfaces } from "@/utils/interfaces";
-import ProductCards from "@/components/cards/product/ProductCards";
 import DataTable from "@/components/table/DataTable";
 import { CreateProductDialog, DeleteProductDialog, EditProductDialog, RecoverProductDialog } from "@/components/dialog/product/ProductDialogs";
- import { ArchiveRestore, Delete, Edit, MoreVerticalIcon, PlusIcon } from "lucide-react";
+ import { ArchiveRestore, Delete, Edit, MoreVerticalIcon, PlusIcon, Tally5, TrendingUpIcon } from "lucide-react";
 import { Row } from "@tanstack/react-table";
-import { useContext, useEffect, useMemo } from "react";
-import { TitleContext } from "@/providers/title-provider";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,24 +12,44 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-interface Props {
-  data: ProductInterfaces[];
-  updateView: () => void;
-}
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { getAllProducts } from "@/api/product/product.api";
+import { countCurrentMonth } from "@/utils/funtions";
+import { Badge } from "@/components/ui/badge";
 
-const ProductPage: React.FC<Props> =  (({ data, updateView }) => {
-  const { setTitle } = useContext(TitleContext);
-
-  useEffect(() => {
-    setTitle("Productos");
-  }, []);
-
+const ProductPage =  () => {
+ const [products, setProducts] = useState<ProductInterfaces[]>([]);
+   const [loading, setLoading] = useState(false); // Estado de carga
+ 
+   useEffect(() => {
+     updateView();
+   }, []);
+ 
+   const updateView = async () => {
+     setLoading(true);
+     try {
+       const ProductionsData = await getAllProducts();
+       setProducts(ProductionsData);
+     } catch (error) {
+       console.error("Error al cargar los datos:", error);
+     } finally {
+       setLoading(false);
+     }
+   };
+ 
   // Generar columnas dinámicamente
-  const columns = useMemo(() => {
-    if (data.length === 0) return [];
+  const columnsProducts = useMemo(() => {
+    if (products.length === 0) return [];
     return [
       
-      ...Object.keys(data[0]).map((key) => ({
+      ...Object.keys(products[0]).map((key) => ({
         accessorKey: key,
         header: key.replace(/_/g, " ").toUpperCase(),
         /* @ts-expect-error: Ignoramos el error en esta línea*/
@@ -93,37 +111,68 @@ const ProductPage: React.FC<Props> =  (({ data, updateView }) => {
         },
       },
     ];
-  }, [data]);
+  }, [products]);
   return (
     <div className="flex flex-col gap-4">
-      <ProductCards initialData={data} />
-      <DataTable
-        actions={
-          <CreateProductDialog
-            updateView={updateView}
-            children={
-              <Button
-                variant="outline"
-                size="sm"
-                onSelect={(event) => {
-                  event.preventDefault(); // Evita el cierre automático
-                }}
-              >
-                <PlusIcon />
-                <span className="ml-2 hidden lg:inline">Agregar</span>
-              </Button>
-            }
-          />
-        }
-        /*@ts-expect-error: Ignoramos el error en esta línea */
-        columns={columns}
-        data={data}
-      />
+      <Card className="@container/card col-span-6 lg:col-span-6">
+        <CardHeader className="relative">
+          <CardDescription>Productos registrados</CardDescription>
+          <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
+            {products.length} Productos
+          </CardTitle>
+          <div className="absolute right-4 top-4">
+            <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
+              <TrendingUpIcon className="size-3" />
+              +{countCurrentMonth(products)} este mes
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardFooter className="flex-col items-start gap-1 text-sm">
+          <div className="line-clamp-1 flex gap-2 font-medium">
+            Total acumulado en el sistema
+            <Tally5 className="size-4" />
+          </div>
+          <div className="text-muted-foreground">
+            Mantén actualizada esta cantidad para un registro preciso.
+          </div>
+        </CardFooter>
+      </Card>
+      <Card className="@container/card col-span-6 lg:col-span-6">
+        <CardHeader>
+          <CardTitle>Producción</CardTitle>
+          <CardDescription>Producción registrada</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loading ? null : (
+            <DataTable
+              actions={
+                <CreateProductDialog
+                  updateView={updateView}
+                  children={
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onSelect={(event) => {
+                        event.preventDefault(); // Evita el cierre automático
+                      }}
+                    >
+                      <PlusIcon />
+                      <span className="ml-2 hidden lg:inline">Agregar</span>
+                    </Button>
+                  }
+                />
+              }
+              columns={columnsProducts}
+              data={products}
+            />
+          )}
+        </CardContent>
+      </Card>
       
 
     </div>
   );
-});
+};
 
 export default ProductPage;
 

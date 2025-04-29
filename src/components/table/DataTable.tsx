@@ -44,21 +44,21 @@ import {
 } from "../ui/select";
 import { GeneralInterfaces } from "@/utils/interfaces";
 
-interface Props {
-  data: GeneralInterfaces[];
+interface Props<T extends GeneralInterfaces> {
+  data: T[];
   actions: React.ReactNode;
-  columns: ColumnDef<GeneralInterfaces>[];
-  options?: boolean;
-  isPaginated?: boolean;
+  columns: ColumnDef<T>[];
+  hasOptions?: boolean;
+  hasPaginated?: boolean;
 }
 
-const DataTable: React.FC<Props> = ({
-  data,
-  actions,
-  columns,
-  options = true,
-  isPaginated = true,
-}) => {
+const DataTable = <T extends GeneralInterfaces>({ 
+  data, 
+  actions, 
+  columns, 
+  hasOptions=true, 
+  hasPaginated =true,
+}: Props<T>) => {
   const [rowSelection, setRowSelection] = useState({});
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     createdAt: false,
@@ -69,7 +69,7 @@ const DataTable: React.FC<Props> = ({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: isPaginated ? 5 : 100,
+    pageSize: hasPaginated ? 5 : 100,
   });
   const [globalFilter, setGlobalFilter] = useState("");
 
@@ -103,7 +103,7 @@ const DataTable: React.FC<Props> = ({
   return (
     <div className="flex flex-col gap-4">
       {/* Barra superior con filtros y opciones */}
-      {!options ? null : (
+      {!hasOptions ? null : (
         <div className="flex items-center justify-between gap-4">
           <Filter
             placeholder="Busqueda General"
@@ -203,7 +203,7 @@ const DataTable: React.FC<Props> = ({
         </Table>
       </div>
       {/* Controles de paginación */}
-      {!isPaginated ? null : (
+      {!hasPaginated ? null : (
         <div className="flex items-center justify-between px-4">
           {/*<div className="hidden flex-1 text-sm text-muted-foreground lg:flex">
             {table.getFilteredSelectedRowModel().rows.length} de{" "}

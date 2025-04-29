@@ -1,11 +1,6 @@
 import { SectorInterfaces } from "@/utils/interfaces";
-import SectorCards from "@/components/cards/params/SectorCards";
-import {
-  CreateSectorDialog,
-  DeleteSectorDialog,
-  EditSectorDialog,
-  RecoverSectorDialog,
-} from "@/components/dialog/params/SectorDialogs";
+import { useEffect, useMemo, useState } from "react";
+import DataTable from "@/components/table/DataTable";
 import { Button } from "@/components/ui/button";
 import {
   ArchiveRestore,
@@ -13,11 +8,16 @@ import {
   Edit,
   MoreVerticalIcon,
   PlusIcon,
+  Tally5,
+  TrendingUpIcon,
 } from "lucide-react";
-import DataTable from "@/components/table/DataTable";
-import { useContext, useEffect, useMemo } from "react";
-import { TitleContext } from "@/providers/title-provider";
-import { CellContext, Row } from "@tanstack/react-table";
+import {
+  CreateSectorDialog,
+  DeleteSectorDialog,
+  EditSectorDialog,
+  RecoverSectorDialog,
+} from "@/components/dialog/params/SectorDialogs";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,28 +25,46 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { getAllSectors } from "@/api/params/sector.api";
+import { Badge } from "@/components/ui/badge";
+import { countCurrentMonth } from "@/utils/funtions";
 
-interface Props {
-  data: SectorInterfaces[];
-  updateView: () => void;
-}
-
-const SectorPage: React.FC<Props> = ({ data, updateView }) => {
-  const { setTitle } = useContext(TitleContext);
+const SectorPage = () => {
+  const [sectors, setSectors] = useState<SectorInterfaces[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setTitle("Sectores");
-  }, [setTitle]);
+    updateView();
+  }, []);
 
-  // Generar columnas dinámicamente
-  const columns = useMemo(() => {
-    if (data.length === 0) return [];
+  const updateView = async () => {
+    setLoading(true);
+    try {
+      const sectorsData = await getAllSectors();
+      setSectors(sectorsData);
+    } catch (error) {
+      console.error("Error al cargar los datos:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const columnsSector: ColumnDef<SectorInterfaces>[] = useMemo(() => {
+    if (sectors.length === 0) return [];
     return [
-      ...Object.keys(data[0]).map((key) => ({
+      ...Object.keys(sectors[0]).map((key) => ({
         accessorKey: key,
         header: key.replace(/_/g, " ").toUpperCase(),
-        cell: (info: CellContext<SectorInterfaces, unknown>) =>
-          info.getValue(),
+        /* @ts-expect-error: Ignoramos el error en esta línea*/
+        cell: (info) => info.getValue(),
       })),
       {
         id: "actions",
@@ -103,33 +121,65 @@ const SectorPage: React.FC<Props> = ({ data, updateView }) => {
         },
       },
     ];
-  }, [data, updateView]);
+  }, [sectors]);
 
   return (
     <div className="flex flex-col gap-4">
-      <SectorCards initialData={data} />
-      <DataTable
-        actions={
-          <CreateSectorDialog
-            updateView={updateView}
-            children={
-              <Button
-                variant="outline"
-                size="sm"
-                onSelect={(event) => {
-                  event.preventDefault(); // Evita el cierre automático
-                }}
-              >
-                <PlusIcon />
-                <span className="ml-2 hidden lg:inline">Agregar</span>
-              </Button>
-            }
-          />
-        }
-        /*@ts-expect-error: Ignoramos el error en esta línea */
-        columns={columns}
-        data={data}
-      />
+      <Card className="@container/card col-span-6 lg:col-span-6">
+        <CardHeader className="relative">
+          <CardDescription>Sectores registrados</CardDescription>
+          <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
+            {sectors.length} Sectores
+          </CardTitle>
+          <div className="absolute right-4 top-4">
+            <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
+              <TrendingUpIcon className="size-3" />+
+              {countCurrentMonth(sectors)} este mes
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardFooter className="flex-col items-start gap-1 text-sm">
+          <div className="line-clamp-1 flex gap-2 font-medium">
+            Total acumulado en el sistema
+            <Tally5 className="size-4" />
+          </div>
+          <div className="text-muted-foreground">
+            Mantén actualizada esta cantidad para un registro preciso.
+          </div>
+        </CardFooter>
+      </Card>
+
+      <Card className="@container/card col-span-6 lg:col-span-6">
+        <CardHeader>
+          <CardTitle>Producción</CardTitle>
+          <CardDescription>Producción registrada</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loading ? null : (
+            <DataTable
+              actions={
+                <CreateSectorDialog
+                  updateView={updateView}
+                  children={
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onSelect={(event) => {
+                        event.preventDefault();
+                      }}
+                    >
+                      <PlusIcon />
+                      <span className="ml-2 hidden lg:inline">Agregar</span>
+                    </Button>
+                  }
+                />
+              }
+              columns={columnsSector}
+              data={sectors}
+            />
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

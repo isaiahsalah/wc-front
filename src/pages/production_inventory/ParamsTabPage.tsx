@@ -1,37 +1,21 @@
-import { useCallback, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator"; 
-import { GeneralInterfaces } from "@/utils/interfaces";
-import SelectorTabPage from "@/components/SelectorTabPage"; 
-import ModelPage from "./params/ModelPage"; 
-import { getAllModels } from "@/api/params/model.api"; 
+import { Separator } from "@/components/ui/separator";
+import SelectorTabPage from "@/components/SelectorTabPage";
+import ModelPage from "./params/ModelPage";
 import MachinePage from "./params/MachinePage";
-import { getAllMachines } from "@/api/params/machine.api";
 import ProcessPage from "./params/ProcessPage";
-import { getAllProcesses } from "@/api/params/process.api";
 import SectorPage from "./params/SectorPage";
-import { getAllSectors } from "@/api/params/sector.api";
+import { TitleContext } from "@/providers/title-provider";
 
 const ParamsTabPage = () => {
   const [activeTab, setActiveTab] = useState(tabData[0]);
-  const [data, setData] = useState<GeneralInterfaces[]>([]);
-  const [loading, setLoading] = useState(false); // Estado de carga
+
+  const { setTitle } = useContext(TitleContext);
 
   useEffect(() => {
-    updateView();
-  }, [activeTab]);
-
-  const updateView = useCallback(async () => {
-    setLoading(true);
-    //console.log("se actualizaron los datos");
-    try {
-      setData(await activeTab.get());
-    } catch (error) {
-      console.error("Error al cargar datos:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [activeTab]);
+    setTitle(activeTab.title);
+  }, [activeTab, setTitle]);
 
   return (
     <Tabs
@@ -53,12 +37,7 @@ const ParamsTabPage = () => {
       <Separator />
       {tabData.map((tab) => (
         <TabsContent key={tab.id} value={tab.id}>
-          {loading ? ( // Muestra un indicador de carga mientras se obtienen los datos
-            <div>Cargando datos...</div>
-          ) : (
-            // @ts-expect-error: Ignoramos el error en esta línea
-            <tab.content data={data} updateView={updateView} />
-          )}
+          <tab.content />
         </TabsContent>
       ))}
     </Tabs>
@@ -71,25 +50,25 @@ const tabData = [
   {
     id: "tab1",
     label: "Modelo",
+    title: "Gestionar Modelo",
     content: ModelPage,
-    get: getAllModels,
   },
   {
     id: "tab2",
     label: "Maquina",
+    title: "Gestionar Maquina",
     content: MachinePage,
-    get: getAllMachines,
   },
   {
     id: "tab3",
     label: "Proceso",
+    title: "Gestionar Proceso",
     content: ProcessPage,
-    get: getAllProcesses,
   },
   {
     id: "tab4",
     label: "Sector",
+    title: "Gestionar Sector",
     content: SectorPage,
-    get: getAllSectors,
   },
 ];

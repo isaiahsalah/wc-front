@@ -6,6 +6,7 @@ import {
   Route,
   Outlet,
   Navigate,
+  useNavigate,
 } from "react-router-dom";
 import { ThemeProvider } from "./providers/theme-provider";
 
@@ -26,44 +27,47 @@ import SecurityTabPage from "./pages/production_inventory/SecurityTabPage";
 import ProductionTabPage from "./pages/production_inventory/ProductionTabPage";
 
 function App() {
+
   const PrivateRoutes = () => {
     const { setSesion } = useContext(SesionContext);
     const [loading, setLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
-      const checkToken = async () => {
-        const rawToken = window.localStorage.getItem("token");
-
-        if (!rawToken) {
-          setIsAuthenticated(false);
-          setLoading(false);
-          return;
-        }
-
-        const savedtoken = JSON.parse(rawToken).toString();
-
-        try {
-          const response = await getCheckToken(savedtoken);
-
-          if (response.status === 200) {
-            setSesion({
-              token: savedtoken,
-              params: response.sesion.params,
-            } as SesionInterface);
-            setIsAuthenticated(true);
-          } else {
-            setIsAuthenticated(false);
-          }
-        } catch (error) {
-          console.error("Error al verificar el token:", error);
-          setIsAuthenticated(false);
-        } finally {
-          setLoading(false);
-        }
-      };
       checkToken();
     }, [setSesion]);
+
+    const checkToken = async () => {
+      const rawToken = window.localStorage.getItem("token");
+      if (!rawToken) {
+        setIsAuthenticated(false);
+        navigate("/home");
+        setLoading(false);
+        return;
+      }
+
+      const savedtoken = JSON.parse(rawToken).toString();
+
+      await getCheckToken({token:savedtoken})
+        .then((response) => {
+          
+          if (response.token) {
+            // Almacena el token en localStorage
+            window.localStorage.setItem(
+              "token",
+              JSON.stringify(response.token)
+            );
+            // Actualiza la sesión en el estado
+            setSesion(response as SesionInterface);
+            setIsAuthenticated(true);
+
+            // Navega a la ruta deseada después de iniciar sesión
+            navigate("/home");
+          }
+        })
+        .finally(() => setLoading(false));
+    };
 
     if (loading) return <LoadingPage />;
 
@@ -93,7 +97,7 @@ function App() {
               <Routes>
                 <Route element={<PrivateRoutes />}>
                   <Route path="/product" element={<ProductTabPage />} />
-                  <Route path="/production" element={<ProductionTabPage  />} />
+                  <Route path="/production" element={<ProductionTabPage />} />
                   <Route path="/inventory" element={<InventoryTabPage />} />
                   <Route path="/params" element={<ParamsTabPage />} />
                   <Route path="/security" element={<SecurityTabPage />} />
