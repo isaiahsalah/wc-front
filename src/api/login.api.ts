@@ -1,5 +1,5 @@
-import { toast } from "sonner";
-import { apiClient } from "./axiosConfig";
+import {toast} from "sonner";
+import {apiClient} from "./axiosConfig";
 
 export const getLogin = async ({
   user,
@@ -10,7 +10,6 @@ export const getLogin = async ({
   pass: string;
   module: number;
 }) => {
-  
   try {
     const response = await apiClient.post("/auth/login", {
       user,
@@ -18,8 +17,7 @@ export const getLogin = async ({
       module,
     });
     toast("Inicio de sesión exitoso", {
-      description:
-        "Bienvenido(a) de nuevo. Has ingresado correctamente a tu cuenta.",
+      description: "Bienvenido(a) de nuevo. Has ingresado correctamente a tu cuenta.",
       action: {
         label: "OK",
         onClick: () => console.log("Aceptar"),
@@ -30,27 +28,42 @@ export const getLogin = async ({
   } catch (error) {
     toast("Error de autenticación", {
       description:
-        "Las credenciales ingresadas no son válidas. Por favor, verifica tu usuario y contraseña.",
+        "Las credenciales ingresadas no son válidas. Por favor, verifica tu usuario y contraseña .",
       action: {
         label: "OK",
         onClick: () => console.log("Aceptar"),
       },
     });
     throw error; // Lanza el error para que pueda manejarse fuera
-  } 
+  }
 };
 
-export const getCheckToken = async ({ token }: { token: string }) => {
+export const getCheckToken = async ({token}: {token: string}) => {
   try {
-    setTimeout(()=>{}, 2000)
+    setTimeout(() => {}, 2000);
     const response = await apiClient.get("/auth/token", {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {Authorization: `Bearer ${token}`},
     });
-   
+
+    toast("Bienvenido(a) de nuevo", {
+      description: "Has ingresado correctamente a tu cuenta.",
+      action: {
+        label: "OK",
+        onClick: () => console.log("Aceptar"),
+      },
+    });
+
     return response.data; // Devuelve los datos obtenidos de la API
   } catch (error) {
-    console.log("token erroneo o caducado")
+    window.localStorage.removeItem("token-app");
+    toast("Sesión caducada", {
+      description: "Vuelva a iniciar sesión",
+      action: {
+        label: "OK",
+        onClick: () => console.log("Aceptar"),
+      },
+    });
+    console.log("token erroneo o caducado", error);
     throw error; // Lanza el error para que pueda manejarse fuera
   }
-
 };

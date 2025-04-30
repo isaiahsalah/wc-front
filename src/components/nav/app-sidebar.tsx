@@ -1,4 +1,4 @@
-import { AudioWaveform, Command } from "lucide-react";
+import {AudioWaveform, Command} from "lucide-react";
 
 import {
   Sidebar,
@@ -9,17 +9,17 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
- 
+
 import clsx from "clsx";
-import { NavUser } from "./nav-user";
- import { Switcher } from "./section-swicher"; 
+import {NavUser} from "./nav-user";
+import {Switcher} from "./section-swicher";
 import NavProductionInventory from "./navProductionInventory";
 
 interface Props {
   className?: string; // Clase personalizada opcional
 }
 
-export const AppSidebar: React.FC<Props> = ({ className }) => {
+export const AppSidebar: React.FC<Props> = ({className}) => {
   return (
     <Sidebar className={clsx("animate-fadeIn", className)}>
       <SidebarHeader>
@@ -27,11 +27,11 @@ export const AppSidebar: React.FC<Props> = ({ className }) => {
           <SidebarMenuItem>
             <Switcher items={section} />
           </SidebarMenuItem>
-         {/*
+          {/*
          <SidebarMenuItem className="">
             <ProcesoSwitcher items={sector} />
           </SidebarMenuItem>
-         */} 
+         */}
         </SidebarMenu>
       </SidebarHeader>
       <SidebarSeparator className=" m-0" />
@@ -41,16 +41,10 @@ export const AppSidebar: React.FC<Props> = ({ className }) => {
       </SidebarContent>
       <SidebarSeparator className=" m-0" />
       <SidebarFooter>
-        <NavUser user={user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   );
-};
-
-const user = {
-  name: "Isaias",
-  user: "45781245",
-  avatar: "/avatars/shadcn.jpg",
 };
 
 const section = [
@@ -75,4 +69,3 @@ const section = [
     plan: "Free",
   },
 ];
- 

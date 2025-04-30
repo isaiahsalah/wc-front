@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
 
 import {
   Form,
@@ -12,8 +12,8 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import {Textarea} from "@/components/ui/textarea";
+import {useState} from "react";
 import {
   createColor,
   deleteColor,
@@ -21,7 +21,7 @@ import {
   recoverColor,
   updateColor,
 } from "@/api/product/color.api";
-import { toast } from "sonner";
+import {toast} from "sonner";
 import {
   Dialog,
   DialogClose,
@@ -33,17 +33,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
-import { ColorInterfaces, ColorSchema } from "@/utils/interfaces";
+import {ColorInterfaces, ColorSchema} from "@/utils/interfaces";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
   updateView: () => void; // Define the type as a function that returns void
 }
 
-export const CreateColorDialog: React.FC<PropsCreate> = ({
-  children,
-  updateView,
-}) => {
+export const CreateColorDialog: React.FC<PropsCreate> = ({children, updateView}) => {
   //const [data, setData] = useState<GeneralInterfaces | never>();
   const [loadingSave, setLoadingSave] = useState(false); // Estado de carga
 
@@ -57,27 +54,14 @@ export const CreateColorDialog: React.FC<PropsCreate> = ({
 
   function onSubmit(values: ColorInterfaces) {
     setLoadingSave(true); // Inicia la carga
-    createColor({ data: values })
+    createColor({data: values})
       .then((updatedColor) => {
         console.log("Color creado:", updatedColor);
-
-        toast("El color se creó correctamente.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
 
         updateView();
       })
       .catch((error) => {
         console.error("Error al crear el color:", error);
-        toast("Hubo un error al crear el color.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
       })
       .finally(() => {
         setLoadingSave(false); // Finaliza la carga
@@ -90,19 +74,14 @@ export const CreateColorDialog: React.FC<PropsCreate> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Gestión de color</DialogTitle>
-          <DialogDescription>
-            Mostrando datos relacionados con el color.
-          </DialogDescription>
+          <DialogDescription>Mostrando datos relacionados con el color.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className=" grid grid-cols-6 gap-4 "
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className=" grid grid-cols-6 gap-4 ">
             <FormField
               control={form.control}
               name="name"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem className="col-span-6">
                   <FormDescription>Nombre</FormDescription>
                   <FormControl>
@@ -116,7 +95,7 @@ export const CreateColorDialog: React.FC<PropsCreate> = ({
             <FormField
               control={form.control}
               name="description"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem className="col-span-6">
                   <FormDescription>Descripción</FormDescription>
                   <FormControl>
@@ -136,12 +115,7 @@ export const CreateColorDialog: React.FC<PropsCreate> = ({
                 {loadingSave ? <LoadingCircle /> : "Guardar"}
               </Button>
               <DialogClose asChild className="col-span-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  disabled={loadingSave}
-                >
+                <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                   Cerrar
                 </Button>
               </DialogClose>
@@ -160,12 +134,7 @@ interface PropsEdit {
   onOpenChange?: (open: boolean) => void;
 }
 
-export const EditColorDialog: React.FC<PropsEdit> = ({
-  children,
-  id,
-  updateView,
-  onOpenChange,
-}) => {
+export const EditColorDialog: React.FC<PropsEdit> = ({children, id, updateView, onOpenChange}) => {
   //const [data, setData] = useState<GeneralInterfaces | never>();
   const [loadingSave, setLoadingSave] = useState(false); // Estado de carga
   const [loadingDelete, setLoadingDelete] = useState(false); // Estado de carga
@@ -183,7 +152,7 @@ export const EditColorDialog: React.FC<PropsEdit> = ({
 
   function onSubmit(values: ColorInterfaces) {
     setLoadingSave(true); // Inicia la carga
-    updateColor({ data: values })
+    updateColor({data: values})
       .then((updatedColor) => {
         console.log("Color actualizado:", updatedColor);
 
@@ -266,20 +235,15 @@ export const EditColorDialog: React.FC<PropsEdit> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Gestión de color</DialogTitle>
-          <DialogDescription>
-            Mostrando datos relacionados con el color.
-          </DialogDescription>
+          <DialogDescription>Mostrando datos relacionados con el color.</DialogDescription>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className=" grid grid-cols-6 gap-4 "
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid grid-cols-6 gap-4 ">
               <FormField
                 control={form.control}
                 name="id"
-                render={({ field }) => (
+                render={({field}) => (
                   <FormItem className={"col-span-2"}>
                     <FormDescription>Id</FormDescription>
                     <FormControl>
@@ -287,9 +251,7 @@ export const EditColorDialog: React.FC<PropsEdit> = ({
                         type="number"
                         placeholder="Id"
                         disabled
-                        onChange={(event) =>
-                          field.onChange(Number(event.target.value))
-                        }
+                        onChange={(event) => field.onChange(Number(event.target.value))}
                         defaultValue={field.value ?? ""}
                       />
                     </FormControl>
@@ -300,7 +262,7 @@ export const EditColorDialog: React.FC<PropsEdit> = ({
               <FormField
                 control={form.control}
                 name="name"
-                render={({ field }) => (
+                render={({field}) => (
                   <FormItem className="col-span-4">
                     <FormDescription>Nombre</FormDescription>
                     <FormControl>
@@ -314,7 +276,7 @@ export const EditColorDialog: React.FC<PropsEdit> = ({
               <FormField
                 control={form.control}
                 name="description"
-                render={({ field }) => (
+                render={({field}) => (
                   <FormItem className="col-span-6">
                     <FormDescription>Descripción</FormDescription>
                     <FormControl>
@@ -398,9 +360,7 @@ export const DeleteColorDialog: React.FC<PropsDelete> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Eliminar color</DialogTitle>
-          <DialogDescription>
-            ¿Está seguro de eliminar este color?
-          </DialogDescription>
+          <DialogDescription>¿Está seguro de eliminar este color?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className=" grid grid-cols-6 col-span-6">
@@ -414,12 +374,7 @@ export const DeleteColorDialog: React.FC<PropsDelete> = ({
             {loadingDelete ? <LoadingCircle /> : "Eliminar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              disabled={loadingDelete}
-            >
+            <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
               Cerrar
             </Button>
           </DialogClose>
@@ -466,9 +421,7 @@ export const RecoverColorDialog: React.FC<PropsRecover> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Recuperar color</DialogTitle>
-          <DialogDescription>
-            ¿Está seguro de recuperar este color?
-          </DialogDescription>
+          <DialogDescription>¿Está seguro de recuperar este color?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className=" grid grid-cols-6 col-span-6">
@@ -481,12 +434,7 @@ export const RecoverColorDialog: React.FC<PropsRecover> = ({
             {loadingRecover ? <LoadingCircle /> : "Recuperar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              disabled={loadingRecover}
-            >
+            <Button type="button" variant="outline" className="w-full" disabled={loadingRecover}>
               Cerrar
             </Button>
           </DialogClose>

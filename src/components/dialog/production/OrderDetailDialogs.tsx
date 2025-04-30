@@ -1,14 +1,14 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
 
-import { useForm } from "react-hook-form";
+import {useForm} from "react-hook-form";
 import {
   OrderDetailInterfaces,
   OrderInterfaces,
   OrderSchema,
   ProductInterfaces,
 } from "@/utils/interfaces";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {zodResolver} from "@hookform/resolvers/zod";
 
 import {
   Form,
@@ -18,10 +18,8 @@ import {
   FormDescription,
   FormMessage,
 } from "@/components/ui/form";
-import { useMemo, useState } from "react";
-import { 
-  createOrderWithDetail, 
-} from "@/api/production/order.api"; 
+import {useMemo, useState} from "react";
+import {createOrderWithDetail} from "@/api/production/order.api";
 import {
   Dialog,
   DialogClose,
@@ -33,8 +31,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
-import { DatePicker } from "@/components/date-picker";
-import { getProducts } from "@/api/product/product.api";
+import {DatePicker} from "@/components/date-picker";
+import {getProducts} from "@/api/product/product.api";
 import {
   Select,
   SelectContent,
@@ -42,28 +40,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, X } from "lucide-react";
+import {Plus, X} from "lucide-react";
 import DataTable from "@/components/table/DataTable";
-import { ColumnDef, Row } from "@tanstack/react-table";
+import {ColumnDef, Row} from "@tanstack/react-table";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
   updateView: () => void; // Define the type as a function that returns void
 }
 
-export const CreateOrderDetailDialog: React.FC<PropsCreate> = ({
-  children,
-  updateView,
-}) => {
+export const CreateOrderDetailDialog: React.FC<PropsCreate> = ({children, updateView}) => {
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
 
   const [products, setProducts] = useState<ProductInterfaces[]>([]);
 
   const [productSelected, setProductSelected] = useState<ProductInterfaces>();
-  const [orderDetailsSelected, setOrderDetailsSelected] = useState<
-    OrderDetailInterfaces[]
-  >([]);
+  const [orderDetailsSelected, setOrderDetailsSelected] = useState<OrderDetailInterfaces[]>([]);
 
   const [amount, setAmount] = useState<number>();
 
@@ -78,7 +71,7 @@ export const CreateOrderDetailDialog: React.FC<PropsCreate> = ({
     if (orderDetailsSelected.length <= 0) return;
     setLoadingSave(true);
 
-    createOrderWithDetail({ order: values, orderDetails: orderDetailsSelected })
+    createOrderWithDetail({order: values, orderDetails: orderDetailsSelected})
       .then((updatedOrder) => {
         console.log("Orden creada:", updatedOrder);
         updateView();
@@ -118,9 +111,7 @@ export const CreateOrderDetailDialog: React.FC<PropsCreate> = ({
 
   const deleteProductSelected = (index: number) => {
     // Filtra la lista para excluir el producto seleccionado
-    setOrderDetailsSelected(
-      orderDetailsSelected.filter((_item, idx) => idx !== index)
-    );
+    setOrderDetailsSelected(orderDetailsSelected.filter((_item, idx) => idx !== index));
   };
 
   // Generar columnas dinámicamente
@@ -154,7 +145,7 @@ export const CreateOrderDetailDialog: React.FC<PropsCreate> = ({
           id: "actions",
           header: "",
           enableHiding: false,
-          cell: ({ row }: { row: Row<ProductInterfaces> }) => {
+          cell: ({row}: {row: Row<ProductInterfaces>}) => {
             return (
               <div className="flex gap-2  justify-end  ">
                 <Button
@@ -179,21 +170,16 @@ export const CreateOrderDetailDialog: React.FC<PropsCreate> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Registrar orden</DialogTitle>
-          <DialogDescription>
-            Mostrando datos relacionados con la orden.
-          </DialogDescription>
+          <DialogDescription>Mostrando datos relacionados con la orden.</DialogDescription>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className=" grid  gap-4 "
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid  gap-4 ">
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
                   name="init_date"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-3">
                       <FormDescription>Inicio</FormDescription>
                       <FormControl>
@@ -206,11 +192,7 @@ export const CreateOrderDetailDialog: React.FC<PropsCreate> = ({
                           }
                           onChange={(date) => {
                             const endDate = form.getValues("end_date");
-                            if (
-                              endDate &&
-                              date &&
-                              new Date(date) > new Date(endDate)
-                            ) {
+                            if (endDate && date && new Date(date) > new Date(endDate)) {
                               console.log(
                                 "La fecha de inicio no puede ser posterior a la fecha de fin."
                               );
@@ -234,7 +216,7 @@ export const CreateOrderDetailDialog: React.FC<PropsCreate> = ({
                 <FormField
                   control={form.control}
                   name="end_date"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-3">
                       <FormDescription>fin</FormDescription>
                       <FormControl>
@@ -247,11 +229,7 @@ export const CreateOrderDetailDialog: React.FC<PropsCreate> = ({
                           }
                           onChange={(date) => {
                             const startDate = form.getValues("init_date");
-                            if (
-                              startDate &&
-                              date &&
-                              new Date(date) < new Date(startDate)
-                            ) {
+                            if (startDate && date && new Date(date) < new Date(startDate)) {
                               console.log(
                                 "La fecha de fin no puede ser anterior a la fecha de inicio."
                               );
@@ -278,8 +256,7 @@ export const CreateOrderDetailDialog: React.FC<PropsCreate> = ({
                   <Select
                     onValueChange={(value) => {
                       const selectedProduct = products?.find(
-                        (product: ProductInterfaces) =>
-                          product.id?.toString() === value
+                        (product: ProductInterfaces) => product.id?.toString() === value
                       );
                       setProductSelected(selectedProduct); // Guarda el objeto completo
                     }} // Convertir el valor a número
@@ -289,10 +266,7 @@ export const CreateOrderDetailDialog: React.FC<PropsCreate> = ({
                     </SelectTrigger>
                     <SelectContent>
                       {products?.map((process: ProductInterfaces) => (
-                        <SelectItem
-                          key={process.id}
-                          value={(process.id ?? "").toString()}
-                        >
+                        <SelectItem key={process.id} value={(process.id ?? "").toString()}>
                           {process.name}
                         </SelectItem>
                       ))}
@@ -310,25 +284,17 @@ export const CreateOrderDetailDialog: React.FC<PropsCreate> = ({
                 </div>
                 <div className="w-full col-span-1 grid gap-2">
                   <FormDescription>Añadir</FormDescription>
-                  <Button
-                    type="button"
-                    variant={"outline"}
-                    onClick={addProductSelected}
-                  >
+                  <Button type="button" variant={"outline"} onClick={addProductSelected}>
                     <Plus />
                   </Button>
                 </div>
                 <div className="w-full col-span-6 grid gap-2">
                   <FormDescription>Añadir</FormDescription>
                   <DataTable
-                    options={false}
-                    isPaginated={false}
+                    hasOptions={false}
+                    hasPaginated={false}
                     actions={<></>}
-                    /*@ts-expect-error: Ignoramos el error en esta línea */
-
                     columns={columnsOrderDetailsSelected}
-                    /*@ts-expect-error: Ignoramos el error en esta línea */
-
                     data={orderDetailsSelected}
                   />
                 </div>
@@ -343,12 +309,7 @@ export const CreateOrderDetailDialog: React.FC<PropsCreate> = ({
                   {loadingSave ? <LoadingCircle /> : "Guardar"}
                 </Button>
                 <DialogClose asChild className="col-span-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    disabled={loadingSave}
-                  >
+                  <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                     Cerrar
                   </Button>
                 </DialogClose>

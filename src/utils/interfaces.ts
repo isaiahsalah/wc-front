@@ -1,4 +1,4 @@
-import { z } from "zod";
+import {z} from "zod";
 
 export interface SesionInterface {
   user: UserInterfaces;
@@ -81,6 +81,17 @@ export const ProcessSchema = z.object({
   deletedAt: z.date().nullable().optional(),
 });
 
+// Tabla: Group
+export const GroupSchema = z.object({
+  id: z.number().nullable().optional(),
+  name: z.string(),
+  description: z.string(),
+  turn: z.number().optional(),
+  createdAt: z.date().nullable().optional(),
+  updatedAt: z.date().nullable().optional(),
+  deletedAt: z.date().nullable().optional(),
+});
+
 // Tabla: User
 export const UserSchema = z.object({
   id: z.number().nullable().optional(),
@@ -91,7 +102,9 @@ export const UserSchema = z.object({
   phone: z.string(),
   user: z.string(),
   pass: z.string(),
-  turn: z.number().optional(),
+  id_group: z.number(),
+  group: GroupSchema.nullable().optional(),
+  permissions: z.array(z.any()).nullable().optional(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
@@ -223,6 +236,7 @@ export const PermissionSchema = z.object({
   user: UserSchema.nullable().optional(),
   degree: z.number().optional(),
   screen: z.number().optional(),
+  module: z.number().optional(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
@@ -261,6 +275,8 @@ export const ProductionDetailSchema = z.object({
   deletedAt: z.date().nullable().optional(),
 });
 
+export type GroupInterfaces = z.infer<typeof GroupSchema>;
+
 export type ColorInterfaces = z.infer<typeof ColorSchema>;
 export type FormulaDetailInterfaces = z.infer<typeof FormulaDetailSchema>;
 export type FormulaInterfaces = z.infer<typeof FormulaSchema>;
@@ -280,6 +296,7 @@ export type UnityInterfaces = z.infer<typeof UnitySchema>;
 export type UserInterfaces = z.infer<typeof UserSchema>;
 
 export type GeneralInterfaces =
+  | GroupInterfaces
   | FormulaInterfaces
   | ColorInterfaces
   | FormulaDetailInterfaces
