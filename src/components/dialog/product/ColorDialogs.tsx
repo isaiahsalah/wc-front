@@ -33,7 +33,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
-import {ColorInterfaces, ColorSchema} from "@/utils/interfaces";
+import {IColor, ColorSchema} from "@/utils/interfaces";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -41,10 +41,10 @@ interface PropsCreate {
 }
 
 export const CreateColorDialog: React.FC<PropsCreate> = ({children, updateView}) => {
-  //const [data, setData] = useState<GeneralInterfaces | never>();
+  //const [data, setData] = useState<IGeneral | never>();
   const [loadingSave, setLoadingSave] = useState(false); // Estado de carga
 
-  const form = useForm<ColorInterfaces>({
+  const form = useForm<IColor>({
     resolver: zodResolver(ColorSchema),
     defaultValues: {
       name: "",
@@ -52,7 +52,7 @@ export const CreateColorDialog: React.FC<PropsCreate> = ({children, updateView})
     },
   });
 
-  function onSubmit(values: ColorInterfaces) {
+  function onSubmit(values: IColor) {
     setLoadingSave(true); // Inicia la carga
     createColor({data: values})
       .then((updatedColor) => {
@@ -135,13 +135,13 @@ interface PropsEdit {
 }
 
 export const EditColorDialog: React.FC<PropsEdit> = ({children, id, updateView, onOpenChange}) => {
-  //const [data, setData] = useState<GeneralInterfaces | never>();
+  //const [data, setData] = useState<IGeneral | never>();
   const [loadingSave, setLoadingSave] = useState(false); // Estado de carga
   const [loadingDelete, setLoadingDelete] = useState(false); // Estado de carga
 
   const [loadingInit, setLoadingInit] = useState(false); // Estado de carga
 
-  const form = useForm<ColorInterfaces>({
+  const form = useForm<IColor>({
     resolver: zodResolver(ColorSchema),
     defaultValues: {
       id: 0,
@@ -150,7 +150,7 @@ export const EditColorDialog: React.FC<PropsEdit> = ({children, id, updateView, 
     },
   });
 
-  function onSubmit(values: ColorInterfaces) {
+  function onSubmit(values: IColor) {
     setLoadingSave(true); // Inicia la carga
     updateColor({data: values})
       .then((updatedColor) => {
@@ -336,7 +336,7 @@ export const DeleteColorDialog: React.FC<PropsDelete> = ({
   updateView,
   onOpenChange,
 }) => {
-  //const [data, setData] = useState<GeneralInterfaces | never>();
+  //const [data, setData] = useState<IGeneral | never>();
   const [loadingDelete, setLoadingDelete] = useState(false); // Estado de carga
 
   function onDelete(): void {
@@ -397,7 +397,7 @@ export const RecoverColorDialog: React.FC<PropsRecover> = ({
   updateView,
   onOpenChange,
 }) => {
-  //const [data, setData] = useState<GeneralInterfaces | never>();
+  //const [data, setData] = useState<IGeneral | never>();
   const [loadingRecover, setLoadingRecover] = useState(false); // Estado de carga
 
   function onRecover(): void {

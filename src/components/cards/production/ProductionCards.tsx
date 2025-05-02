@@ -6,28 +6,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Edit,
-  MoreVerticalIcon,
-  Tally5,
-  TrendingUpIcon,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { countCurrentMonth } from "@/utils/funtions";
-import {
-  OrderDetailInterfaces,
-  OrderInterfaces,
-  ProcessInterfaces,
-  ProductInterfaces,
-  SectorInterfaces,
-} from "@/utils/interfaces";
+import {Edit, MoreVerticalIcon, Tally5, TrendingUpIcon} from "lucide-react";
+import {Badge} from "@/components/ui/badge";
+import {countCurrentMonth} from "@/utils/funtions";
+import {IOrderDetail, IOrder, IProcess, IProduct, ISector} from "@/utils/interfaces";
 import DataTable from "@/components/table/DataTable";
-import { useEffect, useMemo, useState } from "react";
-import { getOrderDetails_date } from "@/api/production/orderDetail.api";
-import { ColumnDef, Row } from "@tanstack/react-table";
+import {useEffect, useMemo, useState} from "react";
+import {getOrderDetails_date} from "@/api/production/orderDetail.api";
+import {ColumnDef, Row} from "@tanstack/react-table";
 
-import { getProcesses } from "@/api/params/process.api";
-import { getSectors } from "@/api/params/sector.api";
+import {getProcesses} from "@/api/params/process.api";
+import {getSectors} from "@/api/params/sector.api";
 import {
   Select,
   SelectContent,
@@ -41,20 +30,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { CreateProductionOrderDialog } from "@/components/dialog/production/ProductionOrderDialogs";
+import {Button} from "@/components/ui/button";
+import {CreateProductionOrderDialog} from "@/components/dialog/production/ProductionOrderDialogs";
 
 interface Props {
-  initialData: ProductInterfaces[];
+  initialData: IProduct[];
 }
 
-const ProductionCards: React.FC<Props> = ({ initialData }) => {
-  const [orderDetails, setOrderDetails] = useState<OrderDetailInterfaces[]>([]);
+const ProductionCards: React.FC<Props> = ({initialData}) => {
+  const [orderDetails, setOrderDetails] = useState<IOrderDetail[]>([]);
   const [loading, setLoading] = useState(false); // Estado de carga
   const [sector, setSector] = useState<number | null>(null);
   const [process, setProcess] = useState<number | null>(null);
-  const [sectors, setSectors] = useState<SectorInterfaces[]>();
-  const [processes, setProcesses] = useState<ProcessInterfaces[]>();
+  const [sectors, setSectors] = useState<ISector[]>();
+  const [processes, setProcesses] = useState<IProcess[]>();
 
   useEffect(() => {
     updateView();
@@ -99,7 +88,7 @@ const ProductionCards: React.FC<Props> = ({ initialData }) => {
   };
 
   // Generar columnas dinámicamente
-  const columns: ColumnDef<OrderDetailInterfaces>[] = useMemo(() => {
+  const columns: ColumnDef<IOrderDetail>[] = useMemo(() => {
     if (orderDetails.length === 0) return [];
     return [
       {
@@ -121,8 +110,7 @@ const ProductionCards: React.FC<Props> = ({ initialData }) => {
         accessorKey: "product",
         header: "Producto",
         cell: (info) => {
-          const product: ProductInterfaces =
-            info.getValue() as ProductInterfaces;
+          const product: IProduct = info.getValue() as IProduct;
           return product.name;
         },
       },
@@ -131,8 +119,7 @@ const ProductionCards: React.FC<Props> = ({ initialData }) => {
         accessorKey: "product",
         header: "Proceso",
         cell: (info) => {
-          const product: ProductInterfaces =
-            info.getValue() as ProductInterfaces;
+          const product: IProduct = info.getValue() as IProduct;
           return product.model?.process?.name;
         },
       },
@@ -141,8 +128,7 @@ const ProductionCards: React.FC<Props> = ({ initialData }) => {
         accessorKey: "product",
         header: "Sector",
         cell: (info) => {
-          const product: ProductInterfaces =
-            info.getValue() as ProductInterfaces;
+          const product: IProduct = info.getValue() as IProduct;
           return product.model?.sector?.name;
         },
       },
@@ -150,7 +136,7 @@ const ProductionCards: React.FC<Props> = ({ initialData }) => {
         accessorKey: "order",
         header: "Fecha Límite",
         cell: (info) => {
-          const order: OrderInterfaces = info.getValue() as OrderInterfaces;
+          const order: IOrder = info.getValue() as IOrder;
           return order.end_date;
         },
       },
@@ -158,7 +144,7 @@ const ProductionCards: React.FC<Props> = ({ initialData }) => {
         id: "actions",
         header: "",
         enableHiding: false,
-        cell: ({ row }: { row: Row<OrderDetailInterfaces> }) => {
+        cell: ({row}: {row: Row<IOrderDetail>}) => {
           return (
             <div className="flex gap-2 justify-end">
               <DropdownMenu>
@@ -215,8 +201,7 @@ const ProductionCards: React.FC<Props> = ({ initialData }) => {
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-              <TrendingUpIcon className="size-3" />+
-              {countCurrentMonth(initialData)} este mes
+              <TrendingUpIcon className="size-3" />+{countCurrentMonth(initialData)} este mes
             </Badge>
           </div>
         </CardHeader>
@@ -241,11 +226,8 @@ const ProductionCards: React.FC<Props> = ({ initialData }) => {
                 <SelectValue placeholder="Seleccionar Sector" />
               </SelectTrigger>
               <SelectContent>
-                {sectors?.map((sector: SectorInterfaces) => (
-                  <SelectItem
-                    key={sector.id}
-                    value={(sector.id ?? "").toString()}
-                  >
+                {sectors?.map((sector: ISector) => (
+                  <SelectItem key={sector.id} value={(sector.id ?? "").toString()}>
                     {sector.name}
                   </SelectItem>
                 ))}
@@ -258,11 +240,8 @@ const ProductionCards: React.FC<Props> = ({ initialData }) => {
                 <SelectValue placeholder="Seleccionar Proceso" />
               </SelectTrigger>
               <SelectContent>
-                {processes?.map((process: ProcessInterfaces) => (
-                  <SelectItem
-                    key={process.id}
-                    value={(process.id ?? "").toString()}
-                  >
+                {processes?.map((process: IProcess) => (
+                  <SelectItem key={process.id} value={(process.id ?? "").toString()}>
                     {process.name}
                   </SelectItem>
                 ))}
@@ -276,9 +255,7 @@ const ProductionCards: React.FC<Props> = ({ initialData }) => {
               options={false}
               actions={<></>}
               /*@ts-expect-error: Ignoramos el error en esta línea */
-              columns={
-                columns
-              } /*@ts-expect-error: Ignoramos el error en esta línea */
+              columns={columns} /*@ts-expect-error: Ignoramos el error en esta línea */
               data={orderDetails}
             />
           )}

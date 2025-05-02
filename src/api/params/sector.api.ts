@@ -1,6 +1,6 @@
-import { apiClient } from "../axiosConfig";
-import { SectorInterfaces } from "@/utils/interfaces";
-import { toast } from "sonner";
+import {apiClient} from "../axiosConfig";
+import {ISector} from "@/utils/interfaces";
+import {toast} from "sonner";
 
 export const getSectors = async () => {
   try {
@@ -32,7 +32,7 @@ export const getSectorById = async (id: number) => {
   }
 };
 
-export const createSector = async ({ data }: { data: SectorInterfaces }) => {
+export const createSector = async ({data}: {data: ISector}) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",
@@ -59,7 +59,7 @@ export const createSector = async ({ data }: { data: SectorInterfaces }) => {
   }
 };
 
-export const updateSector = async ({ data }: { data: SectorInterfaces }) => {
+export const updateSector = async ({data}: {data: ISector}) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",

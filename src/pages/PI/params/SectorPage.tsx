@@ -1,7 +1,7 @@
-import { ColorInterfaces } from "@/utils/interfaces";
-import { useEffect, useMemo, useState } from "react";
+import {ISector} from "@/utils/interfaces";
+import {useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 import {
   ArchiveRestore,
   Delete,
@@ -12,12 +12,12 @@ import {
   TrendingUpIcon,
 } from "lucide-react";
 import {
-  CreateColorDialog,
-  DeleteColorDialog,
-  EditColorDialog,
-  RecoverColorDialog,
-} from "@/components/dialog/product/ColorDialogs";
-import { ColumnDef, Row } from "@tanstack/react-table";
+  CreateSectorDialog,
+  DeleteSectorDialog,
+  EditSectorDialog,
+  RecoverSectorDialog,
+} from "@/components/dialog/params/SectorDialogs";
+import {ColumnDef, Row} from "@tanstack/react-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,18 +33,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getAllColors } from "@/api/product/color.api";
-import { Badge } from "@/components/ui/badge";
-import { countCurrentMonth } from "@/utils/funtions";
+import {getAllSectors} from "@/api/params/sector.api";
+import {Badge} from "@/components/ui/badge";
+import {countCurrentMonth} from "@/utils/funtions";
 
-// interface Props {
-//   data: ColorInterfaces[];
-//   updateView: () => void;
-// }
-
-const ColorPage = () => {
-  const [colors, setColors] = useState<ColorInterfaces[]>([]);
-  const [loading, setLoading] = useState(false); // Estado de carga
+const SectorPage = () => {
+  const [sectors, setSectors] = useState<ISector[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     updateView();
@@ -53,8 +48,8 @@ const ColorPage = () => {
   const updateView = async () => {
     setLoading(true);
     try {
-      const ProductionsData = await getAllColors();
-      setColors(ProductionsData);
+      const sectorsData = await getAllSectors();
+      setSectors(sectorsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
     } finally {
@@ -62,33 +57,22 @@ const ColorPage = () => {
     }
   };
 
-  // Generar columnas dinámicamente
-  const columnsColor: ColumnDef<ColorInterfaces>[] = useMemo(() => {
-    if (colors.length === 0) return [];
+  const columnsSector: ColumnDef<ISector>[] = useMemo(() => {
+    if (sectors.length === 0) return [];
     return [
-      {
-        accessorKey: "id",
-        header: "Id",
+      ...Object.keys(sectors[0]).map((key) => ({
+        accessorKey: key,
+        header: key.replace(/_/g, " ").toUpperCase(),
+        /* @ts-expect-error: Ignoramos el error en esta línea*/
         cell: (info) => info.getValue(),
-      },
-      {
-        accessorKey: "name",
-        header: "Nombre",
-        cell: (info) => info.getValue(),
-      },
-      {
-        accessorKey: "description",
-        header: "Descripción",
-        cell: (info) => info.getValue(),
-      },
-
+      })),
       {
         id: "actions",
         header: "",
         enableHiding: false,
-        cell: ({ row }: { row: Row<ColorInterfaces> }) => {
+        cell: ({row}: {row: Row<ISector>}) => {
           return (
-            <div className="flex gap-2  justify-end  ">
+            <div className="flex gap-2 justify-end">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -96,40 +80,30 @@ const ColorPage = () => {
                     className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
                     size="icon"
                   >
-                    {" "}
                     <MoreVerticalIcon />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-32">
                   {!row.original.deletedAt ? (
                     <>
-                      <EditColorDialog
-                        id={row.original.id ?? 0}
-                        updateView={updateView}
-                      >
+                      <EditSectorDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Edit /> Editar{" "}
+                          <Edit /> Editar
                         </DropdownMenuItem>
-                      </EditColorDialog>
+                      </EditSectorDialog>
                       <DropdownMenuSeparator />
-                      <DeleteColorDialog
-                        id={row.original.id ?? 0}
-                        updateView={updateView}
-                      >
+                      <DeleteSectorDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Delete /> Eliminar{" "}
+                          <Delete /> Eliminar
                         </DropdownMenuItem>
-                      </DeleteColorDialog>
+                      </DeleteSectorDialog>
                     </>
                   ) : (
-                    <RecoverColorDialog
-                      id={row.original.id ?? 0}
-                      updateView={updateView}
-                    >
+                    <RecoverSectorDialog id={row.original.id ?? 0} updateView={updateView}>
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        <ArchiveRestore /> Recuperar{" "}
+                        <ArchiveRestore /> Recuperar
                       </DropdownMenuItem>
-                    </RecoverColorDialog>
+                    </RecoverSectorDialog>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -138,20 +112,19 @@ const ColorPage = () => {
         },
       },
     ];
-  }, [colors]);
+  }, [sectors]);
 
   return (
     <div className="flex flex-col gap-4">
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader className="relative">
-          <CardDescription>Colores registrados</CardDescription>
+          <CardDescription>Sectores registrados</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            {colors.length} Colores
+            {sectors.length} Sectores
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-              <TrendingUpIcon className="size-3" />+{countCurrentMonth(colors)}{" "}
-              este mes
+              <TrendingUpIcon className="size-3" />+{countCurrentMonth(sectors)} este mes
             </Badge>
           </div>
         </CardHeader>
@@ -175,14 +148,14 @@ const ColorPage = () => {
           {loading ? null : (
             <DataTable
               actions={
-                <CreateColorDialog
+                <CreateSectorDialog
                   updateView={updateView}
                   children={
                     <Button
                       variant="outline"
                       size="sm"
                       onSelect={(event) => {
-                        event.preventDefault(); // Evita el cierre automático
+                        event.preventDefault();
                       }}
                     >
                       <PlusIcon />
@@ -191,8 +164,8 @@ const ColorPage = () => {
                   }
                 />
               }
-              columns={columnsColor}
-              data={colors}
+              columns={columnsSector}
+              data={sectors}
             />
           )}
         </CardContent>
@@ -201,5 +174,4 @@ const ColorPage = () => {
   );
 };
 
-export default ColorPage;
-//      <ColorTable data={data} updateView={updateView} />
+export default SectorPage;

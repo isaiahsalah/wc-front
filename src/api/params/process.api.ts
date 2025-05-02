@@ -1,6 +1,6 @@
-import { apiClient } from "../axiosConfig";
-import { ProcessInterfaces } from "@/utils/interfaces";
-import { toast } from "sonner";
+import {apiClient} from "../axiosConfig";
+import {IProcess} from "@/utils/interfaces";
+import {toast} from "sonner";
 
 export const getProcesses = async () => {
   try {
@@ -32,7 +32,7 @@ export const getProcessById = async (id: number) => {
   }
 };
 
-export const createProcess = async ({ data }: { data: ProcessInterfaces }) => {
+export const createProcess = async ({data}: {data: IProcess}) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",
@@ -59,7 +59,7 @@ export const createProcess = async ({ data }: { data: ProcessInterfaces }) => {
   }
 };
 
-export const updateProcess = async ({ data }: { data: ProcessInterfaces }) => {
+export const updateProcess = async ({data}: {data: IProcess}) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",

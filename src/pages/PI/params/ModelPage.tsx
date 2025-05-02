@@ -1,7 +1,7 @@
-import { UnityInterfaces } from "@/utils/interfaces";
-import { useEffect, useMemo, useState } from "react";
+import {IModel} from "@/utils/interfaces";
+import {useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 import {
   ArchiveRestore,
   Delete,
@@ -12,12 +12,12 @@ import {
   TrendingUpIcon,
 } from "lucide-react";
 import {
-  CreateUnityDialog,
-  DeleteUnityDialog,
-  EditUnityDialog,
-  RecoverUnityDialog,
-} from "@/components/dialog/product/UnityDialogs";
-import { ColumnDef, Row } from "@tanstack/react-table";
+  CreateModelDialog,
+  DeleteModelDialog,
+  EditModelDialog,
+  RecoverModelDialog,
+} from "@/components/dialog/params/ModelDialogs";
+import {ColumnDef, Row} from "@tanstack/react-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,13 +33,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getAllUnities } from "@/api/product/unity.api";
-import { Badge } from "@/components/ui/badge";
-import { countCurrentMonth } from "@/utils/funtions";
+import {getAllModels} from "@/api/params/model.api";
+import {Badge} from "@/components/ui/badge";
+import {countCurrentMonth} from "@/utils/funtions";
 
-const UnityPage = () => {
-  const [unities, setUnities] = useState<UnityInterfaces[]>([]);
-  const [loading, setLoading] = useState(false); // Estado de carga
+const ModelPage = () => {
+  const [models, setModels] = useState<IModel[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     updateView();
@@ -48,8 +48,8 @@ const UnityPage = () => {
   const updateView = async () => {
     setLoading(true);
     try {
-      const ProductionsData = await getAllUnities();
-      setUnities(ProductionsData);
+      const modelsData = await getAllModels();
+      setModels(modelsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
     } finally {
@@ -57,31 +57,21 @@ const UnityPage = () => {
     }
   };
 
-  // Generar columnas dinámicamente
-  const columnsUnity: ColumnDef<UnityInterfaces>[] = useMemo(() => {
-    if (unities.length === 0) return [];
+  const columnsModel: ColumnDef<IModel>[] = useMemo(() => {
+    if (models.length === 0) return [];
     return [
-      {
-        accessorKey: "id",
-        header: "Id",
+      ...Object.keys(models[0]).map((key) => ({
+        accessorKey: key,
+        header: key.replace(/_/g, " ").toUpperCase(),
+        /* @ts-expect-error: Ignoramos el error en esta línea*/
         cell: (info) => info.getValue(),
-      },
-      {
-        accessorKey: "name",
-        header: "Nombre",
-        cell: (info) => info.getValue(),
-      },
-      {
-        accessorKey: "description",
-        header: "Descripción",
-        cell: (info) => info.getValue(),
-      },
+      })),
 
       {
         id: "actions",
         header: "",
         enableHiding: false,
-        cell: ({ row }: { row: Row<UnityInterfaces> }) => {
+        cell: ({row}: {row: Row<IModel>}) => {
           return (
             <div className="flex gap-2 justify-end">
               <DropdownMenu>
@@ -91,40 +81,30 @@ const UnityPage = () => {
                     className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
                     size="icon"
                   >
-                    {" "}
                     <MoreVerticalIcon />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-32">
                   {!row.original.deletedAt ? (
                     <>
-                      <EditUnityDialog
-                        id={row.original.id ?? 0}
-                        updateView={updateView}
-                      >
+                      <EditModelDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Edit /> Editar{" "}
+                          <Edit /> Editar
                         </DropdownMenuItem>
-                      </EditUnityDialog>
+                      </EditModelDialog>
                       <DropdownMenuSeparator />
-                      <DeleteUnityDialog
-                        id={row.original.id ?? 0}
-                        updateView={updateView}
-                      >
+                      <DeleteModelDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Delete /> Eliminar{" "}
+                          <Delete /> Eliminar
                         </DropdownMenuItem>
-                      </DeleteUnityDialog>
+                      </DeleteModelDialog>
                     </>
                   ) : (
-                    <RecoverUnityDialog
-                      id={row.original.id ?? 0}
-                      updateView={updateView}
-                    >
+                    <RecoverModelDialog id={row.original.id ?? 0} updateView={updateView}>
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        <ArchiveRestore /> Recuperar{" "}
+                        <ArchiveRestore /> Recuperar
                       </DropdownMenuItem>
-                    </RecoverUnityDialog>
+                    </RecoverModelDialog>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -133,20 +113,19 @@ const UnityPage = () => {
         },
       },
     ];
-  }, [unities]);
+  }, [models]);
 
   return (
     <div className="flex flex-col gap-4">
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader className="relative">
-          <CardDescription>Unidades registradas</CardDescription>
+          <CardDescription>Modelos registrados</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            {unities.length} Unidades
+            {models.length} Modelos
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-              <TrendingUpIcon className="size-3" />+{countCurrentMonth(unities)}{" "}
-              este mes
+              <TrendingUpIcon className="size-3" />+{countCurrentMonth(models)} este mes
             </Badge>
           </div>
         </CardHeader>
@@ -170,14 +149,14 @@ const UnityPage = () => {
           {loading ? null : (
             <DataTable
               actions={
-                <CreateUnityDialog
+                <CreateModelDialog
                   updateView={updateView}
                   children={
                     <Button
                       variant="outline"
                       size="sm"
                       onSelect={(event) => {
-                        event.preventDefault(); // Evita el cierre automático
+                        event.preventDefault();
                       }}
                     >
                       <PlusIcon />
@@ -186,8 +165,8 @@ const UnityPage = () => {
                   }
                 />
               }
-              columns={columnsUnity}
-              data={unities}
+              columns={columnsModel}
+              data={models}
             />
           )}
         </CardContent>
@@ -196,4 +175,4 @@ const UnityPage = () => {
   );
 };
 
-export default UnityPage;
+export default ModelPage;

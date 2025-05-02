@@ -1,12 +1,5 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { ColumnDef, flexRender } from "@tanstack/react-table";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
+import {ColumnDef, flexRender} from "@tanstack/react-table";
 import {
   ColumnFiltersState,
   getCoreRowModel,
@@ -17,14 +10,14 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
-import { useState } from "react";
+import {useState} from "react";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Button } from "../ui/button";
+import {Button} from "../ui/button";
 import {
   ChevronDownIcon,
   ChevronLeftIcon,
@@ -33,18 +26,15 @@ import {
   ChevronsRightIcon,
   ColumnsIcon,
 } from "lucide-react";
-import { Filter } from "./dataTableFilters";
-import { Label } from "../ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import { GeneralInterfaces } from "@/utils/interfaces";
+import {Filter} from "./dataTableFilters";
+import {Label} from "../ui/label";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "../ui/select";
+import {IGeneral} from "@/utils/interfaces";
+import {format} from "date-fns";
+import {Skeleton} from "../ui/skeleton";
+import TableSkeleton from "../skeleton/table-skeleton";
 
-interface Props<T extends GeneralInterfaces> {
+interface Props<T extends IGeneral> {
   data: T[];
   actions: React.ReactNode;
   columns: ColumnDef<T>[];
@@ -52,12 +42,12 @@ interface Props<T extends GeneralInterfaces> {
   hasPaginated?: boolean;
 }
 
-const DataTable = <T extends GeneralInterfaces>({ 
-  data, 
-  actions, 
-  columns, 
-  hasOptions=true, 
-  hasPaginated =true,
+const DataTable = <T extends IGeneral>({
+  data,
+  actions,
+  columns,
+  hasOptions = true,
+  hasPaginated = true,
 }: Props<T>) => {
   const [rowSelection, setRowSelection] = useState({});
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
@@ -102,6 +92,8 @@ const DataTable = <T extends GeneralInterfaces>({
 
   return (
     <div className="flex flex-col gap-4">
+      <TableSkeleton colums={5} rows={5} hasOptions={hasOptions} hasPaginated={hasPaginated} />
+
       {/* Barra superior con filtros y opciones */}
       {!hasOptions ? null : (
         <div className="flex items-center justify-between gap-4">
@@ -112,7 +104,7 @@ const DataTable = <T extends GeneralInterfaces>({
               setFilterValue: setGlobalFilter,
               /* @ts-expect-error: Ignoramos el error en esta línea*/
               columnDef: {
-                meta: { filterVariant: "text" },
+                meta: {filterVariant: "text"},
               },
             }}
           />
@@ -121,16 +113,11 @@ const DataTable = <T extends GeneralInterfaces>({
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm">
                   <ColumnsIcon />
-                  <span className="ml-2 hidden lg:inline">
-                    Personalizar Columnas
-                  </span>
+                  <span className="ml-2 hidden lg:inline">Personalizar Columnas</span>
                   <ChevronDownIcon className="ml-1" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                onClick={(event) => event.stopPropagation()}
-              >
+              <DropdownMenuContent align="end" onClick={(event) => event.stopPropagation()}>
                 {table.getAllColumns().map((column) => (
                   <DropdownMenuCheckboxItem
                     key={column.id}
@@ -165,9 +152,7 @@ const DataTable = <T extends GeneralInterfaces>({
                     >
                       {!header.column.columnDef.header
                         ? null
-                        : header.column.columnDef.header
-                            .toString()
-                            .replace(/_/g, " ")}
+                        : header.column.columnDef.header.toString().replace(/_/g, " ")}
                     </TableHead>
                   );
                 })}
@@ -184,10 +169,7 @@ const DataTable = <T extends GeneralInterfaces>({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -221,9 +203,7 @@ const DataTable = <T extends GeneralInterfaces>({
                 }}
               >
                 <SelectTrigger className="w-20" id="rows-per-page">
-                  <SelectValue
-                    placeholder={table.getState().pagination.pageSize}
-                  />
+                  <SelectValue placeholder={table.getState().pagination.pageSize} />
                 </SelectTrigger>
                 <SelectContent side="top">
                   {[5, 10, 20, 30, 40, 50].map((pageSize) => (
@@ -235,8 +215,7 @@ const DataTable = <T extends GeneralInterfaces>({
               </Select>
             </div>
             <div className="flex w-fit items-center justify-center text-sm   text-muted-foreground ">
-              Página {table.getState().pagination.pageIndex + 1} of{" "}
-              {table.getPageCount()}
+              Página {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
             </div>
             <div className="ml-auto flex items-center gap-2 lg:ml-0">
               <Button

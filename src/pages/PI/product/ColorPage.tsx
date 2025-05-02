@@ -1,7 +1,7 @@
-import { ProcessInterfaces } from "@/utils/interfaces";
-import { useEffect, useMemo, useState } from "react";
+import {IColor} from "@/utils/interfaces";
+import {useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 import {
   ArchiveRestore,
   Delete,
@@ -12,12 +12,12 @@ import {
   TrendingUpIcon,
 } from "lucide-react";
 import {
-  CreateProcessDialog,
-  DeleteProcessDialog,
-  EditProcessDialog,
-  RecoverProcessDialog,
-} from "@/components/dialog/params/ProcessDialogs";
-import { ColumnDef, Row } from "@tanstack/react-table";
+  CreateColorDialog,
+  DeleteColorDialog,
+  EditColorDialog,
+  RecoverColorDialog,
+} from "@/components/dialog/product/ColorDialogs";
+import {ColumnDef, Row} from "@tanstack/react-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,46 +33,97 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getAllProcesses } from "@/api/params/process.api";
-import { Badge } from "@/components/ui/badge";
-import { countCurrentMonth } from "@/utils/funtions";
+import {getAllColors} from "@/api/product/color.api";
+import {Badge} from "@/components/ui/badge";
+import {countCurrentMonth} from "@/utils/funtions";
+import {format} from "date-fns";
 
-const ProcessPage = () => {
-  const [processes, setProcesses] = useState<ProcessInterfaces[]>([]);
-  const [loading, setLoading] = useState(false);
+// interface Props {
+//   data: IColor[];
+//   updateView: () => void;
+// }
+
+const ColorPage = () => {
+  const [colors, setColors] = useState<IColor[]>([]);
+  const [loading, setLoading] = useState(false); // Estado de carga
 
   useEffect(() => {
+    setLoading(true);
     updateView();
+    setLoading(false);
   }, []);
 
   const updateView = async () => {
-    setLoading(true);
     try {
-      const processesData = await getAllProcesses();
-      setProcesses(processesData);
+      const ProductionsData = await getAllColors();
+      setColors(ProductionsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
-  const columnsProcess: ColumnDef<ProcessInterfaces>[] = useMemo(() => {
-    if (processes.length === 0) return [];
+  // Generar columnas dinámicamente
+  const columnsColor: ColumnDef<IColor>[] = useMemo(() => {
+    if (colors.length === 0) return [];
     return [
-      ...Object.keys(processes[0]).map((key) => ({
-        accessorKey: key,
-        header: key.replace(/_/g, " ").toUpperCase(),
-        /* @ts-expect-error: Ignoramos el error en esta línea*/
+      {
+        accessorKey: "id",
+        header: "Id",
         cell: (info) => info.getValue(),
-      })),
+      },
+      {
+        accessorKey: "name",
+        header: "Nombre",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "description",
+        header: "Descripción",
+        cell: (info) => info.getValue(),
+      },
+
+      {
+        accessorKey: "createdAt",
+        header: "Creado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "No disponible";
+        },
+      },
+      {
+        accessorKey: "updatedAt",
+        header: "Editado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "No disponible";
+        },
+      },
+
+      {
+        accessorKey: "deletedAt",
+        header: "Eliminado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "-";
+        },
+      },
+
       {
         id: "actions",
         header: "",
         enableHiding: false,
-        cell: ({ row }: { row: Row<ProcessInterfaces> }) => {
+        cell: ({row}: {row: Row<IColor>}) => {
           return (
-            <div className="flex gap-2 justify-end">
+            <div className="flex gap-2  justify-end  ">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -80,39 +131,31 @@ const ProcessPage = () => {
                     className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
                     size="icon"
                   >
+                    {" "}
                     <MoreVerticalIcon />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-32">
                   {!row.original.deletedAt ? (
                     <>
-                      <EditProcessDialog
-                        id={row.original.id ?? 0}
-                        updateView={updateView}
-                      >
+                      <EditColorDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Edit /> Editar
+                          <Edit /> Editar{" "}
                         </DropdownMenuItem>
-                      </EditProcessDialog>
+                      </EditColorDialog>
                       <DropdownMenuSeparator />
-                      <DeleteProcessDialog
-                        id={row.original.id ?? 0}
-                        updateView={updateView}
-                      >
+                      <DeleteColorDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Delete /> Eliminar
+                          <Delete /> Eliminar{" "}
                         </DropdownMenuItem>
-                      </DeleteProcessDialog>
+                      </DeleteColorDialog>
                     </>
                   ) : (
-                    <RecoverProcessDialog
-                      id={row.original.id ?? 0}
-                      updateView={updateView}
-                    >
+                    <RecoverColorDialog id={row.original.id ?? 0} updateView={updateView}>
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        <ArchiveRestore /> Recuperar
+                        <ArchiveRestore /> Recuperar{" "}
                       </DropdownMenuItem>
-                    </RecoverProcessDialog>
+                    </RecoverColorDialog>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -121,20 +164,19 @@ const ProcessPage = () => {
         },
       },
     ];
-  }, [processes]);
+  }, [colors]);
 
   return (
     <div className="flex flex-col gap-4">
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader className="relative">
-          <CardDescription>Procesos registrados</CardDescription>
+          <CardDescription>Colores registrados</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            {processes.length} Procesos
+            {colors.length} Colores
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-              <TrendingUpIcon className="size-3" />+
-              {countCurrentMonth(processes)} este mes
+              <TrendingUpIcon className="size-3" />+{countCurrentMonth(colors)} este mes
             </Badge>
           </div>
         </CardHeader>
@@ -158,14 +200,14 @@ const ProcessPage = () => {
           {loading ? null : (
             <DataTable
               actions={
-                <CreateProcessDialog
+                <CreateColorDialog
                   updateView={updateView}
                   children={
                     <Button
                       variant="outline"
                       size="sm"
                       onSelect={(event) => {
-                        event.preventDefault();
+                        event.preventDefault(); // Evita el cierre automático
                       }}
                     >
                       <PlusIcon />
@@ -174,8 +216,8 @@ const ProcessPage = () => {
                   }
                 />
               }
-              columns={columnsProcess}
-              data={processes}
+              columns={columnsColor}
+              data={colors}
             />
           )}
         </CardContent>
@@ -184,4 +226,5 @@ const ProcessPage = () => {
   );
 };
 
-export default ProcessPage;
+export default ColorPage;
+//      <ColorTable data={data} updateView={updateView} />

@@ -1,6 +1,6 @@
-import { apiClient } from "../axiosConfig";
-import { FormulaInterfaces } from "@/utils/interfaces";
-import { toast } from "sonner";
+import {apiClient} from "../axiosConfig";
+import {IFormula} from "@/utils/interfaces";
+import {toast} from "sonner";
 
 export const getFormulas = async () => {
   try {
@@ -32,7 +32,7 @@ export const getFormulaById = async (id: number) => {
   }
 };
 
-export const createFormula = async ({ data }: { data: FormulaInterfaces }) => {
+export const createFormula = async ({data}: {data: IFormula}) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",
@@ -59,7 +59,7 @@ export const createFormula = async ({ data }: { data: FormulaInterfaces }) => {
   }
 };
 
-export const updateFormula = async ({ data }: { data: FormulaInterfaces }) => {
+export const updateFormula = async ({data}: {data: IFormula}) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",

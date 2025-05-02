@@ -1,6 +1,6 @@
-import { apiClient } from "../axiosConfig";
-import { OrderDetailInterfaces, OrderInterfaces } from "@/utils/interfaces";
-import { toast } from "sonner";
+import {apiClient} from "../axiosConfig";
+import {IOrderDetail, IOrder} from "@/utils/interfaces";
+import {toast} from "sonner";
 
 export const getOrders = async () => {
   try {
@@ -32,7 +32,7 @@ export const getOrderById = async (id: number) => {
   }
 };
 
-export const createOrder = async ({ data }: { data: OrderInterfaces }) => {
+export const createOrder = async ({data}: {data: IOrder}) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",
@@ -44,7 +44,7 @@ export const createOrder = async ({ data }: { data: OrderInterfaces }) => {
     toast("La orden se creó correctamente.", {
       action: {
         label: "OK",
-      onClick: () => console.log("Undo"),
+        onClick: () => console.log("Undo"),
       },
     });
     return response.data; // Devuelve la orden creada
@@ -59,7 +59,7 @@ export const createOrder = async ({ data }: { data: OrderInterfaces }) => {
   }
 };
 
-export const updateOrder = async ({ data }: { data: OrderInterfaces }) => {
+export const updateOrder = async ({data}: {data: IOrder}) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",
@@ -146,7 +146,13 @@ export const recoverOrder = async (id: number) => {
 
 ////////////////////////////////////////////////////////////////////////
 
-export const createOrderWithDetail = async ({ order,orderDetails }: { order: OrderInterfaces, orderDetails:OrderDetailInterfaces[] }) => {
+export const createOrderWithDetail = async ({
+  order,
+  orderDetails,
+}: {
+  order: IOrder;
+  orderDetails: IOrderDetail[];
+}) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",
@@ -154,11 +160,11 @@ export const createOrderWithDetail = async ({ order,orderDetails }: { order: Ord
     },
   });
   try {
-    const response = await apiClient.post("/pr/order/withdetails", { order,orderDetails });
+    const response = await apiClient.post("/pr/order/withdetails", {order, orderDetails});
     toast("La orden se creó correctamente.", {
       action: {
         label: "OK",
-      onClick: () => console.log("Undo"),
+        onClick: () => console.log("Undo"),
       },
     });
     return response.data; // Devuelve la orden creada

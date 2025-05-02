@@ -1,7 +1,11 @@
-import { SectorInterfaces } from "@/utils/interfaces";
-import { useEffect, useMemo, useState } from "react";
-import DataTable from "@/components/table/DataTable";
-import { Button } from "@/components/ui/button";
+import {IFormula} from "@/utils/interfaces";
+import {
+  CreateFormulaDialog,
+  DeleteFormulaDialog,
+  EditFormulaDialog,
+  RecoverFormulaDialog,
+} from "@/components/dialog/product/FormulaDialogs";
+import {Button} from "@/components/ui/button";
 import {
   ArchiveRestore,
   Delete,
@@ -11,13 +15,9 @@ import {
   Tally5,
   TrendingUpIcon,
 } from "lucide-react";
-import {
-  CreateSectorDialog,
-  DeleteSectorDialog,
-  EditSectorDialog,
-  RecoverSectorDialog,
-} from "@/components/dialog/params/SectorDialogs";
-import { ColumnDef, Row } from "@tanstack/react-table";
+import DataTable from "@/components/table/DataTable";
+import {useEffect, useMemo, useState} from "react";
+import {ColumnDef, Row} from "@tanstack/react-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +25,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {getAllFormulas} from "@/api/product/formula.api";
 import {
   Card,
   CardContent,
@@ -33,13 +34,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getAllSectors } from "@/api/params/sector.api";
-import { Badge } from "@/components/ui/badge";
-import { countCurrentMonth } from "@/utils/funtions";
+import {countCurrentMonth} from "@/utils/funtions";
+import {Badge} from "@/components/ui/badge";
 
-const SectorPage = () => {
-  const [sectors, setSectors] = useState<SectorInterfaces[]>([]);
-  const [loading, setLoading] = useState(false);
+const FormulaPage = () => {
+  const [formulas, setFormulas] = useState<IFormula[]>([]);
+  const [loading, setLoading] = useState(false); // Estado de carga
 
   useEffect(() => {
     updateView();
@@ -48,8 +48,8 @@ const SectorPage = () => {
   const updateView = async () => {
     setLoading(true);
     try {
-      const sectorsData = await getAllSectors();
-      setSectors(sectorsData);
+      const FormulasData = await getAllFormulas();
+      setFormulas(FormulasData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
     } finally {
@@ -57,10 +57,11 @@ const SectorPage = () => {
     }
   };
 
-  const columnsSector: ColumnDef<SectorInterfaces>[] = useMemo(() => {
-    if (sectors.length === 0) return [];
+  // Generar columnas dinámicamente
+  const columnsFormula: ColumnDef<IFormula>[] = useMemo(() => {
+    if (formulas.length === 0) return [];
     return [
-      ...Object.keys(sectors[0]).map((key) => ({
+      ...Object.keys(formulas[0]).map((key) => ({
         accessorKey: key,
         header: key.replace(/_/g, " ").toUpperCase(),
         /* @ts-expect-error: Ignoramos el error en esta línea*/
@@ -70,9 +71,9 @@ const SectorPage = () => {
         id: "actions",
         header: "",
         enableHiding: false,
-        cell: ({ row }: { row: Row<SectorInterfaces> }) => {
+        cell: ({row}: {row: Row<IFormula>}) => {
           return (
-            <div className="flex gap-2 justify-end">
+            <div className="flex gap-2  justify-end  ">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -80,39 +81,31 @@ const SectorPage = () => {
                     className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
                     size="icon"
                   >
+                    {" "}
                     <MoreVerticalIcon />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-32">
                   {!row.original.deletedAt ? (
                     <>
-                      <EditSectorDialog
-                        id={row.original.id ?? 0}
-                        updateView={updateView}
-                      >
+                      <EditFormulaDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Edit /> Editar
+                          <Edit /> Editar{" "}
                         </DropdownMenuItem>
-                      </EditSectorDialog>
+                      </EditFormulaDialog>
                       <DropdownMenuSeparator />
-                      <DeleteSectorDialog
-                        id={row.original.id ?? 0}
-                        updateView={updateView}
-                      >
+                      <DeleteFormulaDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Delete /> Eliminar
+                          <Delete /> Eliminar{" "}
                         </DropdownMenuItem>
-                      </DeleteSectorDialog>
+                      </DeleteFormulaDialog>
                     </>
                   ) : (
-                    <RecoverSectorDialog
-                      id={row.original.id ?? 0}
-                      updateView={updateView}
-                    >
+                    <RecoverFormulaDialog id={row.original.id ?? 0} updateView={updateView}>
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        <ArchiveRestore /> Recuperar
+                        <ArchiveRestore /> Recuperar{" "}
                       </DropdownMenuItem>
-                    </RecoverSectorDialog>
+                    </RecoverFormulaDialog>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -121,20 +114,18 @@ const SectorPage = () => {
         },
       },
     ];
-  }, [sectors]);
-
+  }, [formulas]);
   return (
     <div className="flex flex-col gap-4">
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader className="relative">
-          <CardDescription>Sectores registrados</CardDescription>
+          <CardDescription>Formulas registradas</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            {sectors.length} Sectores
+            {formulas.length} Formulas
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-              <TrendingUpIcon className="size-3" />+
-              {countCurrentMonth(sectors)} este mes
+              <TrendingUpIcon className="size-3" />+{countCurrentMonth(formulas)} este mes
             </Badge>
           </div>
         </CardHeader>
@@ -158,14 +149,14 @@ const SectorPage = () => {
           {loading ? null : (
             <DataTable
               actions={
-                <CreateSectorDialog
+                <CreateFormulaDialog
                   updateView={updateView}
                   children={
                     <Button
                       variant="outline"
                       size="sm"
                       onSelect={(event) => {
-                        event.preventDefault();
+                        event.preventDefault(); // Evita el cierre automático
                       }}
                     >
                       <PlusIcon />
@@ -174,8 +165,8 @@ const SectorPage = () => {
                   }
                 />
               }
-              columns={columnsSector}
-              data={sectors}
+              columns={columnsFormula}
+              data={formulas}
             />
           )}
         </CardContent>
@@ -184,4 +175,5 @@ const SectorPage = () => {
   );
 };
 
-export default SectorPage;
+export default FormulaPage;
+//      <FormulaTable data={data} updateView={updateView} />

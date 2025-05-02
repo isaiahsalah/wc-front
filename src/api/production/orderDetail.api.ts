@@ -1,6 +1,6 @@
-import { apiClient } from "../axiosConfig";
-import { OrderDetailInterfaces } from "@/utils/interfaces";
-import { toast } from "sonner";
+import {apiClient} from "../axiosConfig";
+import {IOrderDetail} from "@/utils/interfaces";
+import {toast} from "sonner";
 
 export const getOrderDetails = async () => {
   try {
@@ -32,11 +32,7 @@ export const getOrderDetailById = async (id: number) => {
   }
 };
 
-export const createOrderDetail = async ({
-  data,
-}: {
-  data: OrderDetailInterfaces;
-}) => {
+export const createOrderDetail = async ({data}: {data: IOrderDetail}) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",
@@ -63,11 +59,7 @@ export const createOrderDetail = async ({
   }
 };
 
-export const updateOrderDetail = async ({
-  data,
-}: {
-  data: OrderDetailInterfaces;
-}) => {
+export const updateOrderDetail = async ({data}: {data: IOrderDetail}) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",
@@ -121,7 +113,7 @@ export const deleteOrderDetail = async (id: number) => {
   }
 };
 
-export const recoverOrderDetail = async ({ id }: { id: number }) => {
+export const recoverOrderDetail = async ({id}: {id: number}) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",
@@ -169,7 +161,7 @@ export const getOrderDetails_date = async ({
       id_sector,
       id_process,
     };
-    const response = await apiClient.get("/pr/order-detail/date", { params }); // Cambia la URL según tu API
+    const response = await apiClient.get("/pr/order-detail/date", {params}); // Cambia la URL según tu API
     return response.data; // Devuelve la lista de detalles de pedido
   } catch (error) {
     console.error("Error al obtener los detalles de pedido:", error);

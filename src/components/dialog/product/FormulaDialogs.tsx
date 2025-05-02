@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
 
-import { useForm } from "react-hook-form";
- import { FormulaInterfaces, FormulaSchema, ProductInterfaces } from "@/utils/interfaces";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {useForm} from "react-hook-form";
+import {IFormula, FormulaSchema, IProduct} from "@/utils/interfaces";
+import {zodResolver} from "@hookform/resolvers/zod";
 
 import {
   Form,
@@ -13,7 +13,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { useState } from "react";
+import {useState} from "react";
 import {
   createFormula,
   deleteFormula,
@@ -21,7 +21,7 @@ import {
   recoverFormula,
   updateFormula,
 } from "@/api/product/formula.api";
-import { toast } from "sonner";
+import {toast} from "sonner";
 import {
   Dialog,
   DialogClose,
@@ -33,7 +33,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
-import { Switch } from "@/components/ui/switch";
+import {Switch} from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -41,22 +41,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getProducts } from "@/api/product/product.api";
+import {getProducts} from "@/api/product/product.api";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
   updateView: () => void; // Define the type as a function that returns void
 }
 
-export const CreateFormulaDialog: React.FC<PropsCreate> = ({
-  children,
-  updateView,
-}) => {
+export const CreateFormulaDialog: React.FC<PropsCreate> = ({children, updateView}) => {
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
-  const [products, setProducts] = useState<ProductInterfaces[]>();
+  const [products, setProducts] = useState<IProduct[]>();
 
-  const form = useForm<FormulaInterfaces>({
+  const form = useForm<IFormula>({
     resolver: zodResolver(FormulaSchema),
     defaultValues: {
       name: "",
@@ -65,9 +62,9 @@ export const CreateFormulaDialog: React.FC<PropsCreate> = ({
     },
   });
 
-  function onSubmit(values: FormulaInterfaces) {
+  function onSubmit(values: IFormula) {
     setLoadingSave(true);
-    createFormula({ data: values })
+    createFormula({data: values})
       .then((updatedFormula) => {
         console.log("Fórmula creada:", updatedFormula);
 
@@ -114,21 +111,16 @@ export const CreateFormulaDialog: React.FC<PropsCreate> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Registro de fórmula</DialogTitle>
-          <DialogDescription>
-            Mostrando datos relacionados con la fórmula.
-          </DialogDescription>
+          <DialogDescription>Mostrando datos relacionados con la fórmula.</DialogDescription>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className=" grid  gap-4 "
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid  gap-4 ">
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
                   name="name"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-6">
                       <FormDescription>Nombre</FormDescription>
                       <FormControl>
@@ -141,7 +133,7 @@ export const CreateFormulaDialog: React.FC<PropsCreate> = ({
                 <FormField
                   control={form.control}
                   name="active"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-2  ">
                       <FormDescription>Activa</FormDescription>
                       <FormControl>
@@ -159,25 +151,20 @@ export const CreateFormulaDialog: React.FC<PropsCreate> = ({
                 <FormField
                   control={form.control}
                   name="id_product"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-4 ">
                       <FormDescription>Producto</FormDescription>
                       <FormControl>
                         <Select
-                          onValueChange={(value) =>
-                            field.onChange(Number(value))
-                          } // Convertir el valor a número
+                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                           defaultValue={field.value.toString()}
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Seleccionar producto" />
                           </SelectTrigger>
                           <SelectContent>
-                            {products?.map((product: ProductInterfaces) => (
-                              <SelectItem
-                                key={product.id}
-                                value={(product.id ?? "").toString()}
-                              >
+                            {products?.map((product: IProduct) => (
+                              <SelectItem key={product.id} value={(product.id ?? "").toString()}>
                                 {product.name}
                               </SelectItem>
                             ))}
@@ -198,12 +185,7 @@ export const CreateFormulaDialog: React.FC<PropsCreate> = ({
                   {loadingSave ? <LoadingCircle /> : "Guardar"}
                 </Button>
                 <DialogClose asChild className="col-span-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    disabled={loadingSave}
-                  >
+                  <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                     Cerrar
                   </Button>
                 </DialogClose>
@@ -232,9 +214,9 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
-  const [products, setProducts] = useState<ProductInterfaces[]>();
+  const [products, setProducts] = useState<IProduct[]>();
 
-  const form = useForm<FormulaInterfaces>({
+  const form = useForm<IFormula>({
     resolver: zodResolver(FormulaSchema),
     defaultValues: {
       id: 0,
@@ -244,9 +226,9 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
     },
   });
 
-  function onSubmit(values: FormulaInterfaces) {
+  function onSubmit(values: IFormula) {
     setLoadingSave(true);
-    updateFormula({ data: values })
+    updateFormula({data: values})
       .then((updatedFormula) => {
         console.log("Fórmula actualizada:", updatedFormula);
 
@@ -330,21 +312,16 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Edición de fórmula</DialogTitle>
-          <DialogDescription>
-            Mostrando datos relacionados con la fórmula.
-          </DialogDescription>
+          <DialogDescription>Mostrando datos relacionados con la fórmula.</DialogDescription>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className=" grid  gap-4 "
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid  gap-4 ">
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
                   name="id"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className={"col-span-2"}>
                       <FormDescription>Id</FormDescription>
                       <FormControl>
@@ -352,9 +329,7 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
                           type="number"
                           placeholder="Id"
                           disabled
-                          onChange={(event) =>
-                            field.onChange(Number(event.target.value))
-                          }
+                          onChange={(event) => field.onChange(Number(event.target.value))}
                           defaultValue={field.value ?? ""}
                         />
                       </FormControl>
@@ -365,7 +340,7 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
                 <FormField
                   control={form.control}
                   name="name"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-4 ">
                       <FormDescription>Nombre</FormDescription>
                       <FormControl>
@@ -379,7 +354,7 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
                 <FormField
                   control={form.control}
                   name="active"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-2  ">
                       <FormDescription>Activa</FormDescription>
                       <FormControl>
@@ -397,25 +372,20 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
                 <FormField
                   control={form.control}
                   name="id_product"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-4 ">
                       <FormDescription>Producto</FormDescription>
                       <FormControl>
                         <Select
-                          onValueChange={(value) =>
-                            field.onChange(Number(value))
-                          } // Convertir el valor a número
+                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                           defaultValue={field.value.toString()}
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Seleccionar producto" />
                           </SelectTrigger>
                           <SelectContent>
-                            {products?.map((product: ProductInterfaces) => (
-                              <SelectItem
-                                key={product.id}
-                                value={(product.id ?? "").toString()}
-                              >
+                            {products?.map((product: IProduct) => (
+                              <SelectItem key={product.id} value={(product.id ?? "").toString()}>
                                 {product.name}
                               </SelectItem>
                             ))}
@@ -501,9 +471,7 @@ export const DeleteFormulaDialog: React.FC<PropsDelete> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Eliminar fórmula</DialogTitle>
-          <DialogDescription>
-            ¿Está seguro de eliminar esta fórmula?
-          </DialogDescription>
+          <DialogDescription>¿Está seguro de eliminar esta fórmula?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -517,12 +485,7 @@ export const DeleteFormulaDialog: React.FC<PropsDelete> = ({
             {loadingDelete ? <LoadingCircle /> : "Eliminar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              disabled={loadingDelete}
-            >
+            <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
               Cerrar
             </Button>
           </DialogClose>
@@ -569,9 +532,7 @@ export const RecoverFormulaDialog: React.FC<PropsRecover> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Recuperar fórmula</DialogTitle>
-          <DialogDescription>
-            ¿Está seguro de recuperar esta fórmula?
-          </DialogDescription>
+          <DialogDescription>¿Está seguro de recuperar esta fórmula?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -584,12 +545,7 @@ export const RecoverFormulaDialog: React.FC<PropsRecover> = ({
             {loadingRecover ? <LoadingCircle /> : "Recuperar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              disabled={loadingRecover}
-            >
+            <Button type="button" variant="outline" className="w-full" disabled={loadingRecover}>
               Cerrar
             </Button>
           </DialogClose>

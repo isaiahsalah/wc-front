@@ -1,20 +1,14 @@
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Tally5, TrendingUpIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge"; 
-import { countCurrentMonth } from "@/utils/funtions";
-import { OrderInterfaces } from "@/utils/interfaces";
+import {Card, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
+import {Tally5, TrendingUpIcon} from "lucide-react";
+import {Badge} from "@/components/ui/badge";
+import {countCurrentMonth} from "@/utils/funtions";
+import {IOrder} from "@/utils/interfaces";
 
 interface Props {
-  initialData: OrderInterfaces[];
+  initialData: IOrder[];
 }
 
-const OrderCards: React.FC<Props> = ({ initialData }) => {
+const OrderCards: React.FC<Props> = ({initialData}) => {
   return (
     <div className="grid grid-cols-6 gap-4">
       <Card className="@container/card col-span-6 lg:col-span-6">

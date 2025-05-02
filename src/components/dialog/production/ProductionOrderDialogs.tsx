@@ -1,13 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
 
-import { useForm } from "react-hook-form";
-import {
-  ProductionSchema,
-  MachineInterfaces,
-  ProductionInterfaces,
-} from "@/utils/interfaces";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {useForm} from "react-hook-form";
+import {ProductionSchema, IMachine, IProduction} from "@/utils/interfaces";
+import {zodResolver} from "@hookform/resolvers/zod";
 
 import {
   Form,
@@ -17,9 +13,9 @@ import {
   FormDescription,
   FormMessage,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
-import { createProductions } from "@/api/production/production.api";
+import {Textarea} from "@/components/ui/textarea";
+import {useState} from "react";
+import {createProductions} from "@/api/production/production.api";
 import {
   Dialog,
   DialogClose,
@@ -38,17 +34,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getMachines } from "@/api/params/machine.api";
-import { typeQuality } from "@/utils/const";
-import { z } from "zod";
-import { generateQR, printTag } from "@/utils/printTag";
-import { DateTimePicker } from "@/components/DateTimePicker";
+import {getMachines} from "@/api/params/machine.api";
+import {typeQuality} from "@/utils/const";
+import {z} from "zod";
+import {generateQR, printTag} from "@/utils/printTag";
+import {DateTimePicker} from "@/components/DateTimePicker";
 
 const ProductionOrderSchema = z.object({
   production: ProductionSchema,
   amount: z.number(),
 });
-type ProductionOrderInterfaces = z.infer<typeof ProductionOrderSchema>;
+type ProductionIOrder = z.infer<typeof ProductionOrderSchema>;
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -63,9 +59,9 @@ export const CreateProductionOrderDialog: React.FC<PropsCreate> = ({
 }) => {
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
-  const [machines, setMachines] = useState<MachineInterfaces[]>();
+  const [machines, setMachines] = useState<IMachine[]>();
 
-  const form = useForm<ProductionOrderInterfaces>({
+  const form = useForm<ProductionIOrder>({
     resolver: zodResolver(ProductionOrderSchema),
     defaultValues: {
       production: {
@@ -76,10 +72,10 @@ export const CreateProductionOrderDialog: React.FC<PropsCreate> = ({
     },
   });
 
-  function onSubmit(values: ProductionOrderInterfaces) {
+  function onSubmit(values: ProductionIOrder) {
     setLoadingSave(true);
 
-    const productions: ProductionInterfaces[] = [];
+    const productions: IProduction[] = [];
     const duration: number = values.production.duration / values.amount;
 
     // Crear 7 objetos e insertarlos en el array
@@ -103,11 +99,11 @@ export const CreateProductionOrderDialog: React.FC<PropsCreate> = ({
       });
     }
 
-    createProductions({ data: productions })
+    createProductions({data: productions})
       .then((updatedProduction) => {
         console.log("Producciones creada:", updatedProduction);
-        generateQR({ productions: updatedProduction }).then((QRs) => {
-          printTag({ productions: updatedProduction, QRs: QRs });
+        generateQR({productions: updatedProduction}).then((QRs) => {
+          printTag({productions: updatedProduction, QRs: QRs});
         });
         updateView();
       })
@@ -149,21 +145,16 @@ export const CreateProductionOrderDialog: React.FC<PropsCreate> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Registro de producción</DialogTitle>
-          <DialogDescription>
-            Mostrando datos relacionados con la producción.
-          </DialogDescription>
+          <DialogDescription>Mostrando datos relacionados con la producción.</DialogDescription>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit, onError)}
-              className=" grid   gap-4 "
-            >
+            <form onSubmit={form.handleSubmit(onSubmit, onError)} className=" grid   gap-4 ">
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
                   name="production.description"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-6">
                       <FormDescription>Descripción</FormDescription>
                       <FormControl>
@@ -176,24 +167,19 @@ export const CreateProductionOrderDialog: React.FC<PropsCreate> = ({
                 <FormField
                   control={form.control}
                   name="production.id_machine"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-3 ">
                       <FormDescription>Maquina</FormDescription>
                       <FormControl>
                         <Select
-                          onValueChange={(value) =>
-                            field.onChange(Number(value))
-                          } // Convertir el valor a número
+                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Seleccionar producto" />
                           </SelectTrigger>
                           <SelectContent>
-                            {machines?.map((product: MachineInterfaces) => (
-                              <SelectItem
-                                key={product.id}
-                                value={(product.id ?? "").toString()}
-                              >
+                            {machines?.map((product: IMachine) => (
+                              <SelectItem key={product.id} value={(product.id ?? "").toString()}>
                                 {product.name}
                               </SelectItem>
                             ))}
@@ -207,7 +193,7 @@ export const CreateProductionOrderDialog: React.FC<PropsCreate> = ({
                 <FormField
                   control={form.control}
                   name="amount"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-3">
                       <FormDescription>Cantidad Producidad</FormDescription>
                       <FormControl>
@@ -215,9 +201,7 @@ export const CreateProductionOrderDialog: React.FC<PropsCreate> = ({
                           placeholder="Cantidad"
                           type="number"
                           {...field}
-                          onChange={(event) =>
-                            field.onChange(Number(event.target.value))
-                          }
+                          onChange={(event) => field.onChange(Number(event.target.value))}
                         />
                       </FormControl>
                       <FormMessage />
@@ -227,7 +211,7 @@ export const CreateProductionOrderDialog: React.FC<PropsCreate> = ({
                 <FormField
                   control={form.control}
                   name="production.date"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-3">
                       <FormDescription>Fecha</FormDescription>
                       <FormControl>
@@ -256,7 +240,7 @@ export const CreateProductionOrderDialog: React.FC<PropsCreate> = ({
                 <FormField
                   control={form.control}
                   name="production.duration"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-3">
                       <FormDescription>Duración(m)</FormDescription>
                       <FormControl>
@@ -264,9 +248,7 @@ export const CreateProductionOrderDialog: React.FC<PropsCreate> = ({
                           placeholder="Duración"
                           type="number"
                           {...field}
-                          onChange={(event) =>
-                            field.onChange(Number(event.target.value))
-                          }
+                          onChange={(event) => field.onChange(Number(event.target.value))}
                         />
                       </FormControl>
                       <FormMessage />
@@ -276,24 +258,19 @@ export const CreateProductionOrderDialog: React.FC<PropsCreate> = ({
                 <FormField
                   control={form.control}
                   name="production.quality"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-6 ">
                       <FormDescription>Calidad de Producción</FormDescription>
                       <FormControl>
                         <Select
-                          onValueChange={(value) =>
-                            field.onChange(Number(value))
-                          } // Convertir el valor a número
+                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Seleccionar Calidad" />
                           </SelectTrigger>
                           <SelectContent>
                             {typeQuality.map((type) => (
-                              <SelectItem
-                                key={type.id}
-                                value={type.id.toString()}
-                              >
+                              <SelectItem key={type.id} value={type.id.toString()}>
                                 {type.name}
                               </SelectItem>
                             ))}
@@ -314,12 +291,7 @@ export const CreateProductionOrderDialog: React.FC<PropsCreate> = ({
                   {loadingSave ? <LoadingCircle /> : "Guardar"}
                 </Button>
                 <DialogClose asChild className="col-span-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    disabled={loadingSave}
-                  >
+                  <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                     Cerrar
                   </Button>
                 </DialogClose>

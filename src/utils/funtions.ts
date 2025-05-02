@@ -1,11 +1,5 @@
-import { z } from "zod";
-import { 
-  UnitySchema,
-  ColorSchema,
-  ModelSchema,
-  FormulaSchema,
-  ProductSchema,
-} from "./interfaces";
+import {z} from "zod";
+import {UnitySchema, ColorSchema, ModelSchema, FormulaSchema, ProductSchema} from "./interfaces";
 
 export function countCurrentMonth(
   data: z.infer<
@@ -32,3 +26,7 @@ export function countCurrentMonth(
     return count;
   }, 0);
 }
+
+export const randomNumber = (from: number, to: number) => {
+  return Math.floor(Math.random() * (to - from + 1)) + from;
+};

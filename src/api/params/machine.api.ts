@@ -1,6 +1,6 @@
-import { apiClient } from "../axiosConfig";
-import { MachineInterfaces } from "@/utils/interfaces";
-import { toast } from "sonner";
+import {apiClient} from "../axiosConfig";
+import {IMachine} from "@/utils/interfaces";
+import {toast} from "sonner";
 
 export const getMachines = async () => {
   try {
@@ -32,7 +32,7 @@ export const getMachineById = async (id: number) => {
   }
 };
 
-export const createMachine = async ({ data }: { data: MachineInterfaces }) => {
+export const createMachine = async ({data}: {data: IMachine}) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",
@@ -59,7 +59,7 @@ export const createMachine = async ({ data }: { data: MachineInterfaces }) => {
   }
 };
 
-export const updateMachine = async ({ data }: { data: MachineInterfaces }) => {
+export const updateMachine = async ({data}: {data: IMachine}) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",

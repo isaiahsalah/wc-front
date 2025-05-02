@@ -25,7 +25,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
-import {GroupInterfaces, UserInterfaces, UserSchema} from "@/utils/interfaces";
+import {IGroup, IUser, UserSchema} from "@/utils/interfaces";
 import {SesionContext} from "@/providers/sesion-provider";
 import {updateProfile} from "@/api/profile/profile.api";
 import {getGroups} from "@/api/params/group.api";
@@ -52,17 +52,17 @@ export const EditProfileDialog: React.FC<PropsEditProfile> = ({
 }) => {
   const {sesion, setSesion} = useContext(SesionContext);
 
-  //const [data, setData] = useState<GeneralInterfaces | never>();
+  //const [data, setData] = useState<IGeneral | never>();
   const [loadingSave, setLoadingSave] = useState(false); // Estado de carga
   const [loadingInit, setLoadingInit] = useState(false); // Estado de carga
-  const [groups, setGroups] = useState<GroupInterfaces[]>();
+  const [groups, setGroups] = useState<IGroup[]>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const form = useForm<UserInterfaces>({
+  const form = useForm<IUser>({
     resolver: zodResolver(UserSchema),
   });
 
-  function onSubmit(values: UserInterfaces) {
+  function onSubmit(values: IUser) {
     setLoadingSave(true); // Inicia la carga
     updateProfile({data: values})
       .then((updatedProfile) => {

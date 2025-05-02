@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
 
-import { useForm } from "react-hook-form";
-import { SectorInterfaces, SectorSchema } from "@/utils/interfaces";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {useForm} from "react-hook-form";
+import {ISector, SectorSchema} from "@/utils/interfaces";
+import {zodResolver} from "@hookform/resolvers/zod";
 
 import {
   Form,
@@ -13,8 +13,8 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import {Textarea} from "@/components/ui/textarea";
+import {useState} from "react";
 import {
   createSector,
   deleteSector,
@@ -39,22 +39,19 @@ interface PropsCreate {
   updateView: () => void; // Define the type as a function that returns void
 }
 
-export const CreateSectorDialog: React.FC<PropsCreate> = ({
-  children,
-  updateView,
-}) => {
+export const CreateSectorDialog: React.FC<PropsCreate> = ({children, updateView}) => {
   const [loadingSave, setLoadingSave] = useState(false);
 
-  const form = useForm<SectorInterfaces>({
+  const form = useForm<ISector>({
     resolver: zodResolver(SectorSchema),
     defaultValues: {
       name: "",
     },
   });
 
-  function onSubmit(values: SectorInterfaces) {
+  function onSubmit(values: ISector) {
     setLoadingSave(true);
-    createSector({ data: values })
+    createSector({data: values})
       .then((updatedSector) => {
         console.log("Sectoro creado:", updatedSector);
         updateView();
@@ -73,20 +70,15 @@ export const CreateSectorDialog: React.FC<PropsCreate> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Registro de Sectoro</DialogTitle>
-          <DialogDescription>
-            Mostrando datos relacionados con el Sectoro.
-          </DialogDescription>
+          <DialogDescription>Mostrando datos relacionados con el Sectoro.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className=" grid  gap-4 "
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className=" grid  gap-4 ">
             <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
               <FormField
                 control={form.control}
                 name="name"
-                render={({ field }) => (
+                render={({field}) => (
                   <FormItem className="col-span-6">
                     <FormDescription>Nombre</FormDescription>
                     <FormControl>
@@ -100,7 +92,7 @@ export const CreateSectorDialog: React.FC<PropsCreate> = ({
               <FormField
                 control={form.control}
                 name="description"
-                render={({ field }) => (
+                render={({field}) => (
                   <FormItem className="col-span-6">
                     <FormDescription>Descripción</FormDescription>
                     <FormControl>
@@ -120,12 +112,7 @@ export const CreateSectorDialog: React.FC<PropsCreate> = ({
                 {loadingSave ? <LoadingCircle /> : "Guardar"}
               </Button>
               <DialogClose asChild className="col-span-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  disabled={loadingSave}
-                >
+                <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                   Cerrar
                 </Button>
               </DialogClose>
@@ -144,23 +131,18 @@ interface PropsEdit {
   onOpenChange?: (open: boolean) => void;
 }
 
-export const EditSectorDialog: React.FC<PropsEdit> = ({
-  children,
-  id,
-  updateView,
-  onOpenChange,
-}) => {
+export const EditSectorDialog: React.FC<PropsEdit> = ({children, id, updateView, onOpenChange}) => {
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
 
-  const form = useForm<SectorInterfaces>({
+  const form = useForm<ISector>({
     resolver: zodResolver(SectorSchema),
   });
 
-  function onSubmit(values: SectorInterfaces) {
+  function onSubmit(values: ISector) {
     setLoadingSave(true);
-    updateSector({ data: values })
+    updateSector({data: values})
       .then((updatedSector) => {
         console.log("Sectoro actualizado:", updatedSector);
 
@@ -177,7 +159,7 @@ export const EditSectorDialog: React.FC<PropsEdit> = ({
   const fetchSector = async () => {
     setLoadingInit(true);
     try {
-      const SectorData: SectorInterfaces = await getSectorById(id);
+      const SectorData: ISector = await getSectorById(id);
       console.log("Sectoros:", SectorData);
 
       form.reset({
@@ -216,21 +198,16 @@ export const EditSectorDialog: React.FC<PropsEdit> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Gestión de Sectoro</DialogTitle>
-          <DialogDescription>
-            Mostrando datos relacionados con el Sectoro.
-          </DialogDescription>
+          <DialogDescription>Mostrando datos relacionados con el Sectoro.</DialogDescription>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className=" grid   gap-4 "
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid   gap-4 ">
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
                   name="id"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className={"col-span-2"}>
                       <FormDescription>Id</FormDescription>
                       <FormControl>
@@ -238,9 +215,7 @@ export const EditSectorDialog: React.FC<PropsEdit> = ({
                           type="number"
                           placeholder="Id"
                           disabled
-                          onChange={(event) =>
-                            field.onChange(Number(event.target.value))
-                          }
+                          onChange={(event) => field.onChange(Number(event.target.value))}
                           defaultValue={field.value ?? ""}
                         />
                       </FormControl>
@@ -251,7 +226,7 @@ export const EditSectorDialog: React.FC<PropsEdit> = ({
                 <FormField
                   control={form.control}
                   name="name"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-4">
                       <FormDescription>Nombre</FormDescription>
                       <FormControl>
@@ -265,7 +240,7 @@ export const EditSectorDialog: React.FC<PropsEdit> = ({
                 <FormField
                   control={form.control}
                   name="description"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-6">
                       <FormDescription>Descripción</FormDescription>
                       <FormControl>
@@ -350,9 +325,7 @@ export const DeleteSectorDialog: React.FC<PropsDelete> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Eliminar Sectoro</DialogTitle>
-          <DialogDescription>
-            ¿Está seguro de eliminar este Sectoro?
-          </DialogDescription>
+          <DialogDescription>¿Está seguro de eliminar este Sectoro?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -366,12 +339,7 @@ export const DeleteSectorDialog: React.FC<PropsDelete> = ({
             {loadingDelete ? <LoadingCircle /> : "Eliminar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              disabled={loadingDelete}
-            >
+            <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
               Cerrar
             </Button>
           </DialogClose>
@@ -418,9 +386,7 @@ export const RecoverSectorDialog: React.FC<PropsRecover> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Recuperar Sectoro</DialogTitle>
-          <DialogDescription>
-            ¿Está seguro de recuperar este Sectoro?
-          </DialogDescription>
+          <DialogDescription>¿Está seguro de recuperar este Sectoro?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -433,12 +399,7 @@ export const RecoverSectorDialog: React.FC<PropsRecover> = ({
             {loadingRecover ? <LoadingCircle /> : "Recuperar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              disabled={loadingRecover}
-            >
+            <Button type="button" variant="outline" className="w-full" disabled={loadingRecover}>
               Cerrar
             </Button>
           </DialogClose>

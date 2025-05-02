@@ -13,7 +13,7 @@ import {ModeToggle} from "@/components/mode-toggle";
 import {useContext, useState} from "react";
 import {SesionContext} from "@/providers/sesion-provider";
 import {getLogin} from "@/api/login.api";
-import {SesionInterface} from "@/utils/interfaces";
+import {ISesion} from "@/utils/interfaces";
 import {Navigate, useNavigate} from "react-router-dom";
 import {Select} from "@radix-ui/react-select";
 import {SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
@@ -64,7 +64,7 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
           window.localStorage.setItem("token-app", JSON.stringify(response.token));
 
           // Actualiza la sesión en el estado
-          setSesion(response as SesionInterface);
+          setSesion(response as ISesion);
           console.log("😒😒login: ", response);
           // Navega a la ruta deseada después de iniciar sesión
           navigate("/home");
@@ -88,7 +88,6 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
           <TypographyH3 className="">Plásticos Carmen</TypographyH3>
 
           <SquareDashed className="w-full   h-full px-15" />
-
           <TypographyP className="text-foreground/70 text-right">
             Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
             has been the industry's standard dummy text ever since the 1500s.

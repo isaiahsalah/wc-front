@@ -1,8 +1,8 @@
-import {UserInterfaces} from "@/utils/interfaces";
+import {IUser} from "@/utils/interfaces";
 import {apiClient} from "../axiosConfig";
 import {toast} from "sonner";
 
-export const updateProfile = async ({data}: {data: UserInterfaces}) => {
+export const updateProfile = async ({data}: {data: IUser}) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",

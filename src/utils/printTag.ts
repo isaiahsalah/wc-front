@@ -1,14 +1,14 @@
 import jsPDF from "jspdf";
-import { ProductionInterfaces } from "./interfaces";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import {IProduction} from "./interfaces";
+import {format} from "date-fns";
+import {es} from "date-fns/locale";
 
 import QRCode from "qrcode"; // Asegúrate de importar correctamente tu biblioteca
 
 export const generateQR = async ({
   productions,
 }: {
-  productions: ProductionInterfaces[];
+  productions: IProduction[];
 }): Promise<string[]> => {
   try {
     // Verificar que la lista de productos no esté vacía
@@ -45,13 +45,7 @@ export const generateQR = async ({
   }
 };
 
-export const printTag = ({
-  productions,
-  QRs,
-}: {
-  productions: ProductionInterfaces[];
-  QRs: string[];
-}) => {
+export const printTag = ({productions, QRs}: {productions: IProduction[]; QRs: string[]}) => {
   // Crear una instancia de jsPDF
   const doc = new jsPDF({
     orientation: "landscape", // Horizontal
@@ -78,11 +72,7 @@ export const printTag = ({
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(6);
-    const formattedDate = format(
-      new Date(production.date),
-      "dd/LLL/y - HH:mm",
-      { locale: es }
-    );
+    const formattedDate = format(new Date(production.date), "dd/LLL/y - HH:mm", {locale: es});
     const qrData = `${production.lote?.name}-${production.id}`; // Puedes poner cualquier URL o texto que desees
 
     doc.text(`${qrData}`, 24, 7);
@@ -95,9 +85,8 @@ export const printTag = ({
     );
     doc.setFont("helvetica", "bold"); // Usamos Helvetica y negrita
 
-    console.log("Type✔️✔️",production.order_detail?.product?.model?.type)
-    if (production.order_detail?.product?.model?.type === 1)
-      doc.text(`PLÁSTICOS CARMEN`, 14, 27);
+    console.log("Type✔️✔️", production.order_detail?.product?.model?.type);
+    if (production.order_detail?.product?.model?.type === 1) doc.text(`PLÁSTICOS CARMEN`, 14, 27);
     else doc.text(`PRODUCTO EN PROCESO`, 12, 27);
 
     doc.roundedRect(1, 1, 48, 28, 2, 2); // Rectángulo con bordes redondeados, radio de 5

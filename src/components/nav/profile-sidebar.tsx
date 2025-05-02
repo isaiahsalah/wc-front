@@ -17,7 +17,7 @@ import {useNavigate} from "react-router-dom";
 import {typeTurn} from "@/utils/const";
 import {EditProfileDialog} from "../dialog/profile/ProfileDialog";
 
-export function NavUser() {
+export function ProfileSidebar() {
   const {isMobile} = useSidebar();
 
   const navigate = useNavigate(); // Obtienes la función navigate

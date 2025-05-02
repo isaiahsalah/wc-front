@@ -1,15 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
 
-import { useForm } from "react-hook-form";
-import {
-  ColorInterfaces,
-  ModelInterfaces,
-  ProductInterfaces,
-  ProductSchema,
-  UnityInterfaces,
-} from "@/utils/interfaces";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {useForm} from "react-hook-form";
+import {IColor, IModel, IProduct, ProductSchema, IUnity} from "@/utils/interfaces";
+import {zodResolver} from "@hookform/resolvers/zod";
 
 import {
   Form,
@@ -19,8 +13,8 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import {Textarea} from "@/components/ui/textarea";
+import {useState} from "react";
 import {
   createProduct,
   deleteProduct,
@@ -28,7 +22,7 @@ import {
   recoverProduct,
   updateProduct,
 } from "@/api/product/product.api";
-import { toast } from "sonner";
+import {toast} from "sonner";
 import {
   Dialog,
   DialogClose,
@@ -40,9 +34,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
-import { getColors } from "@/api/product/color.api";
-import { getModels } from "@/api/params/model.api";
-import { getUnities } from "@/api/product/unity.api";
+import {getColors} from "@/api/product/color.api";
+import {getModels} from "@/api/params/model.api";
+import {getUnities} from "@/api/product/unity.api";
 import {
   Select,
   SelectContent,
@@ -56,17 +50,14 @@ interface PropsCreate {
   updateView: () => void; // Define the type as a function that returns void
 }
 
-export const CreateProductDialog: React.FC<PropsCreate> = ({
-  children,
-  updateView,
-}) => {
+export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView}) => {
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
-  const [colors, setColors] = useState<ColorInterfaces[]>();
-  const [models, setModels] = useState<ModelInterfaces[]>();
-  const [unities, setUnities] = useState<UnityInterfaces[]>();
+  const [colors, setColors] = useState<IColor[]>();
+  const [models, setModels] = useState<IModel[]>();
+  const [unities, setUnities] = useState<IUnity[]>();
 
-  const form = useForm<ProductInterfaces>({
+  const form = useForm<IProduct>({
     resolver: zodResolver(ProductSchema),
     defaultValues: {
       name: "",
@@ -77,9 +68,9 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({
     },
   });
 
-  function onSubmit(values: ProductInterfaces) {
+  function onSubmit(values: IProduct) {
     setLoadingSave(true);
-    createProduct({ data: values })
+    createProduct({data: values})
       .then((updatedProduct) => {
         console.log("Producto creado:", updatedProduct);
         updateView();
@@ -117,21 +108,16 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({
       <DialogContent className="">
         <DialogHeader>
           <DialogTitle>Registro de producto</DialogTitle>
-          <DialogDescription>
-            Mostrando datos relacionados con el producto.
-          </DialogDescription>
+          <DialogDescription>Mostrando datos relacionados con el producto.</DialogDescription>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className=" grid  gap-4 "
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid  gap-4 ">
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
                   name="name"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-6">
                       <FormDescription>Nombre</FormDescription>
                       <FormControl>
@@ -145,7 +131,7 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({
                 <FormField
                   control={form.control}
                   name="description"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-6">
                       <FormDescription>Descripción</FormDescription>
                       <FormControl>
@@ -159,25 +145,20 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({
                 <FormField
                   control={form.control}
                   name="id_color"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-3 ">
                       <FormDescription>Color</FormDescription>
                       <FormControl>
                         <Select
-                          onValueChange={(value) =>
-                            field.onChange(Number(value))
-                          } // Convertir el valor a número
+                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                           defaultValue={field.value.toString()}
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Seleccionar producto" />
                           </SelectTrigger>
                           <SelectContent>
-                            {colors?.map((product: ColorInterfaces) => (
-                              <SelectItem
-                                key={product.id}
-                                value={(product.id ?? "").toString()}
-                              >
+                            {colors?.map((product: IColor) => (
+                              <SelectItem key={product.id} value={(product.id ?? "").toString()}>
                                 {product.name}
                               </SelectItem>
                             ))}
@@ -192,25 +173,20 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({
                 <FormField
                   control={form.control}
                   name="id_model"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-3 ">
                       <FormDescription>Modelo</FormDescription>
                       <FormControl>
                         <Select
-                          onValueChange={(value) =>
-                            field.onChange(Number(value))
-                          } // Convertir el valor a número
+                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                           defaultValue={field.value.toString()}
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Seleccionar producto" />
                           </SelectTrigger>
                           <SelectContent>
-                            {models?.map((product: ModelInterfaces) => (
-                              <SelectItem
-                                key={product.id}
-                                value={(product.id ?? "").toString()}
-                              >
+                            {models?.map((product: IModel) => (
+                              <SelectItem key={product.id} value={(product.id ?? "").toString()}>
                                 {product.name}
                               </SelectItem>
                             ))}
@@ -225,25 +201,20 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({
                 <FormField
                   control={form.control}
                   name="id_unity"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-3 ">
                       <FormDescription>Unidad</FormDescription>
                       <FormControl>
                         <Select
-                          onValueChange={(value) =>
-                            field.onChange(Number(value))
-                          } // Convertir el valor a número
+                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                           defaultValue={field.value.toString()}
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Seleccionar producto" />
                           </SelectTrigger>
                           <SelectContent>
-                            {unities?.map((product: UnityInterfaces) => (
-                              <SelectItem
-                                key={product.id}
-                                value={(product.id ?? "").toString()}
-                              >
+                            {unities?.map((product: IUnity) => (
+                              <SelectItem key={product.id} value={(product.id ?? "").toString()}>
                                 {product.name}
                               </SelectItem>
                             ))}
@@ -257,7 +228,7 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({
                 <FormField
                   control={form.control}
                   name="amount"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-3">
                       <FormDescription>Cantidad</FormDescription>
                       <FormControl>
@@ -265,9 +236,7 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({
                           placeholder="Cantidad"
                           type="number"
                           {...field}
-                          onChange={(event) =>
-                            field.onChange(Number(event.target.value))
-                          }
+                          onChange={(event) => field.onChange(Number(event.target.value))}
                         />
                       </FormControl>
                       <FormMessage />
@@ -277,7 +246,7 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({
                 <FormField
                   control={form.control}
                   name="cost"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-3">
                       <FormDescription>Costo</FormDescription>
                       <FormControl>
@@ -285,9 +254,7 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({
                           placeholder="Costo"
                           type="number"
                           {...field}
-                          onChange={(event) =>
-                            field.onChange(Number(event.target.value))
-                          }
+                          onChange={(event) => field.onChange(Number(event.target.value))}
                         />
                       </FormControl>
                       <FormMessage />
@@ -297,7 +264,7 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({
                 <FormField
                   control={form.control}
                   name="price"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-3">
                       <FormDescription>Precio</FormDescription>
                       <FormControl>
@@ -305,9 +272,7 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({
                           placeholder="Precio"
                           type="number"
                           {...field}
-                          onChange={(event) =>
-                            field.onChange(Number(event.target.value))
-                          } // Convertir el valor a número
+                          onChange={(event) => field.onChange(Number(event.target.value))} // Convertir el valor a número
                         />
                       </FormControl>
                       <FormMessage />
@@ -325,12 +290,7 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({
                   {loadingSave ? <LoadingCircle /> : "Guardar"}
                 </Button>
                 <DialogClose asChild className="col-span-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    disabled={loadingSave}
-                  >
+                  <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                     Cerrar
                   </Button>
                 </DialogClose>
@@ -359,11 +319,11 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
-  const [colors, setColors] = useState<ColorInterfaces[]>();
-  const [models, setModels] = useState<ModelInterfaces[]>();
-  const [unities, setUnities] = useState<UnityInterfaces[]>();
+  const [colors, setColors] = useState<IColor[]>();
+  const [models, setModels] = useState<IModel[]>();
+  const [unities, setUnities] = useState<IUnity[]>();
 
-  const form = useForm<ProductInterfaces>({
+  const form = useForm<IProduct>({
     resolver: zodResolver(ProductSchema),
     defaultValues: {
       id: 0,
@@ -375,9 +335,9 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
     },
   });
 
-  function onSubmit(values: ProductInterfaces) {
+  function onSubmit(values: IProduct) {
     setLoadingSave(true);
-    updateProduct({ data: values })
+    updateProduct({data: values})
       .then((updatedProduct) => {
         console.log("Producto actualizado:", updatedProduct);
 
@@ -407,7 +367,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
   const fetchProduct = async () => {
     setLoadingInit(true);
     try {
-      const productData: ProductInterfaces = await getProductById(id);
+      const productData: IProduct = await getProductById(id);
       console.log("Productos:", productData);
       const ColorsData = await getColors();
       const ModelsData = await getModels();
@@ -471,21 +431,16 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Editar producto</DialogTitle>
-          <DialogDescription>
-            Mostrando datos relacionados con el producto.
-          </DialogDescription>
+          <DialogDescription>Mostrando datos relacionados con el producto.</DialogDescription>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className=" grid  gap-4 "
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid  gap-4 ">
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
                   name="id"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className={"col-span-2"}>
                       <FormDescription>Id</FormDescription>
                       <FormControl>
@@ -493,9 +448,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                           type="number"
                           placeholder="Id"
                           disabled
-                          onChange={(event) =>
-                            field.onChange(Number(event.target.value))
-                          }
+                          onChange={(event) => field.onChange(Number(event.target.value))}
                           defaultValue={field.value ?? ""}
                         />
                       </FormControl>
@@ -506,7 +459,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                 <FormField
                   control={form.control}
                   name="name"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-4">
                       <FormDescription>Nombre</FormDescription>
                       <FormControl>
@@ -519,7 +472,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                 <FormField
                   control={form.control}
                   name="description"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-6">
                       <FormDescription>Descripción</FormDescription>
                       <FormControl>
@@ -533,25 +486,20 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                 <FormField
                   control={form.control}
                   name="id_color"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-3 ">
                       <FormDescription>Color</FormDescription>
                       <FormControl>
                         <Select
-                          onValueChange={(value) =>
-                            field.onChange(Number(value))
-                          } // Convertir el valor a número
+                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                           defaultValue={field.value.toString()}
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Seleccionar producto" />
                           </SelectTrigger>
                           <SelectContent>
-                            {colors?.map((product: ColorInterfaces) => (
-                              <SelectItem
-                                key={product.id}
-                                value={(product.id ?? "").toString()}
-                              >
+                            {colors?.map((product: IColor) => (
+                              <SelectItem key={product.id} value={(product.id ?? "").toString()}>
                                 {product.name}
                               </SelectItem>
                             ))}
@@ -566,25 +514,20 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                 <FormField
                   control={form.control}
                   name="id_model"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-3 ">
                       <FormDescription>Modelo</FormDescription>
                       <FormControl>
                         <Select
-                          onValueChange={(value) =>
-                            field.onChange(Number(value))
-                          } // Convertir el valor a número
+                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                           defaultValue={field.value.toString()}
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Seleccionar producto" />
                           </SelectTrigger>
                           <SelectContent>
-                            {models?.map((product: ModelInterfaces) => (
-                              <SelectItem
-                                key={product.id}
-                                value={(product.id ?? "").toString()}
-                              >
+                            {models?.map((product: IModel) => (
+                              <SelectItem key={product.id} value={(product.id ?? "").toString()}>
                                 {product.name}
                               </SelectItem>
                             ))}
@@ -599,25 +542,20 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                 <FormField
                   control={form.control}
                   name="id_unity"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-3 ">
                       <FormDescription>Unidad</FormDescription>
                       <FormControl>
                         <Select
-                          onValueChange={(value) =>
-                            field.onChange(Number(value))
-                          } // Convertir el valor a número
+                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                           defaultValue={field.value.toString()}
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Seleccionar producto" />
                           </SelectTrigger>
                           <SelectContent>
-                            {unities?.map((product: UnityInterfaces) => (
-                              <SelectItem
-                                key={product.id}
-                                value={(product.id ?? "").toString()}
-                              >
+                            {unities?.map((product: IUnity) => (
+                              <SelectItem key={product.id} value={(product.id ?? "").toString()}>
                                 {product.name}
                               </SelectItem>
                             ))}
@@ -631,7 +569,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                 <FormField
                   control={form.control}
                   name="amount"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-3">
                       <FormDescription>Cantidad</FormDescription>
                       <FormControl>
@@ -639,9 +577,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                           placeholder="Cantidad"
                           type="number"
                           {...field}
-                          onChange={(event) =>
-                            field.onChange(Number(event.target.value))
-                          }
+                          onChange={(event) => field.onChange(Number(event.target.value))}
                         />
                       </FormControl>
                       <FormMessage />
@@ -651,7 +587,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                 <FormField
                   control={form.control}
                   name="cost"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-3">
                       <FormDescription>Costo</FormDescription>
                       <FormControl>
@@ -659,9 +595,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                           placeholder="Costo"
                           type="number"
                           {...field}
-                          onChange={(event) =>
-                            field.onChange(Number(event.target.value))
-                          }
+                          onChange={(event) => field.onChange(Number(event.target.value))}
                         />
                       </FormControl>
                       <FormMessage />
@@ -671,7 +605,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                 <FormField
                   control={form.control}
                   name="price"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-3">
                       <FormDescription>Precio</FormDescription>
                       <FormControl>
@@ -679,9 +613,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                           placeholder="Precio"
                           type="number"
                           {...field}
-                          onChange={(event) =>
-                            field.onChange(Number(event.target.value))
-                          } // Convertir el valor a número
+                          onChange={(event) => field.onChange(Number(event.target.value))} // Convertir el valor a número
                         />
                       </FormControl>
                       <FormMessage />
@@ -775,9 +707,7 @@ export const DeleteProductDialog: React.FC<PropsDelete> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Eliminar producto</DialogTitle>
-          <DialogDescription>
-            ¿Está seguro de eliminar este producto?
-          </DialogDescription>
+          <DialogDescription>¿Está seguro de eliminar este producto?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -791,12 +721,7 @@ export const DeleteProductDialog: React.FC<PropsDelete> = ({
             {loadingDelete ? <LoadingCircle /> : "Eliminar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              disabled={loadingDelete}
-            >
+            <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
               Cerrar
             </Button>
           </DialogClose>
@@ -855,9 +780,7 @@ export const RecoverProductDialog: React.FC<PropsRecover> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Recuperar producto</DialogTitle>
-          <DialogDescription>
-            ¿Está seguro de recuperar este producto?
-          </DialogDescription>
+          <DialogDescription>¿Está seguro de recuperar este producto?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -870,12 +793,7 @@ export const RecoverProductDialog: React.FC<PropsRecover> = ({
             {loadingRecover ? <LoadingCircle /> : "Recuperar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              disabled={loadingRecover}
-            >
+            <Button type="button" variant="outline" className="w-full" disabled={loadingRecover}>
               Cerrar
             </Button>
           </DialogClose>

@@ -1,6 +1,6 @@
-import { apiClient } from "../axiosConfig";
-import { UnityInterfaces } from "@/utils/interfaces";
-import { toast } from "sonner";
+import {apiClient} from "../axiosConfig";
+import {IUnity} from "@/utils/interfaces";
+import {toast} from "sonner";
 
 export const getUnities = async () => {
   try {
@@ -32,7 +32,7 @@ export const getUnityById = async (id: number) => {
   }
 };
 
-export const createUnity = async ({ data }: { data: UnityInterfaces }) => {
+export const createUnity = async ({data}: {data: IUnity}) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",
@@ -59,7 +59,7 @@ export const createUnity = async ({ data }: { data: UnityInterfaces }) => {
   }
 };
 
-export const updateUnity = async ({ data }: { data: UnityInterfaces }) => {
+export const updateUnity = async ({data}: {data: IUnity}) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",

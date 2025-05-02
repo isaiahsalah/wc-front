@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
 
-import { useForm } from "react-hook-form";
-import { ProcessInterfaces, ProcessSchema } from "@/utils/interfaces";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {useForm} from "react-hook-form";
+import {IProcess, ProcessSchema} from "@/utils/interfaces";
+import {zodResolver} from "@hookform/resolvers/zod";
 
 import {
   Form,
@@ -13,8 +13,8 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import {Textarea} from "@/components/ui/textarea";
+import {useState} from "react";
 import {
   createProcess,
   deleteProcess,
@@ -39,22 +39,19 @@ interface PropsCreate {
   updateView: () => void; // Define the type as a function that returns void
 }
 
-export const CreateProcessDialog: React.FC<PropsCreate> = ({
-  children,
-  updateView,
-}) => {
+export const CreateProcessDialog: React.FC<PropsCreate> = ({children, updateView}) => {
   const [loadingSave, setLoadingSave] = useState(false);
 
-  const form = useForm<ProcessInterfaces>({
+  const form = useForm<IProcess>({
     resolver: zodResolver(ProcessSchema),
     defaultValues: {
       name: "",
     },
   });
 
-  function onSubmit(values: ProcessInterfaces) {
+  function onSubmit(values: IProcess) {
     setLoadingSave(true);
-    createProcess({ data: values })
+    createProcess({data: values})
       .then((updatedProcess) => {
         console.log("Processo creado:", updatedProcess);
         updateView();
@@ -73,20 +70,15 @@ export const CreateProcessDialog: React.FC<PropsCreate> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Registro de Processo</DialogTitle>
-          <DialogDescription>
-            Mostrando datos relacionados con el Processo.
-          </DialogDescription>
+          <DialogDescription>Mostrando datos relacionados con el Processo.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className=" grid  gap-4 "
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className=" grid  gap-4 ">
             <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
               <FormField
                 control={form.control}
                 name="name"
-                render={({ field }) => (
+                render={({field}) => (
                   <FormItem className="col-span-6">
                     <FormDescription>Nombre</FormDescription>
                     <FormControl>
@@ -100,7 +92,7 @@ export const CreateProcessDialog: React.FC<PropsCreate> = ({
               <FormField
                 control={form.control}
                 name="description"
-                render={({ field }) => (
+                render={({field}) => (
                   <FormItem className="col-span-6">
                     <FormDescription>Descripción</FormDescription>
                     <FormControl>
@@ -120,12 +112,7 @@ export const CreateProcessDialog: React.FC<PropsCreate> = ({
                 {loadingSave ? <LoadingCircle /> : "Guardar"}
               </Button>
               <DialogClose asChild className="col-span-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  disabled={loadingSave}
-                >
+                <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                   Cerrar
                 </Button>
               </DialogClose>
@@ -154,13 +141,13 @@ export const EditProcessDialog: React.FC<PropsEdit> = ({
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
 
-  const form = useForm<ProcessInterfaces>({
+  const form = useForm<IProcess>({
     resolver: zodResolver(ProcessSchema),
   });
 
-  function onSubmit(values: ProcessInterfaces) {
+  function onSubmit(values: IProcess) {
     setLoadingSave(true);
-    updateProcess({ data: values })
+    updateProcess({data: values})
       .then((updatedProcess) => {
         console.log("Processo actualizado:", updatedProcess);
 
@@ -177,7 +164,7 @@ export const EditProcessDialog: React.FC<PropsEdit> = ({
   const fetchProcess = async () => {
     setLoadingInit(true);
     try {
-      const ProcessData: ProcessInterfaces = await getProcessById(id);
+      const ProcessData: IProcess = await getProcessById(id);
       console.log("Processos:", ProcessData);
 
       form.reset({
@@ -216,21 +203,16 @@ export const EditProcessDialog: React.FC<PropsEdit> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Gestión de Processo</DialogTitle>
-          <DialogDescription>
-            Mostrando datos relacionados con el Processo.
-          </DialogDescription>
+          <DialogDescription>Mostrando datos relacionados con el Processo.</DialogDescription>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className=" grid   gap-4 "
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid   gap-4 ">
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
                   name="id"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className={"col-span-2"}>
                       <FormDescription>Id</FormDescription>
                       <FormControl>
@@ -238,9 +220,7 @@ export const EditProcessDialog: React.FC<PropsEdit> = ({
                           type="number"
                           placeholder="Id"
                           disabled
-                          onChange={(event) =>
-                            field.onChange(Number(event.target.value))
-                          }
+                          onChange={(event) => field.onChange(Number(event.target.value))}
                           defaultValue={field.value ?? ""}
                         />
                       </FormControl>
@@ -251,7 +231,7 @@ export const EditProcessDialog: React.FC<PropsEdit> = ({
                 <FormField
                   control={form.control}
                   name="name"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-4">
                       <FormDescription>Nombre</FormDescription>
                       <FormControl>
@@ -265,7 +245,7 @@ export const EditProcessDialog: React.FC<PropsEdit> = ({
                 <FormField
                   control={form.control}
                   name="description"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-6">
                       <FormDescription>Descripción</FormDescription>
                       <FormControl>
@@ -350,9 +330,7 @@ export const DeleteProcessDialog: React.FC<PropsDelete> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Eliminar Processo</DialogTitle>
-          <DialogDescription>
-            ¿Está seguro de eliminar este Processo?
-          </DialogDescription>
+          <DialogDescription>¿Está seguro de eliminar este Processo?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -366,12 +344,7 @@ export const DeleteProcessDialog: React.FC<PropsDelete> = ({
             {loadingDelete ? <LoadingCircle /> : "Eliminar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              disabled={loadingDelete}
-            >
+            <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
               Cerrar
             </Button>
           </DialogClose>
@@ -418,9 +391,7 @@ export const RecoverProcessDialog: React.FC<PropsRecover> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Recuperar Processo</DialogTitle>
-          <DialogDescription>
-            ¿Está seguro de recuperar este Processo?
-          </DialogDescription>
+          <DialogDescription>¿Está seguro de recuperar este Processo?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -433,12 +404,7 @@ export const RecoverProcessDialog: React.FC<PropsRecover> = ({
             {loadingRecover ? <LoadingCircle /> : "Recuperar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              disabled={loadingRecover}
-            >
+            <Button type="button" variant="outline" className="w-full" disabled={loadingRecover}>
               Cerrar
             </Button>
           </DialogClose>

@@ -2,12 +2,7 @@ import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 
 import {useForm} from "react-hook-form";
-import {
-  OrderDetailInterfaces,
-  OrderInterfaces,
-  OrderSchema,
-  ProductInterfaces,
-} from "@/utils/interfaces";
+import {IOrderDetail, IOrder, OrderSchema, IProduct} from "@/utils/interfaces";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 import {
@@ -53,21 +48,21 @@ export const CreateOrderDetailDialog: React.FC<PropsCreate> = ({children, update
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
 
-  const [products, setProducts] = useState<ProductInterfaces[]>([]);
+  const [products, setProducts] = useState<IProduct[]>([]);
 
-  const [productSelected, setProductSelected] = useState<ProductInterfaces>();
-  const [orderDetailsSelected, setOrderDetailsSelected] = useState<OrderDetailInterfaces[]>([]);
+  const [productSelected, setProductSelected] = useState<IProduct>();
+  const [orderDetailsSelected, setOrderDetailsSelected] = useState<IOrderDetail[]>([]);
 
   const [amount, setAmount] = useState<number>();
 
-  const form = useForm<OrderInterfaces>({
+  const form = useForm<IOrder>({
     resolver: zodResolver(OrderSchema),
     defaultValues: {
       id_user: 1,
     },
   });
 
-  function onSubmit(values: OrderInterfaces) {
+  function onSubmit(values: IOrder) {
     if (orderDetailsSelected.length <= 0) return;
     setLoadingSave(true);
 
@@ -115,7 +110,7 @@ export const CreateOrderDetailDialog: React.FC<PropsCreate> = ({children, update
   };
 
   // Generar columnas dinámicamente
-  const columnsOrderDetailsSelected: ColumnDef<OrderDetailInterfaces>[] =
+  const columnsOrderDetailsSelected: ColumnDef<IOrderDetail>[] =
     /*@ts-expect-error: Ignoramos el error en esta línea */
 
     useMemo(() => {
@@ -132,7 +127,7 @@ export const CreateOrderDetailDialog: React.FC<PropsCreate> = ({children, update
           cell: (info) => {
             /*@ts-expect-error: Ignoramos el error en esta línea */
 
-            const product: ProductInterfaces = info.getValue();
+            const product: IProduct = info.getValue();
             return product.name;
           },
         },
@@ -145,7 +140,7 @@ export const CreateOrderDetailDialog: React.FC<PropsCreate> = ({children, update
           id: "actions",
           header: "",
           enableHiding: false,
-          cell: ({row}: {row: Row<ProductInterfaces>}) => {
+          cell: ({row}: {row: Row<IProduct>}) => {
             return (
               <div className="flex gap-2  justify-end  ">
                 <Button
@@ -256,7 +251,7 @@ export const CreateOrderDetailDialog: React.FC<PropsCreate> = ({children, update
                   <Select
                     onValueChange={(value) => {
                       const selectedProduct = products?.find(
-                        (product: ProductInterfaces) => product.id?.toString() === value
+                        (product: IProduct) => product.id?.toString() === value
                       );
                       setProductSelected(selectedProduct); // Guarda el objeto completo
                     }} // Convertir el valor a número
@@ -265,7 +260,7 @@ export const CreateOrderDetailDialog: React.FC<PropsCreate> = ({children, update
                       <SelectValue placeholder="Seleccionar Producto" />
                     </SelectTrigger>
                     <SelectContent>
-                      {products?.map((process: ProductInterfaces) => (
+                      {products?.map((process: IProduct) => (
                         <SelectItem key={process.id} value={(process.id ?? "").toString()}>
                           {process.name}
                         </SelectItem>

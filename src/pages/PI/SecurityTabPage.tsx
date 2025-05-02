@@ -1,21 +1,19 @@
-import { useCallback, useEffect, useState } from "react";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator"; 
-import { GeneralInterfaces } from "@/utils/interfaces";
-import SelectorTabPage from "@/components/SelectorTabPage"; 
-import ProductPage from "./product/ProductPage";
-import { getAllProducts } from "@/api/product/product.api" 
-  
-const InventoryTabPage = () => {
+import SelectorTabPage from "@/components/SelectorTabPage";
+import {Separator} from "@/components/ui/separator";
+import {Tabs, TabsContent} from "@/components/ui/tabs";
+import {useCallback, useEffect, useState} from "react";
+import {IGeneral} from "@/utils/interfaces";
+import {getAllProductions} from "@/api/production/production.api";
+import ProductionPage from "./production/ProductionPage";
+
+const SecurityTabPage = () => {
   const [activeTab, setActiveTab] = useState(tabData[0]);
-  const [data, setData] = useState<GeneralInterfaces[]  >([]);
+  const [data, setData] = useState<IGeneral[]>([]);
   const [loading, setLoading] = useState(false); // Estado de carga
 
   useEffect(() => {
     updateView();
   }, [activeTab]);
-
-  
 
   const updateView = useCallback(async () => {
     setLoading(true);
@@ -31,7 +29,7 @@ const InventoryTabPage = () => {
 
   return (
     <Tabs
-      value={activeTab.id }
+      value={activeTab.id}
       onValueChange={(value) => {
         const selectedTab = tabData.find((tab) => tab.id === value);
         if (selectedTab) setActiveTab(selectedTab);
@@ -39,7 +37,7 @@ const InventoryTabPage = () => {
       className="flex w-full flex-col justify-start gap-4"
     >
       <SelectorTabPage
-        activeTab={activeTab.id }
+        activeTab={activeTab.id}
         setActiveTab={(value) => {
           const selectedTab = tabData.find((tab) => tab.id === value);
           if (selectedTab) setActiveTab(selectedTab);
@@ -56,18 +54,18 @@ const InventoryTabPage = () => {
             <tab.content data={data} updateView={updateView} />
           )}
         </TabsContent>
-      ))} 
+      ))}
     </Tabs>
   );
 };
 
-export default InventoryTabPage;
+export default SecurityTabPage;
 
 const tabData = [
   {
     id: "tab1",
-    label: "Producto",
-    content: ProductPage,
-    get: getAllProducts
-  }, 
+    label: "Producción",
+    content: ProductionPage,
+    get: getAllProductions,
+  },
 ];

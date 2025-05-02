@@ -2,7 +2,7 @@ import {
   ColumnDef,
   ColumnFiltersState,
   SortingState,
-  VisibilityState, 
+  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -19,10 +19,10 @@ import {
   ChevronsRightIcon,
   ChevronsUpDown,
   ChevronUp,
-  ColumnsIcon, 
+  ColumnsIcon,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+import {Button} from "@/components/ui/button";
+import {Label} from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -30,31 +30,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"; 
- import { useState } from "react";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
+import {useState} from "react";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Filter } from "./dataTableFilters"; 
-import { GeneralInterfaces } from "@/utils/interfaces";
+import {Filter} from "./dataTableFilters";
+import {IGeneral} from "@/utils/interfaces";
 
 interface Props {
-  data: GeneralInterfaces[];
-  columns: ColumnDef<GeneralInterfaces>[];
+  data: IGeneral[];
+  columns: ColumnDef<IGeneral>[];
   actions: React.ReactNode;
 }
 
-const DataTableDinamic: React.FC<Props> = ({ data, columns, actions }) => {
+const DataTableDinamic: React.FC<Props> = ({data, columns, actions}) => {
   const [rowSelection, setRowSelection] = useState({});
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -77,7 +70,7 @@ const DataTableDinamic: React.FC<Props> = ({ data, columns, actions }) => {
       globalFilter,
     },
     filterFns: {}, // Define funciones personalizadas si es necesario
-            /*@ts-expect-error: Ignoramos el error en esta línea */
+    /*@ts-expect-error: Ignoramos el error en esta línea */
     getRowId: (row) => row.id.toString(),
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
@@ -100,9 +93,9 @@ const DataTableDinamic: React.FC<Props> = ({ data, columns, actions }) => {
           column={{
             getFilterValue: () => globalFilter,
             setFilterValue: setGlobalFilter,
-                    /*@ts-expect-error: Ignoramos el error en esta línea */
+            /*@ts-expect-error: Ignoramos el error en esta línea */
 
-            columnDef: { meta: { filterVariant: "text" } },
+            columnDef: {meta: {filterVariant: "text"}},
           }}
         />
         <div className="flex gap-2">
@@ -110,9 +103,7 @@ const DataTableDinamic: React.FC<Props> = ({ data, columns, actions }) => {
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
                 <ColumnsIcon />
-                <span className="ml-2 hidden lg:inline">
-                  Personalizar Columnas
-                </span>
+                <span className="ml-2 hidden lg:inline">Personalizar Columnas</span>
                 <ChevronDownIcon className="ml-1" />
               </Button>
             </DropdownMenuTrigger>
@@ -144,8 +135,8 @@ const DataTableDinamic: React.FC<Props> = ({ data, columns, actions }) => {
                   const filterOptions =
                     header.column.id === "deletedAt"
                       ? [
-                          { value: "Eliminado", label: "Eliminado" },
-                          { value: "Vigente", label: "Vigente" },
+                          {value: "Eliminado", label: "Eliminado"},
+                          {value: "Vigente", label: "Vigente"},
                         ]
                       : undefined;
                   return (
@@ -155,7 +146,7 @@ const DataTableDinamic: React.FC<Props> = ({ data, columns, actions }) => {
                           {header.column.getCanFilter() ? (
                             <div>
                               <Filter
-                                      /*@ts-expect-error: Ignoramos el error en esta línea */
+                                /*@ts-expect-error: Ignoramos el error en esta línea */
 
                                 placeholder={header.column.columnDef.header}
                                 column={header.column}
@@ -168,8 +159,7 @@ const DataTableDinamic: React.FC<Props> = ({ data, columns, actions }) => {
                             <div
                               {...{
                                 className: "  flex cursor-pointer mr-auto  my-auto   ",
-                                onClick:
-                                  header.column.getToggleSortingHandler(),
+                                onClick: header.column.getToggleSortingHandler(),
                               }}
                             >
                               {{
@@ -191,16 +181,10 @@ const DataTableDinamic: React.FC<Props> = ({ data, columns, actions }) => {
           <TableBody>
             {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -234,9 +218,7 @@ const DataTableDinamic: React.FC<Props> = ({ data, columns, actions }) => {
               }}
             >
               <SelectTrigger className="w-20" id="rows-per-page">
-                <SelectValue
-                  placeholder={table.getState().pagination.pageSize}
-                />
+                <SelectValue placeholder={table.getState().pagination.pageSize} />
               </SelectTrigger>
               <SelectContent side="top">
                 {[5, 10, 20, 30, 40, 50].map((pageSize) => (
@@ -248,8 +230,7 @@ const DataTableDinamic: React.FC<Props> = ({ data, columns, actions }) => {
             </Select>
           </div>
           <div className="flex w-fit items-center justify-center text-sm font-medium">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
+            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
           </div>
           <div className="ml-auto flex items-center gap-2 lg:ml-0">
             <Button

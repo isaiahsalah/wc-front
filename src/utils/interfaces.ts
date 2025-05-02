@@ -1,7 +1,7 @@
 import {z} from "zod";
 
-export interface SesionInterface {
-  user: UserInterfaces;
+export interface ISesion {
+  user: IUser;
   token: string;
 }
 /*
@@ -129,7 +129,6 @@ export const ModelSchema = z.object({
   process: ProcessSchema.nullable().optional(),
   id_sector: z.number(),
   sector: SectorSchema.nullable().optional(),
-  type: z.number(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
@@ -152,6 +151,8 @@ export const ProductSchema = z.object({
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
+  isRawMaterial: z.boolean(),
+  isFinishedProductz: z.boolean(),
 });
 
 // Tabla: Formula
@@ -172,7 +173,7 @@ export const FormulaDetailSchema = z.object({
   name: z.string(),
   amount: z.number(),
   id_product_material: z.number(),
-  productMaterial: ProductSchema.nullable().optional(),
+  product_material: ProductSchema.nullable().optional(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
@@ -231,12 +232,13 @@ export const OrderDetailSchema = z.object({
 // Tabla: Permission
 export const PermissionSchema = z.object({
   id: z.number().nullable().optional(),
-  name: z.string(),
   id_user: z.number(),
   user: UserSchema.nullable().optional(),
-  degree: z.number().optional(),
-  screen: z.number().optional(),
-  module: z.number().optional(),
+  id_sector: z.number(),
+  sector: SectorSchema.nullable().optional(),
+  degree: z.number(),
+  screen: z.number(),
+  module: z.number(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
@@ -248,6 +250,10 @@ export const ProductionSchema = z.object({
   description: z.string(),
   date: z.date(),
   duration: z.number(),
+  amount: z.number(),
+  quality: z.number().optional(),
+  id_unity: z.number(),
+  unity: UnitySchema.nullable().optional(),
   id_machine: z.number(),
   machine: MachineSchema.nullable().optional(),
   id_lote: z.number(),
@@ -256,7 +262,6 @@ export const ProductionSchema = z.object({
   order_detail: OrderDetailSchema.nullable().optional(),
   id_user: z.number(),
   user: UserSchema.nullable().optional(),
-  quality: z.number().optional(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
@@ -268,49 +273,51 @@ export const ProductionDetailSchema = z.object({
   amount: z.number(),
   id_production: z.number(),
   production: ProductionSchema.nullable().optional(),
-  id_product_materia: z.number(),
-  productMaterial: ProductSchema.nullable().optional(),
+  id_product_material: z.number(),
+  product_material: ProductSchema.nullable().optional(),
+  id_production_material: z.number(),
+  production_material: ProductionSchema.nullable().optional(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
 });
 
-export type GroupInterfaces = z.infer<typeof GroupSchema>;
+export type IGroup = z.infer<typeof GroupSchema>;
 
-export type ColorInterfaces = z.infer<typeof ColorSchema>;
-export type FormulaDetailInterfaces = z.infer<typeof FormulaDetailSchema>;
-export type FormulaInterfaces = z.infer<typeof FormulaSchema>;
-export type InventoryInterfaces = z.infer<typeof InventorySchema>;
-export type LoteInterfaces = z.infer<typeof LoteSchema>;
-export type MachineInterfaces = z.infer<typeof MachineSchema>;
-export type ModelInterfaces = z.infer<typeof ModelSchema>;
-export type OrderDetailInterfaces = z.infer<typeof OrderDetailSchema>;
-export type OrderInterfaces = z.infer<typeof OrderSchema>;
-export type PermissionInterfaces = z.infer<typeof PermissionSchema>;
-export type ProcessInterfaces = z.infer<typeof ProcessSchema>;
-export type ProductInterfaces = z.infer<typeof ProductSchema>;
-export type ProductionDetailInterfaces = z.infer<typeof ProductionDetailSchema>;
-export type ProductionInterfaces = z.infer<typeof ProductionSchema>;
-export type SectorInterfaces = z.infer<typeof SectorSchema>;
-export type UnityInterfaces = z.infer<typeof UnitySchema>;
-export type UserInterfaces = z.infer<typeof UserSchema>;
+export type IColor = z.infer<typeof ColorSchema>;
+export type IFormulaDetail = z.infer<typeof FormulaDetailSchema>;
+export type IFormula = z.infer<typeof FormulaSchema>;
+export type IInventory = z.infer<typeof InventorySchema>;
+export type ILote = z.infer<typeof LoteSchema>;
+export type IMachine = z.infer<typeof MachineSchema>;
+export type IModel = z.infer<typeof ModelSchema>;
+export type IOrderDetail = z.infer<typeof OrderDetailSchema>;
+export type IOrder = z.infer<typeof OrderSchema>;
+export type IPermission = z.infer<typeof PermissionSchema>;
+export type IProcess = z.infer<typeof ProcessSchema>;
+export type IProduct = z.infer<typeof ProductSchema>;
+export type IProductionDetail = z.infer<typeof ProductionDetailSchema>;
+export type IProduction = z.infer<typeof ProductionSchema>;
+export type ISector = z.infer<typeof SectorSchema>;
+export type IUnity = z.infer<typeof UnitySchema>;
+export type IUser = z.infer<typeof UserSchema>;
 
-export type GeneralInterfaces =
-  | GroupInterfaces
-  | FormulaInterfaces
-  | ColorInterfaces
-  | FormulaDetailInterfaces
-  | InventoryInterfaces
-  | LoteInterfaces
-  | MachineInterfaces
-  | ModelInterfaces
-  | OrderDetailInterfaces
-  | OrderInterfaces
-  | PermissionInterfaces
-  | ProcessInterfaces
-  | ProductInterfaces
-  | ProductionDetailInterfaces
-  | ProductionInterfaces
-  | SectorInterfaces
-  | UnityInterfaces
-  | UserInterfaces;
+export type IGeneral =
+  | IGroup
+  | IFormula
+  | IColor
+  | IFormulaDetail
+  | IInventory
+  | ILote
+  | IMachine
+  | IModel
+  | IOrderDetail
+  | IOrder
+  | IPermission
+  | IProcess
+  | IProduct
+  | IProductionDetail
+  | IProduction
+  | ISector
+  | IUnity
+  | IUser;

@@ -6,14 +6,14 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
 
-import { Separator } from "@/components/ui/separator";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { GeneralSchema } from "@/utils/interfaces";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {Separator} from "@/components/ui/separator";
+import {useForm} from "react-hook-form";
+import {z} from "zod";
+import {GeneralSchema} from "@/utils/interfaces";
+import {zodResolver} from "@hookform/resolvers/zod";
 
 import {
   Form,
@@ -24,15 +24,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
-import {
-  createColor,
-  deleteColor,
-  getColorById,
-  updateColor,
-} from "@/api/product/color.api";
-import { toast } from "sonner";
+import {Textarea} from "@/components/ui/textarea";
+import {useState} from "react";
+import {createColor, deleteColor, getColorById, updateColor} from "@/api/product/color.api";
+import {toast} from "sonner";
 import {
   Dialog,
   DialogClose,
@@ -50,8 +45,8 @@ interface Props {
   updateView: () => void; // Define the type as a function that returns void
 }
 
-const CreateColorDialog: React.FC<Props> = ({ children, updateView }) => {
-  //const [data, setData] = useState<GeneralInterfaces | never>();
+const CreateColorDialog: React.FC<Props> = ({children, updateView}) => {
+  //const [data, setData] = useState<IGeneral | never>();
   const [loadingSave, setLoadingSave] = useState(false); // Estado de carga
 
   const form = useForm<z.infer<typeof GeneralSchema>>({
@@ -64,7 +59,7 @@ const CreateColorDialog: React.FC<Props> = ({ children, updateView }) => {
 
   function onSubmit(values: z.infer<typeof GeneralSchema>) {
     setLoadingSave(true); // Inicia la carga
-    createColor({ data: values })
+    createColor({data: values})
       .then((updatedColor) => {
         console.log("Color creado:", updatedColor);
 
@@ -94,22 +89,17 @@ const CreateColorDialog: React.FC<Props> = ({ children, updateView }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent >
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Gestión de color</DialogTitle>
-          <DialogDescription>
-            Mostrando datos relacionados con el color.
-          </DialogDescription>
+          <DialogDescription>Mostrando datos relacionados con el color.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className=" grid grid-cols-6 gap-4 "
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className=" grid grid-cols-6 gap-4 ">
             <FormField
               control={form.control}
               name="name"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem className="col-span-6">
                   <FormLabel>Nombre</FormLabel>
                   <FormControl>
@@ -123,7 +113,7 @@ const CreateColorDialog: React.FC<Props> = ({ children, updateView }) => {
             <FormField
               control={form.control}
               name="description"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem className="col-span-6">
                   <FormLabel>Descripción</FormLabel>
                   <FormControl>
@@ -143,12 +133,7 @@ const CreateColorDialog: React.FC<Props> = ({ children, updateView }) => {
                 {loadingSave ? <LoadingCircle /> : "Guardar"}
               </Button>
               <DialogClose asChild className="col-span-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  disabled={loadingSave}
-                >
+                <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                   Cerrar
                 </Button>
               </DialogClose>

@@ -1,6 +1,6 @@
-import { apiClient } from "../axiosConfig";
-import { LoteInterfaces } from "@/utils/interfaces";
-import { toast } from "sonner";
+import {apiClient} from "../axiosConfig";
+import {ILote} from "@/utils/interfaces";
+import {toast} from "sonner";
 
 export const getLotes = async () => {
   try {
@@ -32,7 +32,7 @@ export const getLoteById = async (id: number) => {
   }
 };
 
-export const createLote = async ({ data }: { data: LoteInterfaces }) => {
+export const createLote = async ({data}: {data: ILote}) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",
@@ -59,7 +59,7 @@ export const createLote = async ({ data }: { data: LoteInterfaces }) => {
   }
 };
 
-export const updateLote = async ({ data }: { data: LoteInterfaces }) => {
+export const updateLote = async ({data}: {data: ILote}) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",

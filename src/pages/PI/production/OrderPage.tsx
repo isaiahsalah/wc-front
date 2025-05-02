@@ -1,7 +1,8 @@
-import { ModelInterfaces } from "@/utils/interfaces";
-import { useEffect, useMemo, useState } from "react";
+import {IOrder} from "@/utils/interfaces";
+import {ColumnDef, Row} from "@tanstack/react-table";
+import {useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 import {
   ArchiveRestore,
   Delete,
@@ -12,12 +13,10 @@ import {
   TrendingUpIcon,
 } from "lucide-react";
 import {
-  CreateModelDialog,
-  DeleteModelDialog,
-  EditModelDialog,
-  RecoverModelDialog,
-} from "@/components/dialog/params/ModelDialogs";
-import { ColumnDef, Row } from "@tanstack/react-table";
+  DeleteOrderDialog,
+  EditOrderDialog,
+  RecoverOrderDialog,
+} from "@/components/dialog/production/OrderDialogs";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +24,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import {
   Card,
   CardContent,
@@ -33,13 +33,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getAllModels } from "@/api/params/model.api";
-import { Badge } from "@/components/ui/badge";
-import { countCurrentMonth } from "@/utils/funtions";
 
-const ModelPage = () => {
-  const [models, setModels] = useState<ModelInterfaces[]>([]);
-  const [loading, setLoading] = useState(false);
+import {getAllOrders} from "@/api/production/order.api";
+import {countCurrentMonth} from "@/utils/funtions";
+import {Badge} from "@/components/ui/badge";
+import {CreateOrderDetailDialog} from "@/components/dialog/production/OrderDetailDialogs";
+
+const OrderPage = () => {
+  const [orders, setOrders] = useState<IOrder[]>([]);
+
+  const [loading, setLoading] = useState(false); // Estado de carga
 
   useEffect(() => {
     updateView();
@@ -48,8 +51,8 @@ const ModelPage = () => {
   const updateView = async () => {
     setLoading(true);
     try {
-      const modelsData = await getAllModels();
-      setModels(modelsData);
+      const ProductionsData = await getAllOrders();
+      setOrders(ProductionsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
     } finally {
@@ -57,23 +60,23 @@ const ModelPage = () => {
     }
   };
 
-  const columnsModel: ColumnDef<ModelInterfaces>[] = useMemo(() => {
-    if (models.length === 0) return [];
+  // Generar columnas dinámicamente
+  const columnsOrder: ColumnDef<IOrder>[] = useMemo(() => {
+    if (orders.length === 0) return [];
     return [
-      ...Object.keys(models[0]).map((key) => ({
+      ...Object.keys(orders[0]).map((key) => ({
         accessorKey: key,
         header: key.replace(/_/g, " ").toUpperCase(),
         /* @ts-expect-error: Ignoramos el error en esta línea*/
         cell: (info) => info.getValue(),
       })),
-
       {
         id: "actions",
         header: "",
         enableHiding: false,
-        cell: ({ row }: { row: Row<ModelInterfaces> }) => {
+        cell: ({row}: {row: Row<IOrder>}) => {
           return (
-            <div className="flex gap-2 justify-end">
+            <div className="flex gap-2  justify-end  ">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -81,39 +84,31 @@ const ModelPage = () => {
                     className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
                     size="icon"
                   >
+                    {" "}
                     <MoreVerticalIcon />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-32">
                   {!row.original.deletedAt ? (
                     <>
-                      <EditModelDialog
-                        id={row.original.id ?? 0}
-                        updateView={updateView}
-                      >
+                      <EditOrderDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Edit /> Editar
+                          <Edit /> Editar{" "}
                         </DropdownMenuItem>
-                      </EditModelDialog>
+                      </EditOrderDialog>
                       <DropdownMenuSeparator />
-                      <DeleteModelDialog
-                        id={row.original.id ?? 0}
-                        updateView={updateView}
-                      >
+                      <DeleteOrderDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Delete /> Eliminar
+                          <Delete /> Eliminar{" "}
                         </DropdownMenuItem>
-                      </DeleteModelDialog>
+                      </DeleteOrderDialog>
                     </>
                   ) : (
-                    <RecoverModelDialog
-                      id={row.original.id ?? 0}
-                      updateView={updateView}
-                    >
+                    <RecoverOrderDialog id={row.original.id ?? 0} updateView={updateView}>
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        <ArchiveRestore /> Recuperar
+                        <ArchiveRestore /> Recuperar{" "}
                       </DropdownMenuItem>
-                    </RecoverModelDialog>
+                    </RecoverOrderDialog>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -122,20 +117,19 @@ const ModelPage = () => {
         },
       },
     ];
-  }, [models]);
-
+  }, [orders]);
   return (
-    <div className="flex flex-col gap-4">
+    <div className="grid grid-cols-6 gap-4">
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader className="relative">
-          <CardDescription>Modelos registrados</CardDescription>
+          <CardDescription>Órdenes registradas</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            {models.length} Modelos
+            {orders.length} Órdenes
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-              <TrendingUpIcon className="size-3" />+
-              {countCurrentMonth(models)} este mes
+              {/* @ts-expect-error: Ignoramos el error en esta línea*/}
+              <TrendingUpIcon className="size-3" />+{countCurrentMonth(orders)} este mes
             </Badge>
           </div>
         </CardHeader>
@@ -159,14 +153,14 @@ const ModelPage = () => {
           {loading ? null : (
             <DataTable
               actions={
-                <CreateModelDialog
+                <CreateOrderDetailDialog
                   updateView={updateView}
                   children={
                     <Button
                       variant="outline"
                       size="sm"
                       onSelect={(event) => {
-                        event.preventDefault();
+                        event.preventDefault(); // Evita el cierre automático
                       }}
                     >
                       <PlusIcon />
@@ -175,8 +169,8 @@ const ModelPage = () => {
                   }
                 />
               }
-              columns={columnsModel}
-              data={models}
+              columns={columnsOrder}
+              data={orders}
             />
           )}
         </CardContent>
@@ -185,4 +179,5 @@ const ModelPage = () => {
   );
 };
 
-export default ModelPage;
+export default OrderPage;
+//<OrderTable data={data} updateView={updateView} />

@@ -1,11 +1,11 @@
-import {   FormulaInterfaces } from "@/utils/interfaces";
+import {IProduct} from "@/utils/interfaces";
+import DataTable from "@/components/table/DataTable";
 import {
-  CreateFormulaDialog,
-  DeleteFormulaDialog,
-  EditFormulaDialog,
-  RecoverFormulaDialog,
-} from "@/components/dialog/product/FormulaDialogs";
-import { Button } from "@/components/ui/button";
+  CreateProductDialog,
+  DeleteProductDialog,
+  EditProductDialog,
+  RecoverProductDialog,
+} from "@/components/dialog/product/ProductDialogs";
 import {
   ArchiveRestore,
   Delete,
@@ -15,9 +15,9 @@ import {
   Tally5,
   TrendingUpIcon,
 } from "lucide-react";
-import DataTable from "@/components/table/DataTable";
-import { useEffect, useMemo, useState } from "react";
-import { ColumnDef, Row } from "@tanstack/react-table";
+import {Row} from "@tanstack/react-table";
+import {useEffect, useMemo, useState} from "react";
+import {Button} from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,7 +25,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getAllFormulas } from "@/api/product/formula.api";
 import {
   Card,
   CardContent,
@@ -34,11 +33,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { countCurrentMonth } from "@/utils/funtions";
-import { Badge } from "@/components/ui/badge";
+import {getAllProducts} from "@/api/product/product.api";
+import {countCurrentMonth} from "@/utils/funtions";
+import {Badge} from "@/components/ui/badge";
 
-const FormulaPage = () => {
-  const [formulas, setFormulas] = useState<FormulaInterfaces[]>([]);
+const ProductPage = () => {
+  const [products, setProducts] = useState<IProduct[]>([]);
   const [loading, setLoading] = useState(false); // Estado de carga
 
   useEffect(() => {
@@ -48,8 +48,8 @@ const FormulaPage = () => {
   const updateView = async () => {
     setLoading(true);
     try {
-      const FormulasData = await getAllFormulas();
-      setFormulas(FormulasData);
+      const ProductionsData = await getAllProducts();
+      setProducts(ProductionsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
     } finally {
@@ -58,10 +58,10 @@ const FormulaPage = () => {
   };
 
   // Generar columnas dinámicamente
-  const columnsFormula: ColumnDef<FormulaInterfaces>[] = useMemo(() => {
-    if (formulas.length === 0) return [];
+  const columnsProducts = useMemo(() => {
+    if (products.length === 0) return [];
     return [
-      ...Object.keys(formulas[0]).map((key) => ({
+      ...Object.keys(products[0]).map((key) => ({
         accessorKey: key,
         header: key.replace(/_/g, " ").toUpperCase(),
         /* @ts-expect-error: Ignoramos el error en esta línea*/
@@ -71,7 +71,7 @@ const FormulaPage = () => {
         id: "actions",
         header: "",
         enableHiding: false,
-        cell: ({ row }: { row: Row<FormulaInterfaces> }) => {
+        cell: ({row}: {row: Row<IProduct>}) => {
           return (
             <div className="flex gap-2  justify-end  ">
               <DropdownMenu>
@@ -88,33 +88,24 @@ const FormulaPage = () => {
                 <DropdownMenuContent align="end" className="w-32">
                   {!row.original.deletedAt ? (
                     <>
-                      <EditFormulaDialog
-                        id={row.original.id ?? 0}
-                        updateView={updateView}
-                      >
+                      <EditProductDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                           <Edit /> Editar{" "}
                         </DropdownMenuItem>
-                      </EditFormulaDialog>
+                      </EditProductDialog>
                       <DropdownMenuSeparator />
-                      <DeleteFormulaDialog
-                        id={row.original.id ?? 0}
-                        updateView={updateView}
-                      >
+                      <DeleteProductDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                           <Delete /> Eliminar{" "}
                         </DropdownMenuItem>
-                      </DeleteFormulaDialog>
+                      </DeleteProductDialog>
                     </>
                   ) : (
-                    <RecoverFormulaDialog
-                      id={row.original.id ?? 0}
-                      updateView={updateView}
-                    >
+                    <RecoverProductDialog id={row.original.id ?? 0} updateView={updateView}>
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                         <ArchiveRestore /> Recuperar{" "}
                       </DropdownMenuItem>
-                    </RecoverFormulaDialog>
+                    </RecoverProductDialog>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -123,19 +114,18 @@ const FormulaPage = () => {
         },
       },
     ];
-  }, [formulas]);
+  }, [products]);
   return (
     <div className="flex flex-col gap-4">
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader className="relative">
-          <CardDescription>Formulas registradas</CardDescription>
+          <CardDescription>Productos registrados</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            {formulas.length} Formulas
+            {products.length} Productos
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-              <TrendingUpIcon className="size-3" />+
-              {countCurrentMonth(formulas)} este mes
+              <TrendingUpIcon className="size-3" />+{countCurrentMonth(products)} este mes
             </Badge>
           </div>
         </CardHeader>
@@ -149,7 +139,6 @@ const FormulaPage = () => {
           </div>
         </CardFooter>
       </Card>
-
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader>
           <CardTitle>Producción</CardTitle>
@@ -159,7 +148,7 @@ const FormulaPage = () => {
           {loading ? null : (
             <DataTable
               actions={
-                <CreateFormulaDialog
+                <CreateProductDialog
                   updateView={updateView}
                   children={
                     <Button
@@ -175,8 +164,8 @@ const FormulaPage = () => {
                   }
                 />
               }
-              columns={columnsFormula}
-              data={formulas}
+              columns={columnsProducts}
+              data={products}
             />
           )}
         </CardContent>
@@ -185,5 +174,6 @@ const FormulaPage = () => {
   );
 };
 
-export default FormulaPage;
-//      <FormulaTable data={data} updateView={updateView} />
+export default ProductPage;
+
+//<ProductTable data={data} updateView={updateView} />

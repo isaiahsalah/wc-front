@@ -1,7 +1,7 @@
-import { MachineInterfaces } from "@/utils/interfaces";
-import { useEffect, useMemo, useState } from "react";
+import {IUnity} from "@/utils/interfaces";
+import {useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 import {
   ArchiveRestore,
   Delete,
@@ -12,12 +12,12 @@ import {
   TrendingUpIcon,
 } from "lucide-react";
 import {
-  CreateMachineDialog,
-  DeleteMachineDialog,
-  EditMachineDialog,
-  RecoverMachineDialog,
-} from "@/components/dialog/params/MachineDialogs";
-import { ColumnDef, Row } from "@tanstack/react-table";
+  CreateUnityDialog,
+  DeleteUnityDialog,
+  EditUnityDialog,
+  RecoverUnityDialog,
+} from "@/components/dialog/product/UnityDialogs";
+import {ColumnDef, Row} from "@tanstack/react-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,12 +33,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getAllMachines } from "@/api/params/machine.api";
-import { Badge } from "@/components/ui/badge";
-import { countCurrentMonth } from "@/utils/funtions";
+import {getAllUnities} from "@/api/product/unity.api";
+import {Badge} from "@/components/ui/badge";
+import {countCurrentMonth} from "@/utils/funtions";
 
-const MachinePage = () => {
-  const [machines, setMachines] = useState<MachineInterfaces[]>([]);
+const UnityPage = () => {
+  const [unities, setUnities] = useState<IUnity[]>([]);
   const [loading, setLoading] = useState(false); // Estado de carga
 
   useEffect(() => {
@@ -48,8 +48,8 @@ const MachinePage = () => {
   const updateView = async () => {
     setLoading(true);
     try {
-      const machinesData = await getAllMachines();
-      setMachines(machinesData);
+      const ProductionsData = await getAllUnities();
+      setUnities(ProductionsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
     } finally {
@@ -58,21 +58,30 @@ const MachinePage = () => {
   };
 
   // Generar columnas dinámicamente
-  const columnsMachine: ColumnDef<MachineInterfaces>[] = useMemo(() => {
-    if (machines.length === 0) return [];
+  const columnsUnity: ColumnDef<IUnity>[] = useMemo(() => {
+    if (unities.length === 0) return [];
     return [
-      ...Object.keys(machines[0]).map((key) => ({
-        accessorKey: key,
-        header: key.replace(/_/g, " ").toUpperCase(),
-        /* @ts-expect-error: Ignoramos el error en esta línea*/
+      {
+        accessorKey: "id",
+        header: "Id",
         cell: (info) => info.getValue(),
-      })),
+      },
+      {
+        accessorKey: "name",
+        header: "Nombre",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "description",
+        header: "Descripción",
+        cell: (info) => info.getValue(),
+      },
 
       {
         id: "actions",
         header: "",
         enableHiding: false,
-        cell: ({ row }: { row: Row<MachineInterfaces> }) => {
+        cell: ({row}: {row: Row<IUnity>}) => {
           return (
             <div className="flex gap-2 justify-end">
               <DropdownMenu>
@@ -82,39 +91,31 @@ const MachinePage = () => {
                     className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
                     size="icon"
                   >
+                    {" "}
                     <MoreVerticalIcon />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-32">
                   {!row.original.deletedAt ? (
                     <>
-                      <EditMachineDialog
-                        id={row.original.id ?? 0}
-                        updateView={updateView}
-                      >
+                      <EditUnityDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Edit /> Editar
+                          <Edit /> Editar{" "}
                         </DropdownMenuItem>
-                      </EditMachineDialog>
+                      </EditUnityDialog>
                       <DropdownMenuSeparator />
-                      <DeleteMachineDialog
-                        id={row.original.id ?? 0}
-                        updateView={updateView}
-                      >
+                      <DeleteUnityDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Delete /> Eliminar
+                          <Delete /> Eliminar{" "}
                         </DropdownMenuItem>
-                      </DeleteMachineDialog>
+                      </DeleteUnityDialog>
                     </>
                   ) : (
-                    <RecoverMachineDialog
-                      id={row.original.id ?? 0}
-                      updateView={updateView}
-                    >
+                    <RecoverUnityDialog id={row.original.id ?? 0} updateView={updateView}>
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        <ArchiveRestore /> Recuperar
+                        <ArchiveRestore /> Recuperar{" "}
                       </DropdownMenuItem>
-                    </RecoverMachineDialog>
+                    </RecoverUnityDialog>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -123,20 +124,19 @@ const MachinePage = () => {
         },
       },
     ];
-  }, [machines]);
+  }, [unities]);
 
   return (
     <div className="flex flex-col gap-4">
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader className="relative">
-          <CardDescription>Máquinas registradas</CardDescription>
+          <CardDescription>Unidades registradas</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            {machines.length} Máquinas
+            {unities.length} Unidades
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-              <TrendingUpIcon className="size-3" />+
-              {countCurrentMonth(machines)} este mes
+              <TrendingUpIcon className="size-3" />+{countCurrentMonth(unities)} este mes
             </Badge>
           </div>
         </CardHeader>
@@ -160,14 +160,14 @@ const MachinePage = () => {
           {loading ? null : (
             <DataTable
               actions={
-                <CreateMachineDialog
+                <CreateUnityDialog
                   updateView={updateView}
                   children={
                     <Button
                       variant="outline"
                       size="sm"
                       onSelect={(event) => {
-                        event.preventDefault();
+                        event.preventDefault(); // Evita el cierre automático
                       }}
                     >
                       <PlusIcon />
@@ -176,8 +176,8 @@ const MachinePage = () => {
                   }
                 />
               }
-              columns={columnsMachine}
-              data={machines}
+              columns={columnsUnity}
+              data={unities}
             />
           )}
         </CardContent>
@@ -186,4 +186,4 @@ const MachinePage = () => {
   );
 };
 
-export default MachinePage;
+export default UnityPage;

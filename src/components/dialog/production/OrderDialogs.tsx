@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
 
-import { useForm } from "react-hook-form";
-import { OrderInterfaces, OrderSchema } from "@/utils/interfaces";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {useForm} from "react-hook-form";
+import {IOrder, OrderSchema} from "@/utils/interfaces";
+import {zodResolver} from "@hookform/resolvers/zod";
 
 import {
   Form,
@@ -13,7 +13,7 @@ import {
   FormDescription,
   FormMessage,
 } from "@/components/ui/form";
-import { useState } from "react";
+import {useState} from "react";
 import {
   createOrder,
   deleteOrder,
@@ -21,7 +21,7 @@ import {
   recoverOrder,
   updateOrder,
 } from "@/api/production/order.api";
-import { toast } from "sonner";
+import {toast} from "sonner";
 import {
   Dialog,
   DialogClose,
@@ -33,29 +33,26 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
-import { DatePicker } from "@/components/date-picker";
+import {DatePicker} from "@/components/date-picker";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
   updateView: () => void; // Define the type as a function that returns void
 }
 
-export const CreateOrderDialog: React.FC<PropsCreate> = ({
-  children,
-  updateView,
-}) => {
+export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView}) => {
   const [loadingSave, setLoadingSave] = useState(false);
 
-  const form = useForm<OrderInterfaces>({
+  const form = useForm<IOrder>({
     resolver: zodResolver(OrderSchema),
     defaultValues: {
       id_user: 1,
     },
   });
 
-  function onSubmit(values: OrderInterfaces) {
+  function onSubmit(values: IOrder) {
     setLoadingSave(true);
-    createOrder({ data: values })
+    createOrder({data: values})
       .then((updatedOrder) => {
         console.log("Orden creada:", updatedOrder);
 
@@ -75,20 +72,15 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Registrar orden</DialogTitle>
-          <DialogDescription>
-            Mostrando datos relacionados con la orden.
-          </DialogDescription>
+          <DialogDescription>Mostrando datos relacionados con la orden.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className=" grid  gap-4 "
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className=" grid  gap-4 ">
             <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
               <FormField
                 control={form.control}
                 name="init_date"
-                render={({ field }) => (
+                render={({field}) => (
                   <FormItem className="col-span-3">
                     <FormDescription>Inicio</FormDescription>
                     <FormControl>
@@ -102,7 +94,9 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({
                         onChange={(date) => {
                           const endDate = form.getValues("end_date");
                           if (endDate && date && new Date(date) > new Date(endDate)) {
-                            console.log("La fecha de inicio no puede ser posterior a la fecha de fin.");
+                            console.log(
+                              "La fecha de inicio no puede ser posterior a la fecha de fin."
+                            );
                             return;
                           }
                           if (date) {
@@ -123,7 +117,7 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({
               <FormField
                 control={form.control}
                 name="end_date"
-                render={({ field }) => (
+                render={({field}) => (
                   <FormItem className="col-span-3">
                     <FormDescription>fin</FormDescription>
                     <FormControl>
@@ -136,17 +130,13 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({
                         }
                         onChange={(date) => {
                           const startDate = form.getValues("init_date");
-                          if (
-                            startDate &&
-                            date &&
-                            new Date(date) < new Date(startDate)
-                          ) {
+                          if (startDate && date && new Date(date) < new Date(startDate)) {
                             console.log(
                               "La fecha de fin no puede ser anterior a la fecha de inicio."
                             );
                             return;
                           }
- 
+
                           if (date) {
                             const adjustedDate = new Date(date);
                             adjustedDate.setHours(23, 59, 59, 999);
@@ -173,12 +163,7 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({
                 {loadingSave ? <LoadingCircle /> : "Guardar"}
               </Button>
               <DialogClose asChild className="col-span-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  disabled={loadingSave}
-                >
+                <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                   Cerrar
                 </Button>
               </DialogClose>
@@ -197,24 +182,19 @@ interface PropsEdit {
   onOpenChange?: (open: boolean) => void;
 }
 
-export const EditOrderDialog: React.FC<PropsEdit> = ({
-  children,
-  id,
-  updateView,
-  onOpenChange,
-}) => {
+export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, onOpenChange}) => {
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
 
-  const form = useForm<OrderInterfaces>({
+  const form = useForm<IOrder>({
     resolver: zodResolver(OrderSchema),
     defaultValues: {},
   });
 
-  function onSubmit(values: OrderInterfaces) {
+  function onSubmit(values: IOrder) {
     setLoadingSave(true);
-    updateOrder({ data: values })
+    updateOrder({data: values})
       .then((updatedOrder) => {
         console.log("Orden actualizada:", updatedOrder);
 
@@ -231,7 +211,7 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({
   const fetchOrder = async () => {
     setLoadingInit(true);
     try {
-      const orderData: OrderInterfaces = await getOrderById(id);
+      const orderData: IOrder = await getOrderById(id);
       console.log("Órdenes:", orderData);
       form.reset({
         id: orderData.id,
@@ -283,21 +263,16 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Editar orden</DialogTitle>
-          <DialogDescription>
-            Mostrando datos relacionados con la orden.
-          </DialogDescription>
+          <DialogDescription>Mostrando datos relacionados con la orden.</DialogDescription>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className=" grid   gap-4 "
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid   gap-4 ">
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
                   name="id"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className={"col-span-6"}>
                       <FormDescription>Id</FormDescription>
                       <FormControl>
@@ -305,9 +280,7 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({
                           type="number"
                           placeholder="Id"
                           disabled
-                          onChange={(event) =>
-                            field.onChange(Number(event.target.value))
-                          }
+                          onChange={(event) => field.onChange(Number(event.target.value))}
                           defaultValue={field.value ?? ""}
                         />
                       </FormControl>
@@ -315,83 +288,81 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({
                     </FormItem>
                   )}
                 />
-                 <FormField
-                control={form.control}
-                name="init_date"
-                render={({ field }) => (
-                  <FormItem className="col-span-3">
-                    <FormDescription>Inicio</FormDescription>
-                    <FormControl>
-                      <DatePicker
-                        className="w-full"
-                        value={
-                          field.value && typeof field.value === "string"
-                            ? new Date(field.value)
-                            : field.value
-                        }
-                        onChange={(date) => {
-                          const endDate = form.getValues("end_date");
-                          if (endDate && date && new Date(date) > new Date(endDate)) {
-                            console.log("La fecha de inicio no puede ser posterior a la fecha de fin.");
-                            return;
+                <FormField
+                  control={form.control}
+                  name="init_date"
+                  render={({field}) => (
+                    <FormItem className="col-span-3">
+                      <FormDescription>Inicio</FormDescription>
+                      <FormControl>
+                        <DatePicker
+                          className="w-full"
+                          value={
+                            field.value && typeof field.value === "string"
+                              ? new Date(field.value)
+                              : field.value
                           }
-                          if (date) {
-                            const adjustedDate = new Date(date);
-                            adjustedDate.setHours(0, 0, 0, 0);
-                            field.onChange(adjustedDate);
-                          } else {
-                            field.onChange(null);
+                          onChange={(date) => {
+                            const endDate = form.getValues("end_date");
+                            if (endDate && date && new Date(date) > new Date(endDate)) {
+                              console.log(
+                                "La fecha de inicio no puede ser posterior a la fecha de fin."
+                              );
+                              return;
+                            }
+                            if (date) {
+                              const adjustedDate = new Date(date);
+                              adjustedDate.setHours(0, 0, 0, 0);
+                              field.onChange(adjustedDate);
+                            } else {
+                              field.onChange(null);
+                            }
+                          }}
+                          placeholder="Selecciona una fecha"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="end_date"
+                  render={({field}) => (
+                    <FormItem className="col-span-3">
+                      <FormDescription>fin</FormDescription>
+                      <FormControl>
+                        <DatePicker
+                          className="w-full"
+                          value={
+                            field.value && typeof field.value === "string"
+                              ? new Date(field.value)
+                              : field.value
                           }
-                        }}
-                        placeholder="Selecciona una fecha"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="end_date"
-                render={({ field }) => (
-                  <FormItem className="col-span-3">
-                    <FormDescription>fin</FormDescription>
-                    <FormControl>
-                      <DatePicker
-                        className="w-full"
-                        value={
-                          field.value && typeof field.value === "string"
-                            ? new Date(field.value)
-                            : field.value
-                        }
-                        onChange={(date) => {
-                          const startDate = form.getValues("init_date");
-                          if (
-                            startDate &&
-                            date &&
-                            new Date(date) < new Date(startDate)
-                          ) {
-                            console.log(
-                              "La fecha de fin no puede ser anterior a la fecha de inicio."
-                            );
-                            return;
-                          }
- 
-                          if (date) {
-                            const adjustedDate = new Date(date);
-                            adjustedDate.setHours(23, 59, 59, 999);
-                            field.onChange(adjustedDate);
-                          } else {
-                            field.onChange(null);
-                          }
-                        }}
-                        placeholder="Selecciona una fecha"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                          onChange={(date) => {
+                            const startDate = form.getValues("init_date");
+                            if (startDate && date && new Date(date) < new Date(startDate)) {
+                              console.log(
+                                "La fecha de fin no puede ser anterior a la fecha de inicio."
+                              );
+                              return;
+                            }
+
+                            if (date) {
+                              const adjustedDate = new Date(date);
+                              adjustedDate.setHours(23, 59, 59, 999);
+                              field.onChange(adjustedDate);
+                            } else {
+                              field.onChange(null);
+                            }
+                          }}
+                          placeholder="Selecciona una fecha"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
               <DialogFooter className=" grid grid-cols-6  ">
                 <Button
@@ -478,9 +449,7 @@ export const DeleteOrderDialog: React.FC<PropsDelete> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Eliminar orden</DialogTitle>
-          <DialogDescription>
-            ¿Está seguro de eliminar esta orden?
-          </DialogDescription>
+          <DialogDescription>¿Está seguro de eliminar esta orden?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -494,12 +463,7 @@ export const DeleteOrderDialog: React.FC<PropsDelete> = ({
             {loadingDelete ? <LoadingCircle /> : "Eliminar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              disabled={loadingDelete}
-            >
+            <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
               Cerrar
             </Button>
           </DialogClose>
@@ -558,9 +522,7 @@ export const RecoverOrderDialog: React.FC<PropsRecover> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Recuperar orden</DialogTitle>
-          <DialogDescription>
-            ¿Está seguro de recuperar esta orden?
-          </DialogDescription>
+          <DialogDescription>¿Está seguro de recuperar esta orden?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -573,12 +535,7 @@ export const RecoverOrderDialog: React.FC<PropsRecover> = ({
             {loadingRecover ? <LoadingCircle /> : "Recuperar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              disabled={loadingRecover}
-            >
+            <Button type="button" variant="outline" className="w-full" disabled={loadingRecover}>
               Cerrar
             </Button>
           </DialogClose>

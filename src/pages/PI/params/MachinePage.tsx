@@ -1,10 +1,9 @@
-import { OrderInterfaces } from "@/utils/interfaces"; 
-import { ColumnDef, Row } from "@tanstack/react-table";
-import {  useEffect, useMemo, useState } from "react"; 
+import {IMachine} from "@/utils/interfaces";
+import {useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 import {
-  ArchiveRestore, 
+  ArchiveRestore,
   Delete,
   Edit,
   MoreVerticalIcon,
@@ -12,11 +11,13 @@ import {
   Tally5,
   TrendingUpIcon,
 } from "lucide-react";
-import { 
-  DeleteOrderDialog,
-  EditOrderDialog,
-  RecoverOrderDialog,
-} from "@/components/dialog/production/OrderDialogs";
+import {
+  CreateMachineDialog,
+  DeleteMachineDialog,
+  EditMachineDialog,
+  RecoverMachineDialog,
+} from "@/components/dialog/params/MachineDialogs";
+import {ColumnDef, Row} from "@tanstack/react-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +25,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 import {
   Card,
   CardContent,
@@ -33,15 +33,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
- 
-import { getAllOrders } from "@/api/production/order.api";
-import { countCurrentMonth } from "@/utils/funtions";
-import { Badge } from "@/components/ui/badge";
-import { CreateOrderDetailDialog } from "@/components/dialog/production/OrderDetailDialogs";
+import {getAllMachines} from "@/api/params/machine.api";
+import {Badge} from "@/components/ui/badge";
+import {countCurrentMonth} from "@/utils/funtions";
 
-const OrderPage = () => {
-  const [orders, setOrders] = useState<OrderInterfaces[]>([]);
-
+const MachinePage = () => {
+  const [machines, setMachines] = useState<IMachine[]>([]);
   const [loading, setLoading] = useState(false); // Estado de carga
 
   useEffect(() => {
@@ -51,8 +48,8 @@ const OrderPage = () => {
   const updateView = async () => {
     setLoading(true);
     try {
-      const ProductionsData = await getAllOrders();
-      setOrders(ProductionsData);
+      const machinesData = await getAllMachines();
+      setMachines(machinesData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
     } finally {
@@ -60,23 +57,24 @@ const OrderPage = () => {
     }
   };
 
-  // Generar columnas dinámicamente 
-  const columnsOrder: ColumnDef<OrderInterfaces>[] = useMemo(() => {
-    if (orders.length === 0) return [];
+  // Generar columnas dinámicamente
+  const columnsMachine: ColumnDef<IMachine>[] = useMemo(() => {
+    if (machines.length === 0) return [];
     return [
-      ...Object.keys(orders[0]).map((key) => ({
+      ...Object.keys(machines[0]).map((key) => ({
         accessorKey: key,
         header: key.replace(/_/g, " ").toUpperCase(),
         /* @ts-expect-error: Ignoramos el error en esta línea*/
         cell: (info) => info.getValue(),
       })),
+
       {
         id: "actions",
         header: "",
         enableHiding: false,
-        cell: ({ row }: { row: Row<OrderInterfaces> }) => {
+        cell: ({row}: {row: Row<IMachine>}) => {
           return (
-            <div className="flex gap-2  justify-end  ">
+            <div className="flex gap-2 justify-end">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -84,40 +82,30 @@ const OrderPage = () => {
                     className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
                     size="icon"
                   >
-                    {" "}
                     <MoreVerticalIcon />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-32">
                   {!row.original.deletedAt ? (
                     <>
-                      <EditOrderDialog
-                        id={row.original.id ?? 0}
-                        updateView={updateView}
-                      >
+                      <EditMachineDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Edit /> Editar{" "}
+                          <Edit /> Editar
                         </DropdownMenuItem>
-                      </EditOrderDialog>
+                      </EditMachineDialog>
                       <DropdownMenuSeparator />
-                      <DeleteOrderDialog
-                        id={row.original.id ?? 0}
-                        updateView={updateView}
-                      >
+                      <DeleteMachineDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Delete /> Eliminar{" "}
+                          <Delete /> Eliminar
                         </DropdownMenuItem>
-                      </DeleteOrderDialog>
+                      </DeleteMachineDialog>
                     </>
                   ) : (
-                    <RecoverOrderDialog
-                      id={row.original.id ?? 0}
-                      updateView={updateView}
-                    >
+                    <RecoverMachineDialog id={row.original.id ?? 0} updateView={updateView}>
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        <ArchiveRestore /> Recuperar{" "}
+                        <ArchiveRestore /> Recuperar
                       </DropdownMenuItem>
-                    </RecoverOrderDialog>
+                    </RecoverMachineDialog>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -126,20 +114,19 @@ const OrderPage = () => {
         },
       },
     ];
-  }, [orders]); 
+  }, [machines]);
+
   return (
-    <div className="grid grid-cols-6 gap-4">
+    <div className="flex flex-col gap-4">
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader className="relative">
-          <CardDescription>Órdenes registradas</CardDescription>
+          <CardDescription>Máquinas registradas</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            {orders.length} Órdenes
+            {machines.length} Máquinas
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-              {/* @ts-expect-error: Ignoramos el error en esta línea*/}
-              <TrendingUpIcon className="size-3" />+{countCurrentMonth(orders)}{" "}
-              este mes
+              <TrendingUpIcon className="size-3" />+{countCurrentMonth(machines)} este mes
             </Badge>
           </div>
         </CardHeader>
@@ -163,14 +150,14 @@ const OrderPage = () => {
           {loading ? null : (
             <DataTable
               actions={
-                <CreateOrderDetailDialog
+                <CreateMachineDialog
                   updateView={updateView}
                   children={
                     <Button
                       variant="outline"
                       size="sm"
                       onSelect={(event) => {
-                        event.preventDefault(); // Evita el cierre automático
+                        event.preventDefault();
                       }}
                     >
                       <PlusIcon />
@@ -179,8 +166,8 @@ const OrderPage = () => {
                   }
                 />
               }
-              columns={columnsOrder}
-              data={orders}
+              columns={columnsMachine}
+              data={machines}
             />
           )}
         </CardContent>
@@ -189,5 +176,4 @@ const OrderPage = () => {
   );
 };
 
-export default OrderPage;
-//<OrderTable data={data} updateView={updateView} />
+export default MachinePage;

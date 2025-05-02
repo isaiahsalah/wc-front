@@ -1,16 +1,9 @@
-import {
-  OrderDetailInterfaces,
-  OrderInterfaces,
-  ProcessInterfaces,
-  ProductInterfaces,
-  ProductionInterfaces,
-  SectorInterfaces,
-} from "@/utils/interfaces";
-import { CellContext, ColumnDef, Row } from "@tanstack/react-table";
-import { useEffect, useMemo, useState } from "react";
+import {IOrderDetail, IOrder, IProcess, IProduct, IProduction, ISector} from "@/utils/interfaces";
+import {CellContext, ColumnDef, Row} from "@tanstack/react-table";
+import {useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
-import { Button } from "@/components/ui/button";
-import { ArchiveRestore, Delete, Edit, MoreVerticalIcon } from "lucide-react";
+import {Button} from "@/components/ui/button";
+import {ArchiveRestore, Delete, Edit, MoreVerticalIcon} from "lucide-react";
 import {
   DeleteProductionDialog,
   EditProductionDialog,
@@ -23,18 +16,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getProcesses } from "@/api/params/process.api";
-import { getSectors } from "@/api/params/sector.api";
-import { getOrderDetails_date } from "@/api/production/orderDetail.api";
-import { getAllProductions } from "@/api/production/production.api";
-import { CreateProductionOrderDialog } from "@/components/dialog/production/ProductionOrderDialogs";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import {getProcesses} from "@/api/params/process.api";
+import {getSectors} from "@/api/params/sector.api";
+import {getOrderDetails_date} from "@/api/production/orderDetail.api";
+import {getAllProductions} from "@/api/production/production.api";
+import {CreateProductionOrderDialog} from "@/components/dialog/production/ProductionOrderDialogs";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 
 import {
   Select,
@@ -45,14 +32,14 @@ import {
 } from "@/components/ui/select";
 
 const ProductionPage = () => {
-  const [productions, setProductions] = useState<ProductionInterfaces[]>([]);
-  const [orderDetails, setOrderDetails] = useState<OrderDetailInterfaces[]>([]);
+  const [productions, setProductions] = useState<IProduction[]>([]);
+  const [orderDetails, setOrderDetails] = useState<IOrderDetail[]>([]);
 
   const [loading, setLoading] = useState(false); // Estado de carga
   const [sector, setSector] = useState<number | null>(null);
   const [process, setProcess] = useState<number | null>(null);
-  const [sectors, setSectors] = useState<SectorInterfaces[]>();
-  const [processes, setProcesses] = useState<ProcessInterfaces[]>();
+  const [sectors, setSectors] = useState<ISector[]>();
+  const [processes, setProcesses] = useState<IProcess[]>();
 
   useEffect(() => {
     updateView();
@@ -98,21 +85,20 @@ const ProductionPage = () => {
     }
   };
 
-  // Generar columnas dinámicamente 
-  const columnsProduction: ColumnDef<ProductionInterfaces>[] = useMemo(() => {
+  // Generar columnas dinámicamente
+  const columnsProduction: ColumnDef<IProduction>[] = useMemo(() => {
     if (productions.length === 0) return [];
     return [
       ...Object.keys(productions[0]).map((key) => ({
         accessorKey: key,
         header: key.replace(/_/g, " ").toUpperCase(),
-        cell: (info: CellContext<ProductionInterfaces, unknown>) =>
-          info.getValue(),
+        cell: (info: CellContext<IProduction, unknown>) => info.getValue(),
       })),
       {
         id: "actions",
         header: "",
         enableHiding: false,
-        cell: ({ row }: { row: Row<ProductionInterfaces> }) => {
+        cell: ({row}: {row: Row<IProduction>}) => {
           return (
             <div className="flex gap-2  justify-end  ">
               <DropdownMenu>
@@ -129,29 +115,20 @@ const ProductionPage = () => {
                 <DropdownMenuContent align="end" className="w-32">
                   {!row.original.deletedAt ? (
                     <>
-                      <EditProductionDialog
-                        id={row.original.id ?? 0}
-                        updateView={updateView}
-                      >
+                      <EditProductionDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                           <Edit /> Editar{" "}
                         </DropdownMenuItem>
                       </EditProductionDialog>
                       <DropdownMenuSeparator />
-                      <DeleteProductionDialog
-                        id={row.original.id ?? 0}
-                        updateView={updateView}
-                      >
+                      <DeleteProductionDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                           <Delete /> Eliminar{" "}
                         </DropdownMenuItem>
                       </DeleteProductionDialog>
                     </>
                   ) : (
-                    <RecoverProductionDialog
-                      id={row.original.id ?? 0}
-                      updateView={updateView}
-                    >
+                    <RecoverProductionDialog id={row.original.id ?? 0} updateView={updateView}>
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                         <ArchiveRestore /> Recuperar{" "}
                       </DropdownMenuItem>
@@ -167,96 +144,92 @@ const ProductionPage = () => {
   }, [productions]);
 
   // Generar columnas dinámicamente
-  const columnsOrderDetails: ColumnDef<OrderDetailInterfaces>[] =
-    useMemo(() => {
-      if (orderDetails.length === 0) return [];
-      return [
-        {
-          accessorKey: "id",
-          header: "Id",
-          cell: (info) => info.getValue(),
+  const columnsOrderDetails: ColumnDef<IOrderDetail>[] = useMemo(() => {
+    if (orderDetails.length === 0) return [];
+    return [
+      {
+        accessorKey: "id",
+        header: "Id",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "amount",
+        header: "Cant. Ordenada",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "production_count",
+        header: "Cant. Producida",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "product",
+        header: "Producto",
+        cell: (info) => {
+          const product: IProduct = info.getValue() as IProduct;
+          return product.name;
         },
-        {
-          accessorKey: "amount",
-          header: "Cant. Ordenada",
-          cell: (info) => info.getValue(),
+      },
+      {
+        id: "product_process",
+        accessorKey: "product",
+        header: "Proceso",
+        cell: (info) => {
+          const product: IProduct = info.getValue() as IProduct;
+          return product.model?.process?.name;
         },
-        {
-          accessorKey: "production_count",
-          header: "Cant. Producida",
-          cell: (info) => info.getValue(),
+      },
+      {
+        id: "product_sector",
+        accessorKey: "product",
+        header: "Sector",
+        cell: (info) => {
+          const product: IProduct = info.getValue() as IProduct;
+          return product.model?.sector?.name;
         },
-        {
-          accessorKey: "product",
-          header: "Producto",
-          cell: (info) => {
-            const product: ProductInterfaces =
-              info.getValue() as ProductInterfaces;
-            return product.name;
-          },
+      },
+      {
+        accessorKey: "order",
+        header: "Fecha Límite",
+        cell: (info) => {
+          const order: IOrder = info.getValue() as IOrder;
+          return order.end_date;
         },
-        {
-          id: "product_process",
-          accessorKey: "product",
-          header: "Proceso",
-          cell: (info) => {
-            const product: ProductInterfaces =
-              info.getValue() as ProductInterfaces;
-            return product.model?.process?.name;
-          },
+      },
+      {
+        id: "actions",
+        header: "",
+        enableHiding: false,
+        cell: ({row}: {row: Row<IOrderDetail>}) => {
+          return (
+            <div className="flex gap-2 justify-end">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
+                    size="icon"
+                  >
+                    <MoreVerticalIcon />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-32">
+                  <CreateProductionOrderDialog
+                    idOrderDetail={row.original.id ?? 0}
+                    updateView={updateView}
+                  >
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      <Edit /> Producir
+                    </DropdownMenuItem>
+                  </CreateProductionOrderDialog>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          );
         },
-        {
-          id: "product_sector",
-          accessorKey: "product",
-          header: "Sector",
-          cell: (info) => {
-            const product: ProductInterfaces =
-              info.getValue() as ProductInterfaces;
-            return product.model?.sector?.name;
-          },
-        },
-        {
-          accessorKey: "order",
-          header: "Fecha Límite",
-          cell: (info) => {
-            const order: OrderInterfaces = info.getValue() as OrderInterfaces;
-            return order.end_date;
-          },
-        },
-        {
-          id: "actions",
-          header: "",
-          enableHiding: false,
-          cell: ({ row }: { row: Row<OrderDetailInterfaces> }) => {
-            return (
-              <div className="flex gap-2 justify-end">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
-                      size="icon"
-                    >
-                      <MoreVerticalIcon />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-32">
-                    <CreateProductionOrderDialog
-                      idOrderDetail={row.original.id ?? 0}
-                      updateView={updateView}
-                    >
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        <Edit /> Producir
-                      </DropdownMenuItem>
-                    </CreateProductionOrderDialog>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            );
-          },
-        },
+      },
 
-        /*...Object.keys(orderDetails[0]).map((key) => ({
+      /*...Object.keys(orderDetails[0]).map((key) => ({
           accessorKey: key,
           header: key.replace(/_/g, " ").toUpperCase(),
           cell: (info: any) => {
@@ -271,8 +244,8 @@ const ProductionPage = () => {
             return value;
           },
         })),*/
-      ];
-    }, [orderDetails]);
+    ];
+  }, [orderDetails]);
 
   return (
     <div className="grid grid-cols-6 gap-4">
@@ -281,18 +254,14 @@ const ProductionPage = () => {
           <CardDescription>Selecciona el sector y proceso</CardDescription>
           <div className="grid grid-cols-6 gap-2">
             <Select
-            
               onValueChange={(value) => setSector(Number(value))} // Convertir el valor a número
             >
               <SelectTrigger className="w-full col-span-3">
                 <SelectValue placeholder="Sector" />
               </SelectTrigger>
               <SelectContent>
-                {sectors?.map((sector: SectorInterfaces) => (
-                  <SelectItem
-                    key={sector.id}
-                    value={(sector.id ?? "").toString()}
-                  >
+                {sectors?.map((sector: ISector) => (
+                  <SelectItem key={sector.id} value={(sector.id ?? "").toString()}>
                     {sector.name}
                   </SelectItem>
                 ))}
@@ -305,11 +274,8 @@ const ProductionPage = () => {
                 <SelectValue placeholder="Proceso" />
               </SelectTrigger>
               <SelectContent>
-                {processes?.map((process: ProcessInterfaces) => (
-                  <SelectItem
-                    key={process.id}
-                    value={(process.id ?? "").toString()}
-                  >
+                {processes?.map((process: IProcess) => (
+                  <SelectItem key={process.id} value={(process.id ?? "").toString()}>
                     {process.name}
                   </SelectItem>
                 ))}
@@ -342,11 +308,7 @@ const ProductionPage = () => {
         </CardHeader>
         <CardContent>
           {loading ? null : (
-            <DataTable
-              actions={<></>}
-              columns={columnsProduction}
-              data={productions}
-            />
+            <DataTable actions={<></>} columns={columnsProduction} data={productions} />
           )}
         </CardContent>
       </Card>

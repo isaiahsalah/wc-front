@@ -1,32 +1,27 @@
- 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
- 
-import { useForm } from "react-hook-form"; 
-import {
-  MachineInterfaces,
-  MachineSchema,
-  ProcessInterfaces, 
-} from "@/utils/interfaces";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
+
+import {useForm} from "react-hook-form";
+import {IMachine, MachineSchema, IProcess} from "@/utils/interfaces";
+import {zodResolver} from "@hookform/resolvers/zod";
 
 import {
   Form,
   FormControl,
   FormDescription,
   FormField,
-  FormItem, 
+  FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import {Textarea} from "@/components/ui/textarea";
+import {useState} from "react";
 import {
   createMachine,
   deleteMachine,
   getMachineById,
   recoverMachine,
   updateMachine,
-} from "@/api/params/machine.api"; 
+} from "@/api/params/machine.api";
 import {
   Dialog,
   DialogClose,
@@ -38,39 +33,36 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
-import { getProcesses } from "@/api/params/process.api";
- import {
+import {getProcesses} from "@/api/params/process.api";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"; 
+} from "@/components/ui/select";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
   updateView: () => void; // Define the type as a function that returns void
 }
 
-export const CreateMachineDialog: React.FC<PropsCreate> = ({
-  children,
-  updateView,
-}) => {
+export const CreateMachineDialog: React.FC<PropsCreate> = ({children, updateView}) => {
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
 
-  const [processes, setProcesses] = useState<ProcessInterfaces[]>();
- 
-  const form = useForm<MachineInterfaces>({
+  const [processes, setProcesses] = useState<IProcess[]>();
+
+  const form = useForm<IMachine>({
     resolver: zodResolver(MachineSchema),
-    defaultValues:{
-      name:""
-    }
+    defaultValues: {
+      name: "",
+    },
   });
 
-  function onSubmit(values: MachineInterfaces) {
+  function onSubmit(values: IMachine) {
     setLoadingSave(true);
-    createMachine({ data: values })
+    createMachine({data: values})
       .then((updatedMachine) => {
         console.log("Machineo creado:", updatedMachine);
         updateView();
@@ -87,9 +79,9 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({
     setLoadingInit(true);
     try {
       const ProcessesData = await getProcesses();
- 
+
       setProcesses(ProcessesData);
-     } catch (error) {
+    } catch (error) {
       console.error("Error al cargar los datos:", error);
     } finally {
       setLoadingInit(false);
@@ -104,21 +96,16 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Registro de Machineo</DialogTitle>
-          <DialogDescription>
-            Mostrando datos relacionados con el Machineo.
-          </DialogDescription>
+          <DialogDescription>Mostrando datos relacionados con el Machineo.</DialogDescription>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className=" grid  gap-4 "
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid  gap-4 ">
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
                   name="name"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-6">
                       <FormDescription>Nombre</FormDescription>
                       <FormControl>
@@ -132,7 +119,7 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({
                 <FormField
                   control={form.control}
                   name="description"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-6">
                       <FormDescription>Descripción</FormDescription>
                       <FormControl>
@@ -141,28 +128,23 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({
                       <FormMessage />
                     </FormItem>
                   )}
-                /> 
+                />
                 <FormField
                   control={form.control}
                   name="id_process"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-3 ">
                       <FormDescription>Proceso</FormDescription>
                       <FormControl>
                         <Select
-                          onValueChange={(value) =>
-                            field.onChange(Number(value))
-                          } // Convertir el valor a número
+                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Seleccionar Proceso" />
                           </SelectTrigger>
                           <SelectContent>
-                            {processes?.map((process: ProcessInterfaces) => (
-                              <SelectItem
-                                key={process.id}
-                                value={(process.id ?? "").toString()}
-                              >
+                            {processes?.map((process: IProcess) => (
+                              <SelectItem key={process.id} value={(process.id ?? "").toString()}>
                                 {process.name}
                               </SelectItem>
                             ))}
@@ -173,7 +155,6 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({
                     </FormItem>
                   )}
                 />
-
               </div>
               <DialogFooter className=" grid grid-cols-6  ">
                 <Button
@@ -184,12 +165,7 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({
                   {loadingSave ? <LoadingCircle /> : "Guardar"}
                 </Button>
                 <DialogClose asChild className="col-span-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    disabled={loadingSave}
-                  >
+                  <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                     Cerrar
                   </Button>
                 </DialogClose>
@@ -219,15 +195,15 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
 
-  const [processes, setProcesses] = useState<ProcessInterfaces[]>();
- 
-  const form = useForm<MachineInterfaces>({
+  const [processes, setProcesses] = useState<IProcess[]>();
+
+  const form = useForm<IMachine>({
     resolver: zodResolver(MachineSchema),
   });
 
-  function onSubmit(values: MachineInterfaces) {
+  function onSubmit(values: IMachine) {
     setLoadingSave(true);
-    updateMachine({ data: values })
+    updateMachine({data: values})
       .then((updatedMachine) => {
         console.log("Machineo actualizado:", updatedMachine);
 
@@ -244,18 +220,18 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
   const fetchMachine = async () => {
     setLoadingInit(true);
     try {
-      const MachineData: MachineInterfaces = await getMachineById(id);
+      const MachineData: IMachine = await getMachineById(id);
       console.log("Machineos:", MachineData);
 
       const ProcessesData = await getProcesses();
- 
+
       setProcesses(ProcessesData);
-       form.reset({
+      form.reset({
         id: MachineData.id,
         name: MachineData.name,
-        description: MachineData.description, 
-        id_process: MachineData.id_process, 
-        active:MachineData.active,
+        description: MachineData.description,
+        id_process: MachineData.id_process,
+        active: MachineData.active,
       });
     } catch (error) {
       console.error("Error al cargar los Machineos:", error);
@@ -288,21 +264,16 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Gestión de Machineo</DialogTitle>
-          <DialogDescription>
-            Mostrando datos relacionados con el Machineo.
-          </DialogDescription>
+          <DialogDescription>Mostrando datos relacionados con el Machineo.</DialogDescription>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className=" grid   gap-4 "
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid   gap-4 ">
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
                   name="id"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className={"col-span-2"}>
                       <FormDescription>Id</FormDescription>
                       <FormControl>
@@ -310,9 +281,7 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
                           type="number"
                           placeholder="Id"
                           disabled
-                          onChange={(event) =>
-                            field.onChange(Number(event.target.value))
-                          }
+                          onChange={(event) => field.onChange(Number(event.target.value))}
                           defaultValue={field.value ?? ""}
                         />
                       </FormControl>
@@ -323,7 +292,7 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
                 <FormField
                   control={form.control}
                   name="name"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-4">
                       <FormDescription>Nombre</FormDescription>
                       <FormControl>
@@ -337,7 +306,7 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
                 <FormField
                   control={form.control}
                   name="description"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-6">
                       <FormDescription>Descripción</FormDescription>
                       <FormControl>
@@ -347,30 +316,24 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
                     </FormItem>
                   )}
                 />
-                 
+
                 <FormField
                   control={form.control}
                   name="id_process"
-                  render={({ field }) => (
+                  render={({field}) => (
                     <FormItem className="col-span-3 ">
                       <FormDescription>Proceso</FormDescription>
                       <FormControl>
                         <Select
-                          onValueChange={(value) =>
-                            field.onChange(Number(value))
-                          } // Convertir el valor a número
+                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                           defaultValue={field.value.toString()}
-
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Seleccionar Proceso" />
                           </SelectTrigger>
                           <SelectContent>
-                            {processes?.map((process: ProcessInterfaces) => (
-                              <SelectItem
-                                key={process.id}
-                                value={(process.id ?? "").toString()}
-                              >
+                            {processes?.map((process: IProcess) => (
+                              <SelectItem key={process.id} value={(process.id ?? "").toString()}>
                                 {process.name}
                               </SelectItem>
                             ))}
@@ -381,8 +344,6 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
                     </FormItem>
                   )}
                 />
-
-                 
               </div>
 
               <DialogFooter className=" grid grid-cols-6  ">
@@ -458,9 +419,7 @@ export const DeleteMachineDialog: React.FC<PropsDelete> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Eliminar Machineo</DialogTitle>
-          <DialogDescription>
-            ¿Está seguro de eliminar este Machineo?
-          </DialogDescription>
+          <DialogDescription>¿Está seguro de eliminar este Machineo?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -474,12 +433,7 @@ export const DeleteMachineDialog: React.FC<PropsDelete> = ({
             {loadingDelete ? <LoadingCircle /> : "Eliminar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              disabled={loadingDelete}
-            >
+            <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
               Cerrar
             </Button>
           </DialogClose>
@@ -526,9 +480,7 @@ export const RecoverMachineDialog: React.FC<PropsRecover> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Recuperar Machineo</DialogTitle>
-          <DialogDescription>
-            ¿Está seguro de recuperar este Machineo?
-          </DialogDescription>
+          <DialogDescription>¿Está seguro de recuperar este Machineo?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -541,12 +493,7 @@ export const RecoverMachineDialog: React.FC<PropsRecover> = ({
             {loadingRecover ? <LoadingCircle /> : "Recuperar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              disabled={loadingRecover}
-            >
+            <Button type="button" variant="outline" className="w-full" disabled={loadingRecover}>
               Cerrar
             </Button>
           </DialogClose>

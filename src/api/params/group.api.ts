@@ -1,5 +1,5 @@
 import {apiClient} from "../axiosConfig";
-import {GroupInterfaces} from "@/utils/interfaces"; // Cambiar el nombre de la interfaz si es necesario
+import {IGroup} from "@/utils/interfaces"; // Cambiar el nombre de la interfaz si es necesario
 import {toast} from "sonner";
 
 export const getGroups = async () => {
@@ -32,7 +32,7 @@ export const getGroupById = async (id: number) => {
   }
 };
 
-export const createGroup = async ({data}: {data: GroupInterfaces}) => {
+export const createGroup = async ({data}: {data: IGroup}) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",
@@ -59,7 +59,7 @@ export const createGroup = async ({data}: {data: GroupInterfaces}) => {
   }
 };
 
-export const updateGroup = async ({data}: {data: GroupInterfaces}) => {
+export const updateGroup = async ({data}: {data: IGroup}) => {
   toast("Se está procesando la petición", {
     action: {
       label: "OK",

@@ -1,22 +1,14 @@
- 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
- 
-import { useForm } from "react-hook-form"; 
-import { zodResolver } from "@hookform/resolvers/zod";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
 
-import {
-  Form,
-  FormControl, 
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import React, { useState } from "react";
-import { deleteColor, getColorById, updateColor } from "@/api/product/color.api";
-import { toast } from "sonner";
+import {useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {Textarea} from "@/components/ui/textarea";
+import React, {useState} from "react";
+import {deleteColor, getColorById, updateColor} from "@/api/product/color.api";
+import {toast} from "sonner";
 import {
   Dialog,
   DialogClose,
@@ -26,9 +18,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"; 
+} from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
-import { ColorInterfaces, ColorSchema } from "@/utils/interfaces";
+import {IColor, ColorSchema} from "@/utils/interfaces";
 
 interface Props {
   children: React.ReactNode; // Define el tipo de children
@@ -37,19 +29,14 @@ interface Props {
   onOpenChange?: (open: boolean) => void;
 }
 
-const EditColorDialog: React.FC<Props> = ({
-  children,
-  id,
-  updateView,
-  onOpenChange,
-}) => {
-  //const [data, setData] = useState<GeneralInterfaces | never>();
+const EditColorDialog: React.FC<Props> = ({children, id, updateView, onOpenChange}) => {
+  //const [data, setData] = useState<IGeneral | never>();
   const [loadingSave, setLoadingSave] = useState(false); // Estado de carga
   const [loadingDelete, setLoadingDelete] = useState(false); // Estado de carga
 
   const [loadingInit, setLoadingInit] = useState(false); // Estado de carga
 
-  const form = useForm<ColorInterfaces>({
+  const form = useForm<IColor>({
     resolver: zodResolver(ColorSchema),
     defaultValues: {
       id: 0,
@@ -58,9 +45,9 @@ const EditColorDialog: React.FC<Props> = ({
     },
   });
 
-  function onSubmit(values: ColorInterfaces) {
+  function onSubmit(values: IColor) {
     setLoadingSave(true); // Inicia la carga
-    updateColor({ data: values })
+    updateColor({data: values})
       .then((updatedColor) => {
         console.log("Color actualizado:", updatedColor);
 
@@ -140,23 +127,18 @@ const EditColorDialog: React.FC<Props> = ({
       <DialogTrigger asChild onClick={fetchColor}>
         {children}
       </DialogTrigger>
-      <DialogContent >
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Gestión de color</DialogTitle>
-          <DialogDescription>
-            Mostrando datos relacionados con el color.
-          </DialogDescription>
+          <DialogDescription>Mostrando datos relacionados con el color.</DialogDescription>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className=" grid grid-cols-6 gap-4 "
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid grid-cols-6 gap-4 ">
               <FormField
                 control={form.control}
                 name="id"
-                render={({ field }) => (
+                render={({field}) => (
                   <FormItem className={"col-span-6"}>
                     <FormLabel>Id</FormLabel>
                     <FormControl>
@@ -164,9 +146,7 @@ const EditColorDialog: React.FC<Props> = ({
                         type="number"
                         placeholder="Id"
                         disabled
-                        onChange={(event) =>
-                          field.onChange(Number(event.target.value))
-                        }
+                        onChange={(event) => field.onChange(Number(event.target.value))}
                         /*@ts-expect-error: Ignoramos el error en esta línea */
                         defaultValue={field.value}
                       />
@@ -178,7 +158,7 @@ const EditColorDialog: React.FC<Props> = ({
               <FormField
                 control={form.control}
                 name="name"
-                render={({ field }) => (
+                render={({field}) => (
                   <FormItem className="col-span-6">
                     <FormLabel>Nombre</FormLabel>
                     <FormControl>
@@ -192,7 +172,7 @@ const EditColorDialog: React.FC<Props> = ({
               <FormField
                 control={form.control}
                 name="description"
-                render={({ field }) => (
+                render={({field}) => (
                   <FormItem className="col-span-6">
                     <FormLabel>Descripción</FormLabel>
                     <FormControl>

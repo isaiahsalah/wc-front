@@ -1,14 +1,14 @@
+import {useCallback, useEffect, useState} from "react";
+import {Tabs, TabsContent} from "@/components/ui/tabs";
+import {Separator} from "@/components/ui/separator";
+import {IGeneral} from "@/utils/interfaces";
 import SelectorTabPage from "@/components/SelectorTabPage";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { useCallback, useEffect, useState } from "react";
-import { GeneralInterfaces } from "@/utils/interfaces";
-import { getAllProductions } from "@/api/production/production.api";
-import ProductionPage from "./production/ProductionPage";
+import ProductPage from "./product/ProductPage";
+import {getAllProducts} from "@/api/product/product.api";
 
-const SecurityTabPage = () => {
+const InventoryTabPage = () => {
   const [activeTab, setActiveTab] = useState(tabData[0]);
-  const [data, setData] = useState<GeneralInterfaces[]>([]);
+  const [data, setData] = useState<IGeneral[]>([]);
   const [loading, setLoading] = useState(false); // Estado de carga
 
   useEffect(() => {
@@ -59,13 +59,13 @@ const SecurityTabPage = () => {
   );
 };
 
-export default SecurityTabPage;
+export default InventoryTabPage;
 
 const tabData = [
   {
     id: "tab1",
-    label: "Producción",
-    content: ProductionPage,
-    get: getAllProductions,
+    label: "Producto",
+    content: ProductPage,
+    get: getAllProducts,
   },
 ];

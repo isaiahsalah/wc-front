@@ -9,10 +9,11 @@ import {useContext, useEffect, useState} from "react";
 import {SesionContext, SesionProvider} from "./providers/sesion-provider";
 import LoginPage from "./pages/LoginPage";
 import {getCheckToken} from "./api/login.api";
-import {SesionInterface} from "./utils/interfaces";
+import {ISesion} from "./utils/interfaces";
 import LoadingPage from "./pages/LoadingPage";
 import {TitleProvider} from "./providers/title-provider";
 import ModuleRoutes from "./ModuleRoutes";
+import {SectorProvider} from "./providers/sector-provider";
 
 function App() {
   const PrivateRoutes = () => {
@@ -42,9 +43,8 @@ function App() {
             // Almacena el token en localStorage
             window.localStorage.setItem("token-app", JSON.stringify(response.token));
             // Actualiza la sesión en el estado
-            setSesion(response as SesionInterface);
+            setSesion(response as ISesion);
             setIsAuthenticated(true);
-
             // Navega a la ruta deseada después de iniciar sesión
             navigate("/home");
           }
@@ -56,17 +56,21 @@ function App() {
     if (loading) return <LoadingPage />;
 
     return isAuthenticated ? (
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset>
-          <Header />
-          <div className=" @container/main flex flex-1 flex-col gap-4 p-4 animate-fadeIn md:mx-4">
-            <main className="h-full ">
-              <Outlet />
-            </main>
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
+      <SectorProvider>
+        <TitleProvider>
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>
+              <Header />
+              <div className=" @container/main flex flex-1 flex-col gap-4 p-4 animate-fadeIn md:mx-4">
+                <main className="h-full ">
+                  <Outlet />
+                </main>
+              </div>
+            </SidebarInset>
+          </SidebarProvider>
+        </TitleProvider>
+      </SectorProvider>
     ) : (
       <Navigate to="/login" />
     );
@@ -74,22 +78,20 @@ function App() {
 
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-      <TitleProvider>
-        <SesionProvider>
-          <BrowserRouter>
-            <div className=" flex h-[100vh] animate-fadeIn ">
-              <Routes>
-                <Route element={<PrivateRoutes />}>
-                  <Route path="/*" element={<ModuleRoutes />} />
-                </Route>
-                <Route path="/login" element={<LoginPage />} />
-                {/*<Route path="*" element={<Navigate to="/login" />} />*/}
-              </Routes>
-            </div>
-            <Toaster />
-          </BrowserRouter>
-        </SesionProvider>
-      </TitleProvider>
+      <SesionProvider>
+        <BrowserRouter>
+          <div className=" flex h-[100vh] animate-fadeIn ">
+            <Routes>
+              <Route element={<PrivateRoutes />}>
+                <Route path="/*" element={<ModuleRoutes />} />
+              </Route>
+              <Route path="/login" element={<LoginPage />} />
+              {/*<Route path="*" element={<Navigate to="/login" />} />*/}
+            </Routes>
+          </div>
+          <Toaster />
+        </BrowserRouter>
+      </SesionProvider>
     </ThemeProvider>
   );
 }

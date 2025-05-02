@@ -1,15 +1,28 @@
-import {  ProductInterfaces } from "@/utils/interfaces";
+import {IProcess} from "@/utils/interfaces";
+import {useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
-import { CreateProductDialog, DeleteProductDialog, EditProductDialog, RecoverProductDialog } from "@/components/dialog/product/ProductDialogs";
- import { ArchiveRestore, Delete, Edit, MoreVerticalIcon, PlusIcon, Tally5, TrendingUpIcon } from "lucide-react";
-import { Row } from "@tanstack/react-table";
-import { useEffect, useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
+import {
+  ArchiveRestore,
+  Delete,
+  Edit,
+  MoreVerticalIcon,
+  PlusIcon,
+  Tally5,
+  TrendingUpIcon,
+} from "lucide-react";
+import {
+  CreateProcessDialog,
+  DeleteProcessDialog,
+  EditProcessDialog,
+  RecoverProcessDialog,
+} from "@/components/dialog/params/ProcessDialogs";
+import {ColumnDef, Row} from "@tanstack/react-table";
 import {
   DropdownMenu,
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuSeparator, 
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -20,36 +33,34 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getAllProducts } from "@/api/product/product.api";
-import { countCurrentMonth } from "@/utils/funtions";
-import { Badge } from "@/components/ui/badge";
+import {getAllProcesses} from "@/api/params/process.api";
+import {Badge} from "@/components/ui/badge";
+import {countCurrentMonth} from "@/utils/funtions";
 
-const ProductPage =  () => {
- const [products, setProducts] = useState<ProductInterfaces[]>([]);
-   const [loading, setLoading] = useState(false); // Estado de carga
- 
-   useEffect(() => {
-     updateView();
-   }, []);
- 
-   const updateView = async () => {
-     setLoading(true);
-     try {
-       const ProductionsData = await getAllProducts();
-       setProducts(ProductionsData);
-     } catch (error) {
-       console.error("Error al cargar los datos:", error);
-     } finally {
-       setLoading(false);
-     }
-   };
- 
-  // Generar columnas dinámicamente
-  const columnsProducts = useMemo(() => {
-    if (products.length === 0) return [];
+const ProcessPage = () => {
+  const [processes, setProcesses] = useState<IProcess[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    updateView();
+  }, []);
+
+  const updateView = async () => {
+    setLoading(true);
+    try {
+      const processesData = await getAllProcesses();
+      setProcesses(processesData);
+    } catch (error) {
+      console.error("Error al cargar los datos:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const columnsProcess: ColumnDef<IProcess>[] = useMemo(() => {
+    if (processes.length === 0) return [];
     return [
-      
-      ...Object.keys(products[0]).map((key) => ({
+      ...Object.keys(processes[0]).map((key) => ({
         accessorKey: key,
         header: key.replace(/_/g, " ").toUpperCase(),
         /* @ts-expect-error: Ignoramos el error en esta línea*/
@@ -59,9 +70,9 @@ const ProductPage =  () => {
         id: "actions",
         header: "",
         enableHiding: false,
-        cell: ({ row }: { row: Row<ProductInterfaces> }) => {
+        cell: ({row}: {row: Row<IProcess>}) => {
           return (
-            <div className="flex gap-2  justify-end  ">
+            <div className="flex gap-2 justify-end">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -69,40 +80,30 @@ const ProductPage =  () => {
                     className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
                     size="icon"
                   >
-                    {" "}
                     <MoreVerticalIcon />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-32">
                   {!row.original.deletedAt ? (
                     <>
-                      <EditProductDialog
-                        id={row.original.id ?? 0}
-                        updateView={updateView}
-                      >
+                      <EditProcessDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        <Edit/> Editar{" "}
+                          <Edit /> Editar
                         </DropdownMenuItem>
-                      </EditProductDialog>
+                      </EditProcessDialog>
                       <DropdownMenuSeparator />
-                      <DeleteProductDialog
-                        id={row.original.id ?? 0}
-                        updateView={updateView}
-                      >
+                      <DeleteProcessDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        <Delete/> Eliminar{" "}
+                          <Delete /> Eliminar
                         </DropdownMenuItem>
-                      </DeleteProductDialog>
+                      </DeleteProcessDialog>
                     </>
                   ) : (
-                    <RecoverProductDialog
-                      id={row.original.id ?? 0}
-                      updateView={updateView}
-                    >
+                    <RecoverProcessDialog id={row.original.id ?? 0} updateView={updateView}>
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                      <ArchiveRestore/> Recuperar{" "}
+                        <ArchiveRestore /> Recuperar
                       </DropdownMenuItem>
-                    </RecoverProductDialog>
+                    </RecoverProcessDialog>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -111,19 +112,19 @@ const ProductPage =  () => {
         },
       },
     ];
-  }, [products]);
+  }, [processes]);
+
   return (
     <div className="flex flex-col gap-4">
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader className="relative">
-          <CardDescription>Productos registrados</CardDescription>
+          <CardDescription>Procesos registrados</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            {products.length} Productos
+            {processes.length} Procesos
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-              <TrendingUpIcon className="size-3" />
-              +{countCurrentMonth(products)} este mes
+              <TrendingUpIcon className="size-3" />+{countCurrentMonth(processes)} este mes
             </Badge>
           </div>
         </CardHeader>
@@ -137,6 +138,7 @@ const ProductPage =  () => {
           </div>
         </CardFooter>
       </Card>
+
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader>
           <CardTitle>Producción</CardTitle>
@@ -146,14 +148,14 @@ const ProductPage =  () => {
           {loading ? null : (
             <DataTable
               actions={
-                <CreateProductDialog
+                <CreateProcessDialog
                   updateView={updateView}
                   children={
                     <Button
                       variant="outline"
                       size="sm"
                       onSelect={(event) => {
-                        event.preventDefault(); // Evita el cierre automático
+                        event.preventDefault();
                       }}
                     >
                       <PlusIcon />
@@ -162,18 +164,14 @@ const ProductPage =  () => {
                   }
                 />
               }
-              columns={columnsProducts}
-              data={products}
+              columns={columnsProcess}
+              data={processes}
             />
           )}
         </CardContent>
       </Card>
-      
-
     </div>
   );
 };
 
-export default ProductPage;
-
-//<ProductTable data={data} updateView={updateView} />
+export default ProcessPage;
