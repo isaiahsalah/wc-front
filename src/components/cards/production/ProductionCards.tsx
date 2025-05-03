@@ -39,7 +39,6 @@ interface Props {
 
 const ProductionCards: React.FC<Props> = ({initialData}) => {
   const [orderDetails, setOrderDetails] = useState<IOrderDetail[]>([]);
-  const [loading, setLoading] = useState(false); // Estado de carga
   const [sector, setSector] = useState<number | null>(null);
   const [process, setProcess] = useState<number | null>(null);
   const [sectors, setSectors] = useState<ISector[]>();
@@ -54,7 +53,6 @@ const ProductionCards: React.FC<Props> = ({initialData}) => {
   }, []);
 
   const fetchFilter = async () => {
-    setLoading(true);
     try {
       const ProcessesData = await getProcesses();
       const SectorsData = await getSectors();
@@ -63,13 +61,10 @@ const ProductionCards: React.FC<Props> = ({initialData}) => {
       setSectors(SectorsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   const updateView = async () => {
-    setLoading(true);
     try {
       const date = new Date().toISOString();
       const OrderDetailsData = await getOrderDetails_date({
@@ -82,8 +77,6 @@ const ProductionCards: React.FC<Props> = ({initialData}) => {
       setOrderDetails(OrderDetailsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -250,15 +243,7 @@ const ProductionCards: React.FC<Props> = ({initialData}) => {
           </div>
         </CardHeader>
         <CardContent>
-          {loading ? null : (
-            <DataTable
-              options={false}
-              actions={<></>}
-              /*@ts-expect-error: Ignoramos el error en esta línea */
-              columns={columns} /*@ts-expect-error: Ignoramos el error en esta línea */
-              data={orderDetails}
-            />
-          )}
+          <DataTable hasOptions={false} actions={<></>} columns={columns} data={orderDetails} />
         </CardContent>
       </Card>
     </div>

@@ -40,29 +40,24 @@ import {Badge} from "@/components/ui/badge";
 import {CreateOrderDetailDialog} from "@/components/dialog/production/OrderDetailDialogs";
 
 const OrderPage = () => {
-  const [orders, setOrders] = useState<IOrder[]>([]);
-
-  const [loading, setLoading] = useState(false); // Estado de carga
+  const [orders, setOrders] = useState<IOrder[] | null>(null);
 
   useEffect(() => {
     updateView();
   }, []);
 
   const updateView = async () => {
-    setLoading(true);
     try {
       const ProductionsData = await getAllOrders();
       setOrders(ProductionsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   // Generar columnas dinámicamente
   const columnsOrder: ColumnDef<IOrder>[] = useMemo(() => {
-    if (orders.length === 0) return [];
+    if (!orders) return [];
     return [
       ...Object.keys(orders[0]).map((key) => ({
         accessorKey: key,
@@ -124,12 +119,12 @@ const OrderPage = () => {
         <CardHeader className="relative">
           <CardDescription>Órdenes registradas</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            {orders.length} Órdenes
+            {orders ? orders.length : null} Órdenes
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
               {/* @ts-expect-error: Ignoramos el error en esta línea*/}
-              <TrendingUpIcon className="size-3" />+{countCurrentMonth(orders)} este mes
+              <TrendingUpIcon className="size-3" />+{countCurrentMonth(orders ?? [])} este mes
             </Badge>
           </div>
         </CardHeader>
@@ -150,29 +145,27 @@ const OrderPage = () => {
           <CardDescription>Producción registrada</CardDescription>
         </CardHeader>
         <CardContent>
-          {loading ? null : (
-            <DataTable
-              actions={
-                <CreateOrderDetailDialog
-                  updateView={updateView}
-                  children={
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onSelect={(event) => {
-                        event.preventDefault(); // Evita el cierre automático
-                      }}
-                    >
-                      <PlusIcon />
-                      <span className="ml-2 hidden lg:inline">Agregar</span>
-                    </Button>
-                  }
-                />
-              }
-              columns={columnsOrder}
-              data={orders}
-            />
-          )}
+          <DataTable
+            actions={
+              <CreateOrderDetailDialog
+                updateView={updateView}
+                children={
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onSelect={(event) => {
+                      event.preventDefault(); // Evita el cierre automático
+                    }}
+                  >
+                    <PlusIcon />
+                    <span className="ml-2 hidden lg:inline">Agregar</span>
+                  </Button>
+                }
+              />
+            }
+            columns={columnsOrder}
+            data={orders}
+          />
         </CardContent>
       </Card>
     </div>

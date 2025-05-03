@@ -30,12 +30,10 @@ import {Filter} from "./dataTableFilters";
 import {Label} from "../ui/label";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "../ui/select";
 import {IGeneral} from "@/utils/interfaces";
-import {format} from "date-fns";
-import {Skeleton} from "../ui/skeleton";
 import TableSkeleton from "../skeleton/table-skeleton";
 
 interface Props<T extends IGeneral> {
-  data: T[];
+  data: T[] | null;
   actions: React.ReactNode;
   columns: ColumnDef<T>[];
   hasOptions?: boolean;
@@ -64,7 +62,7 @@ const DataTable = <T extends IGeneral>({
   const [globalFilter, setGlobalFilter] = useState("");
 
   const table = useReactTable({
-    data,
+    data: data ?? [],
     columns,
     state: {
       sorting,
@@ -90,10 +88,13 @@ const DataTable = <T extends IGeneral>({
 
   // const headers = data.length > 0 ? Object.keys(data[0]) : [];
 
+  if (!data) {
+    return (
+      <TableSkeleton colums={5} rows={5} hasOptions={hasOptions} hasPaginated={hasPaginated} />
+    );
+  }
   return (
     <div className="flex flex-col gap-4">
-      <TableSkeleton colums={5} rows={5} hasOptions={hasOptions} hasPaginated={hasPaginated} />
-
       {/* Barra superior con filtros y opciones */}
       {!hasOptions ? null : (
         <div className="flex items-center justify-between gap-4">
@@ -168,7 +169,7 @@ const DataTable = <T extends IGeneral>({
                   className={row.original.deletedAt ? "text-red-400" : ""}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className=" py-1.5">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}

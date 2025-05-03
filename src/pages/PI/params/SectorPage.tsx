@@ -38,27 +38,23 @@ import {Badge} from "@/components/ui/badge";
 import {countCurrentMonth} from "@/utils/funtions";
 
 const SectorPage = () => {
-  const [sectors, setSectors] = useState<ISector[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [sectors, setSectors] = useState<ISector[] | null>(null);
 
   useEffect(() => {
     updateView();
   }, []);
 
   const updateView = async () => {
-    setLoading(true);
     try {
       const sectorsData = await getAllSectors();
       setSectors(sectorsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   const columnsSector: ColumnDef<ISector>[] = useMemo(() => {
-    if (sectors.length === 0) return [];
+    if (!sectors) return [];
     return [
       ...Object.keys(sectors[0]).map((key) => ({
         accessorKey: key,
@@ -120,11 +116,12 @@ const SectorPage = () => {
         <CardHeader className="relative">
           <CardDescription>Sectores registrados</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            {sectors.length} Sectores
+            {sectors ? sectors.length : 0} Sectores
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-              <TrendingUpIcon className="size-3" />+{countCurrentMonth(sectors)} este mes
+              <TrendingUpIcon className="size-3" />+{countCurrentMonth(sectors ? sectors : [])} este
+              mes
             </Badge>
           </div>
         </CardHeader>
@@ -145,29 +142,27 @@ const SectorPage = () => {
           <CardDescription>Producción registrada</CardDescription>
         </CardHeader>
         <CardContent>
-          {loading ? null : (
-            <DataTable
-              actions={
-                <CreateSectorDialog
-                  updateView={updateView}
-                  children={
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onSelect={(event) => {
-                        event.preventDefault();
-                      }}
-                    >
-                      <PlusIcon />
-                      <span className="ml-2 hidden lg:inline">Agregar</span>
-                    </Button>
-                  }
-                />
-              }
-              columns={columnsSector}
-              data={sectors}
-            />
-          )}
+          <DataTable
+            actions={
+              <CreateSectorDialog
+                updateView={updateView}
+                children={
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onSelect={(event) => {
+                      event.preventDefault();
+                    }}
+                  >
+                    <PlusIcon />
+                    <span className="ml-2 hidden lg:inline">Agregar</span>
+                  </Button>
+                }
+              />
+            }
+            columns={columnsSector}
+            data={sectors}
+          />
         </CardContent>
       </Card>
     </div>

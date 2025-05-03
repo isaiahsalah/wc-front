@@ -44,13 +44,12 @@ import {format} from "date-fns";
 // }
 
 const ColorPage = () => {
-  const [colors, setColors] = useState<IColor[]>([]);
-  const [loading, setLoading] = useState(false); // Estado de carga
+  const [colors, setColors] = useState<IColor[] | null>(null);
 
   useEffect(() => {
-    setLoading(true);
+    //setLoading(true);
     updateView();
-    setLoading(false);
+    //setLoading(false);
   }, []);
 
   const updateView = async () => {
@@ -64,7 +63,7 @@ const ColorPage = () => {
 
   // Generar columnas dinámicamente
   const columnsColor: ColumnDef<IColor>[] = useMemo(() => {
-    if (colors.length === 0) return [];
+    if (!colors) return [];
     return [
       {
         accessorKey: "id",
@@ -172,11 +171,12 @@ const ColorPage = () => {
         <CardHeader className="relative">
           <CardDescription>Colores registrados</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            {colors.length} Colores
+            {colors ? colors.length : 0} Colores
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-              <TrendingUpIcon className="size-3" />+{countCurrentMonth(colors)} este mes
+              <TrendingUpIcon className="size-3" />+{countCurrentMonth(colors ? colors : [])} este
+              mes
             </Badge>
           </div>
         </CardHeader>
@@ -197,29 +197,27 @@ const ColorPage = () => {
           <CardDescription>Producción registrada</CardDescription>
         </CardHeader>
         <CardContent>
-          {loading ? null : (
-            <DataTable
-              actions={
-                <CreateColorDialog
-                  updateView={updateView}
-                  children={
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onSelect={(event) => {
-                        event.preventDefault(); // Evita el cierre automático
-                      }}
-                    >
-                      <PlusIcon />
-                      <span className="ml-2 hidden lg:inline">Agregar</span>
-                    </Button>
-                  }
-                />
-              }
-              columns={columnsColor}
-              data={colors}
-            />
-          )}
+          <DataTable
+            actions={
+              <CreateColorDialog
+                updateView={updateView}
+                children={
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onSelect={(event) => {
+                      event.preventDefault(); // Evita el cierre automático
+                    }}
+                  >
+                    <PlusIcon />
+                    <span className="ml-2 hidden lg:inline">Agregar</span>
+                  </Button>
+                }
+              />
+            }
+            columns={columnsColor}
+            data={colors}
+          />
         </CardContent>
       </Card>
     </div>

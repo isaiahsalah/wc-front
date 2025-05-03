@@ -38,27 +38,23 @@ import {Badge} from "@/components/ui/badge";
 import {countCurrentMonth} from "@/utils/funtions";
 
 const ModelPage = () => {
-  const [models, setModels] = useState<IModel[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [models, setModels] = useState<IModel[] | null>(null);
 
   useEffect(() => {
     updateView();
   }, []);
 
   const updateView = async () => {
-    setLoading(true);
     try {
       const modelsData = await getAllModels();
       setModels(modelsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   const columnsModel: ColumnDef<IModel>[] = useMemo(() => {
-    if (models.length === 0) return [];
+    if (!models) return [];
     return [
       ...Object.keys(models[0]).map((key) => ({
         accessorKey: key,
@@ -121,11 +117,11 @@ const ModelPage = () => {
         <CardHeader className="relative">
           <CardDescription>Modelos registrados</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            {models.length} Modelos
+            {models ? models.length : 0} Modelos
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-              <TrendingUpIcon className="size-3" />+{countCurrentMonth(models)} este mes
+              <TrendingUpIcon className="size-3" />+{countCurrentMonth(models ?? [])} este mes
             </Badge>
           </div>
         </CardHeader>
@@ -146,29 +142,27 @@ const ModelPage = () => {
           <CardDescription>Producción registrada</CardDescription>
         </CardHeader>
         <CardContent>
-          {loading ? null : (
-            <DataTable
-              actions={
-                <CreateModelDialog
-                  updateView={updateView}
-                  children={
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onSelect={(event) => {
-                        event.preventDefault();
-                      }}
-                    >
-                      <PlusIcon />
-                      <span className="ml-2 hidden lg:inline">Agregar</span>
-                    </Button>
-                  }
-                />
-              }
-              columns={columnsModel}
-              data={models}
-            />
-          )}
+          <DataTable
+            actions={
+              <CreateModelDialog
+                updateView={updateView}
+                children={
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onSelect={(event) => {
+                      event.preventDefault();
+                    }}
+                  >
+                    <PlusIcon />
+                    <span className="ml-2 hidden lg:inline">Agregar</span>
+                  </Button>
+                }
+              />
+            }
+            columns={columnsModel}
+            data={models}
+          />
         </CardContent>
       </Card>
     </div>

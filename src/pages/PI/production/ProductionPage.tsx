@@ -32,10 +32,9 @@ import {
 } from "@/components/ui/select";
 
 const ProductionPage = () => {
-  const [productions, setProductions] = useState<IProduction[]>([]);
-  const [orderDetails, setOrderDetails] = useState<IOrderDetail[]>([]);
+  const [productions, setProductions] = useState<IProduction[] | null>(null);
+  const [orderDetails, setOrderDetails] = useState<IOrderDetail[] | null>(null);
 
-  const [loading, setLoading] = useState(false); // Estado de carga
   const [sector, setSector] = useState<number | null>(null);
   const [process, setProcess] = useState<number | null>(null);
   const [sectors, setSectors] = useState<ISector[]>();
@@ -50,7 +49,6 @@ const ProductionPage = () => {
   }, []);
 
   const fetchFilter = async () => {
-    setLoading(true);
     try {
       const ProcessesData = await getProcesses();
       const SectorsData = await getSectors();
@@ -59,13 +57,10 @@ const ProductionPage = () => {
       setSectors(SectorsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   const updateView = async () => {
-    setLoading(true);
     try {
       const date = new Date().toISOString();
       const OrderDetailsData = await getOrderDetails_date({
@@ -80,14 +75,12 @@ const ProductionPage = () => {
       setProductions(ProductionsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   // Generar columnas dinámicamente
   const columnsProduction: ColumnDef<IProduction>[] = useMemo(() => {
-    if (productions.length === 0) return [];
+    if (!productions) return [];
     return [
       ...Object.keys(productions[0]).map((key) => ({
         accessorKey: key,
@@ -145,7 +138,7 @@ const ProductionPage = () => {
 
   // Generar columnas dinámicamente
   const columnsOrderDetails: ColumnDef<IOrderDetail>[] = useMemo(() => {
-    if (orderDetails.length === 0) return [];
+    if (!orderDetails) return [];
     return [
       {
         accessorKey: "id",
@@ -290,14 +283,12 @@ const ProductionPage = () => {
           <CardDescription>Ordenes de producción pendientes</CardDescription>
         </CardHeader>
         <CardContent>
-          {loading ? null : (
-            <DataTable
-              hasOptions={false}
-              actions={<></>}
-              columns={columnsOrderDetails}
-              data={orderDetails}
-            />
-          )}
+          <DataTable
+            hasOptions={false}
+            actions={<></>}
+            columns={columnsOrderDetails}
+            data={orderDetails}
+          />
         </CardContent>
       </Card>
 
@@ -307,9 +298,7 @@ const ProductionPage = () => {
           <CardDescription>Producción registrada</CardDescription>
         </CardHeader>
         <CardContent>
-          {loading ? null : (
-            <DataTable actions={<></>} columns={columnsProduction} data={productions} />
-          )}
+          <DataTable actions={<></>} columns={columnsProduction} data={productions} />
         </CardContent>
       </Card>
     </div>

@@ -1,12 +1,4 @@
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-  TableCaption,
-} from "@/components/ui/table";
+import {Table, TableHeader, TableRow, TableHead, TableBody, TableCell} from "@/components/ui/table";
 import {Skeleton} from "@/components/ui/skeleton";
 import {randomNumber} from "@/utils/funtions";
 import {useEffect} from "react";
@@ -28,8 +20,8 @@ const TableSkeleton: React.FC<Props> = ({rows, colums, hasOptions, hasPaginated}
       {/* Barra superior con filtros y opciones */}
       {!hasOptions ? null : (
         <div className="flex items-center justify-between gap-4">
-          <Skeleton className="h-5    " style={{width: `${randomNumber(20, 100)}%`}} />
-          <Skeleton className="h-5    " style={{width: `${randomNumber(20, 50)}%`}} />
+          <Skeleton className="h-8    " style={{width: `${randomNumber(20, 100)}%`}} />
+          <Skeleton className="h-8    " style={{width: `${randomNumber(20, 50)}%`}} />
         </div>
       )}
       <div className="overflow-hidden rounded-lg border">
@@ -65,8 +57,8 @@ const TableSkeleton: React.FC<Props> = ({rows, colums, hasOptions, hasPaginated}
       {/* Controles de paginación */}
       {!hasPaginated ? null : (
         <div className="flex items-center justify-between px-4 gap-4">
-          <Skeleton className={`h-5 `} style={{width: `${randomNumber(20, 100)}%`}} />
-          <Skeleton className={`h-5 `} style={{width: `${randomNumber(20, 100)}%`}} />
+          <Skeleton className={`h-8 `} style={{width: `${randomNumber(20, 100)}%`}} />
+          <Skeleton className={`h-8 `} style={{width: `${randomNumber(20, 100)}%`}} />
         </div>
       )}
     </div>

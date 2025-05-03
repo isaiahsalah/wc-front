@@ -38,28 +38,24 @@ import {Badge} from "@/components/ui/badge";
 import {countCurrentMonth} from "@/utils/funtions";
 
 const UnityPage = () => {
-  const [unities, setUnities] = useState<IUnity[]>([]);
-  const [loading, setLoading] = useState(false); // Estado de carga
+  const [unities, setUnities] = useState<IUnity[] | null>(null);
 
   useEffect(() => {
     updateView();
   }, []);
 
   const updateView = async () => {
-    setLoading(true);
     try {
       const ProductionsData = await getAllUnities();
       setUnities(ProductionsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   // Generar columnas dinámicamente
   const columnsUnity: ColumnDef<IUnity>[] = useMemo(() => {
-    if (unities.length === 0) return [];
+    if (!unities) return [];
     return [
       {
         accessorKey: "id",
@@ -132,11 +128,11 @@ const UnityPage = () => {
         <CardHeader className="relative">
           <CardDescription>Unidades registradas</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            {unities.length} Unidades
+            {unities ? unities.length : 0} Unidades
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-              <TrendingUpIcon className="size-3" />+{countCurrentMonth(unities)} este mes
+              <TrendingUpIcon className="size-3" />+{countCurrentMonth(unities ?? [])} este mes
             </Badge>
           </div>
         </CardHeader>
@@ -157,29 +153,27 @@ const UnityPage = () => {
           <CardDescription>Producción registrada</CardDescription>
         </CardHeader>
         <CardContent>
-          {loading ? null : (
-            <DataTable
-              actions={
-                <CreateUnityDialog
-                  updateView={updateView}
-                  children={
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onSelect={(event) => {
-                        event.preventDefault(); // Evita el cierre automático
-                      }}
-                    >
-                      <PlusIcon />
-                      <span className="ml-2 hidden lg:inline">Agregar</span>
-                    </Button>
-                  }
-                />
-              }
-              columns={columnsUnity}
-              data={unities}
-            />
-          )}
+          <DataTable
+            actions={
+              <CreateUnityDialog
+                updateView={updateView}
+                children={
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onSelect={(event) => {
+                      event.preventDefault(); // Evita el cierre automático
+                    }}
+                  >
+                    <PlusIcon />
+                    <span className="ml-2 hidden lg:inline">Agregar</span>
+                  </Button>
+                }
+              />
+            }
+            columns={columnsUnity}
+            data={unities}
+          />
         </CardContent>
       </Card>
     </div>

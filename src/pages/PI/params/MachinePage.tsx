@@ -38,28 +38,24 @@ import {Badge} from "@/components/ui/badge";
 import {countCurrentMonth} from "@/utils/funtions";
 
 const MachinePage = () => {
-  const [machines, setMachines] = useState<IMachine[]>([]);
-  const [loading, setLoading] = useState(false); // Estado de carga
+  const [machines, setMachines] = useState<IMachine[] | null>(null);
 
   useEffect(() => {
     updateView();
   }, []);
 
   const updateView = async () => {
-    setLoading(true);
     try {
       const machinesData = await getAllMachines();
       setMachines(machinesData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   // Generar columnas dinámicamente
   const columnsMachine: ColumnDef<IMachine>[] = useMemo(() => {
-    if (machines.length === 0) return [];
+    if (!machines) return [];
     return [
       ...Object.keys(machines[0]).map((key) => ({
         accessorKey: key,
@@ -122,11 +118,11 @@ const MachinePage = () => {
         <CardHeader className="relative">
           <CardDescription>Máquinas registradas</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            {machines.length} Máquinas
+            {machines ? machines.length : 0} Máquinas
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-              <TrendingUpIcon className="size-3" />+{countCurrentMonth(machines)} este mes
+              <TrendingUpIcon className="size-3" />+{countCurrentMonth(machines ?? [])} este mes
             </Badge>
           </div>
         </CardHeader>
@@ -147,29 +143,27 @@ const MachinePage = () => {
           <CardDescription>Producción registrada</CardDescription>
         </CardHeader>
         <CardContent>
-          {loading ? null : (
-            <DataTable
-              actions={
-                <CreateMachineDialog
-                  updateView={updateView}
-                  children={
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onSelect={(event) => {
-                        event.preventDefault();
-                      }}
-                    >
-                      <PlusIcon />
-                      <span className="ml-2 hidden lg:inline">Agregar</span>
-                    </Button>
-                  }
-                />
-              }
-              columns={columnsMachine}
-              data={machines}
-            />
-          )}
+          <DataTable
+            actions={
+              <CreateMachineDialog
+                updateView={updateView}
+                children={
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onSelect={(event) => {
+                      event.preventDefault();
+                    }}
+                  >
+                    <PlusIcon />
+                    <span className="ml-2 hidden lg:inline">Agregar</span>
+                  </Button>
+                }
+              />
+            }
+            columns={columnsMachine}
+            data={machines}
+          />
         </CardContent>
       </Card>
     </div>

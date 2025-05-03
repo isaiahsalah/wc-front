@@ -38,28 +38,24 @@ import {countCurrentMonth} from "@/utils/funtions";
 import {Badge} from "@/components/ui/badge";
 
 const FormulaPage = () => {
-  const [formulas, setFormulas] = useState<IFormula[]>([]);
-  const [loading, setLoading] = useState(false); // Estado de carga
+  const [formulas, setFormulas] = useState<IFormula[] | null>(null);
 
   useEffect(() => {
     updateView();
   }, []);
 
   const updateView = async () => {
-    setLoading(true);
     try {
       const FormulasData = await getAllFormulas();
       setFormulas(FormulasData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   // Generar columnas dinámicamente
   const columnsFormula: ColumnDef<IFormula>[] = useMemo(() => {
-    if (formulas.length === 0) return [];
+    if (!formulas) return [];
     return [
       ...Object.keys(formulas[0]).map((key) => ({
         accessorKey: key,
@@ -121,11 +117,12 @@ const FormulaPage = () => {
         <CardHeader className="relative">
           <CardDescription>Formulas registradas</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            {formulas.length} Formulas
+            {formulas ? formulas.length : 0} Formulas
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-              <TrendingUpIcon className="size-3" />+{countCurrentMonth(formulas)} este mes
+              <TrendingUpIcon className="size-3" />+{countCurrentMonth(formulas ? formulas : [])}{" "}
+              este mes
             </Badge>
           </div>
         </CardHeader>
@@ -146,29 +143,27 @@ const FormulaPage = () => {
           <CardDescription>Producción registrada</CardDescription>
         </CardHeader>
         <CardContent>
-          {loading ? null : (
-            <DataTable
-              actions={
-                <CreateFormulaDialog
-                  updateView={updateView}
-                  children={
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onSelect={(event) => {
-                        event.preventDefault(); // Evita el cierre automático
-                      }}
-                    >
-                      <PlusIcon />
-                      <span className="ml-2 hidden lg:inline">Agregar</span>
-                    </Button>
-                  }
-                />
-              }
-              columns={columnsFormula}
-              data={formulas}
-            />
-          )}
+          <DataTable
+            actions={
+              <CreateFormulaDialog
+                updateView={updateView}
+                children={
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onSelect={(event) => {
+                      event.preventDefault(); // Evita el cierre automático
+                    }}
+                  >
+                    <PlusIcon />
+                    <span className="ml-2 hidden lg:inline">Agregar</span>
+                  </Button>
+                }
+              />
+            }
+            columns={columnsFormula}
+            data={formulas}
+          />
         </CardContent>
       </Card>
     </div>
