@@ -144,3 +144,24 @@ export const typeProduct = [
   {id: 2, name: "Producto en Proceso"},
   {id: 3, name: "Producto Terminado"},
 ];
+
+export const typeTicket = [
+  {
+    id: 1,
+    name: "QR 1",
+    example: ["202356845", "Bandeja 20*15", "15/04/25 20:34", "15 kg.", "189 mm."],
+    colums: ["id", "name", "date", "amount", "micronage"],
+  },
+  {
+    id: 2,
+    name: "QR 2",
+    example: ["Bandeja 20*15", "15/04/25 20:34"],
+    colums: ["name", "date"],
+  },
+  {
+    id: 3,
+    name: "QR 3",
+    example: ["202356845", "Bandeja 20*15"],
+    colums: ["id", "name"],
+  },
+];

@@ -52,12 +52,13 @@ import {
 import {getMachines} from "@/api/params/machine.api";
 import {getLotes} from "@/api/inventory/lote.api";
 import {getOrderDetails} from "@/api/production/orderDetail.api";
-import {typeQuality} from "@/utils/const";
+import {typeQuality, typeTicket} from "@/utils/const";
 import {DateTimePicker} from "@/components/DateTimePicker";
 import {generateQR, printTag} from "@/utils/printTag";
 import {getUnities} from "@/api/product/unity.api";
 import {SesionContext} from "@/providers/sesion-provider";
 import {MoveRight} from "lucide-react";
+import TicketView from "@/components/TicketView";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -329,10 +330,10 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
   const [loadingInit, setLoadingInit] = useState(false);
   const [machines, setMachines] = useState<IMachine[]>();
   const [unities, setUnities] = useState<IUnity[]>();
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<number>();
   const [micronage, setMicronage] = useState<number>(orderDetail.product?.micronage ?? 0);
-  const [micronages, setMicronages] = useState<number[]>([]);
-
+  const [micronages, setMicronages] = useState<number[]>();
+  const [selectTicket, setSelectTicket] = useState<number>(1);
   const {sesion} = useContext(SesionContext);
 
   const form = useForm<IProduction>({
@@ -347,7 +348,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
   });
 
   function onSubmit(values: IProduction) {
-    if (amount <= 0) return;
+    if (!amount || amount <= 0) return;
     setLoadingSave(true);
 
     const productions: IProduction[] = [];
@@ -381,7 +382,12 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
       .then((updatedProduction) => {
         console.log("Producciones creada:", updatedProduction);
         generateQR({productions: updatedProduction}).then((QRs) => {
-          printTag({productions: updatedProduction, QRs: QRs});
+          printTag({
+            productions: updatedProduction,
+            QRs: QRs,
+            ticketFormat: typeTicket.find((ticket) => ticket.id == selectTicket)
+              ?.colums as string[],
+          });
         });
         updateView();
       })
@@ -499,7 +505,6 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                           }
                           onChange={(date) => {
                             if (date) {
-                              console.log("🚩🚩🚩🚩🚩🚩🚩", date);
                               field.onChange(date);
                             } else {
                               field.onChange(null);
@@ -530,32 +535,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="type_quality"
-                  render={({field}) => (
-                    <FormItem className="col-span-6 ">
-                      <FormDescription>Calidad de Producción</FormDescription>
-                      <FormControl>
-                        <Select
-                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Seleccionar Calidad" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {typeQuality.map((type) => (
-                              <SelectItem key={type.id} value={type.id.toString()}>
-                                {type.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+
                 <FormField
                   control={form.control}
                   name="id_unity"
@@ -609,17 +589,80 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                       type="number"
                       value={micronage}
                       onChange={(event) => setMicronage(Number(event.target.value))}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          setMicronages([...(micronages ?? []), micronage]);
+                        }
+                      }}
                     />
                     <Button
                       variant={"ghost"}
                       type="button"
-                      onClick={() => setMicronages([...micronages, micronage])}
+                      onClick={() => setMicronages([...(micronages ?? []), micronage])}
                     >
                       <MoveRight />{" "}
                     </Button>
-                    <Input placeholder="Micronajes" disabled value={micronages.toString()} />
+                    <Input placeholder="Micronajes" disabled value={micronages?.join(" - ")} />
                   </div>
                 </FormItem>
+                <FormField
+                  control={form.control}
+                  name="type_quality"
+                  render={({field}) => (
+                    <FormItem className="col-span-3">
+                      <FormDescription>Calidad de Producción</FormDescription>
+                      <FormControl>
+                        <Select
+                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Seleccionar Calidad" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {typeQuality.map((type) => (
+                              <SelectItem key={type.id} value={type.id.toString()}>
+                                {type.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormItem className="col-span-3">
+                  <FormDescription>Formato de Ticket</FormDescription>
+                  <Select
+                    onValueChange={(value) => setSelectTicket(Number(value))} // Convertir el valor a número
+                    value={selectTicket.toString()}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Seleccionar Calidad" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {typeTicket.map((type) => (
+                        <SelectItem key={type.id} value={type.id.toString()}>
+                          {type.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+
+                <div className="col-span-6">
+                  <div className="flex rounded-lg border p-3 shadow-sm">
+                    <TicketView
+                      production={form.getValues()}
+                      ticketFormat={
+                        typeTicket.find((ticket) => ticket.id === selectTicket)?.colums as string[]
+                      }
+                    />
+                    {amount ? (
+                      <div className="text-4xl font-bold my-auto mr-auto"> x {amount}</div>
+                    ) : null}
+                  </div>
+                </div>
               </div>
               <DialogFooter className=" grid grid-cols-6  ">
                 <Button
@@ -1078,7 +1121,6 @@ export const RecoverProductionDialog: React.FC<PropsRecover> = ({
           <DialogTitle>Recuperar producción</DialogTitle>
           <DialogDescription>¿Está seguro de recuperar esta producción?</DialogDescription>
         </DialogHeader>
-
         <DialogFooter className="grid grid-cols-6 col-span-6">
           <Button
             type="submit"
@@ -1090,6 +1132,78 @@ export const RecoverProductionDialog: React.FC<PropsRecover> = ({
           </Button>
           <DialogClose className="col-span-3" asChild>
             <Button type="button" variant="outline" className="w-full" disabled={loadingRecover}>
+              Cerrar
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+interface PropsPrintQR {
+  children: React.ReactNode; // Define el tipo de children
+
+  updateView: () => void; // Define the type as a function that returns void
+}
+
+export const PrintQRDialog: React.FC<PropsPrintQR> = ({children, updateView}) => {
+  const [loadingSave, setLoadingSave] = useState(false);
+
+  function onSubmit(values: IProduction) {
+    setLoadingSave(true);
+    createProduction({data: values})
+      .then((updatedProduction) => {
+        console.log("Producción creada:", updatedProduction);
+
+        updateView();
+      })
+      .catch((error) => {
+        console.error("Error al crear la producción:", error);
+      })
+      .finally(() => {
+        setLoadingSave(false);
+      });
+  }
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>QR de producción</DialogTitle>
+          <DialogDescription>Mostrando datos relacionados con la producción.</DialogDescription>
+        </DialogHeader>
+
+        <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
+          <div className="bg-white w-[50mm] h-[30mm] rounded-xl  flex  ">
+            <div className=" bg-transparent w-[48mm] h-[28mm] rounded-xl border-black border-2 m-auto flex flex-col ">
+              <div className="flex bg-transparent w-[48mm] h-[22mm] ">
+                <div className="  flex-1  flex  ">
+                  <div className="bg-black w-[18mm]  h-[18mm] m-auto text-white   flex">
+                    <div className="m-auto">QR</div>
+                  </div>
+                </div>
+                <div className="  flex-1   text-black text-[9px] m-auto ">
+                  <div>202356845</div>
+                  <div>Bandeja 20*15</div>
+                  <div>15/04/25 20:34</div>
+                  <div>15 kg.</div>
+                  <div>189 mm.</div>
+                </div>
+              </div>
+              <div className="bg-transparent  flex flex-1  border-t-2 border-black text-black ">
+                <div className="m-auto font-bold text-[9px]">PRODUCTO EN PROCESO</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <DialogFooter className=" grid grid-cols-6  ">
+          <Button type="submit" className="col-span-3">
+            {loadingSave ? <LoadingCircle /> : "Guardar"}
+          </Button>
+          <DialogClose asChild className="col-span-3">
+            <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
               Cerrar
             </Button>
           </DialogClose>

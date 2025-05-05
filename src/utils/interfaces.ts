@@ -4,6 +4,7 @@ export interface ISesion {
   user: IUser;
   token: string;
 }
+
 /*
 export interface UsuarioInterface {
   id?: number | null;
@@ -252,7 +253,7 @@ export const ProductionSchema = z.object({
   duration: z.number(),
   micronage: z.array(z.number()).nullable().optional(),
   amount: z.number(),
-  type_quality: z.number().optional(),
+  type_quality: z.number(),
   id_unity: z.number(),
   unity: UnitySchema.nullable().optional(),
   id_machine: z.number(),

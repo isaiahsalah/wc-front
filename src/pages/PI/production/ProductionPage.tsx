@@ -13,11 +13,12 @@ import {ColumnDef, Row} from "@tanstack/react-table";
 import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
 import {Button} from "@/components/ui/button";
-import {ArchiveRestore, Delete, Edit, MoreVerticalIcon} from "lucide-react";
+import {ArchiveRestore, Delete, Edit, MoreVerticalIcon, Printer} from "lucide-react";
 import {
   CreateProductionsDialog,
   DeleteProductionDialog,
   EditProductionDialog,
+  PrintQRDialog,
   RecoverProductionDialog,
 } from "@/components/dialog/production/ProductionDialogs";
 import {
@@ -114,6 +115,11 @@ const ProductionPage = () => {
         cell: (info) => info.getValue(),
       },
       {
+        accessorKey: "order_detail",
+        header: "Producto",
+        cell: (info) => (info.getValue() as IOrderDetail).product?.name,
+      },
+      {
         accessorKey: "date",
         header: "Fecha",
         cell: (info) => (
@@ -148,7 +154,7 @@ const ProductionPage = () => {
         header: "Micronaje",
         cell: (info) => (
           <Badge variant={"outline"} className="text-muted-foreground">
-            {((info.getValue() as []) ?? "-").toString()}
+            {(info.getValue() as []) ? (info.getValue() as []).join(" - ") : " - "}
           </Badge>
         ),
       },
@@ -236,12 +242,19 @@ const ProductionPage = () => {
                 <DropdownMenuContent align="end" className="w-32">
                   {!row.original.deletedAt ? (
                     <>
+                      <PrintQRDialog updateView={updateView}>
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                          <Printer /> Reimprimir{" "}
+                        </DropdownMenuItem>
+                      </PrintQRDialog>
+
+                      <DropdownMenuSeparator />
+
                       <EditProductionDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                           <Edit /> Editar{" "}
                         </DropdownMenuItem>
                       </EditProductionDialog>
-                      <DropdownMenuSeparator />
                       <DeleteProductionDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                           <Delete /> Eliminar{" "}
@@ -286,36 +299,40 @@ const ProductionPage = () => {
       {
         accessorKey: "product",
         header: "Producto",
-        cell: (info) => {
-          const product: IProduct = info.getValue() as IProduct;
-          return product.name;
-        },
+        cell: (info) => (
+          <Badge variant={"outline"} className="text-muted-foreground">
+            {(info.getValue() as IProduct).name}
+          </Badge>
+        ),
       },
       {
         id: "product_process",
         accessorKey: "product",
         header: "Proceso",
-        cell: (info) => {
-          const product: IProduct = info.getValue() as IProduct;
-          return product.model?.process?.name;
-        },
+        cell: (info) => (
+          <Badge variant={"outline"} className="text-muted-foreground">
+            {(info.getValue() as IProduct).model?.process?.name}
+          </Badge>
+        ),
       },
       {
         id: "product_sector",
         accessorKey: "product",
         header: "Sector",
-        cell: (info) => {
-          const product: IProduct = info.getValue() as IProduct;
-          return product.model?.sector?.name;
-        },
+        cell: (info) => (
+          <Badge variant={"outline"} className="text-muted-foreground">
+            {(info.getValue() as IProduct).model?.sector?.name}
+          </Badge>
+        ),
       },
       {
         accessorKey: "order",
         header: "Fecha Límite",
-        cell: (info) => {
-          const order: IOrder = info.getValue() as IOrder;
-          return format(new Date(order.end_date as Date), "dd/MM/yyyy hh:mm");
-        },
+        cell: (info) => (
+          <Badge variant={"outline"} className="text-muted-foreground">
+            {format((info.getValue() as IOrder).end_date as Date, "dd/MM/yyyy hh:mm")}
+          </Badge>
+        ),
       },
       {
         id: "actions",

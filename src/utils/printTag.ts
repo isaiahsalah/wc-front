@@ -45,7 +45,15 @@ export const generateQR = async ({
   }
 };
 
-export const printTag = ({productions, QRs}: {productions: IProduction[]; QRs: string[]}) => {
+export const printTag = ({
+  productions,
+  QRs,
+  ticketFormat,
+}: {
+  productions: IProduction[];
+  QRs: string[];
+  ticketFormat: string[];
+}) => {
   // Crear una instancia de jsPDF
   const doc = new jsPDF({
     orientation: "landscape", // Horizontal
@@ -53,25 +61,53 @@ export const printTag = ({productions, QRs}: {productions: IProduction[]; QRs: s
     format: [30, 50], // Tamaño personalizado de etiqueta (30mm x 50mm)
   });
 
+  const rowInit =
+    ticketFormat.length === 5
+      ? 7
+      : ticketFormat.length === 4
+      ? 9
+      : ticketFormat.length === 3
+      ? 11
+      : ticketFormat.length === 2
+      ? 13
+      : 15;
+
   productions.map(async (production, index) => {
     // Dibujar un borde opcional
     doc.setDrawColor(0); // Negro
     doc.setLineWidth(0.5); // Grosor
+    doc.addImage(QRs[index], "PNG", 1, 1, 23, 23);
 
+    /*
     // Configuración de fuente y tamaño
     doc.setFont("helvetica", "normal");
     doc.setFontSize(5);
     // Colocar el texto en la mitad derecha (desplazamos a la derecha)
 
-    doc.addImage(QRs[index], "PNG", 1, 1, 23, 23);
+ 
 
     doc.text(`Id:`, 24, 5);
     doc.text(`Nombre:`, 24, 10);
     doc.text(`Fecha:`, 24, 15);
     doc.text(`Unidad:`, 24, 20);
-
+*/
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(6);
+    doc.setFontSize(7);
+
+    ticketFormat.map((key, i) => {
+      const line = rowInit + i * 3;
+      if (key === "date") {
+        const formattedDate = format(new Date(production.date), "dd/LL/y - HH:mm", {locale: es});
+
+        return doc.text(`${formattedDate}`, 24, line);
+      }
+      if (key === "name") return doc.text(`${production.order_detail?.product?.name}`, 24, line);
+      if (key === "amount")
+        return doc.text(`${production.amount} ${production.unity?.shortname}.`, 24, line);
+      if (key === "micronage") return doc.text(`${production.micronage?.toString()} mm.`, 24, line);
+      return doc.text(`${production[key as keyof IProduction]}`, 24, line);
+    });
+    /*
     const formattedDate = format(new Date(production.date), "dd/LLL/y - HH:mm", {locale: es});
     const qrData = `${production.lote?.name}-${production.id}`; // Puedes poner cualquier URL o texto que desees
 
@@ -82,11 +118,10 @@ export const printTag = ({productions, QRs}: {productions: IProduction[]; QRs: s
       `${production.order_detail?.product?.amount} ${production.order_detail?.product?.unity?.shortname}.`,
       24,
       22
-    );
+    );*/
     doc.setFont("helvetica", "bold"); // Usamos Helvetica y negrita
 
-    console.log("Type✔️✔️", production.order_detail?.product?.model?.type);
-    if (production.order_detail?.product?.model?.type === 1) doc.text(`PLÁSTICOS CARMEN`, 14, 27);
+    if (production.order_detail?.product?.type_product === 1) doc.text(`PLÁSTICOS CARMEN`, 14, 27);
     else doc.text(`PRODUCTO EN PROCESO`, 12, 27);
 
     doc.roundedRect(1, 1, 48, 28, 2, 2); // Rectángulo con bordes redondeados, radio de 5
