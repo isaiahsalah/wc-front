@@ -36,6 +36,7 @@ import {
 import {getAllProcesses} from "@/api/params/process.api";
 import {Badge} from "@/components/ui/badge";
 import {countCurrentMonth} from "@/utils/funtions";
+import {format} from "date-fns";
 
 const ProcessPage = () => {
   const [processes, setProcesses] = useState<IProcess[] | null>(null);
@@ -56,12 +57,55 @@ const ProcessPage = () => {
   const columnsProcess: ColumnDef<IProcess>[] = useMemo(() => {
     if (!processes) return [];
     return [
-      ...Object.keys(processes[0]).map((key) => ({
-        accessorKey: key,
-        header: key.replace(/_/g, " ").toUpperCase(),
-        /* @ts-expect-error: Ignoramos el error en esta línea*/
+      {
+        accessorKey: "id",
+        header: "Id",
         cell: (info) => info.getValue(),
-      })),
+      },
+      {
+        accessorKey: "name",
+        header: "Nombre",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "description",
+        header: "Descripción",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "createdAt",
+        header: "Creado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "No disponible";
+        },
+      },
+      {
+        accessorKey: "updatedAt",
+        header: "Editado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "No disponible";
+        },
+      },
+
+      {
+        accessorKey: "deletedAt",
+        header: "Eliminado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "-";
+        },
+      },
       {
         id: "actions",
         header: "",
@@ -111,7 +155,7 @@ const ProcessPage = () => {
   }, [processes]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2">
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader className="relative">
           <CardDescription>Procesos registrados</CardDescription>
@@ -137,8 +181,8 @@ const ProcessPage = () => {
 
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader>
-          <CardTitle>Producción</CardTitle>
-          <CardDescription>Producción registrada</CardDescription>
+          <CardTitle>Procesos</CardTitle>
+          <CardDescription>Procesos registrados</CardDescription>
         </CardHeader>
         <CardContent>
           <DataTable

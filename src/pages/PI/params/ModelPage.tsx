@@ -1,5 +1,5 @@
-import {IModel} from "@/utils/interfaces";
-import {useEffect, useMemo, useState} from "react";
+import {IModel, IProcess, ISector} from "@/utils/interfaces";
+import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
 import {Button} from "@/components/ui/button";
 import {
@@ -36,17 +36,20 @@ import {
 import {getAllModels} from "@/api/params/model.api";
 import {Badge} from "@/components/ui/badge";
 import {countCurrentMonth} from "@/utils/funtions";
+import {format} from "date-fns";
+import {SectorContext} from "@/providers/sector-provider";
 
 const ModelPage = () => {
   const [models, setModels] = useState<IModel[] | null>(null);
+  const {sector} = useContext(SectorContext);
 
   useEffect(() => {
     updateView();
-  }, []);
+  }, [sector]);
 
   const updateView = async () => {
     try {
-      const modelsData = await getAllModels();
+      const modelsData = await getAllModels({id_sector: sector?.id});
       setModels(modelsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
@@ -56,12 +59,68 @@ const ModelPage = () => {
   const columnsModel: ColumnDef<IModel>[] = useMemo(() => {
     if (!models) return [];
     return [
-      ...Object.keys(models[0]).map((key) => ({
-        accessorKey: key,
-        header: key.replace(/_/g, " ").toUpperCase(),
-        /* @ts-expect-error: Ignoramos el error en esta línea*/
+      {
+        accessorKey: "id",
+        header: "Id",
         cell: (info) => info.getValue(),
-      })),
+      },
+      {
+        accessorKey: "name",
+        header: "Nombre",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "description",
+        header: "Descripción",
+        cell: (info) => info.getValue(),
+      },
+
+      {
+        accessorKey: "process",
+        header: "Proceso",
+        cell: (info) => (
+          <Badge variant={"outline"} className="text-muted-foreground">
+            {(info.getValue() as IProcess).name}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: "sector",
+        header: "Sector",
+        cell: (info) => (
+          <Badge variant={"outline"} className="text-muted-foreground">
+            {(info.getValue() as ISector).name}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: "createdAt",
+        header: "Creado",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "updatedAt",
+        header: "Editado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "No disponible";
+        },
+      },
+
+      {
+        accessorKey: "deletedAt",
+        header: "Eliminado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "-";
+        },
+      },
 
       {
         id: "actions",
@@ -112,7 +171,7 @@ const ModelPage = () => {
   }, [models]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2">
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader className="relative">
           <CardDescription>Modelos registrados</CardDescription>
@@ -138,8 +197,8 @@ const ModelPage = () => {
 
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader>
-          <CardTitle>Producción</CardTitle>
-          <CardDescription>Producción registrada</CardDescription>
+          <CardTitle>Modelos</CardTitle>
+          <CardDescription>Modelos registrados en sector de {sector?.name}</CardDescription>
         </CardHeader>
         <CardContent>
           <DataTable

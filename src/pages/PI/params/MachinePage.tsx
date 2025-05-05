@@ -1,4 +1,4 @@
-import {IMachine} from "@/utils/interfaces";
+import {IMachine, IProcess} from "@/utils/interfaces";
 import {useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
 import {Button} from "@/components/ui/button";
@@ -36,6 +36,7 @@ import {
 import {getAllMachines} from "@/api/params/machine.api";
 import {Badge} from "@/components/ui/badge";
 import {countCurrentMonth} from "@/utils/funtions";
+import {format} from "date-fns";
 
 const MachinePage = () => {
   const [machines, setMachines] = useState<IMachine[] | null>(null);
@@ -57,12 +58,65 @@ const MachinePage = () => {
   const columnsMachine: ColumnDef<IMachine>[] = useMemo(() => {
     if (!machines) return [];
     return [
-      ...Object.keys(machines[0]).map((key) => ({
-        accessorKey: key,
-        header: key.replace(/_/g, " ").toUpperCase(),
-        /* @ts-expect-error: Ignoramos el error en esta línea*/
+      {
+        accessorKey: "id",
+        header: "Id",
         cell: (info) => info.getValue(),
-      })),
+      },
+      {
+        accessorKey: "name",
+        header: "Nombre",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "description",
+        header: "Descripción",
+        cell: (info) => info.getValue(),
+      },
+
+      {
+        accessorKey: "process",
+        header: "Proceso",
+        cell: (info) => (
+          <Badge variant={"outline"} className="text-muted-foreground">
+            {(info.getValue() as IProcess).name}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: "createdAt",
+        header: "Creado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "No disponible";
+        },
+      },
+      {
+        accessorKey: "updatedAt",
+        header: "Editado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "No disponible";
+        },
+      },
+
+      {
+        accessorKey: "deletedAt",
+        header: "Eliminado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "-";
+        },
+      },
 
       {
         id: "actions",
@@ -113,7 +167,7 @@ const MachinePage = () => {
   }, [machines]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2">
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader className="relative">
           <CardDescription>Máquinas registradas</CardDescription>
@@ -139,8 +193,8 @@ const MachinePage = () => {
 
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader>
-          <CardTitle>Producción</CardTitle>
-          <CardDescription>Producción registrada</CardDescription>
+          <CardTitle>Maquinas</CardTitle>
+          <CardDescription>Maquinas registradas</CardDescription>
         </CardHeader>
         <CardContent>
           <DataTable

@@ -1,10 +1,8 @@
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
-
 import {useForm} from "react-hook-form";
 import {IMachine, MachineSchema, IProcess} from "@/utils/interfaces";
 import {zodResolver} from "@hookform/resolvers/zod";
-
 import {
   Form,
   FormControl,
@@ -133,7 +131,7 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({children, updateView
                   control={form.control}
                   name="id_process"
                   render={({field}) => (
-                    <FormItem className="col-span-3 ">
+                    <FormItem className="col-span-6 ">
                       <FormDescription>Proceso</FormDescription>
                       <FormControl>
                         <Select
@@ -321,7 +319,7 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
                   control={form.control}
                   name="id_process"
                   render={({field}) => (
-                    <FormItem className="col-span-3 ">
+                    <FormItem className="col-span-6 ">
                       <FormDescription>Proceso</FormDescription>
                       <FormControl>
                         <Select

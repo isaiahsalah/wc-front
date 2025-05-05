@@ -2,19 +2,29 @@ import {apiClient} from "../axiosConfig";
 import {IProduction} from "@/utils/interfaces";
 import {toast} from "sonner";
 
-export const getProductions = async () => {
-  try {
-    const response = await apiClient.get("/pr/production"); // Cambia la URL según tu API
-    return response.data; // Devuelve la lista de producciones
-  } catch (error) {
-    console.error("Error al obtener las producciones:", error);
-    throw error;
-  }
-};
+export const getProductions = async ({
+  date,
+  id_sector,
+  id_user,
+  id_process,
+  paranoid,
+}: {
+  date?: string | null;
+  id_sector?: number | null;
+  id_user?: number | null;
 
-export const getAllProductions = async () => {
+  id_process?: number | null;
+  paranoid?: boolean;
+}) => {
   try {
-    const response = await apiClient.get("/pr/production/all"); // Cambia la URL según tu API
+    const params = {
+      date,
+      id_sector,
+      id_process,
+      id_user,
+      paranoid,
+    };
+    const response = await apiClient.get("/pr/production", {params}); // Cambia la URL según tu API
     return response.data; // Devuelve la lista de producciones
   } catch (error) {
     console.error("Error al obtener las producciones:", error);

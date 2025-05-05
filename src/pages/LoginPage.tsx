@@ -22,7 +22,7 @@ import {Eye, EyeOff, SquareDashed} from "lucide-react";
 import {typeModule} from "@/utils/const";
 
 const formSchema = z.object({
-  module: z.string().min(1, {
+  type_module: z.string().min(1, {
     message: "Selecciones un modulo",
   }),
   user: z.string().min(2, {
@@ -43,7 +43,7 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      module: "",
+      type_module: "",
       user: "",
       pass: "",
     },
@@ -56,7 +56,7 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
     getLogin({
       user: values.user.toLowerCase(),
       pass: values.pass,
-      module: parseInt(values.module),
+      type_module: parseInt(values.type_module),
     })
       .then((response) => {
         if (response.token) {
@@ -108,7 +108,7 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
               <form onSubmit={form.handleSubmit(onSubmit)} className="grid  gap-2  text-center">
                 <FormField
                   control={form.control}
-                  name="module"
+                  name="type_module"
                   render={({field}) => (
                     <FormItem>
                       <FormControl>

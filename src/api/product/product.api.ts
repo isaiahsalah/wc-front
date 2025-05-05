@@ -2,19 +2,19 @@ import {apiClient} from "../axiosConfig";
 import {IProduct} from "@/utils/interfaces";
 import {toast} from "sonner";
 
-export const getProducts = async () => {
+export const getProducts = async ({
+  id_sector,
+  paranoid,
+}: {
+  id_sector?: number | null;
+  paranoid?: boolean | null;
+}) => {
   try {
-    const response = await apiClient.get("/pr/product"); // Cambia la URL según tu API
-    return response.data; // Devuelve la lista de productos
-  } catch (error) {
-    console.error("Error al obtener los productos:", error);
-    throw error;
-  }
-};
-
-export const getAllProducts = async () => {
-  try {
-    const response = await apiClient.get("/pr/product/all"); // Cambia la URL según tu API
+    const params = {
+      id_sector,
+      paranoid,
+    };
+    const response = await apiClient.get("/pr/product", {params}); // Cambia la URL según tu API
     return response.data; // Devuelve la lista de productos
   } catch (error) {
     console.error("Error al obtener los productos:", error);

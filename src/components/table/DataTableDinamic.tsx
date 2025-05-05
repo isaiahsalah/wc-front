@@ -85,7 +85,7 @@ const DataTableDinamic: React.FC<Props> = ({data, columns, actions}) => {
   });
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2">
       {/* Barra superior con filtros y opciones */}
       <div className="flex items-center justify-between gap-4">
         <Filter

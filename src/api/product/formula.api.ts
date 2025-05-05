@@ -2,19 +2,22 @@ import {apiClient} from "../axiosConfig";
 import {IFormula} from "@/utils/interfaces";
 import {toast} from "sonner";
 
-export const getFormulas = async () => {
+export const getFormulas = async ({
+  id_sector,
+  id_product,
+  paranoid,
+}: {
+  id_sector?: number | null;
+  id_product?: number | null;
+  paranoid?: boolean | null;
+}) => {
   try {
-    const response = await apiClient.get("/pr/formula"); // Cambia la URL según tu API
-    return response.data; // Devuelve la lista de fórmulas
-  } catch (error) {
-    console.error("Error al obtener las fórmulas:", error);
-    throw error;
-  }
-};
-
-export const getAllFormulas = async () => {
-  try {
-    const response = await apiClient.get("/pr/formula/all"); // Cambia la URL según tu API
+    const params = {
+      id_sector,
+      paranoid,
+      id_product,
+    };
+    const response = await apiClient.get("/pr/formula", {params}); // Cambia la URL según tu API
     return response.data; // Devuelve la lista de fórmulas
   } catch (error) {
     console.error("Error al obtener las fórmulas:", error);

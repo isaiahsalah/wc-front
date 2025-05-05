@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {Textarea} from "@/components/ui/textarea";
-import {useState} from "react";
+import {useContext, useState} from "react";
 import {
   createModel,
   deleteModel,
@@ -42,6 +42,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {SectorContext} from "@/providers/sector-provider";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -51,7 +52,7 @@ interface PropsCreate {
 export const CreateModelDialog: React.FC<PropsCreate> = ({children, updateView}) => {
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
-
+  const {sector} = useContext(SectorContext);
   const [processes, setProcesses] = useState<IProcess[]>();
   const [sectors, setSectors] = useState<ISector[]>();
 
@@ -170,8 +171,9 @@ export const CreateModelDialog: React.FC<PropsCreate> = ({children, updateView})
                       <FormControl>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
+                          value={sector?.id?.toString() as string}
                         >
-                          <SelectTrigger className="w-full">
+                          <SelectTrigger className="w-full" disabled>
                             <SelectValue placeholder="Seleccionar Sector" />
                           </SelectTrigger>
                           <SelectContent>
@@ -386,7 +388,7 @@ export const EditModelDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                           defaultValue={field.value.toString()}
                         >
-                          <SelectTrigger className="w-full">
+                          <SelectTrigger className="w-full" disabled>
                             <SelectValue placeholder="Seleccionar Sector" />
                           </SelectTrigger>
                           <SelectContent>

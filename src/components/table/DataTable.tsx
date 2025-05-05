@@ -31,6 +31,8 @@ import {Label} from "../ui/label";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "../ui/select";
 import {IGeneral} from "@/utils/interfaces";
 import TableSkeleton from "../skeleton/table-skeleton";
+import {format} from "date-fns";
+import {Badge} from "../ui/badge";
 
 interface Props<T extends IGeneral> {
   data: T[] | null;
@@ -94,10 +96,10 @@ const DataTable = <T extends IGeneral>({
     );
   }
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2">
       {/* Barra superior con filtros y opciones */}
       {!hasOptions ? null : (
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between gap-1">
           <Filter
             placeholder="Busqueda General"
             column={{
@@ -109,7 +111,7 @@ const DataTable = <T extends IGeneral>({
               },
             }}
           />
-          <div className="flex gap-2">
+          <div className="flex gap-1">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm">
@@ -166,13 +168,45 @@ const DataTable = <T extends IGeneral>({
                 <TableRow
                   key={i}
                   data-state={row.getIsSelected() && "selected"}
-                  className={row.original.deletedAt ? "text-red-400" : ""}
+                  className={row.original.deletedAt ? "bg-red-500/30 " : ""}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className=" py-1.5">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    if (
+                      cell.column.id === "createdAt" ||
+                      cell.column.id === "updatedAt" ||
+                      cell.column.id === "deletedAt"
+                    ) {
+                      const value = cell.getValue();
+                      if (
+                        typeof value === "string" ||
+                        typeof value === "number" ||
+                        value instanceof Date
+                      ) {
+                        return (
+                          <TableCell key={cell.id} className=" py-1.5">
+                            <Badge variant={"outline"} className="text-muted-foreground">
+                              {flexRender(
+                                format(new Date(value), "dd/MM/yyyy hh:mm"),
+                                cell.getContext()
+                              )}
+                            </Badge>
+                          </TableCell>
+                        );
+                      } else {
+                        return (
+                          <TableCell key={cell.id} className=" py-1.5">
+                            {" - "}
+                          </TableCell>
+                        );
+                      }
+                    } else {
+                      return (
+                        <TableCell key={cell.id} className=" py-1.5">
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      );
+                    }
+                  })}
                 </TableRow>
               ))
             ) : (
@@ -218,7 +252,7 @@ const DataTable = <T extends IGeneral>({
             <div className="flex w-fit items-center justify-center text-sm   text-muted-foreground ">
               Página {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
             </div>
-            <div className="ml-auto flex items-center gap-2 lg:ml-0">
+            <div className="ml-auto flex items-center gap-1 lg:ml-0">
               <Button
                 variant="outline"
                 className="hidden h-8 w-8 p-0 lg:flex"

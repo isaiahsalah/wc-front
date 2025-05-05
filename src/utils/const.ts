@@ -13,17 +13,6 @@ export interface IMenu {
   items: IMenuItem[];
 }
 
-export const typeTurn = [
-  {id: 1, name: "Dia"},
-  {id: 2, name: "Noche"},
-  {id: 3, name: "Mixto"},
-];
-export const typeQuality = [
-  {id: 1, name: "Buena"},
-  {id: 2, name: "Mala"},
-  {id: 3, name: "Desecho"},
-];
-
 const typeMenuPI: IMenu = {
   title: "Producción e Inventarios",
   items: [
@@ -136,4 +125,22 @@ export const typeModule = [
     isActive: true,
     menu: typeMenuRA,
   },
+];
+
+export const typeTurn = [
+  {id: 1, name: "Dia"},
+  {id: 2, name: "Noche"},
+  {id: 3, name: "Mixto"},
+];
+
+export const typeQuality = [
+  {id: 1, name: "Buena"},
+  {id: 2, name: "Mala"},
+  {id: 3, name: "Desecho"},
+];
+
+export const typeProduct = [
+  {id: 1, name: "Materia Prima"},
+  {id: 2, name: "Producto en Proceso"},
+  {id: 3, name: "Producto Terminado"},
 ];

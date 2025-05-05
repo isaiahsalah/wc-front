@@ -36,6 +36,7 @@ import {
 import {getAllUnities} from "@/api/product/unity.api";
 import {Badge} from "@/components/ui/badge";
 import {countCurrentMonth} from "@/utils/funtions";
+import {format} from "date-fns";
 
 const UnityPage = () => {
   const [unities, setUnities] = useState<IUnity[] | null>(null);
@@ -71,6 +72,40 @@ const UnityPage = () => {
         accessorKey: "description",
         header: "Descripción",
         cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "createdAt",
+        header: "Creado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "No disponible";
+        },
+      },
+      {
+        accessorKey: "updatedAt",
+        header: "Editado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "No disponible";
+        },
+      },
+
+      {
+        accessorKey: "deletedAt",
+        header: "Eliminado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "-";
+        },
       },
 
       {
@@ -123,7 +158,7 @@ const UnityPage = () => {
   }, [unities]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2">
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader className="relative">
           <CardDescription>Unidades registradas</CardDescription>
@@ -149,8 +184,8 @@ const UnityPage = () => {
 
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader>
-          <CardTitle>Producción</CardTitle>
-          <CardDescription>Producción registrada</CardDescription>
+          <CardTitle>Unidades</CardTitle>
+          <CardDescription>Unidades registradas</CardDescription>
         </CardHeader>
         <CardContent>
           <DataTable

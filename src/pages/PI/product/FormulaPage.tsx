@@ -1,4 +1,4 @@
-import {IFormula} from "@/utils/interfaces";
+import {IFormula, IProduct} from "@/utils/interfaces";
 import {
   CreateFormulaDialog,
   DeleteFormulaDialog,
@@ -8,15 +8,17 @@ import {
 import {Button} from "@/components/ui/button";
 import {
   ArchiveRestore,
+  Check,
   Delete,
   Edit,
   MoreVerticalIcon,
   PlusIcon,
   Tally5,
   TrendingUpIcon,
+  X,
 } from "lucide-react";
 import DataTable from "@/components/table/DataTable";
-import {useEffect, useMemo, useState} from "react";
+import {useContext, useEffect, useMemo, useState} from "react";
 import {ColumnDef, Row} from "@tanstack/react-table";
 import {
   DropdownMenu,
@@ -25,7 +27,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {getAllFormulas} from "@/api/product/formula.api";
+import {getFormulas} from "@/api/product/formula.api";
 import {
   Card,
   CardContent,
@@ -36,17 +38,41 @@ import {
 } from "@/components/ui/card";
 import {countCurrentMonth} from "@/utils/funtions";
 import {Badge} from "@/components/ui/badge";
+import {format} from "date-fns";
+import {SectorContext} from "@/providers/sector-provider";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {getProducts} from "@/api/product/product.api";
 
 const FormulaPage = () => {
   const [formulas, setFormulas] = useState<IFormula[] | null>(null);
+  const {sector} = useContext(SectorContext);
+  const [products, setProducts] = useState<IProduct[]>();
+  const [idProduct, setIdProduct] = useState<number>();
 
   useEffect(() => {
     updateView();
-  }, []);
+    fetchFilter();
+  }, [sector]);
+
+  const fetchFilter = async () => {
+    try {
+      const ProductData = await getProducts({id_sector: sector?.id, paranoid: true});
+
+      setProducts(ProductData);
+    } catch (error) {
+      console.error("Error al cargar los datos:", error);
+    }
+  };
 
   const updateView = async () => {
     try {
-      const FormulasData = await getAllFormulas();
+      const FormulasData = await getFormulas({id_sector: sector?.id, id_product: idProduct});
       setFormulas(FormulasData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
@@ -57,12 +83,79 @@ const FormulaPage = () => {
   const columnsFormula: ColumnDef<IFormula>[] = useMemo(() => {
     if (!formulas) return [];
     return [
-      ...Object.keys(formulas[0]).map((key) => ({
-        accessorKey: key,
-        header: key.replace(/_/g, " ").toUpperCase(),
-        /* @ts-expect-error: Ignoramos el error en esta línea*/
+      {
+        accessorKey: "id",
+        header: "Id",
         cell: (info) => info.getValue(),
-      })),
+      },
+      {
+        accessorKey: "name",
+        header: "Nombre",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "description",
+        header: "Descripción",
+        cell: (info) => info.getValue(),
+      },
+
+      {
+        accessorKey: "product",
+        header: "Producto",
+        cell: (info) => (
+          <Badge variant={"outline"} className="text-muted-foreground">
+            {(info.getValue() as IProduct).name}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: "createdAt",
+        header: "Creado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "No disponible";
+        },
+      },
+      {
+        accessorKey: "updatedAt",
+        header: "Editado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "No disponible";
+        },
+      },
+
+      {
+        accessorKey: "deletedAt",
+        header: "Eliminado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "-";
+        },
+      },
+      {
+        accessorKey: "active",
+        header: "Activa",
+        cell: (info) =>
+          info.getValue() ? (
+            <Badge className=" text-green-600 dark:text-green-400 " variant={"outline"}>
+              <Check />
+            </Badge>
+          ) : (
+            <Badge className=" text-red-600 dark:text-red-400" variant={"outline"}>
+              <X />
+            </Badge>
+          ),
+      },
       {
         id: "actions",
         header: "",
@@ -112,7 +205,28 @@ const FormulaPage = () => {
     ];
   }, [formulas]);
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2">
+      <Card className="@container/card col-span-6 lg:col-span-6">
+        <CardContent className=" flex flex-col gap-2">
+          <CardDescription>Selecciona el producto</CardDescription>
+          <div className="grid grid-cols-6 gap-2">
+            <Select
+              onValueChange={(value) => setIdProduct(Number(value))} // Convertir el valor a número
+            >
+              <SelectTrigger className="w-full col-span-6">
+                <SelectValue placeholder="Producto" />
+              </SelectTrigger>
+              <SelectContent>
+                {products?.map((sector) => (
+                  <SelectItem key={sector.id} value={(sector.id ?? "").toString()}>
+                    {sector.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader className="relative">
           <CardDescription>Formulas registradas</CardDescription>
@@ -139,8 +253,8 @@ const FormulaPage = () => {
 
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader>
-          <CardTitle>Producción</CardTitle>
-          <CardDescription>Producción registrada</CardDescription>
+          <CardTitle>Formulas</CardTitle>
+          <CardDescription>Formulas registradas</CardDescription>
         </CardHeader>
         <CardContent>
           <DataTable

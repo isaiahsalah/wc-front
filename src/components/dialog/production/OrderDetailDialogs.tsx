@@ -13,7 +13,7 @@ import {
   FormDescription,
   FormMessage,
 } from "@/components/ui/form";
-import {useMemo, useState} from "react";
+import {useContext, useMemo, useState} from "react";
 import {createOrderWithDetail} from "@/api/production/order.api";
 import {
   Dialog,
@@ -38,9 +38,11 @@ import {
 import {Plus, X} from "lucide-react";
 import DataTable from "@/components/table/DataTable";
 import {ColumnDef, Row} from "@tanstack/react-table";
+import {SectorContext} from "@/providers/sector-provider";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
+  product: IProduct;
   updateView: () => void; // Define the type as a function that returns void
 }
 
@@ -54,6 +56,8 @@ export const CreateOrderDetailDialog: React.FC<PropsCreate> = ({children, update
   const [orderDetailsSelected, setOrderDetailsSelected] = useState<IOrderDetail[]>([]);
 
   const [amount, setAmount] = useState<number>();
+
+  const {sector} = useContext(SectorContext);
 
   const form = useForm<IOrder>({
     resolver: zodResolver(OrderSchema),
@@ -82,7 +86,7 @@ export const CreateOrderDetailDialog: React.FC<PropsCreate> = ({children, update
   const fetchData = async () => {
     setLoadingInit(true);
     try {
-      const ProductsData = await getProducts();
+      const ProductsData = await getProducts({id_sector: sector?.id, paranoid: true});
       setProducts(ProductsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);

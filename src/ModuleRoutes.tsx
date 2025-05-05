@@ -21,7 +21,7 @@ const ModuleRoutes = () => {
 
   return (
     <Routes>
-      {permisions[0].module === 1 && (
+      {permisions[0].type_module === 1 && (
         <>
           <Route path="/product" element={<ProductTabPage />} />
           <Route path="/production" element={<ProductionTabPage />} />
@@ -31,22 +31,22 @@ const ModuleRoutes = () => {
           <Route path="/home" element={<PIHomePage />} />
         </>
       )}
-      {permisions[0].module === 2 && (
+      {permisions[0].type_module === 2 && (
         <>
           <Route path="/home" element={<CQHomePage />} />
         </>
       )}
-      {permisions[0].module === 3 && (
+      {permisions[0].type_module === 3 && (
         <>
           <Route path="/home" element={<CQHomePage />} />
         </>
       )}
-      {permisions[0].module === 4 && (
+      {permisions[0].type_module === 4 && (
         <>
           <Route path="/home" element={<CQHomePage />} />
         </>
       )}
-      {permisions[0].module === 5 && (
+      {permisions[0].type_module === 5 && (
         <>
           <Route path="/home" element={<CQHomePage />} />
         </>

@@ -31,7 +31,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
-import {CreateProductionOrderDialog} from "@/components/dialog/production/ProductionOrderDialogs";
+import {CreateProductionsDialog} from "@/components/dialog/production/ProductionDialogs";
 
 interface Props {
   initialData: IProduct[];
@@ -151,14 +151,11 @@ const ProductionCards: React.FC<Props> = ({initialData}) => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-32">
-                  <CreateProductionOrderDialog
-                    idOrderDetail={row.original.id ?? 0}
-                    updateView={updateView}
-                  >
+                  <CreateProductionsDialog orderDetail={row.original} updateView={updateView}>
                     <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                       <Edit /> Producir
                     </DropdownMenuItem>
-                  </CreateProductionOrderDialog>
+                  </CreateProductionsDialog>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>

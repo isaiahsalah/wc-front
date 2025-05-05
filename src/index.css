@@ -41,10 +41,13 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-:root {
-  scrollbar-width: thin; /* Ancho de la barra de desplazamiento */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
 
-  --radius: 0.5rem;
+:root {
+  --radius: 0.35rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);

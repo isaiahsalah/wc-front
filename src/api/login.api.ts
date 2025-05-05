@@ -4,17 +4,17 @@ import {apiClient} from "./axiosConfig";
 export const getLogin = async ({
   user,
   pass,
-  module,
+  type_module,
 }: {
   user: string;
   pass: string;
-  module: number;
+  type_module: number;
 }) => {
   try {
     const response = await apiClient.post("/auth/login", {
       user,
       pass,
-      module,
+      type_module,
     });
     toast("Inicio de sesión exitoso", {
       description: "Bienvenido(a) de nuevo. Has ingresado correctamente a tu cuenta.",
@@ -40,7 +40,6 @@ export const getLogin = async ({
 
 export const getCheckToken = async ({token}: {token: string}) => {
   try {
-    setTimeout(() => {}, 2000);
     const response = await apiClient.get("/auth/token", {
       headers: {Authorization: `Bearer ${token}`},
     });

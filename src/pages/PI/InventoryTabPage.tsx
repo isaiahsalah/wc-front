@@ -4,7 +4,7 @@ import {Separator} from "@/components/ui/separator";
 import {IGeneral} from "@/utils/interfaces";
 import SelectorTabPage from "@/components/SelectorTabPage";
 import ProductPage from "./product/ProductPage";
-import {getAllProducts} from "@/api/product/product.api";
+import {getProducts} from "@/api/product/product.api";
 
 const InventoryTabPage = () => {
   const [activeTab, setActiveTab] = useState(tabData[0]);
@@ -19,7 +19,7 @@ const InventoryTabPage = () => {
     setLoading(true);
     //console.log("se actualizaron los datos");
     try {
-      setData(await activeTab.get());
+      setData(await activeTab.get({}));
     } catch (error) {
       console.error("Error al cargar datos:", error);
     } finally {
@@ -34,7 +34,7 @@ const InventoryTabPage = () => {
         const selectedTab = tabData.find((tab) => tab.id === value);
         if (selectedTab) setActiveTab(selectedTab);
       }}
-      className="flex w-full flex-col justify-start gap-4"
+      className="flex w-full flex-col justify-start gap-2"
     >
       <SelectorTabPage
         activeTab={activeTab.id}
@@ -66,6 +66,6 @@ const tabData = [
     id: "tab1",
     label: "Producto",
     content: ProductPage,
-    get: getAllProducts,
+    get: getProducts,
   },
 ];

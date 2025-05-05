@@ -111,8 +111,8 @@ export const EditProfileDialog: React.FC<PropsEditProfile> = ({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Gestión de color</DialogTitle>
-          <DialogDescription>Mostrando datos relacionados con el color.</DialogDescription>
+          <DialogTitle>Gestión de Perfil</DialogTitle>
+          <DialogDescription>Mostrando datos relacionados con el perfil.</DialogDescription>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>

@@ -1,4 +1,4 @@
-import {IOrder} from "@/utils/interfaces";
+import {IOrder, IUser} from "@/utils/interfaces";
 import {ColumnDef, Row} from "@tanstack/react-table";
 import {useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
@@ -38,6 +38,7 @@ import {getAllOrders} from "@/api/production/order.api";
 import {countCurrentMonth} from "@/utils/funtions";
 import {Badge} from "@/components/ui/badge";
 import {CreateOrderDetailDialog} from "@/components/dialog/production/OrderDetailDialogs";
+import {format} from "date-fns";
 
 const OrderPage = () => {
   const [orders, setOrders] = useState<IOrder[] | null>(null);
@@ -59,12 +60,64 @@ const OrderPage = () => {
   const columnsOrder: ColumnDef<IOrder>[] = useMemo(() => {
     if (!orders) return [];
     return [
-      ...Object.keys(orders[0]).map((key) => ({
-        accessorKey: key,
-        header: key.replace(/_/g, " ").toUpperCase(),
-        /* @ts-expect-error: Ignoramos el error en esta línea*/
+      {
+        accessorKey: "id",
+        header: "Id",
         cell: (info) => info.getValue(),
-      })),
+      },
+      {
+        accessorKey: "init_date",
+        header: "Fecha de inicio",
+        cell: (info) => format(new Date(info.getValue() as Date), "dd/MM/yyyy hh:mm"),
+      },
+      {
+        accessorKey: "end_date",
+        header: "Fecha de fin",
+        cell: (info) => format(new Date(info.getValue() as Date), "dd/MM/yyyy hh:mm"),
+      },
+      {
+        accessorKey: "user",
+        header: "Usuario",
+        cell: (info) => (
+          <Badge variant={"outline"} className="text-muted-foreground">
+            {(info.getValue() as IUser).name} {(info.getValue() as IUser).lastname}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: "createdAt",
+        header: "Creado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "No disponible";
+        },
+      },
+      {
+        accessorKey: "updatedAt",
+        header: "Editado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "No disponible";
+        },
+      },
+
+      {
+        accessorKey: "deletedAt",
+        header: "Eliminado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "-";
+        },
+      },
       {
         id: "actions",
         header: "",
@@ -141,8 +194,8 @@ const OrderPage = () => {
 
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader>
-          <CardTitle>Producción</CardTitle>
-          <CardDescription>Producción registrada</CardDescription>
+          <CardTitle>Ordenes</CardTitle>
+          <CardDescription>Ordenes registrada</CardDescription>
         </CardHeader>
         <CardContent>
           <DataTable

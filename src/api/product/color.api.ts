@@ -14,7 +14,7 @@ export const getColors = async () => {
 
 export const getAllColors = async () => {
   try {
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    //await new Promise((resolve) => setTimeout(resolve, 5000));
     const response = await apiClient.get("/pr/color/all"); // Cambia la URL según tu API
     return response.data; // Devuelve la lista de colores
   } catch (error) {

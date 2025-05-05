@@ -3,7 +3,7 @@ import {Separator} from "@/components/ui/separator";
 import {Tabs, TabsContent} from "@/components/ui/tabs";
 import {useCallback, useEffect, useState} from "react";
 import {IGeneral} from "@/utils/interfaces";
-import {getAllProductions} from "@/api/production/production.api";
+import {getProductions} from "@/api/production/production.api";
 import ProductionPage from "./production/ProductionPage";
 
 const SecurityTabPage = () => {
@@ -34,7 +34,7 @@ const SecurityTabPage = () => {
         const selectedTab = tabData.find((tab) => tab.id === value);
         if (selectedTab) setActiveTab(selectedTab);
       }}
-      className="flex w-full flex-col justify-start gap-4"
+      className="flex w-full flex-col justify-start gap-2"
     >
       <SelectorTabPage
         activeTab={activeTab.id}
@@ -66,6 +66,6 @@ const tabData = [
     id: "tab1",
     label: "Producción",
     content: ProductionPage,
-    get: getAllProductions,
+    get: getProductions,
   },
 ];

@@ -15,7 +15,6 @@ import DataTable from "@/components/table/DataTable";
 import {Button} from "@/components/ui/button";
 import {ArchiveRestore, Delete, Edit, MoreVerticalIcon} from "lucide-react";
 import {
-  CreateProductionsDialog,
   DeleteProductionDialog,
   EditProductionDialog,
   RecoverProductionDialog,
@@ -31,6 +30,7 @@ import {getProcesses} from "@/api/params/process.api";
 import {getSectors} from "@/api/params/sector.api";
 import {getOrderDetails_date} from "@/api/production/orderDetail.api";
 import {getProductions} from "@/api/production/production.api";
+import {CreateProductionOrderDialog} from "@/components/dialog/production/ProductionOrderDialogs";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 
 import {
@@ -44,13 +44,11 @@ import {format} from "date-fns";
 import {SectorContext} from "@/providers/sector-provider";
 import {typeQuality} from "@/utils/const";
 import {Badge} from "@/components/ui/badge";
-import {SesionContext} from "@/providers/sesion-provider";
 
-const ProductionPage = () => {
+const InventoryPage = () => {
   const [productions, setProductions] = useState<IProduction[] | null>(null);
   const [orderDetails, setOrderDetails] = useState<IOrderDetail[] | null>(null);
   const {sector} = useContext(SectorContext);
-  const {sesion} = useContext(SesionContext);
 
   const [process, setProcess] = useState<number | null>(null);
   const [sectors, setSectors] = useState<ISector[]>();
@@ -81,18 +79,13 @@ const ProductionPage = () => {
       const date = new Date().toISOString();
       const OrderDetailsData = await getOrderDetails_date({
         date: date,
-        id_process: process ?? null,
-        id_sector: sector?.id ?? null,
+        id_process: process ?? undefined,
+        id_sector: sector?.id ?? undefined,
       });
 
       setOrderDetails(OrderDetailsData);
 
-      const ProductionsData = await getProductions({
-        id_user: sesion?.user.id,
-        id_process: process ?? null,
-        id_sector: sector?.id ?? null,
-      });
-      console.log(ProductionsData);
+      const ProductionsData = await getProductions();
       setProductions(ProductionsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
@@ -142,15 +135,6 @@ const ProductionPage = () => {
             </Badge>
           );
         },
-      },
-      {
-        accessorKey: "micronage",
-        header: "Micronaje",
-        cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
-            {((info.getValue() as []) ?? "-").toString()}
-          </Badge>
-        ),
       },
       {
         accessorKey: "machine",
@@ -335,11 +319,14 @@ const ProductionPage = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-32">
-                  <CreateProductionsDialog orderDetail={row.original} updateView={updateView}>
+                  <CreateProductionOrderDialog
+                    idOrderDetail={row.original.id ?? 0}
+                    updateView={updateView}
+                  >
                     <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                       <Edit /> Producir
                     </DropdownMenuItem>
-                  </CreateProductionsDialog>
+                  </CreateProductionOrderDialog>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -421,7 +408,7 @@ const ProductionPage = () => {
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader>
           <CardTitle>Producción</CardTitle>
-          <CardDescription>Producción registrada por el usuario activo</CardDescription>
+          <CardDescription>Producción registrada</CardDescription>
         </CardHeader>
         <CardContent>
           <DataTable actions={<></>} columns={columnsProduction} data={productions} />
@@ -431,5 +418,5 @@ const ProductionPage = () => {
   );
 };
 
-export default ProductionPage;
+export default InventoryPage;
 // <ProductionTable data={data} updateView={updateView} />

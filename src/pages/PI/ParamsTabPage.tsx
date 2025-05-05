@@ -1,17 +1,17 @@
-import { useContext, useEffect, useState } from "react";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
+import {useContext, useEffect, useState} from "react";
+import {Tabs, TabsContent} from "@/components/ui/tabs";
+import {Separator} from "@/components/ui/separator";
 import SelectorTabPage from "@/components/SelectorTabPage";
 import ModelPage from "./params/ModelPage";
 import MachinePage from "./params/MachinePage";
 import ProcessPage from "./params/ProcessPage";
 import SectorPage from "./params/SectorPage";
-import { TitleContext } from "@/providers/title-provider";
+import {TitleContext} from "@/providers/title-provider";
 
 const ParamsTabPage = () => {
   const [activeTab, setActiveTab] = useState(tabData[0]);
 
-  const { setTitle } = useContext(TitleContext);
+  const {setTitle} = useContext(TitleContext);
 
   useEffect(() => {
     setTitle(activeTab.title);
@@ -24,7 +24,7 @@ const ParamsTabPage = () => {
         const selectedTab = tabData.find((tab) => tab.id === value);
         if (selectedTab) setActiveTab(selectedTab);
       }}
-      className="flex w-full flex-col justify-start gap-4"
+      className="flex w-full flex-col justify-start gap-2"
     >
       <SelectorTabPage
         activeTab={activeTab.id}

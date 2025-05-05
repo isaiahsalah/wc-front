@@ -16,7 +16,7 @@ const TableSkeleton: React.FC<Props> = ({rows, colums, hasOptions, hasPaginated}
   });
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2">
       {/* Barra superior con filtros y opciones */}
       {!hasOptions ? null : (
         <div className="flex items-center justify-between gap-4">

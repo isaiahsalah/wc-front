@@ -2,9 +2,12 @@ import {apiClient} from "../axiosConfig";
 import {IModel} from "@/utils/interfaces";
 import {toast} from "sonner";
 
-export const getModels = async () => {
+export const getModels = async ({id_sector}: {id_sector?: number | null}) => {
   try {
-    const response = await apiClient.get("/pr/model"); // Cambia la URL según tu API
+    const params = {
+      id_sector,
+    };
+    const response = await apiClient.get("/pr/model", {params}); // Cambia la URL según tu API
     return response.data; // Devuelve la lista de modelos
   } catch (error) {
     console.error("Error al obtener los modelos:", error);
@@ -12,9 +15,12 @@ export const getModels = async () => {
   }
 };
 
-export const getAllModels = async () => {
+export const getAllModels = async ({id_sector}: {id_sector?: number | null}) => {
   try {
-    const response = await apiClient.get("/pr/model/all"); // Cambia la URL según tu API
+    const params = {
+      id_sector,
+    };
+    const response = await apiClient.get("/pr/model/all", {params}); // Cambia la URL según tu API
     return response.data; // Devuelve la lista de modelos
   } catch (error) {
     console.error("Error al obtener los modelos:", error);

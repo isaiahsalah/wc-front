@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {Textarea} from "@/components/ui/textarea";
-import {useState} from "react";
+import {useContext, useState} from "react";
 import {
   createProduct,
   deleteProduct,
@@ -44,6 +44,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {SectorContext} from "@/providers/sector-provider";
+import {typeProduct} from "@/utils/const";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -56,7 +58,7 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
   const [colors, setColors] = useState<IColor[]>();
   const [models, setModels] = useState<IModel[]>();
   const [unities, setUnities] = useState<IUnity[]>();
-
+  const {sector} = useContext(SectorContext);
   const form = useForm<IProduct>({
     resolver: zodResolver(ProductSchema),
     defaultValues: {
@@ -87,7 +89,7 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
     setLoadingInit(true);
     try {
       const ColorsData = await getColors();
-      const ModelsData = await getModels();
+      const ModelsData = await getModels({id_sector: sector?.id});
       const UnitiesData = await getUnities();
 
       setColors(ColorsData);
@@ -182,7 +184,7 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
                           defaultValue={field.value.toString()}
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Seleccionar producto" />
+                            <SelectValue placeholder="Seleccionar Modelo" />
                           </SelectTrigger>
                           <SelectContent>
                             {models?.map((product: IModel) => (
@@ -210,7 +212,7 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
                           defaultValue={field.value.toString()}
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Seleccionar producto" />
+                            <SelectValue placeholder="Seleccionar Unidad" />
                           </SelectTrigger>
                           <SelectContent>
                             {unities?.map((product: IUnity) => (
@@ -245,13 +247,13 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
                 />
                 <FormField
                   control={form.control}
-                  name="cost"
+                  name="micronage"
                   render={({field}) => (
                     <FormItem className="col-span-3">
-                      <FormDescription>Costo</FormDescription>
+                      <FormDescription>Micronaje</FormDescription>
                       <FormControl>
                         <Input
-                          placeholder="Costo"
+                          placeholder="Micronaje"
                           type="number"
                           {...field}
                           onChange={(event) => field.onChange(Number(event.target.value))}
@@ -263,17 +265,28 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
                 />
                 <FormField
                   control={form.control}
-                  name="price"
+                  name="type_product"
                   render={({field}) => (
-                    <FormItem className="col-span-3">
-                      <FormDescription>Precio</FormDescription>
+                    <FormItem className="col-span-3 ">
+                      <FormDescription>Tipo</FormDescription>
                       <FormControl>
-                        <Input
-                          placeholder="Precio"
-                          type="number"
-                          {...field}
-                          onChange={(event) => field.onChange(Number(event.target.value))} // Convertir el valor a número
-                        />
+                        <Select
+                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Seleccionar Tipo" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {typeProduct?.map((type_prod) => (
+                              <SelectItem
+                                key={type_prod.id}
+                                value={(type_prod.id ?? "").toString()}
+                              >
+                                {type_prod.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -322,6 +335,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
   const [colors, setColors] = useState<IColor[]>();
   const [models, setModels] = useState<IModel[]>();
   const [unities, setUnities] = useState<IUnity[]>();
+  const {sector} = useContext(SectorContext);
 
   const form = useForm<IProduct>({
     resolver: zodResolver(ProductSchema),
@@ -370,7 +384,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
       const productData: IProduct = await getProductById(id);
       console.log("Productos:", productData);
       const ColorsData = await getColors();
-      const ModelsData = await getModels();
+      const ModelsData = await getModels({id_sector: sector?.id});
       const UnitiesData = await getUnities();
 
       setColors(ColorsData);
@@ -381,8 +395,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
         name: productData.name,
         description: productData.description,
         amount: productData.amount,
-        price: productData.price,
-        cost: productData.cost,
+
         id_color: productData.id_color,
         id_model: productData.id_model,
         id_unity: productData.id_unity,
@@ -586,13 +599,13 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                 />
                 <FormField
                   control={form.control}
-                  name="cost"
+                  name="micronage"
                   render={({field}) => (
                     <FormItem className="col-span-3">
-                      <FormDescription>Costo</FormDescription>
+                      <FormDescription>Micronaje</FormDescription>
                       <FormControl>
                         <Input
-                          placeholder="Costo"
+                          placeholder="Micronaje"
                           type="number"
                           {...field}
                           onChange={(event) => field.onChange(Number(event.target.value))}
@@ -604,17 +617,28 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                 />
                 <FormField
                   control={form.control}
-                  name="price"
+                  name="type_product"
                   render={({field}) => (
-                    <FormItem className="col-span-3">
-                      <FormDescription>Precio</FormDescription>
+                    <FormItem className="col-span-3 ">
+                      <FormDescription>Tipo</FormDescription>
                       <FormControl>
-                        <Input
-                          placeholder="Precio"
-                          type="number"
-                          {...field}
-                          onChange={(event) => field.onChange(Number(event.target.value))} // Convertir el valor a número
-                        />
+                        <Select
+                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Seleccionar Tipo" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {typeProduct?.map((type_prod) => (
+                              <SelectItem
+                                key={type_prod.id}
+                                value={(type_prod.id ?? "").toString()}
+                              >
+                                {type_prod.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

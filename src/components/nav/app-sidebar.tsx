@@ -29,11 +29,11 @@ export const AppSidebar: React.FC<Props> = ({className}) => {
   const permisions = sesion?.user.permissions as IPermission[];
 
   useEffect(() => {
-    if (permisions[0].module === 1) setMenu(typeModule[0].menu);
-    else if (permisions[0].module === 2) setMenu(typeModule[1].menu);
-    else if (permisions[0].module === 3) setMenu(typeModule[2].menu);
-    else if (permisions[0].module === 4) setMenu(typeModule[3].menu);
-    else if (permisions[0].module === 5) setMenu(typeModule[4].menu);
+    if (permisions[0].type_module === 1) setMenu(typeModule[0].menu);
+    else if (permisions[0].type_module === 2) setMenu(typeModule[1].menu);
+    else if (permisions[0].type_module === 3) setMenu(typeModule[2].menu);
+    else if (permisions[0].type_module === 4) setMenu(typeModule[3].menu);
+    else if (permisions[0].type_module === 5) setMenu(typeModule[4].menu);
 
     const uniqueObjects: ISector[] = Array.from(
       new Map(permisions.map((item) => [item.id_sector, item.sector])).values()

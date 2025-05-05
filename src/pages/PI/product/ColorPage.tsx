@@ -166,7 +166,7 @@ const ColorPage = () => {
   }, [colors]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2">
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader className="relative">
           <CardDescription>Colores registrados</CardDescription>
@@ -193,8 +193,8 @@ const ColorPage = () => {
 
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader>
-          <CardTitle>Producción</CardTitle>
-          <CardDescription>Producción registrada</CardDescription>
+          <CardTitle>Colores</CardTitle>
+          <CardDescription>Colores registrados</CardDescription>
         </CardHeader>
         <CardContent>
           <DataTable

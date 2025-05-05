@@ -1,4 +1,4 @@
-import {IProduct} from "@/utils/interfaces";
+import {IColor, IModel, IProduct} from "@/utils/interfaces";
 import DataTable from "@/components/table/DataTable";
 import {
   CreateProductDialog,
@@ -15,8 +15,8 @@ import {
   Tally5,
   TrendingUpIcon,
 } from "lucide-react";
-import {Row} from "@tanstack/react-table";
-import {useEffect, useMemo, useState} from "react";
+import {ColumnDef, Row} from "@tanstack/react-table";
+import {useContext, useEffect, useMemo, useState} from "react";
 import {Button} from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -33,20 +33,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {getAllProducts} from "@/api/product/product.api";
+import {getProducts} from "@/api/product/product.api";
 import {countCurrentMonth} from "@/utils/funtions";
 import {Badge} from "@/components/ui/badge";
+import {format} from "date-fns";
+import {typeProduct} from "@/utils/const";
+import {SectorContext} from "@/providers/sector-provider";
 
 const ProductPage = () => {
   const [products, setProducts] = useState<IProduct[] | null>(null);
-
+  const {sector} = useContext(SectorContext);
   useEffect(() => {
     updateView();
-  }, []);
+  }, [sector]);
 
   const updateView = async () => {
     try {
-      const ProductionsData = await getAllProducts();
+      const ProductionsData = await getProducts({id_sector: sector?.id});
       setProducts(ProductionsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
@@ -54,15 +57,104 @@ const ProductPage = () => {
   };
 
   // Generar columnas dinámicamente
-  const columnsProducts = useMemo(() => {
+  const columnsProducts: ColumnDef<IProduct>[] = useMemo(() => {
     if (!products) return [];
     return [
-      ...Object.keys(products[0]).map((key) => ({
-        accessorKey: key,
-        header: key.replace(/_/g, " ").toUpperCase(),
-        /* @ts-expect-error: Ignoramos el error en esta línea*/
+      {
+        accessorKey: "id",
+        header: "Id",
         cell: (info) => info.getValue(),
-      })),
+      },
+      {
+        accessorKey: "name",
+        header: "Nombre",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "description",
+        header: "Descripción",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "micronage",
+        header: "Micronaje",
+        cell: (info) => (info.getValue() ? info.getValue() : "-"),
+      },
+      {
+        accessorKey: "type_product",
+        header: "Tipo de Producto",
+        cell: (info) => (
+          <Badge variant={"outline"} className="text-muted-foreground">
+            {typeProduct.find((obj) => obj.id === info.getValue())?.name}
+          </Badge>
+        ),
+      },
+
+      {
+        accessorKey: "amount",
+        header: "Cantidad",
+        cell: ({row}: {row: Row<IProduct>}) => {
+          return (
+            <Badge variant={"outline"} className="text-muted-foreground">
+              {row.original.amount} {row.original.unity?.shortname}
+            </Badge>
+          );
+        },
+      },
+      {
+        accessorKey: "color",
+        header: "Color",
+        cell: (info) => (
+          <Badge variant={"outline"} className="text-muted-foreground">
+            {(info.getValue() as IColor).name}
+          </Badge>
+        ),
+      },
+
+      {
+        accessorKey: "model",
+        header: "Modelo",
+        cell: (info) => (
+          <Badge variant={"outline"} className="text-muted-foreground">
+            {(info.getValue() as IModel).name}
+          </Badge>
+        ),
+      },
+
+      {
+        accessorKey: "createdAt",
+        header: "Creado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "No disponible";
+        },
+      },
+      {
+        accessorKey: "updatedAt",
+        header: "Editado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "No disponible";
+        },
+      },
+
+      {
+        accessorKey: "deletedAt",
+        header: "Eliminado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy hh:mm");
+          }
+          return "-";
+        },
+      },
       {
         id: "actions",
         header: "",
@@ -112,7 +204,7 @@ const ProductPage = () => {
     ];
   }, [products]);
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2">
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader className="relative">
           <CardDescription>Productos registrados</CardDescription>

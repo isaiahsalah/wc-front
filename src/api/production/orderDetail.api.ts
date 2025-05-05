@@ -151,9 +151,9 @@ export const getOrderDetails_date = async ({
   id_sector,
   id_process,
 }: {
-  date: string;
-  id_sector?: number;
-  id_process?: number;
+  date: string | null;
+  id_sector?: number | null;
+  id_process?: number | null;
 }) => {
   try {
     const params = {
