@@ -104,7 +104,7 @@ export const printTag = ({
       if (key === "name") return doc.text(`${production.order_detail?.product?.name}`, 24, line);
       if (key === "amount")
         return doc.text(`${production.amount} ${production.unity?.shortname}.`, 24, line);
-      if (key === "micronage") return doc.text(`${production.micronage?.toString()} mm.`, 24, line);
+      if (key === "micronage") return doc.text(`${production.micronage?.join(" - ")}`, 24, line);
       return doc.text(`${production[key as keyof IProduction]}`, 24, line);
     });
     /*

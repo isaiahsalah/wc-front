@@ -12,7 +12,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useState} from "react";
 
 import {
   Dialog,
@@ -25,38 +25,22 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
-import {IGroup, IUser, UserSchema} from "@/utils/interfaces";
+import {IUser, UserSchema} from "@/utils/interfaces";
 import {SesionContext} from "@/providers/sesion-provider";
 import {updateProfile} from "@/api/profile/profile.api";
-import {getGroups} from "@/api/params/group.api";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {typeTurn} from "@/utils/const";
 import {DatePicker} from "@/components/date-picker";
 
 interface PropsEditProfile {
   children: React.ReactNode; // Define el tipo de children
   updateView: () => void; // Define the type as a function that returns void
-  onOpenChange?: (open: boolean) => void;
 }
 
-export const EditProfileDialog: React.FC<PropsEditProfile> = ({
-  children,
-  updateView,
-  onOpenChange,
-}) => {
+export const EditProfileDialog: React.FC<PropsEditProfile> = ({children, updateView}) => {
   const {sesion, setSesion} = useContext(SesionContext);
 
   //const [data, setData] = useState<IGeneral | never>();
   const [loadingSave, setLoadingSave] = useState(false); // Estado de carga
   const [loadingInit, setLoadingInit] = useState(false); // Estado de carga
-  const [groups, setGroups] = useState<IGroup[]>();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const form = useForm<IUser>({
     resolver: zodResolver(UserSchema),
@@ -82,9 +66,6 @@ export const EditProfileDialog: React.FC<PropsEditProfile> = ({
   const fetchData = async () => {
     setLoadingInit(true);
     try {
-      const ProductsData = await getGroups();
-      setGroups(ProductsData);
-
       form.reset({
         id: sesion?.user.id,
         name: sesion?.user.name,
@@ -100,7 +81,6 @@ export const EditProfileDialog: React.FC<PropsEditProfile> = ({
       console.error("Error al cargar los datos:", error);
     } finally {
       setLoadingInit(false);
-      setIsDialogOpen(false); // Cierra el diálogo
     }
   };
 

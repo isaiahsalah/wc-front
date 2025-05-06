@@ -242,7 +242,7 @@ const ProductionPage = () => {
                 <DropdownMenuContent align="end" className="w-32">
                   {!row.original.deletedAt ? (
                     <>
-                      <PrintQRDialog updateView={updateView}>
+                      <PrintQRDialog production={row.original}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                           <Printer /> Reimprimir{" "}
                         </DropdownMenuItem>

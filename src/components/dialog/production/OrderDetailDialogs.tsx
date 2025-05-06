@@ -42,7 +42,6 @@ import {SectorContext} from "@/providers/sector-provider";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
-  product: IProduct;
   updateView: () => void; // Define the type as a function that returns void
 }
 

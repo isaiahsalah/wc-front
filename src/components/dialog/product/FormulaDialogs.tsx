@@ -13,7 +13,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import {useState} from "react";
+import {useContext, useState} from "react";
 import {
   createFormula,
   deleteFormula,
@@ -42,6 +42,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {getProducts} from "@/api/product/product.api";
+import {SectorContext} from "@/providers/sector-provider";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -52,6 +53,7 @@ export const CreateFormulaDialog: React.FC<PropsCreate> = ({children, updateView
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
   const [products, setProducts] = useState<IProduct[]>();
+  const {sector} = useContext(SectorContext);
 
   const form = useForm<IFormula>({
     resolver: zodResolver(FormulaSchema),
@@ -94,7 +96,7 @@ export const CreateFormulaDialog: React.FC<PropsCreate> = ({children, updateView
   const fetchData = async () => {
     setLoadingInit(true);
     try {
-      const ProductsData = await getProducts();
+      const ProductsData = await getProducts({id_sector: sector?.id});
       setProducts(ProductsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
@@ -215,7 +217,7 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
   const [products, setProducts] = useState<IProduct[]>();
-
+  const {sector} = useContext(SectorContext);
   const form = useForm<IFormula>({
     resolver: zodResolver(FormulaSchema),
     defaultValues: {
@@ -260,7 +262,7 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
     try {
       const formulaData = await getFormulaById(id);
       console.log("Fórmulas:", formulaData);
-      const ProductsData = await getProducts();
+      const ProductsData = await getProducts({id_sector: sector?.id});
       setProducts(ProductsData);
       form.reset({
         id: formulaData.id,

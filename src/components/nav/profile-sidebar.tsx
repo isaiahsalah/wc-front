@@ -69,7 +69,7 @@ export function ProfileSidebar() {
                   <span className="truncate text-xs">
                     {sesion?.user.group?.name} -{" "}
                     {
-                      typeTurn.find((turn) => turn.id === (sesion?.user.group?.turn as number))
+                      typeTurn.find((turn) => turn.id === (sesion?.user.group?.type_turn as number))
                         ?.name
                     }
                   </span>

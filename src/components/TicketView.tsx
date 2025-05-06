@@ -1,14 +1,4 @@
-import {IProduction} from "@/utils/interfaces";
-import {format} from "date-fns";
-import React from "react";
-
-const TicketView = ({
-  production,
-  ticketFormat,
-}: {
-  production: IProduction;
-  ticketFormat: string[];
-}) => {
+const TicketView = ({ticketFormat}: {ticketFormat: string[]}) => {
   return (
     <div className="bg-white w-[50mm] h-[30mm] rounded-xl  flex  m-auto">
       <div className=" bg-transparent w-[48mm] h-[28mm] rounded-xl border-black border-2 m-auto flex flex-col ">
@@ -20,19 +10,7 @@ const TicketView = ({
           </div>
           <div className="  flex-1   text-black text-[9px] m-auto ">
             {ticketFormat.map((key) => {
-              if (key === "date") {
-                return <div>{format(new Date(production.date), "dd/LL/y - HH:mm")}</div>;
-              }
-              if (key === "name") return <div>{production.order_detail?.product?.name}</div>;
-              if (key === "amount")
-                return (
-                  <div>
-                    {production.amount} ${production.unity?.shortname}.
-                  </div>
-                );
-              if (key === "micronage") return <div>{production.micronage?.toString()} mm.</div>;
-              const value = production[key as keyof IProduction];
-              return <div>{value?.toString()}</div>;
+              return <div>{key}</div>;
             })}
           </div>
         </div>

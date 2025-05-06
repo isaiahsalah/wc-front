@@ -436,7 +436,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
         {loadingInit ? null : (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit, onError)} className=" grid   gap-4 ">
-              <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
+              <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm max-h-[60vh] overflow-scroll">
                 <FormField
                   control={form.control}
                   name="description"
@@ -653,9 +653,8 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                 <div className="col-span-6">
                   <div className="flex rounded-lg border p-3 shadow-sm">
                     <TicketView
-                      production={form.getValues()}
                       ticketFormat={
-                        typeTicket.find((ticket) => ticket.id === selectTicket)?.colums as string[]
+                        typeTicket.find((ticket) => ticket.id === selectTicket)?.example as string[]
                       }
                     />
                     {amount ? (
@@ -1143,23 +1142,23 @@ export const RecoverProductionDialog: React.FC<PropsRecover> = ({
 
 interface PropsPrintQR {
   children: React.ReactNode; // Define el tipo de children
-
-  updateView: () => void; // Define the type as a function that returns void
+  production: IProduction;
 }
 
-export const PrintQRDialog: React.FC<PropsPrintQR> = ({children, updateView}) => {
+export const PrintQRDialog: React.FC<PropsPrintQR> = ({children, production}) => {
   const [loadingSave, setLoadingSave] = useState(false);
+  const [selectTicket, setSelectTicket] = useState<number>(1);
 
-  function onSubmit(values: IProduction) {
+  function onPrint() {
     setLoadingSave(true);
-    createProduction({data: values})
-      .then((updatedProduction) => {
-        console.log("Producción creada:", updatedProduction);
 
-        updateView();
-      })
-      .catch((error) => {
-        console.error("Error al crear la producción:", error);
+    generateQR({productions: [production]})
+      .then((QRs) => {
+        printTag({
+          productions: [production],
+          QRs: QRs,
+          ticketFormat: typeTicket.find((ticket) => ticket.id == selectTicket)?.colums as string[],
+        });
       })
       .finally(() => {
         setLoadingSave(false);
@@ -1176,31 +1175,37 @@ export const PrintQRDialog: React.FC<PropsPrintQR> = ({children, updateView}) =>
         </DialogHeader>
 
         <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
-          <div className="bg-white w-[50mm] h-[30mm] rounded-xl  flex  ">
-            <div className=" bg-transparent w-[48mm] h-[28mm] rounded-xl border-black border-2 m-auto flex flex-col ">
-              <div className="flex bg-transparent w-[48mm] h-[22mm] ">
-                <div className="  flex-1  flex  ">
-                  <div className="bg-black w-[18mm]  h-[18mm] m-auto text-white   flex">
-                    <div className="m-auto">QR</div>
-                  </div>
-                </div>
-                <div className="  flex-1   text-black text-[9px] m-auto ">
-                  <div>202356845</div>
-                  <div>Bandeja 20*15</div>
-                  <div>15/04/25 20:34</div>
-                  <div>15 kg.</div>
-                  <div>189 mm.</div>
-                </div>
-              </div>
-              <div className="bg-transparent  flex flex-1  border-t-2 border-black text-black ">
-                <div className="m-auto font-bold text-[9px]">PRODUCTO EN PROCESO</div>
-              </div>
+          <div className="col-span-3">
+            <div>Formato de Ticket</div>
+            <Select
+              onValueChange={(value) => setSelectTicket(Number(value))} // Convertir el valor a número
+              value={selectTicket.toString()}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Seleccionar Calidad" />
+              </SelectTrigger>
+              <SelectContent>
+                {typeTicket.map((type) => (
+                  <SelectItem key={type.id} value={type.id.toString()}>
+                    {type.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="col-span-6">
+            <div className="flex rounded-lg border p-3 shadow-sm">
+              <TicketView
+                ticketFormat={
+                  typeTicket.find((ticket) => ticket.id === selectTicket)?.example as string[]
+                }
+              />
             </div>
           </div>
         </div>
         <DialogFooter className=" grid grid-cols-6  ">
-          <Button type="submit" className="col-span-3">
-            {loadingSave ? <LoadingCircle /> : "Guardar"}
+          <Button onClick={onPrint} className="col-span-3">
+            {loadingSave ? <LoadingCircle /> : "Imprimir"}
           </Button>
           <DialogClose asChild className="col-span-3">
             <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>

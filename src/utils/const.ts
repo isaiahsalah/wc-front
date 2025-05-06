@@ -149,19 +149,19 @@ export const typeTicket = [
   {
     id: 1,
     name: "QR 1",
-    example: ["202356845", "Bandeja 20*15", "15/04/25 20:34", "15 kg.", "189 mm."],
+    example: ["Id", "Nombre de Producto", "Fecha de Producción", "Unidad de medida", "Micronage"],
     colums: ["id", "name", "date", "amount", "micronage"],
   },
   {
     id: 2,
     name: "QR 2",
-    example: ["Bandeja 20*15", "15/04/25 20:34"],
+    example: ["Nombre de Producto", "Fecha de Producción"],
     colums: ["name", "date"],
   },
   {
     id: 3,
     name: "QR 3",
-    example: ["202356845", "Bandeja 20*15"],
+    example: ["Id", "Nombre de Producto"],
     colums: ["id", "name"],
   },
 ];
