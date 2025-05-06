@@ -26,13 +26,11 @@ import {
   ChevronsRightIcon,
   ColumnsIcon,
 } from "lucide-react";
-import {Filter} from "./dataTableFilters";
 import {Label} from "../ui/label";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "../ui/select";
 import {IGeneral} from "@/utils/interfaces";
 import TableSkeleton from "../skeleton/table-skeleton";
-import {format} from "date-fns";
-import {Badge} from "../ui/badge";
+import ColumnFilter from "./DataTableFilter";
 
 interface Props<T extends IGeneral> {
   data: T[] | null;
@@ -61,7 +59,6 @@ const DataTable = <T extends IGeneral>({
     pageIndex: 0,
     pageSize: hasPaginated ? 5 : 100,
   });
-  const [globalFilter, setGlobalFilter] = useState("");
 
   const table = useReactTable({
     data: data ?? [],
@@ -72,7 +69,6 @@ const DataTable = <T extends IGeneral>({
       rowSelection,
       columnFilters,
       pagination,
-      globalFilter,
     },
     filterFns: {}, // Define funciones personalizadas si es necesario
     getRowId: (row) => (row.id ?? "").toString(),
@@ -96,21 +92,21 @@ const DataTable = <T extends IGeneral>({
     );
   }
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 overflow-auto">
       {/* Barra superior con filtros y opciones */}
       {!hasOptions ? null : (
         <div className="flex items-center justify-between gap-1">
-          <Filter
+          {/*<Filter
             placeholder="Busqueda General"
             column={{
               getFilterValue: () => globalFilter,
               setFilterValue: setGlobalFilter,
-              /* @ts-expect-error: Ignoramos el error en esta línea*/
               columnDef: {
                 meta: {filterVariant: "text"},
               },
             }}
-          />
+          />*/}
+          <ColumnFilter table={table} placeholder="Filtrar..." />
           <div className="flex gap-1">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -132,7 +128,9 @@ const DataTable = <T extends IGeneral>({
                       event.preventDefault();
                     }}
                   >
-                    {column.id}
+                    {typeof column.columnDef.header === "function"
+                      ? ""
+                      : column.columnDef.header || column.id}
                   </DropdownMenuCheckboxItem>
                 ))}
               </DropdownMenuContent>
@@ -171,41 +169,11 @@ const DataTable = <T extends IGeneral>({
                   className={row.original.deletedAt ? "bg-red-500/30 " : ""}
                 >
                   {row.getVisibleCells().map((cell) => {
-                    if (
-                      cell.column.id === "createdAt" ||
-                      cell.column.id === "updatedAt" ||
-                      cell.column.id === "deletedAt"
-                    ) {
-                      const value = cell.getValue();
-                      if (
-                        typeof value === "string" ||
-                        typeof value === "number" ||
-                        value instanceof Date
-                      ) {
-                        return (
-                          <TableCell key={cell.id} className=" py-1.5">
-                            <Badge variant={"outline"} className="text-muted-foreground">
-                              {flexRender(
-                                format(new Date(value), "dd/MM/yyyy hh:mm"),
-                                cell.getContext()
-                              )}
-                            </Badge>
-                          </TableCell>
-                        );
-                      } else {
-                        return (
-                          <TableCell key={cell.id} className=" py-1.5">
-                            {" - "}
-                          </TableCell>
-                        );
-                      }
-                    } else {
-                      return (
-                        <TableCell key={cell.id} className=" py-1.5">
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </TableCell>
-                      );
-                    }
+                    return (
+                      <TableCell key={cell.id} className=" py-1.5">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    );
                   })}
                 </TableRow>
               ))

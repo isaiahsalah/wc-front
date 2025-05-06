@@ -153,6 +153,23 @@ export const createOrderWithDetail = async ({
   order: IOrder;
   orderDetails: IOrderDetail[];
 }) => {
+  if (orderDetails.length <= 0) {
+    return toast("Selecciona al menos 1 producto", {
+      action: {
+        label: "OK",
+        onClick: () => console.log("Undo"),
+      },
+    });
+  }
+  if (order.init_date >= order.end_date) {
+    return toast("La fecha de inicio debe ser menor a la fecha de fin", {
+      action: {
+        label: "OK",
+        onClick: () => console.log("Undo"),
+      },
+    });
+  }
+
   toast("Se está procesando la petición", {
     action: {
       label: "OK",

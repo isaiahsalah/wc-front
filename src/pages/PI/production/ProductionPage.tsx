@@ -13,7 +13,7 @@ import {ColumnDef, Row} from "@tanstack/react-table";
 import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
 import {Button} from "@/components/ui/button";
-import {ArchiveRestore, Delete, Edit, MoreVerticalIcon, Printer} from "lucide-react";
+import {ArchiveRestore, Edit, MoreVerticalIcon, Printer, Trash2} from "lucide-react";
 import {
   CreateProductionsDialog,
   DeleteProductionDialog,
@@ -105,6 +105,7 @@ const ProductionPage = () => {
     if (!productions) return [];
     return [
       {
+        accessorFn: (row) => row.id?.toString().trim(),
         accessorKey: "id",
         header: "Id",
         cell: (info) => info.getValue(),
@@ -124,7 +125,7 @@ const ProductionPage = () => {
         header: "Fecha",
         cell: (info) => (
           <Badge variant={"outline"} className="text-muted-foreground">
-            {format(info.getValue() as Date, "dd/MM/yyyy hh:mm")}
+            {format(info.getValue() as Date, "dd/MM/yyyy HH:mm")}
           </Badge>
         ),
       },
@@ -188,26 +189,24 @@ const ProductionPage = () => {
       },
 
       {
+        accessorFn: (row) => format(new Date(row.createdAt as Date), "dd/MM/yyyy HH:mm").trim(),
         accessorKey: "createdAt",
         header: "Creado",
-        cell: (info) => {
-          const value = info.getValue();
-          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
-            return format(new Date(value), "dd/MM/yyyy hh:mm");
-          }
-          return "No disponible";
-        },
+        cell: (info) => (
+          <Badge variant={"outline"} className="text-muted-foreground">
+            {info.getValue() as string}
+          </Badge>
+        ),
       },
       {
+        accessorFn: (row) => format(new Date(row.updatedAt as Date), "dd/MM/yyyy HH:mm").trim(),
         accessorKey: "updatedAt",
         header: "Editado",
-        cell: (info) => {
-          const value = info.getValue();
-          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
-            return format(new Date(value), "dd/MM/yyyy hh:mm");
-          }
-          return "No disponible";
-        },
+        cell: (info) => (
+          <Badge variant={"outline"} className="text-muted-foreground">
+            {info.getValue() as string}
+          </Badge>
+        ),
       },
 
       {
@@ -216,7 +215,7 @@ const ProductionPage = () => {
         cell: (info) => {
           const value = info.getValue();
           if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
-            return format(new Date(value), "dd/MM/yyyy hh:mm");
+            return format(new Date(value), "dd/MM/yyyy HH:mm");
           }
           return "-";
         },
@@ -257,7 +256,7 @@ const ProductionPage = () => {
                       </EditProductionDialog>
                       <DeleteProductionDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Delete /> Eliminar{" "}
+                          <Trash2 /> Eliminar{" "}
                         </DropdownMenuItem>
                       </DeleteProductionDialog>
                     </>
@@ -282,6 +281,7 @@ const ProductionPage = () => {
     if (!orderDetails) return [];
     return [
       {
+        accessorFn: (row) => row.id?.toString().trim(),
         accessorKey: "id",
         header: "Id",
         cell: (info) => info.getValue(),
@@ -292,9 +292,18 @@ const ProductionPage = () => {
         cell: (info) => info.getValue(),
       },
       {
-        accessorKey: "production_count",
-        header: "Cant. Producida",
-        cell: (info) => info.getValue(),
+        accessorKey: "productionsGod",
+        header: "Cant. Buena",
+        cell: ({row}: {row: Row<IOrderDetail>}) =>
+          (row.original.productions as IProduction[]).filter((obj) => obj.type_quality === 1)
+            .length,
+      },
+      {
+        accessorKey: "productionsBad",
+        header: "Cant. Mala",
+        cell: ({row}: {row: Row<IOrderDetail>}) =>
+          (row.original.productions as IProduction[]).filter((obj) => obj.type_quality !== 1)
+            .length,
       },
       {
         accessorKey: "product",
@@ -330,7 +339,7 @@ const ProductionPage = () => {
         header: "Fecha Límite",
         cell: (info) => (
           <Badge variant={"outline"} className="text-muted-foreground">
-            {format((info.getValue() as IOrder).end_date as Date, "dd/MM/yyyy hh:mm")}
+            {format((info.getValue() as IOrder).end_date as Date, "dd/MM/yyyy HH:mm")}
           </Badge>
         ),
       },

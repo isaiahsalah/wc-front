@@ -2,7 +2,7 @@ import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 
 import {useForm} from "react-hook-form";
-import {IOrder, OrderSchema} from "@/utils/interfaces";
+import {IOrder, IOrderDetail, IProduct, IProduction, OrderSchema} from "@/utils/interfaces";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 import {
@@ -13,9 +13,9 @@ import {
   FormDescription,
   FormMessage,
 } from "@/components/ui/form";
-import {useState} from "react";
+import {useContext, useMemo, useState} from "react";
 import {
-  createOrder,
+  createOrderWithDetail,
   deleteOrder,
   getOrderById,
   recoverOrder,
@@ -33,7 +33,20 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
-import {DatePicker} from "@/components/date-picker";
+import {DateTimePicker} from "@/components/DateTimePicker";
+import {SectorContext} from "@/providers/sector-provider";
+import {getProducts} from "@/api/product/product.api";
+import {ColumnDef, Row} from "@tanstack/react-table";
+import {Plus, Trash2, X} from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import DataTable from "@/components/table/DataTable";
+import {SesionContext} from "@/providers/sesion-provider";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -42,20 +55,31 @@ interface PropsCreate {
 
 export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView}) => {
   const [loadingSave, setLoadingSave] = useState(false);
+  const [loadingInit, setLoadingInit] = useState(false);
+
+  const [products, setProducts] = useState<IProduct[]>([]);
+
+  const [productSelected, setProductSelected] = useState<IProduct>();
+  const [orderDetailsSelected, setOrderDetailsSelected] = useState<IOrderDetail[]>([]);
+
+  const [amount, setAmount] = useState<number>();
+
+  const {sector} = useContext(SectorContext);
+  const {sesion} = useContext(SesionContext);
 
   const form = useForm<IOrder>({
     resolver: zodResolver(OrderSchema),
     defaultValues: {
-      id_user: 1,
+      id_user: sesion?.user.id as number,
     },
   });
 
   function onSubmit(values: IOrder) {
     setLoadingSave(true);
-    createOrder({data: values})
+
+    createOrderWithDetail({order: values, orderDetails: orderDetailsSelected})
       .then((updatedOrder) => {
         console.log("Orden creada:", updatedOrder);
-
         updateView();
       })
       .catch((error) => {
@@ -66,110 +90,213 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
       });
   }
 
+  const fetchData = async () => {
+    setLoadingInit(true);
+    try {
+      const ProductsData = await getProducts({id_sector: sector?.id, paranoid: true});
+      setProducts(ProductsData);
+    } catch (error) {
+      console.error("Error al cargar los datos:", error);
+    } finally {
+      setLoadingInit(false);
+    }
+  };
+
+  const addProductSelected = () => {
+    if (productSelected && productSelected.id && amount && amount > 0)
+      setOrderDetailsSelected([
+        ...orderDetailsSelected,
+        {
+          amount: amount,
+          id_product: productSelected.id,
+          product: productSelected,
+          id_order: 0,
+        },
+      ]);
+  };
+
+  const deleteProductSelected = (index: number) => {
+    // Filtra la lista para excluir el producto seleccionado
+    setOrderDetailsSelected(orderDetailsSelected.filter((_item, idx) => idx !== index));
+  };
+
+  // Generar columnas dinámicamente
+  const columnsOrderDetailsSelected: ColumnDef<IOrderDetail>[] = useMemo(() => {
+    if (orderDetailsSelected.length === 0) return [];
+    return [
+      {
+        accessorKey: "id_product",
+        header: "Id de producto",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "product",
+        header: "Nombre de producto",
+        cell: (info) => (info.getValue() as IProduct).name,
+      },
+      {
+        accessorKey: "amount",
+        header: "Cantidad",
+        cell: (info) => info.getValue(),
+      },
+      {
+        id: "actions",
+        header: "",
+        enableHiding: false,
+        cell: ({row}: {row: Row<IOrderDetail>}) => {
+          return (
+            <div className="flex gap-2  justify-end  ">
+              <Button
+                variant={"outline"}
+                type="button"
+                onClick={() => deleteProductSelected(row.index)}
+                className="   text-red-600 dark:text-red-400"
+              >
+                <X />
+              </Button>
+            </div>
+          );
+        },
+      },
+    ];
+  }, [orderDetailsSelected]);
+
   return (
     <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger asChild onClick={fetchData}>
+        {children}
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Registrar orden</DialogTitle>
           <DialogDescription>Mostrando datos relacionados con la orden.</DialogDescription>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className=" grid  gap-4 ">
-            <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
-              <FormField
-                control={form.control}
-                name="init_date"
-                render={({field}) => (
-                  <FormItem className="col-span-3">
-                    <FormDescription>Inicio</FormDescription>
-                    <FormControl>
-                      <DatePicker
-                        className="w-full"
-                        value={
-                          field.value && typeof field.value === "string"
-                            ? new Date(field.value)
-                            : field.value
-                        }
-                        onChange={(date) => {
-                          const endDate = form.getValues("end_date");
-                          if (endDate && date && new Date(date) > new Date(endDate)) {
-                            console.log(
-                              "La fecha de inicio no puede ser posterior a la fecha de fin."
-                            );
-                            return;
+        {loadingInit ? null : (
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid  gap-4 ">
+              <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
+                <FormField
+                  control={form.control}
+                  name="init_date"
+                  render={({field}) => (
+                    <FormItem className="col-span-3">
+                      <FormDescription>Inicio</FormDescription>
+                      <FormControl>
+                        <DateTimePicker
+                          className="w-full"
+                          value={
+                            field.value && typeof field.value === "string"
+                              ? new Date(field.value)
+                              : field.value
                           }
-                          if (date) {
-                            const adjustedDate = new Date(date);
-                            adjustedDate.setHours(0, 0, 0, 0);
-                            field.onChange(adjustedDate);
-                          } else {
-                            field.onChange(null);
+                          onChange={(date) => {
+                            if (date) {
+                              field.onChange(date);
+                            } else {
+                              field.onChange(null);
+                            }
+                          }}
+                          placeholder="Selecciona una fecha"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="end_date"
+                  render={({field}) => (
+                    <FormItem className="col-span-3">
+                      <FormDescription>fin</FormDescription>
+                      <FormControl>
+                        <DateTimePicker
+                          className="w-full"
+                          value={
+                            field.value && typeof field.value === "string"
+                              ? new Date(field.value)
+                              : field.value
                           }
-                        }}
-                        placeholder="Selecciona una fecha"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="end_date"
-                render={({field}) => (
-                  <FormItem className="col-span-3">
-                    <FormDescription>fin</FormDescription>
-                    <FormControl>
-                      <DatePicker
-                        className="w-full"
-                        value={
-                          field.value && typeof field.value === "string"
-                            ? new Date(field.value)
-                            : field.value
-                        }
-                        onChange={(date) => {
-                          const startDate = form.getValues("init_date");
-                          if (startDate && date && new Date(date) < new Date(startDate)) {
-                            console.log(
-                              "La fecha de fin no puede ser anterior a la fecha de inicio."
-                            );
-                            return;
-                          }
+                          onChange={(date) => {
+                            if (date) {
+                              field.onChange(date);
+                            } else {
+                              field.onChange(null);
+                            }
+                          }}
+                          placeholder="Selecciona una fecha"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="w-full col-span-4 grid gap-2">
+                  <FormDescription>Producto</FormDescription>
+                  <Select
+                    onValueChange={(value) => {
+                      const selectedProduct = products?.find(
+                        (product: IProduct) => product.id?.toString() === value
+                      );
+                      setProductSelected(selectedProduct); // Guarda el objeto completo
+                    }} // Convertir el valor a número
+                  >
+                    <SelectTrigger className="w-full  ">
+                      <SelectValue placeholder="Seleccionar Producto" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {products?.map((process: IProduct) => (
+                        <SelectItem key={process.id} value={(process.id ?? "").toString()}>
+                          {process.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-                          if (date) {
-                            const adjustedDate = new Date(date);
-                            adjustedDate.setHours(23, 59, 59, 999);
-                            field.onChange(adjustedDate);
-                          } else {
-                            field.onChange(null);
-                          }
-                        }}
-                        placeholder="Selecciona una fecha"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                <div className="w-full col-span-1 grid gap-2">
+                  <FormDescription>Cant.</FormDescription>
+                  <Input
+                    placeholder="Cantidad"
+                    type="number"
+                    onChange={(event) => setAmount(Number(event.target.value))}
+                  />
+                </div>
+                <div className="w-full col-span-1 grid gap-2">
+                  <FormDescription>Añadir</FormDescription>
+                  <Button type="button" variant={"outline"} onClick={addProductSelected}>
+                    <Plus />
+                  </Button>
+                </div>
+                <div className="w-full col-span-6 grid gap-2">
+                  <FormDescription>Añadir</FormDescription>
+                  <DataTable
+                    hasOptions={false}
+                    hasPaginated={false}
+                    actions={<></>}
+                    columns={columnsOrderDetailsSelected}
+                    data={orderDetailsSelected}
+                  />
+                </div>
+              </div>
 
-            <DialogFooter className=" grid grid-cols-6  ">
-              <Button
-                type="submit"
-                className="col-span-3"
-                disabled={!form.formState.isDirty || loadingSave}
-              >
-                {loadingSave ? <LoadingCircle /> : "Guardar"}
-              </Button>
-              <DialogClose asChild className="col-span-3">
-                <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
-                  Cerrar
+              <DialogFooter className=" grid grid-cols-6  ">
+                <Button
+                  type="submit"
+                  className="col-span-3"
+                  disabled={!form.formState.isDirty || loadingSave}
+                >
+                  {loadingSave ? <LoadingCircle /> : "Guardar"}
                 </Button>
-              </DialogClose>
-            </DialogFooter>
-          </form>
-        </Form>
+                <DialogClose asChild className="col-span-3">
+                  <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
+                    Cerrar
+                  </Button>
+                </DialogClose>
+              </DialogFooter>
+            </form>
+          </Form>
+        )}
       </DialogContent>
     </Dialog>
   );
@@ -187,13 +314,22 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
 
+  const [productSelected, setProductSelected] = useState<IProduct>();
+  //const [orderDetailsSelected, setOrderDetailsSelected] = useState<IOrderDetail[]>();
+  const [amount, setAmount] = useState<number>();
+  const [products, setProducts] = useState<IProduct[]>([]);
+
+  const {sector} = useContext(SectorContext);
+
   const form = useForm<IOrder>({
     resolver: zodResolver(OrderSchema),
     defaultValues: {},
   });
+  const orderDetails = form.watch("order_details");
 
   function onSubmit(values: IOrder) {
     setLoadingSave(true);
+    //values.order_details = orderDetailsSelected;
     updateOrder({data: values})
       .then((updatedOrder) => {
         console.log("Orden actualizada:", updatedOrder);
@@ -215,10 +351,16 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
       console.log("Órdenes:", orderData);
       form.reset({
         id: orderData.id,
-        init_date: orderData.init_date,
-        end_date: orderData.end_date,
+        init_date: new Date(orderData.init_date),
+        end_date: new Date(orderData.end_date),
         id_user: orderData.id_user,
+        order_details: orderData.order_details,
       });
+      const ProductsData = await getProducts({id_sector: sector?.id, paranoid: true});
+      console.log("✖️✖️✖️", orderData);
+
+      //setOrderDetailsSelected(orderData.order_details as IOrderDetail[]);
+      setProducts(ProductsData);
     } catch (error) {
       console.error("Error al cargar las órdenes:", error);
     } finally {
@@ -232,28 +374,102 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
       .then((deletedOrder) => {
         console.log("Orden eliminada:", deletedOrder);
 
-        toast("La orden se eliminó correctamente.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
-
         updateView();
       })
       .catch((error) => {
         console.error("Error al eliminar la orden:", error);
-        toast("Hubo un error al eliminar la orden.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
       })
       .finally(() => {
         setLoadingDelete(false);
       });
   }
+  /*
+  const addProductSelected = () => {
+    if (productSelected && productSelected.id && amount && amount > 0) {
+      const orderDetailTemp = form.getValues().order_details;
+
+      form.reset({
+        ...form.getValues(),
+        order_details: [
+          ...(orderDetailTemp ?? []),
+          {
+            amount: amount,
+            id_product: productSelected.id,
+            product: productSelected,
+            id_order: 0,
+          },
+        ],
+      });
+    }
+  };*/
+
+  const deleteProductSelected = (index: number) => {
+    // Filtra la lista para excluir el producto seleccionado
+    //setOrderDetailsSelected(orderDetailsSelected?.filter((_item, idx) => idx !== index));
+    form.reset({
+      ...form.getValues(),
+      order_details: orderDetails?.filter((_item, idx) => idx !== index),
+    });
+  };
+
+  // Generar columnas dinámicamente
+  const columnsOrderDetailsSelected: ColumnDef<IOrderDetail>[] = useMemo(() => {
+    if (!orderDetails) return [];
+    return [
+      {
+        accessorKey: "id",
+        header: "Id",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "product",
+        header: "Nombre de producto",
+        cell: (info) => (info.getValue() as IProduct).name,
+      },
+      {
+        accessorKey: "amount",
+        header: "Cantidad",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "productionsGod",
+        header: "Cant. Buena",
+        cell: ({row}: {row: Row<IOrderDetail>}) =>
+          row.original.productions
+            ? (row.original.productions as IProduction[]).filter((obj) => obj.type_quality === 1)
+                .length
+            : "",
+      },
+      {
+        accessorKey: "productionsBad",
+        header: "Cant. Mala",
+        cell: ({row}: {row: Row<IOrderDetail>}) =>
+          row.original.productions
+            ? (row.original.productions as IProduction[]).filter((obj) => obj.type_quality !== 1)
+                .length
+            : "",
+      },
+      {
+        id: "actions",
+        header: "",
+        enableHiding: false,
+        cell: ({row}: {row: Row<IOrderDetail>}) => {
+          return (
+            <div className="flex gap-2  justify-end  ">
+              <Button
+                variant={"outline"}
+                type="button"
+                onClick={() => deleteProductSelected(row.index)}
+                className="   text-red-600 dark:text-red-400"
+              >
+                <Trash2 />
+              </Button>
+            </div>
+          );
+        },
+      },
+    ];
+  }, [orderDetails]);
 
   return (
     <Dialog onOpenChange={onOpenChange}>
@@ -295,7 +511,7 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                     <FormItem className="col-span-3">
                       <FormDescription>Inicio</FormDescription>
                       <FormControl>
-                        <DatePicker
+                        <DateTimePicker
                           className="w-full"
                           value={
                             field.value && typeof field.value === "string"
@@ -303,7 +519,7 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                               : field.value
                           }
                           onChange={(date) => {
-                            const endDate = form.getValues("end_date");
+                            const endDate = form.getValues().end_date;
                             if (endDate && date && new Date(date) > new Date(endDate)) {
                               console.log(
                                 "La fecha de inicio no puede ser posterior a la fecha de fin."
@@ -332,7 +548,7 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                     <FormItem className="col-span-3">
                       <FormDescription>fin</FormDescription>
                       <FormControl>
-                        <DatePicker
+                        <DateTimePicker
                           className="w-full"
                           value={
                             field.value && typeof field.value === "string"
@@ -340,7 +556,7 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                               : field.value
                           }
                           onChange={(date) => {
-                            const startDate = form.getValues("init_date");
+                            const startDate = form.getValues().init_date;
                             if (startDate && date && new Date(date) < new Date(startDate)) {
                               console.log(
                                 "La fecha de fin no puede ser anterior a la fecha de inicio."
@@ -363,13 +579,87 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                     </FormItem>
                   )}
                 />
+
+                <div className="w-full col-span-4 grid gap-2">
+                  <FormDescription>Producto</FormDescription>
+                  <Select
+                    onValueChange={(value) => {
+                      const selectedProduct = products?.find(
+                        (product: IProduct) => product.id?.toString() === value
+                      );
+                      setProductSelected(selectedProduct); // Guarda el objeto completo
+                    }} // Convertir el valor a número
+                  >
+                    <SelectTrigger className="w-full  ">
+                      <SelectValue placeholder="Seleccionar Producto" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {products?.map((process: IProduct) => (
+                        <SelectItem key={process.id} value={(process.id ?? "").toString()}>
+                          {process.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="w-full col-span-2 flex gap-2">
+                  <div className="w-full col-span-full grid gap-2">
+                    <FormDescription>Cant.</FormDescription>
+                    <Input
+                      placeholder="Cantidad"
+                      type="number"
+                      onChange={(event) => setAmount(Number(event.target.value))}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="order_details"
+                    render={({field}) => (
+                      <FormItem className="">
+                        <FormDescription>Añadir</FormDescription>
+                        <FormControl>
+                          <Button
+                            type="button"
+                            variant={"outline"}
+                            onClick={() => {
+                              if (productSelected && productSelected.id && amount && amount > 0) {
+                                const orderDetailTemp = field.value;
+
+                                field.onChange([
+                                  ...(orderDetailTemp ?? []),
+                                  {
+                                    amount: amount,
+                                    id_product: productSelected.id,
+                                    product: productSelected,
+                                    id_order: 0,
+                                  },
+                                ]);
+                              }
+                            }}
+                          >
+                            <Plus />
+                          </Button>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="w-full col-span-6 grid gap-2   ">
+                  <FormDescription>Orden Detalle</FormDescription>
+                  <DataTable
+                    hasOptions={false}
+                    hasPaginated={false}
+                    actions={<></>}
+                    columns={columnsOrderDetailsSelected}
+                    data={orderDetails ?? []}
+                  />
+                </div>
               </div>
               <DialogFooter className=" grid grid-cols-6  ">
-                <Button
-                  type="submit"
-                  className="col-span-3"
-                  disabled={!form.formState.isDirty || loadingSave}
-                >
+                <Button type="submit" className="col-span-3" disabled={loadingSave}>
                   {loadingSave ? <LoadingCircle /> : "Guardar"}
                 </Button>
                 <Button

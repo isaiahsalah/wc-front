@@ -4,11 +4,11 @@ import DataTable from "@/components/table/DataTable";
 import {Button} from "@/components/ui/button";
 import {
   ArchiveRestore,
-  Delete,
   Edit,
   MoreVerticalIcon,
   PlusIcon,
   Tally5,
+  Trash2,
   TrendingUpIcon,
 } from "lucide-react";
 import {
@@ -59,6 +59,7 @@ const UnityPage = () => {
     if (!unities) return [];
     return [
       {
+        accessorFn: (row) => row.id?.toString().trim(),
         accessorKey: "id",
         header: "Id",
         cell: (info) => info.getValue(),
@@ -74,26 +75,24 @@ const UnityPage = () => {
         cell: (info) => info.getValue(),
       },
       {
+        accessorFn: (row) => format(new Date(row.createdAt as Date), "dd/MM/yyyy HH:mm").trim(),
         accessorKey: "createdAt",
         header: "Creado",
-        cell: (info) => {
-          const value = info.getValue();
-          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
-            return format(new Date(value), "dd/MM/yyyy hh:mm");
-          }
-          return "No disponible";
-        },
+        cell: (info) => (
+          <Badge variant={"outline"} className="text-muted-foreground">
+            {info.getValue() as string}
+          </Badge>
+        ),
       },
       {
+        accessorFn: (row) => format(new Date(row.updatedAt as Date), "dd/MM/yyyy HH:mm").trim(),
         accessorKey: "updatedAt",
         header: "Editado",
-        cell: (info) => {
-          const value = info.getValue();
-          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
-            return format(new Date(value), "dd/MM/yyyy hh:mm");
-          }
-          return "No disponible";
-        },
+        cell: (info) => (
+          <Badge variant={"outline"} className="text-muted-foreground">
+            {info.getValue() as string}
+          </Badge>
+        ),
       },
 
       {
@@ -102,7 +101,7 @@ const UnityPage = () => {
         cell: (info) => {
           const value = info.getValue();
           if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
-            return format(new Date(value), "dd/MM/yyyy hh:mm");
+            return format(new Date(value), "dd/MM/yyyy HH:mm");
           }
           return "-";
         },
@@ -137,7 +136,7 @@ const UnityPage = () => {
                       <DropdownMenuSeparator />
                       <DeleteUnityDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Delete /> Eliminar{" "}
+                          <Trash2 /> Eliminar{" "}
                         </DropdownMenuItem>
                       </DeleteUnityDialog>
                     </>

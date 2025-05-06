@@ -9,11 +9,11 @@ import {Button} from "@/components/ui/button";
 import {
   ArchiveRestore,
   Check,
-  Delete,
   Edit,
   MoreVerticalIcon,
   PlusIcon,
   Tally5,
+  Trash2,
   TrendingUpIcon,
   X,
 } from "lucide-react";
@@ -84,6 +84,7 @@ const FormulaPage = () => {
     if (!formulas) return [];
     return [
       {
+        accessorFn: (row) => row.id?.toString().trim(),
         accessorKey: "id",
         header: "Id",
         cell: (info) => info.getValue(),
@@ -100,48 +101,16 @@ const FormulaPage = () => {
       },
 
       {
+        accessorFn: (row) => row.product?.name.trim(),
         accessorKey: "product",
         header: "Producto",
         cell: (info) => (
           <Badge variant={"outline"} className="text-muted-foreground">
-            {(info.getValue() as IProduct).name}
+            {info.getValue() as string}
           </Badge>
         ),
       },
-      {
-        accessorKey: "createdAt",
-        header: "Creado",
-        cell: (info) => {
-          const value = info.getValue();
-          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
-            return format(new Date(value), "dd/MM/yyyy hh:mm");
-          }
-          return "No disponible";
-        },
-      },
-      {
-        accessorKey: "updatedAt",
-        header: "Editado",
-        cell: (info) => {
-          const value = info.getValue();
-          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
-            return format(new Date(value), "dd/MM/yyyy hh:mm");
-          }
-          return "No disponible";
-        },
-      },
 
-      {
-        accessorKey: "deletedAt",
-        header: "Eliminado",
-        cell: (info) => {
-          const value = info.getValue();
-          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
-            return format(new Date(value), "dd/MM/yyyy hh:mm");
-          }
-          return "-";
-        },
-      },
       {
         accessorKey: "active",
         header: "Activa",
@@ -155,6 +124,38 @@ const FormulaPage = () => {
               <X />
             </Badge>
           ),
+      },
+      {
+        accessorFn: (row) => format(new Date(row.createdAt as Date), "dd/MM/yyyy HH:mm").trim(),
+        accessorKey: "createdAt",
+        header: "Creado",
+        cell: (info) => (
+          <Badge variant={"outline"} className="text-muted-foreground">
+            {info.getValue() as string}
+          </Badge>
+        ),
+      },
+      {
+        accessorFn: (row) => format(new Date(row.updatedAt as Date), "dd/MM/yyyy HH:mm").trim(),
+        accessorKey: "updatedAt",
+        header: "Editado",
+        cell: (info) => (
+          <Badge variant={"outline"} className="text-muted-foreground">
+            {info.getValue() as string}
+          </Badge>
+        ),
+      },
+
+      {
+        accessorKey: "deletedAt",
+        header: "Eliminado",
+        cell: (info) => {
+          const value = info.getValue();
+          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
+            return format(new Date(value), "dd/MM/yyyy HH:mm");
+          }
+          return "-";
+        },
       },
       {
         id: "actions",
@@ -185,7 +186,7 @@ const FormulaPage = () => {
                       <DropdownMenuSeparator />
                       <DeleteFormulaDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Delete /> Eliminar{" "}
+                          <Trash2 /> Eliminar{" "}
                         </DropdownMenuItem>
                       </DeleteFormulaDialog>
                     </>

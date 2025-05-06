@@ -33,7 +33,7 @@ const typeMenuPI: IMenu = {
       title: "Inventario",
       url: "inventory",
       icon: PackageSearch,
-      isActive: false,
+      isActive: true,
     },
     {
       title: "Parametros",

@@ -1,14 +1,14 @@
-import {IModel, IProcess, ISector} from "@/utils/interfaces";
+import {IModel} from "@/utils/interfaces";
 import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
 import {Button} from "@/components/ui/button";
 import {
   ArchiveRestore,
-  Delete,
   Edit,
   MoreVerticalIcon,
   PlusIcon,
   Tally5,
+  Trash2,
   TrendingUpIcon,
 } from "lucide-react";
 import {
@@ -60,6 +60,7 @@ const ModelPage = () => {
     if (!models) return [];
     return [
       {
+        accessorFn: (row) => row.id?.toString().trim(),
         accessorKey: "id",
         header: "Id",
         cell: (info) => info.getValue(),
@@ -76,38 +77,44 @@ const ModelPage = () => {
       },
 
       {
+        accessorFn: (row) => row.process?.name.trim(),
         accessorKey: "process",
         header: "Proceso",
         cell: (info) => (
           <Badge variant={"outline"} className="text-muted-foreground">
-            {(info.getValue() as IProcess).name}
+            {info.getValue() as string}
           </Badge>
         ),
       },
       {
+        accessorFn: (row) => row.sector?.name.trim(),
         accessorKey: "sector",
         header: "Sector",
         cell: (info) => (
           <Badge variant={"outline"} className="text-muted-foreground">
-            {(info.getValue() as ISector).name}
+            {info.getValue() as string}
           </Badge>
         ),
       },
       {
+        accessorFn: (row) => format(new Date(row.createdAt as Date), "dd/MM/yyyy HH:mm").trim(),
         accessorKey: "createdAt",
         header: "Creado",
-        cell: (info) => info.getValue(),
+        cell: (info) => (
+          <Badge variant={"outline"} className="text-muted-foreground">
+            {info.getValue() as string}
+          </Badge>
+        ),
       },
       {
+        accessorFn: (row) => format(new Date(row.updatedAt as Date), "dd/MM/yyyy HH:mm").trim(),
         accessorKey: "updatedAt",
         header: "Editado",
-        cell: (info) => {
-          const value = info.getValue();
-          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
-            return format(new Date(value), "dd/MM/yyyy hh:mm");
-          }
-          return "No disponible";
-        },
+        cell: (info) => (
+          <Badge variant={"outline"} className="text-muted-foreground">
+            {info.getValue() as string}
+          </Badge>
+        ),
       },
 
       {
@@ -116,7 +123,7 @@ const ModelPage = () => {
         cell: (info) => {
           const value = info.getValue();
           if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
-            return format(new Date(value), "dd/MM/yyyy hh:mm");
+            return format(new Date(value), "dd/MM/yyyy HH:mm");
           }
           return "-";
         },
@@ -150,7 +157,7 @@ const ModelPage = () => {
                       <DropdownMenuSeparator />
                       <DeleteModelDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Delete /> Eliminar
+                          <Trash2 /> Eliminar
                         </DropdownMenuItem>
                       </DeleteModelDialog>
                     </>

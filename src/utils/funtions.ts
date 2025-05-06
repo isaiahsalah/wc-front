@@ -1,15 +1,6 @@
-import {z} from "zod";
-import {UnitySchema, ColorSchema, ModelSchema, FormulaSchema, ProductSchema} from "./interfaces";
+import {IGeneral} from "./interfaces";
 
-export function countCurrentMonth(
-  data: z.infer<
-    | typeof UnitySchema
-    | typeof ColorSchema
-    | typeof ModelSchema
-    | typeof FormulaSchema
-    | typeof ProductSchema
-  >[]
-): number {
+export function countCurrentMonth(data: IGeneral[]): number {
   const now = new Date();
   const currentMonth = now.getMonth(); // Mes actual (0-11)
   const currentYear = now.getFullYear(); // Año actual

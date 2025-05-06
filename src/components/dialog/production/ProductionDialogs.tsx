@@ -417,11 +417,6 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
       setLoadingInit(false);
     }
   };
-  /*@ts-expect-error: Ignoramos el error en esta línea */
-
-  const onError = (errors) => {
-    console.error("Errores de validación:", errors); // Mostrar errores en consola
-  };
 
   return (
     <Dialog>
@@ -435,7 +430,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit, onError)} className=" grid   gap-4 ">
+            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid   gap-4 ">
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm max-h-[60vh] overflow-scroll">
                 <FormField
                   control={form.control}

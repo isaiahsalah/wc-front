@@ -1,4 +1,4 @@
-import {IColor, IModel, IProduct} from "@/utils/interfaces";
+import {IProduct} from "@/utils/interfaces";
 import DataTable from "@/components/table/DataTable";
 import {
   CreateProductDialog,
@@ -8,11 +8,11 @@ import {
 } from "@/components/dialog/product/ProductDialogs";
 import {
   ArchiveRestore,
-  Delete,
   Edit,
   MoreVerticalIcon,
   PlusIcon,
   Tally5,
+  Trash2,
   TrendingUpIcon,
 } from "lucide-react";
 import {ColumnDef, Row} from "@tanstack/react-table";
@@ -61,6 +61,7 @@ const ProductPage = () => {
     if (!products) return [];
     return [
       {
+        accessorFn: (row) => row.id?.toString().trim(),
         accessorKey: "id",
         header: "Id",
         cell: (info) => info.getValue(),
@@ -81,76 +82,76 @@ const ProductPage = () => {
         cell: (info) => (info.getValue() ? info.getValue() : "-"),
       },
       {
+        accessorFn: (row) => typeProduct.find((obj) => obj.id === row.type_product)?.name.trim(),
         accessorKey: "type_product",
         header: "Tipo de Producto",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
-            {typeProduct.find((obj) => obj.id === info.getValue())?.name}
+          <Badge variant="outline" className="text-muted-foreground">
+            {info.getValue() as string}
           </Badge>
         ),
       },
 
       {
+        accessorFn: (row) => `${row.amount} ${row.unity?.shortname}`.trim(),
         accessorKey: "amount",
         header: "Cantidad",
-        cell: ({row}: {row: Row<IProduct>}) => {
+        cell: (info) => {
           return (
             <Badge variant={"outline"} className="text-muted-foreground">
-              {row.original.amount} {row.original.unity?.shortname}
+              {info.getValue() as string}
             </Badge>
           );
         },
       },
       {
+        accessorFn: (row) => row.color?.name.trim(),
         accessorKey: "color",
         header: "Color",
         cell: (info) => (
           <Badge variant={"outline"} className="text-muted-foreground">
-            {(info.getValue() as IColor).name}
+            {info.getValue() as string}
           </Badge>
         ),
       },
 
       {
+        accessorFn: (row) => row.model?.name.trim(),
         accessorKey: "model",
         header: "Modelo",
         cell: (info) => (
           <Badge variant={"outline"} className="text-muted-foreground">
-            {(info.getValue() as IModel).name}
+            {info.getValue() as string}
           </Badge>
         ),
       },
-
       {
+        accessorFn: (row) => format(new Date(row.createdAt as Date), "dd/MM/yyyy HH:mm").trim(),
         accessorKey: "createdAt",
         header: "Creado",
-        cell: (info) => {
-          const value = info.getValue();
-          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
-            return format(new Date(value), "dd/MM/yyyy hh:mm");
-          }
-          return "No disponible";
-        },
+        cell: (info) => (
+          <Badge variant={"outline"} className="text-muted-foreground">
+            {info.getValue() as string}
+          </Badge>
+        ),
       },
       {
+        accessorFn: (row) => format(new Date(row.updatedAt as Date), "dd/MM/yyyy HH:mm").trim(),
         accessorKey: "updatedAt",
         header: "Editado",
-        cell: (info) => {
-          const value = info.getValue();
-          if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
-            return format(new Date(value), "dd/MM/yyyy hh:mm");
-          }
-          return "No disponible";
-        },
+        cell: (info) => (
+          <Badge variant={"outline"} className="text-muted-foreground">
+            {info.getValue() as string}
+          </Badge>
+        ),
       },
-
       {
         accessorKey: "deletedAt",
         header: "Eliminado",
         cell: (info) => {
           const value = info.getValue();
           if (typeof value === "string" || typeof value === "number" || value instanceof Date) {
-            return format(new Date(value), "dd/MM/yyyy hh:mm");
+            return format(new Date(value), "dd/MM/yyyy HH:mm");
           }
           return "-";
         },
@@ -184,7 +185,7 @@ const ProductPage = () => {
                       <DropdownMenuSeparator />
                       <DeleteProductDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Delete /> Eliminar{" "}
+                          <Trash2 /> Eliminar{" "}
                         </DropdownMenuItem>
                       </DeleteProductDialog>
                     </>

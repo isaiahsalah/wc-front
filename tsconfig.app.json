@@ -25,10 +25,8 @@
     /* shadCN */
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "trash/dataTableFilters.tsx", "trash/DataTableDinamic.tsx", "types.d.ts"]
 }
