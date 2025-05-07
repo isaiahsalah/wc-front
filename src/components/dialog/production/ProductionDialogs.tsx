@@ -2,14 +2,7 @@ import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 
 import {useForm} from "react-hook-form";
-import {
-  ProductionSchema,
-  IProduction,
-  IMachine,
-  ILote,
-  IOrderDetail,
-  IUnity,
-} from "@/utils/interfaces";
+import {ProductionSchema, IProduction, IMachine, IOrderDetail, IUnity} from "@/utils/interfaces";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 import {
@@ -50,7 +43,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {getMachines} from "@/api/params/machine.api";
-import {getLotes} from "@/api/inventory/lote.api";
 import {getOrderDetails} from "@/api/production/orderDetail.api";
 import {typeQuality, typeTicket} from "@/utils/const";
 import {DateTimePicker} from "@/components/DateTimePicker";
@@ -70,7 +62,6 @@ export const CreateProductionDialog: React.FC<PropsCreate> = ({children, updateV
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
   const [machines, setMachines] = useState<IMachine[]>();
-  const [lotes, setLotes] = useState<ILote[]>();
   const [orderDetails, setOrderDetails] = useState<IOrderDetail[]>();
 
   const form = useForm<IProduction>({
@@ -98,11 +89,9 @@ export const CreateProductionDialog: React.FC<PropsCreate> = ({children, updateV
     setLoadingInit(true);
     try {
       const MachinesData = await getMachines();
-      const LotesData = await getLotes();
       const OrderDetailsData = await getOrderDetails();
 
       setMachines(MachinesData);
-      setLotes(LotesData);
       setOrderDetails(OrderDetailsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
@@ -241,33 +230,6 @@ export const CreateProductionDialog: React.FC<PropsCreate> = ({children, updateV
 
                 <FormField
                   control={form.control}
-                  name="id_lote"
-                  render={({field}) => (
-                    <FormItem className="col-span-3 ">
-                      <FormDescription>Lote</FormDescription>
-                      <FormControl>
-                        <Select
-                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Seleccionar producto" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {lotes?.map((product: ILote) => (
-                              <SelectItem key={product.id} value={(product.id ?? "").toString()}>
-                                {product.id}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="id_order_detail"
                   render={({field}) => (
                     <FormItem className="col-span-3 ">
@@ -340,7 +302,6 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
     resolver: zodResolver(ProductionSchema),
     defaultValues: {
       id_order_detail: orderDetail.id as number,
-      id_lote: 0,
       id_user: sesion?.user.id as number,
       id_unity: orderDetail.product?.id_unity,
       amount: orderDetail.product?.amount,
@@ -368,7 +329,6 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
         date: newDate,
         duration: duration,
         id_machine: values.id_machine,
-        id_lote: values.id_lote,
         id_order_detail: values.id_order_detail,
         id_user: values.id_user,
         id_unity: values.id_unity,
@@ -698,8 +658,6 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
   const [loadingInit, setLoadingInit] = useState(false);
 
   const [machines, setMachines] = useState<IMachine[]>();
-  const [lotes, setLotes] = useState<ILote[]>();
-  const [orderDetails, setOrderDetails] = useState<IOrderDetail[]>();
 
   const form = useForm<IProduction>({
     resolver: zodResolver(ProductionSchema),
@@ -731,22 +689,14 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
       const productionData: IProduction = await getProductionById(id);
       console.log("Producciones:", productionData);
       const MachinesData = await getMachines();
-      const LotesData = await getLotes();
-      const OrderDetailsData = await getOrderDetails();
 
       setMachines(MachinesData);
-      setLotes(LotesData);
-      setOrderDetails(OrderDetailsData);
       form.reset({
-        id: productionData.id,
-        description: productionData.description,
-        date: productionData.date,
-        duration: productionData.duration,
-        type_quality: productionData.type_quality,
-        id_lote: productionData.id_lote,
-        id_machine: productionData.id_machine,
-        id_order_detail: productionData.id_order_detail,
-        id_user: productionData.id_user,
+        ...productionData,
+        micronage: productionData.micronage?.map((value) => parseFloat(value.toString())),
+        date: new Date(productionData.date),
+        createdAt: null,
+        updatedAt: null,
       });
     } catch (error) {
       console.error("Error al cargar las producciones:", error);
@@ -783,22 +733,19 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid   gap-4 ">
+            <form
+              onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
+              className=" grid   gap-4 "
+            >
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
-                  name="id"
+                  name="lote"
                   render={({field}) => (
                     <FormItem className={"col-span-6"}>
-                      <FormDescription>Id</FormDescription>
+                      <FormDescription>Lote</FormDescription>
                       <FormControl>
-                        <Input
-                          type="number"
-                          placeholder="Id"
-                          disabled
-                          onChange={(event) => field.onChange(Number(event.target.value))}
-                          defaultValue={field.value ?? ""}
-                        />
+                        <Input disabled defaultValue={field.value ?? ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -825,13 +772,9 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
                     <FormItem className="col-span-3">
                       <FormDescription>Fecha</FormDescription>
                       <FormControl>
-                        <DatePicker
+                        <DateTimePicker
                           className="w-full"
-                          value={
-                            field.value && typeof field.value === "string"
-                              ? new Date(field.value)
-                              : field.value
-                          }
+                          value={new Date(field.value)}
                           onChange={(date) => {
                             if (date) {
                               field.onChange(date);
@@ -873,6 +816,7 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
                       <FormDescription>Calidad</FormDescription>
                       <FormControl>
                         <Select
+                          value={field.value.toString()}
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                         >
                           <SelectTrigger className="w-full">
@@ -910,62 +854,6 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
                             {machines?.map((product: IMachine) => (
                               <SelectItem key={product.id} value={(product.id ?? "").toString()}>
                                 {product.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="id_lote"
-                  render={({field}) => (
-                    <FormItem className="col-span-3 ">
-                      <FormDescription>Lote</FormDescription>
-                      <FormControl>
-                        <Select
-                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
-                          defaultValue={field.value.toString()}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Seleccionar producto" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {lotes?.map((product: ILote) => (
-                              <SelectItem key={product.id} value={(product.id ?? "").toString()}>
-                                {product.id}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="id_order_detail"
-                  render={({field}) => (
-                    <FormItem className="col-span-3 ">
-                      <FormDescription>Orden Detalle</FormDescription>
-                      <FormControl>
-                        <Select
-                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
-                          defaultValue={field.value.toString()}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Seleccionar producto" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {orderDetails?.map((product: IOrderDetail) => (
-                              <SelectItem key={product.id} value={(product.id ?? "").toString()}>
-                                {product.id}
                               </SelectItem>
                             ))}
                           </SelectContent>

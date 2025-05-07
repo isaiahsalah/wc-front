@@ -35,6 +35,7 @@ export const getProductions = async ({
 export const getProductionById = async (id: number) => {
   try {
     const response = await apiClient.get(`/pr/production/${id}`);
+    console.log("✔️✔️✔️", response.data);
     return response.data; // Devuelve la producción encontrada
   } catch (error) {
     console.error(`Error al obtener la producción con ID ${id}:`, error);

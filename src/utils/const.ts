@@ -1,98 +1,64 @@
 import {Blend, LucideProps, Package, PackagePlus, PackageSearch, UserLockIcon} from "lucide-react";
 import {RefAttributes} from "react";
 
-interface IMenuItem {
+export interface IMenuItem {
+  id: number;
   title: string;
   url: string;
   icon: React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>;
   isActive: boolean;
 }
 
-export interface IMenu {
-  title: string;
-  items: IMenuItem[];
-}
+const typeMenuPI: IMenuItem[] = [
+  {
+    id: 1,
+    title: "Productos",
+    url: "product",
+    icon: Package,
+    isActive: false,
+  },
+  {
+    id: 2,
+    title: "Producción",
+    url: "production",
+    icon: PackagePlus,
+    isActive: false,
+  },
 
-const typeMenuPI: IMenu = {
-  title: "Producción e Inventarios",
-  items: [
-    {
-      title: "Productos",
-      url: "product",
-      icon: Package,
-      isActive: true,
-    },
-    {
-      title: "Producción",
-      url: "production",
-      icon: PackagePlus,
-      isActive: true,
-    },
-
-    {
-      title: "Inventario",
-      url: "inventory",
-      icon: PackageSearch,
-      isActive: true,
-    },
-    {
-      title: "Parametros",
-      url: "params",
-      icon: Blend,
-      isActive: true,
-    },
-    {
-      title: "Seguridad",
-      url: "security",
-      icon: UserLockIcon,
-      isActive: false,
-    },
-  ],
-};
-const typeMenuRA: IMenu = {
-  title: "Producción e Inventarios",
-  items: [
-    {
-      title: "Home",
-      url: "home",
-      icon: Package,
-      isActive: true,
-    },
-  ],
-};
-const typeMenuSL: IMenu = {
-  title: "Producción e Inventarios",
-  items: [
-    {
-      title: "Home",
-      url: "home",
-      icon: Package,
-      isActive: true,
-    },
-  ],
-};
-const typeMenuCQ: IMenu = {
-  title: "Producción e Inventarios",
-  items: [
-    {
-      title: "Home",
-      url: "home",
-      icon: Package,
-      isActive: true,
-    },
-  ],
-};
-const typeMenuAU: IMenu = {
-  title: "Producción e Inventarios",
-  items: [
-    {
-      title: "Home",
-      url: "home",
-      icon: Package,
-      isActive: true,
-    },
-  ],
-};
+  {
+    id: 3,
+    title: "Inventario",
+    url: "inventory",
+    icon: PackageSearch,
+    isActive: false,
+  },
+  {
+    id: 4,
+    title: "Parametros",
+    url: "params",
+    icon: Blend,
+    isActive: false,
+  },
+  {
+    id: 5,
+    title: "Seguridad",
+    url: "security",
+    icon: UserLockIcon,
+    isActive: false,
+  },
+];
+const typeMenuRA: IMenuItem[] = [
+  {id: 1, title: "Home", url: "home", icon: Package, isActive: true},
+];
+const typeMenuSL: IMenuItem[] = [
+  {id: 1, title: "Home", url: "home", icon: Package, isActive: true},
+];
+const typeMenuCQ: IMenuItem[] = [
+  {id: 1, title: "Home", url: "home", icon: Package, isActive: true},
+];
+const typeMenuAU: IMenuItem[] = [
+  {id: 1, title: "Home", url: "home", icon: Package, isActive: true},
+];
 
 export const typeModule = [
   {
@@ -149,8 +115,8 @@ export const typeTicket = [
   {
     id: 1,
     name: "QR 1",
-    example: ["Id", "Nombre de Producto", "Fecha de Producción", "Unidad de medida", "Micronage"],
-    colums: ["id", "name", "date", "amount", "micronage"],
+    example: ["Nombre de Producto", "Fecha de Producción", "Unidad de medida", "Micronage"],
+    colums: ["name", "date", "amount", "micronage"],
   },
   {
     id: 2,
@@ -161,7 +127,7 @@ export const typeTicket = [
   {
     id: 3,
     name: "QR 3",
-    example: ["Id", "Nombre de Producto"],
-    colums: ["id", "name"],
+    example: ["Nombre de Producto"],
+    colums: ["name"],
   },
 ];

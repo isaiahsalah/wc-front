@@ -21,9 +21,7 @@ export const generateQR = async ({
 
     // Iterar sobre los productos para generar el QR para cada uno
     for (const production of productions) {
-      const qrText = `${production.lote?.name}-${production.id}`; // Puedes poner cualquier URL o texto que desees
-
-      QRCode.toDataURL(qrText, {
+      QRCode.toDataURL(production.lote ?? "No tiene lote", {
         width: 256, // Ancho de la imagen en píxeles (aumenta para mayor resolución)
       })
         .then((url) => {
@@ -78,19 +76,6 @@ export const printTag = ({
     doc.setLineWidth(0.5); // Grosor
     doc.addImage(QRs[index], "PNG", 1, 1, 23, 23);
 
-    /*
-    // Configuración de fuente y tamaño
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(5);
-    // Colocar el texto en la mitad derecha (desplazamos a la derecha)
-
- 
-
-    doc.text(`Id:`, 24, 5);
-    doc.text(`Nombre:`, 24, 10);
-    doc.text(`Fecha:`, 24, 15);
-    doc.text(`Unidad:`, 24, 20);
-*/
     doc.setFont("helvetica", "bold");
     doc.setFontSize(7);
 
@@ -107,22 +92,13 @@ export const printTag = ({
       if (key === "micronage") return doc.text(`${production.micronage?.join(" - ")}`, 24, line);
       return doc.text(`${production[key as keyof IProduction]}`, 24, line);
     });
-    /*
-    const formattedDate = format(new Date(production.date), "dd/LLL/y - HH:mm", {locale: es});
-    const qrData = `${production.lote?.name}-${production.id}`; // Puedes poner cualquier URL o texto que desees
 
-    doc.text(`${qrData}`, 24, 7);
-    doc.text(`${production.order_detail?.product?.name}`, 24, 12);
-    doc.text(`${formattedDate}`, 24, 17);
-    doc.text(
-      `${production.order_detail?.product?.amount} ${production.order_detail?.product?.unity?.shortname}.`,
-      24,
-      22
-    );*/
     doc.setFont("helvetica", "bold"); // Usamos Helvetica y negrita
+    doc.setFontSize(8);
+    doc.text(production.lote ?? "", 14, 27);
 
-    if (production.order_detail?.product?.type_product === 1) doc.text(`PLÁSTICOS CARMEN`, 14, 27);
-    else doc.text(`PRODUCTO EN PROCESO`, 12, 27);
+    //if (production.order_detail?.product?.type_product === 1) doc.text(`PLÁSTICOS CARMEN`, 14, 27);
+    //else doc.text(`PRODUCTO EN PROCESO`, 12, 27);
 
     doc.roundedRect(1, 1, 48, 28, 2, 2); // Rectángulo con bordes redondeados, radio de 5
     doc.line(1, 24, 49, 24); // Rectángulo de 1mm de margen

@@ -180,17 +180,6 @@ export const FormulaDetailSchema = z.object({
   deletedAt: z.date().nullable().optional(),
 });
 
-// Tabla: Lote
-export const LoteSchema = z.object({
-  id: z.number().nullable().optional(),
-  name: z.string(),
-  id_inventory: z.number(),
-  inventory: InventorySchema.nullable().optional(),
-  createdAt: z.date().nullable().optional(),
-  updatedAt: z.date().nullable().optional(),
-  deletedAt: z.date().nullable().optional(),
-});
-
 // Tabla: Machine
 export const MachineSchema = z.object({
   id: z.number().nullable().optional(),
@@ -259,8 +248,7 @@ export const ProductionSchema = z.object({
   unity: UnitySchema.nullable().optional(),
   id_machine: z.number(),
   machine: MachineSchema.nullable().optional(),
-  id_lote: z.number(),
-  lote: LoteSchema.nullable().optional(),
+  lote: z.string().nullable().optional(),
   id_order_detail: z.number(),
   order_detail: OrderDetailSchema.nullable().optional(),
   id_user: z.number(),
@@ -291,7 +279,6 @@ export type IColor = z.infer<typeof ColorSchema>;
 export type IFormulaDetail = z.infer<typeof FormulaDetailSchema>;
 export type IFormula = z.infer<typeof FormulaSchema>;
 export type IInventory = z.infer<typeof InventorySchema>;
-export type ILote = z.infer<typeof LoteSchema>;
 export type IMachine = z.infer<typeof MachineSchema>;
 export type IModel = z.infer<typeof ModelSchema>;
 export type IOrderDetail = z.infer<typeof OrderDetailSchema>;
@@ -311,7 +298,6 @@ export type IGeneral =
   | IColor
   | IFormulaDetail
   | IInventory
-  | ILote
   | IMachine
   | IModel
   | IOrderDetail

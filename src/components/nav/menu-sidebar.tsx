@@ -6,13 +6,13 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import {Link} from "react-router-dom";
-import {IMenu} from "@/utils/const";
-const MenuSidebar = ({items}: {items: IMenu}) => {
+import {IMenuItem} from "@/utils/const";
+const MenuSidebar = ({items, title}: {items: IMenuItem[]; title: string}) => {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>{items.title}</SidebarGroupLabel>
+      <SidebarGroupLabel>{title}</SidebarGroupLabel>
       <SidebarMenu className="pl-2 box-border">
-        {items.items.map((item, i) => (
+        {items.map((item, i) => (
           <SidebarMenuItem key={i}>
             <SidebarMenuButton
               className={` ${!item.isActive ? "pointer-events-none opacity-50" : ""} `}

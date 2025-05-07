@@ -15,7 +15,7 @@ const TicketView = ({ticketFormat}: {ticketFormat: string[]}) => {
           </div>
         </div>
         <div className="bg-transparent  flex flex-1  border-t-2 border-black text-black ">
-          <div className="m-auto font-bold text-[9px]">PRODUCTO EN PROCESO</div>
+          <div className="m-auto font-bold text-[9px]">LOTE</div>
         </div>
       </div>
     </div>

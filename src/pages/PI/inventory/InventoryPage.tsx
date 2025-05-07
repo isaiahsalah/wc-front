@@ -1,12 +1,4 @@
-import {
-  IOrderDetail,
-  IProcess,
-  IProduction,
-  ISector,
-  IMachine,
-  ILote,
-  IUser,
-} from "@/utils/interfaces";
+import {IOrderDetail, IProcess, IProduction, ISector, IMachine, IUser} from "@/utils/interfaces";
 import {ColumnDef, Row} from "@tanstack/react-table";
 import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
@@ -88,9 +80,8 @@ const InventoryPage = () => {
     if (!productions) return [];
     return [
       {
-        accessorFn: (row) => row.id?.toString().trim(),
-        accessorKey: "id",
-        header: "Id",
+        accessorKey: "lote",
+        header: "Lote",
         cell: (info) => info.getValue(),
       },
       {
@@ -148,15 +139,6 @@ const InventoryPage = () => {
         cell: (info) => (
           <Badge variant={"outline"} className="text-muted-foreground">
             {(info.getValue() as IMachine).name}
-          </Badge>
-        ),
-      },
-      {
-        accessorKey: "lote",
-        header: "Lote",
-        cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
-            {(info.getValue() as ILote).name}
           </Badge>
         ),
       },
