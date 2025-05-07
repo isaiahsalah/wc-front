@@ -1,6 +1,6 @@
 import {IOrder, IUser} from "@/utils/interfaces";
 import {ColumnDef, Row} from "@tanstack/react-table";
-import {useEffect, useMemo, useState} from "react";
+import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
 import {Button} from "@/components/ui/button";
 import {
@@ -35,21 +35,23 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import {getAllOrders} from "@/api/production/order.api";
+import {getOrders} from "@/api/production/order.api";
 import {countCurrentMonth} from "@/utils/funtions";
 import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
+import {SectorContext} from "@/providers/sector-provider";
 
 const OrderPage = () => {
   const [orders, setOrders] = useState<IOrder[] | null>(null);
+  const {sector} = useContext(SectorContext);
 
   useEffect(() => {
     updateView();
-  }, []);
+  }, [sector]);
 
   const updateView = async () => {
     try {
-      const ProductionsData = await getAllOrders();
+      const ProductionsData = await getOrders({paranoid: true, id_sector: sector?.id});
       setOrders(ProductionsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);

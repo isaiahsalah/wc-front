@@ -2,8 +2,8 @@ import {useContext, useEffect, useState} from "react";
 import {Tabs, TabsContent} from "@/components/ui/tabs";
 import {Separator} from "@/components/ui/separator";
 import SelectorTabPage from "@/components/SelectorTabPage";
-import ProductPage from "./product/ProductPage";
 import {TitleContext} from "@/providers/title-provider";
+import InventoryPage from "./inventory/InventoryPage";
 
 const InventoryTabPage = () => {
   const [activeTab, setActiveTab] = useState(tabData[0]);
@@ -47,7 +47,7 @@ const tabData = [
   {
     id: "tab1",
     title: "Inventario",
-    label: "Producto",
-    content: ProductPage,
+    label: "Inventario",
+    content: InventoryPage,
   },
 ];

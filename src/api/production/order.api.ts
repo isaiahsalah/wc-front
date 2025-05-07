@@ -2,9 +2,19 @@ import {apiClient} from "../axiosConfig";
 import {IOrderDetail, IOrder} from "@/utils/interfaces";
 import {toast} from "sonner";
 
-export const getOrders = async () => {
+export const getOrders = async ({
+  id_sector,
+  paranoid,
+}: {
+  id_sector?: number | null;
+  paranoid?: boolean;
+}) => {
   try {
-    const response = await apiClient.get("/pr/order"); // Cambia la URL según tu API
+    const params = {
+      id_sector,
+      paranoid,
+    };
+    const response = await apiClient.get("/pr/order", {params}); // Cambia la URL según tu API
     return response.data; // Devuelve la lista de órdenes
   } catch (error) {
     console.error("Error al obtener las órdenes:", error);
@@ -59,7 +69,23 @@ export const createOrder = async ({data}: {data: IOrder}) => {
   }
 };
 
-export const updateOrder = async ({data}: {data: IOrder}) => {
+export const updateOrder = async ({order}: {order: IOrder}) => {
+  if (!order.order_details?.length || order.order_details?.length <= 0) {
+    return toast("Selecciona al menos 1 producto", {
+      action: {
+        label: "OK",
+        onClick: () => console.log("Undo"),
+      },
+    });
+  }
+  if (order.init_date >= order.end_date) {
+    return toast("La fecha de inicio debe ser menor a la fecha de fin", {
+      action: {
+        label: "OK",
+        onClick: () => console.log("Undo"),
+      },
+    });
+  }
   toast("Se está procesando la petición", {
     action: {
       label: "OK",
@@ -67,7 +93,7 @@ export const updateOrder = async ({data}: {data: IOrder}) => {
     },
   });
   try {
-    const response = await apiClient.put(`/pr/order/${data.id}`, data);
+    const response = await apiClient.put(`/pr/order/${order.id}`, order);
     toast("La orden se editó correctamente.", {
       action: {
         label: "OK",
@@ -76,7 +102,7 @@ export const updateOrder = async ({data}: {data: IOrder}) => {
     });
     return response.data; // Devuelve la orden actualizada
   } catch (error) {
-    toast(`Error al editar la orden con ID ${data.id}: ${error}`, {
+    toast(`Error al editar la orden con ID ${order.id}: ${error}`, {
       action: {
         label: "OK",
         onClick: () => console.log("Undo"),

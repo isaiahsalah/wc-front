@@ -330,7 +330,7 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
   function onSubmit(values: IOrder) {
     setLoadingSave(true);
     //values.order_details = orderDetailsSelected;
-    updateOrder({data: values})
+    updateOrder({order: values})
       .then((updatedOrder) => {
         console.log("Orden actualizada:", updatedOrder);
 
@@ -519,17 +519,8 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                               : field.value
                           }
                           onChange={(date) => {
-                            const endDate = form.getValues().end_date;
-                            if (endDate && date && new Date(date) > new Date(endDate)) {
-                              console.log(
-                                "La fecha de inicio no puede ser posterior a la fecha de fin."
-                              );
-                              return;
-                            }
                             if (date) {
-                              const adjustedDate = new Date(date);
-                              adjustedDate.setHours(0, 0, 0, 0);
-                              field.onChange(adjustedDate);
+                              field.onChange(date);
                             } else {
                               field.onChange(null);
                             }
@@ -556,18 +547,8 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                               : field.value
                           }
                           onChange={(date) => {
-                            const startDate = form.getValues().init_date;
-                            if (startDate && date && new Date(date) < new Date(startDate)) {
-                              console.log(
-                                "La fecha de fin no puede ser anterior a la fecha de inicio."
-                              );
-                              return;
-                            }
-
                             if (date) {
-                              const adjustedDate = new Date(date);
-                              adjustedDate.setHours(23, 59, 59, 999);
-                              field.onChange(adjustedDate);
+                              field.onChange(date);
                             } else {
                               field.onChange(null);
                             }
