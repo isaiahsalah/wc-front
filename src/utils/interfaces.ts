@@ -141,7 +141,7 @@ export const ProductSchema = z.object({
   name: z.string(),
   description: z.string(),
   type_product: z.number(),
-  micronage: z.number(),
+  micronage: z.number().optional(),
   amount: z.number(),
   id_unity: z.number(),
   unity: UnitySchema.nullable().optional(),
