@@ -152,8 +152,6 @@ export const ProductSchema = z.object({
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
-  isRawMaterial: z.boolean(),
-  isFinishedProductz: z.boolean(),
 });
 
 // Tabla: Formula

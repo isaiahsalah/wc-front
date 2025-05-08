@@ -114,7 +114,10 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid  gap-4 ">
+            <form
+              onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
+              className=" grid  gap-4 "
+            >
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
