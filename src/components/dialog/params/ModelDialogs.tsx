@@ -60,6 +60,7 @@ export const CreateModelDialog: React.FC<PropsCreate> = ({children, updateView})
     resolver: zodResolver(ModelSchema),
     defaultValues: {
       name: "",
+      id_sector: sector?.id as number,
     },
   });
 
