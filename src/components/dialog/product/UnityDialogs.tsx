@@ -1,22 +1,13 @@
- 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
- 
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { UnitySchema } from "@/utils/interfaces";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
 
-import {
-  Form,
-  FormControl, 
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import {useForm} from "react-hook-form";
+import {z} from "zod";
+import {UnitySchema} from "@/utils/interfaces";
+import {zodResolver} from "@hookform/resolvers/zod";
+
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {useState} from "react";
 import {
   createUnity,
   deleteUnity,
@@ -24,7 +15,7 @@ import {
   recoverUnity,
   updateUnity,
 } from "@/api/product/unity.api";
-import { toast } from "sonner";
+import {toast} from "sonner";
 import {
   Dialog,
   DialogClose,
@@ -42,43 +33,24 @@ interface PropsCreate {
   updateView: () => void; // Define the type as a function that returns void
 }
 
-export const CreateUnityDialog: React.FC<PropsCreate> = ({
-  children,
-  updateView,
-}) => {
+export const CreateUnityDialog: React.FC<PropsCreate> = ({children, updateView}) => {
   const [loadingSave, setLoadingSave] = useState(false);
 
   const form = useForm<z.infer<typeof UnitySchema>>({
     resolver: zodResolver(UnitySchema),
-    defaultValues: {
-      name: "",
-      shortname: "",
-    },
+    defaultValues: {},
   });
 
   function onSubmit(values: z.infer<typeof UnitySchema>) {
     setLoadingSave(true);
-    createUnity({ data: values })
+    createUnity({data: values})
       .then((updatedUnity) => {
         console.log("Unity creada:", updatedUnity);
-
-        toast("La unidad se creó correctamente.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
-
+        form.reset();
         updateView();
       })
       .catch((error) => {
         console.error("Error al crear la unidad:", error);
-        toast("Hubo un error al crear la unidad.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
       })
       .finally(() => {
         setLoadingSave(false);
@@ -88,23 +60,18 @@ export const CreateUnityDialog: React.FC<PropsCreate> = ({
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent >
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Gestión de unidad</DialogTitle>
-          <DialogDescription>
-            Mostrando datos relacionados con la unidad.
-          </DialogDescription>
+          <DialogDescription>Mostrando datos relacionados con la unidad.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className=" grid grid-cols-6 gap-4 "
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className=" grid grid-cols-6 gap-4 ">
             <FormField
               control={form.control}
               name="name"
-              render={({ field }) => (
-                <FormItem className="col-span-6">
+              render={({field}) => (
+                <FormItem className="col-span-3">
                   <FormLabel>Nombre</FormLabel>
                   <FormControl>
                     <Input placeholder="Nombre" {...field} />
@@ -113,15 +80,14 @@ export const CreateUnityDialog: React.FC<PropsCreate> = ({
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="shortname"
-              render={({ field }) => (
-                <FormItem className="col-span-6">
-                  <FormLabel>Descripción</FormLabel>
+              render={({field}) => (
+                <FormItem className="col-span-3">
+                  <FormLabel>Abreviación</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Notas adicionales" {...field} />
+                    <Input placeholder="Abreviación" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -137,12 +103,7 @@ export const CreateUnityDialog: React.FC<PropsCreate> = ({
                 {loadingSave ? <LoadingCircle /> : "Guardar"}
               </Button>
               <DialogClose asChild className="col-span-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  disabled={loadingSave}
-                >
+                <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                   Cerrar
                 </Button>
               </DialogClose>
@@ -161,12 +122,7 @@ interface PropsEdit {
   onOpenChange?: (open: boolean) => void;
 }
 
-export const EditUnityDialog: React.FC<PropsEdit> = ({
-  children,
-  id,
-  updateView,
-  onOpenChange,
-}) => {
+export const EditUnityDialog: React.FC<PropsEdit> = ({children, id, updateView, onOpenChange}) => {
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
@@ -182,27 +138,14 @@ export const EditUnityDialog: React.FC<PropsEdit> = ({
 
   function onSubmit(values: z.infer<typeof UnitySchema>) {
     setLoadingSave(true);
-    updateUnity({ data: values })
+    updateUnity({data: values})
       .then((updatedUnity) => {
         console.log("Unidad actualizada:", updatedUnity);
-
-        toast("La unidad se actualizó correctamente.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
 
         updateView();
       })
       .catch((error) => {
         console.error("Error al actualizar la unidad:", error);
-        toast("Hubo un error al actualizar la unidad.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
       })
       .finally(() => {
         setLoadingSave(false);
@@ -232,23 +175,10 @@ export const EditUnityDialog: React.FC<PropsEdit> = ({
       .then((deletedUnity) => {
         console.log("Unidad eliminada:", deletedUnity);
 
-        toast("La unidad se eliminó correctamente.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
-
         updateView();
       })
       .catch((error) => {
         console.error("Error al eliminar la unidad:", error);
-        toast("Hubo un error al eliminar la unidad.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
       })
       .finally(() => {
         setLoadingDelete(false);
@@ -260,23 +190,18 @@ export const EditUnityDialog: React.FC<PropsEdit> = ({
       <DialogTrigger asChild onClick={fetchUnity}>
         {children}
       </DialogTrigger>
-      <DialogContent >
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Gestión de unidad</DialogTitle>
-          <DialogDescription>
-            Mostrando datos relacionados con la unidad.
-          </DialogDescription>
+          <DialogDescription>Mostrando datos relacionados con la unidad.</DialogDescription>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className=" grid grid-cols-6 gap-4 "
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid grid-cols-6 gap-4 ">
               <FormField
                 control={form.control}
                 name="id"
-                render={({ field }) => (
+                render={({field}) => (
                   <FormItem className={"col-span-6"}>
                     <FormLabel>Id</FormLabel>
                     <FormControl>
@@ -284,9 +209,7 @@ export const EditUnityDialog: React.FC<PropsEdit> = ({
                         type="number"
                         placeholder="Id"
                         disabled
-                        onChange={(event) =>
-                          field.onChange(Number(event.target.value))
-                        }
+                        onChange={(event) => field.onChange(Number(event.target.value))}
                         defaultValue={field.value ?? ""}
                       />
                     </FormControl>
@@ -297,8 +220,8 @@ export const EditUnityDialog: React.FC<PropsEdit> = ({
               <FormField
                 control={form.control}
                 name="name"
-                render={({ field }) => (
-                  <FormItem className="col-span-6">
+                render={({field}) => (
+                  <FormItem className="col-span-3">
                     <FormLabel>Nombre</FormLabel>
                     <FormControl>
                       <Input placeholder="Nombre" {...field} />
@@ -311,11 +234,11 @@ export const EditUnityDialog: React.FC<PropsEdit> = ({
               <FormField
                 control={form.control}
                 name="shortname"
-                render={({ field }) => (
-                  <FormItem className="col-span-6">
-                    <FormLabel>Descripción</FormLabel>
+                render={({field}) => (
+                  <FormItem className="col-span-3">
+                    <FormLabel>Abreviación</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Notas adicionales" {...field} />
+                      <Input placeholder="Abreviación" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -404,12 +327,10 @@ export const DeleteUnityDialog: React.FC<PropsDelete> = ({
   return (
     <Dialog onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent >
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Eliminar unidad</DialogTitle>
-          <DialogDescription>
-            ¿Está seguro de eliminar esta unidad?
-          </DialogDescription>
+          <DialogDescription>¿Está seguro de eliminar esta unidad?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -423,12 +344,7 @@ export const DeleteUnityDialog: React.FC<PropsDelete> = ({
             {loadingDelete ? <LoadingCircle /> : "Eliminar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              disabled={loadingDelete}
-            >
+            <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
               Cerrar
             </Button>
           </DialogClose>
@@ -484,12 +400,10 @@ export const RecoverUnityDialog: React.FC<PropsRecover> = ({
   return (
     <Dialog onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent >
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Recuperar unidad</DialogTitle>
-          <DialogDescription>
-            ¿Está seguro de recuperar esta unidad?
-          </DialogDescription>
+          <DialogDescription>¿Está seguro de recuperar esta unidad?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -502,12 +416,7 @@ export const RecoverUnityDialog: React.FC<PropsRecover> = ({
             {loadingRecover ? <LoadingCircle /> : "Recuperar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              disabled={loadingRecover}
-            >
+            <Button type="button" variant="outline" className="w-full" disabled={loadingRecover}>
               Cerrar
             </Button>
           </DialogClose>

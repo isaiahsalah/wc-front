@@ -70,8 +70,8 @@ const UnityPage = () => {
         cell: (info) => info.getValue(),
       },
       {
-        accessorKey: "description",
-        header: "Descripción",
+        accessorKey: "shortname",
+        header: "Abreviación",
         cell: (info) => info.getValue(),
       },
       {
