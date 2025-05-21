@@ -42,7 +42,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {getProducts} from "@/api/product/product.api";
-import {SectorContext} from "@/providers/sector-provider";
+import {SectorContext} from "@/providers/sectorProvider";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -70,23 +70,10 @@ export const CreateFormulaDialog: React.FC<PropsCreate> = ({children, updateView
       .then((updatedFormula) => {
         console.log("Fórmula creada:", updatedFormula);
 
-        toast("La fórmula se creó correctamente.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
-
         updateView();
       })
       .catch((error) => {
         console.error("Error al crear la fórmula:", error);
-        toast("Hubo un error al crear la fórmula.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
       })
       .finally(() => {
         setLoadingSave(false);

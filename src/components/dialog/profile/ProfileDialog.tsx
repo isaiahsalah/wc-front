@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
 import {IUser, UserSchema} from "@/utils/interfaces";
-import {SesionContext} from "@/providers/sesion-provider";
+import {SesionContext} from "@/providers/sesionProvider";
 import {updateProfile} from "@/api/profile/profile.api";
 import {DatePicker} from "@/components/date-picker";
 

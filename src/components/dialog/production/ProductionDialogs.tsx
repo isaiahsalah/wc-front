@@ -48,9 +48,10 @@ import {typeQuality, typeTicket} from "@/utils/const";
 import {DateTimePicker} from "@/components/DateTimePicker";
 import {generateQR, printTag} from "@/utils/printTag";
 import {getUnities} from "@/api/product/unity.api";
-import {SesionContext} from "@/providers/sesion-provider";
+import {SesionContext} from "@/providers/sesionProvider";
 import {MoveRight} from "lucide-react";
 import TicketView from "@/components/TicketView";
+import {toast} from "sonner";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -294,22 +295,36 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
   const [unities, setUnities] = useState<IUnity[]>();
   const [amount, setAmount] = useState<number>();
   const [micronage, setMicronage] = useState<number>(orderDetail.product?.micronage ?? 0);
-  const [micronages, setMicronages] = useState<number[]>();
+  //const [micronages, setMicronages] = useState<number[]>();
   const [selectTicket, setSelectTicket] = useState<number>(1);
   const {sesion} = useContext(SesionContext);
+  const [open, setOpen] = useState(false);
 
   const form = useForm<IProduction>({
     resolver: zodResolver(ProductionSchema),
     defaultValues: {
       id_order_detail: orderDetail.id as number,
       id_user: sesion?.user.id as number,
-      id_unity: orderDetail.product?.id_unity,
-      amount: orderDetail.product?.amount,
+      id_unit: orderDetail.product?.id_unit,
+      id_equivalent_unit: orderDetail.product?.id_equivalent_unit,
+      equivalent_amount: orderDetail.product?.equivalent_amount,
+      weight: orderDetail.product?.weight,
     },
   });
 
+  // Función personalizada para manejar el cambio de estado
+  const handleOpenChange = (isOpen: boolean) => {
+    form.reset();
+    setOpen(isOpen);
+  };
+
   function onSubmit(values: IProduction) {
-    if (!amount || amount <= 0) return;
+    if (!amount || amount <= 0) return toast.error("La cantidad debe ser mayor a 0");
+    console.log("✖️✖️✖️", orderDetail.product?.micronage);
+    console.log("✖️✖️", (form.getValues().micronage ?? []).length);
+
+    if (orderDetail.product?.micronage && (form.getValues().micronage ?? []).length === 0)
+      return toast.error("El micronaje no puede estar vacío");
     setLoadingSave(true);
 
     const productions: IProduction[] = [];
@@ -322,7 +337,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
           ? new Date(values.date) // Para la primera iteración, usamos la fecha original
           : new Date(productions[i - 1].date); // Para las siguientes iteraciones, copiamos la fecha del elemento anterior
 
-      newDate.setMinutes(newDate.getMinutes() + duration); // Sumamos la duración en minutos
+      if (i != 0) newDate.setMinutes(newDate.getMinutes() + duration); // Sumamos la duración en minutos
 
       productions.push({
         description: values.description, // 'A', 'B', 'C', etc.
@@ -331,10 +346,12 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
         id_machine: values.id_machine,
         id_order_detail: values.id_order_detail,
         id_user: values.id_user,
-        id_unity: values.id_unity,
-        amount: values.amount,
+        id_unit: values.id_unit,
+        id_equivalent_unit: values.id_equivalent_unit,
+        equivalent_amount: values.equivalent_amount,
+        weight: values.weight,
         type_quality: values.type_quality,
-        micronage: micronages,
+        micronage: values.micronage,
       });
     }
 
@@ -355,6 +372,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
         console.error("Error al crear las producciones:", error);
       })
       .finally(() => {
+        setOpen(false);
         setLoadingSave(false);
       });
   }
@@ -379,7 +397,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild onClick={fetchData}>
         {children}
       </DialogTrigger>
@@ -390,7 +408,10 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid   gap-4 ">
+            <form
+              onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
+              className=" grid   gap-4 "
+            >
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm max-h-[60vh] overflow-scroll">
                 <FormField
                   control={form.control}
@@ -493,7 +514,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
 
                 <FormField
                   control={form.control}
-                  name="id_unity"
+                  name="id_unit"
                   render={({field}) => (
                     <FormItem className="col-span-3 ">
                       <FormDescription>Unidad</FormDescription>
@@ -501,6 +522,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                           defaultValue={field.value.toString()}
+                          disabled
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Seleccionar Unidad" />
@@ -518,12 +540,60 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                     </FormItem>
                   )}
                 />
+                <div className="col-span-3 grid grid-cols-3 gap-2">
+                  <FormDescription className="col-span-3">Cantidad Equivalente</FormDescription>
+                  <FormField
+                    control={form.control}
+                    name="equivalent_amount"
+                    render={({field}) => (
+                      <FormItem className="col-span-1">
+                        <FormControl>
+                          <Input
+                            placeholder="Cantidad"
+                            type="number"
+                            {...field}
+                            onChange={(event) => field.onChange(Number(event.target.value))}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="id_equivalent_unit"
+                    render={({field}) => (
+                      <FormItem className="col-span-2 ">
+                        <FormControl>
+                          <Select
+                            onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
+                            defaultValue={field.value.toString()}
+                            disabled
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Seleccionar Unidad" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {unities?.map((product: IUnity) => (
+                                <SelectItem key={product.id} value={(product.id ?? "").toString()}>
+                                  {product.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
                 <FormField
                   control={form.control}
-                  name="amount"
+                  name="weight"
                   render={({field}) => (
                     <FormItem className="col-span-3">
-                      <FormDescription>Cantidad</FormDescription>
+                      <FormDescription>Peso(kg)</FormDescription>
                       <FormControl>
                         <Input
                           placeholder="Cantidad"
@@ -536,30 +606,53 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                     </FormItem>
                   )}
                 />
-                <FormItem className="col-span-6">
-                  <FormDescription>Micronaje</FormDescription>
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Micronaje"
-                      type="number"
-                      value={micronage}
-                      onChange={(event) => setMicronage(Number(event.target.value))}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter") {
-                          setMicronages([...(micronages ?? []), micronage]);
-                        }
-                      }}
-                    />
-                    <Button
-                      variant={"ghost"}
-                      type="button"
-                      onClick={() => setMicronages([...(micronages ?? []), micronage])}
-                    >
-                      <MoveRight />{" "}
-                    </Button>
-                    <Input placeholder="Micronajes" disabled value={micronages?.join(" - ")} />
-                  </div>
-                </FormItem>
+                <FormField
+                  control={form.control}
+                  name="micronage"
+                  render={({field}) => (
+                    <FormItem className="col-span-3 flex flex-col gap-2">
+                      <FormDescription className="flex-1">Micronaje</FormDescription>
+                      <div className="flex  gap-2">
+                        <Input
+                          className="w-20"
+                          placeholder="Micronaje"
+                          type="number"
+                          value={micronage}
+                          onChange={(event) => setMicronage(Number(event.target.value))}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter") {
+                              console.log("Micronaje:", field.value);
+                              field.onChange([
+                                ...(field.value ?? []),
+                                parseFloat(micronage.toString()),
+                              ]);
+                            }
+                          }}
+                        />
+                        <Button
+                          variant={"ghost"}
+                          size={"icon"}
+                          type="button"
+                          onClick={() =>
+                            field.onChange([
+                              ...(field.value ?? []),
+                              parseFloat(micronage.toString()),
+                            ])
+                          }
+                        >
+                          <MoveRight />{" "}
+                        </Button>
+                        <Input
+                          className="flex col-span-2"
+                          placeholder="Micronajes"
+                          disabled
+                          value={field.value?.join(" - ")}
+                        />
+                      </div>
+                    </FormItem>
+                  )}
+                />
+
                 <FormField
                   control={form.control}
                   name="type_quality"
@@ -661,10 +754,6 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
 
   const form = useForm<IProduction>({
     resolver: zodResolver(ProductionSchema),
-    defaultValues: {
-      id: 0,
-      description: "",
-    },
   });
 
   function onSubmit(values: IProduction) {
@@ -694,6 +783,8 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
       form.reset({
         ...productionData,
         micronage: productionData.micronage?.map((value) => parseFloat(value.toString())),
+        equivalent_amount: parseFloat(productionData.equivalent_amount.toString()),
+        weight: parseFloat(productionData.weight.toString()),
         date: new Date(productionData.date),
         createdAt: null,
         updatedAt: null,

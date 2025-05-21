@@ -44,7 +44,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {SectorContext} from "@/providers/sector-provider";
+import {SectorContext} from "@/providers/sectorProvider";
 import {typeProduct} from "@/utils/const";
 
 interface PropsCreate {
@@ -59,6 +59,7 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
   const [models, setModels] = useState<IModel[]>();
   const [unities, setUnities] = useState<IUnity[]>();
   const {sector} = useContext(SectorContext);
+  const [open, setOpen] = useState(false);
   const form = useForm<IProduct>({
     resolver: zodResolver(ProductSchema),
     defaultValues: {
@@ -66,11 +67,15 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
       description: "",
       id_color: 0,
       id_model: 0,
-      id_unity: 0,
+      id_unit: 0,
+      id_equivalent_unit: 0,
     },
   });
 
   function onSubmit(values: IProduct) {
+    if (form.getValues().id_equivalent_unit === form.getValues().id_unit)
+      return toast.error("La unidad y el equivalente no pueden ser iguales");
+
     setLoadingSave(true);
     createProduct({data: values})
       .then((updatedProduct) => {
@@ -81,16 +86,23 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
         console.error("Error al crear el producto:", error);
       })
       .finally(() => {
+        setOpen(false);
         setLoadingSave(false);
       });
   }
 
+  // Función personalizada para manejar el cambio de estado
+  const handleOpenChange = (isOpen: boolean) => {
+    form.reset();
+    setOpen(isOpen);
+  };
+
   const fetchData = async () => {
     setLoadingInit(true);
     try {
-      const ColorsData = await getColors();
+      const ColorsData = await getColors({});
       const ModelsData = await getModels({id_sector: sector?.id});
-      const UnitiesData = await getUnities();
+      const UnitiesData = await getUnities({});
 
       setColors(ColorsData);
       setModels(ModelsData);
@@ -103,7 +115,7 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild onClick={fetchData}>
         {children}
       </DialogTrigger>
@@ -202,70 +214,6 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
                     </FormItem>
                   )}
                 />
-
-                <FormField
-                  control={form.control}
-                  name="id_unity"
-                  render={({field}) => (
-                    <FormItem className="col-span-3 ">
-                      <FormDescription>Unidad</FormDescription>
-                      <FormControl>
-                        <Select
-                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
-                          defaultValue={field.value.toString()}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Seleccionar Unidad" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {unities?.map((product: IUnity) => (
-                              <SelectItem key={product.id} value={(product.id ?? "").toString()}>
-                                {product.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="amount"
-                  render={({field}) => (
-                    <FormItem className="col-span-3">
-                      <FormDescription>Cantidad</FormDescription>
-                      <FormControl>
-                        <Input
-                          placeholder="Cantidad"
-                          type="number"
-                          {...field}
-                          onChange={(event) => field.onChange(Number(event.target.value))}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="micronage"
-                  render={({field}) => (
-                    <FormItem className="col-span-3">
-                      <FormDescription>Micronaje</FormDescription>
-                      <FormControl>
-                        <Input
-                          placeholder="Micronaje"
-                          type="number"
-                          {...field}
-                          onChange={(event) => field.onChange(Number(event.target.value))}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
                 <FormField
                   control={form.control}
                   name="type_product"
@@ -290,6 +238,116 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
                             ))}
                           </SelectContent>
                         </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="id_unit"
+                  render={({field}) => (
+                    <FormItem className="col-span-3 ">
+                      <FormDescription>Unidad</FormDescription>
+                      <FormControl>
+                        <Select
+                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
+                          defaultValue={field.value.toString()}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Seleccionar Unidad" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {unities?.map((product: IUnity) => (
+                              <SelectItem key={product.id} value={(product.id ?? "").toString()}>
+                                {product.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="id_equivalent_unit"
+                  render={({field}) => (
+                    <FormItem className="col-span-3 ">
+                      <FormDescription>Equivalente</FormDescription>
+                      <FormControl>
+                        <Select
+                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
+                          defaultValue={field.value.toString()}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Seleccionar Equivalente" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {unities?.map((product: IUnity) => (
+                              <SelectItem key={product.id} value={(product.id ?? "").toString()}>
+                                {product.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="equivalent_amount"
+                  render={({field}) => (
+                    <FormItem className="col-span-3">
+                      <FormDescription>Cantidad Equivalente</FormDescription>
+                      <FormControl>
+                        <Input
+                          placeholder="Cantidad"
+                          type="number"
+                          {...field}
+                          onChange={(event) => field.onChange(Number(event.target.value))}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="weight"
+                  render={({field}) => (
+                    <FormItem className="col-span-3">
+                      <FormDescription>Peso</FormDescription>
+                      <FormControl>
+                        <Input
+                          placeholder="Peso"
+                          type="number"
+                          {...field}
+                          onChange={(event) => field.onChange(Number(event.target.value))}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="micronage"
+                  render={({field}) => (
+                    <FormItem className="col-span-3">
+                      <FormDescription>Micronaje</FormDescription>
+                      <FormControl>
+                        <Input
+                          placeholder="Micronaje"
+                          type="number"
+                          {...field}
+                          onChange={(event) => field.onChange(Number(event.target.value))}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -342,14 +400,6 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
 
   const form = useForm<IProduct>({
     resolver: zodResolver(ProductSchema),
-    defaultValues: {
-      id: 0,
-      name: "",
-      description: "",
-      id_color: 0,
-      id_model: 0,
-      id_unity: 0,
-    },
   });
 
   function onSubmit(values: IProduct) {
@@ -358,23 +408,10 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
       .then((updatedProduct) => {
         console.log("Producto actualizado:", updatedProduct);
 
-        toast("El producto se actualizó correctamente.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
-
         updateView();
       })
       .catch((error) => {
         console.error("Error al actualizar el producto:", error);
-        toast("Hubo un error al actualizar el producto.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
       })
       .finally(() => {
         setLoadingSave(false);
@@ -386,9 +423,9 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
     try {
       const productData: IProduct = await getProductById(id);
       console.log("Productos:", productData);
-      const ColorsData = await getColors();
+      const ColorsData = await getColors({});
       const ModelsData = await getModels({id_sector: sector?.id});
-      const UnitiesData = await getUnities();
+      const UnitiesData = await getUnities({});
 
       setColors(ColorsData);
       setModels(ModelsData);
@@ -397,11 +434,14 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
         id: productData.id,
         name: productData.name,
         description: productData.description,
-        amount: productData.amount,
-
+        equivalent_amount: parseFloat(productData.equivalent_amount.toString()),
+        weight: parseFloat(productData.weight.toString()),
+        micronage: parseFloat((productData.micronage ?? 0).toString()),
         id_color: productData.id_color,
         id_model: productData.id_model,
-        id_unity: productData.id_unity,
+        id_unit: productData.id_unit,
+        id_equivalent_unit: productData.id_equivalent_unit,
+        type_product: productData.type_product,
       });
     } catch (error) {
       console.error("Error al cargar los productos:", error);
@@ -416,23 +456,10 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
       .then((deletedProduct) => {
         console.log("Producto eliminado:", deletedProduct);
 
-        toast("El producto se eliminó correctamente.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
-
         updateView();
       })
       .catch((error) => {
         console.error("Error al eliminar el producto:", error);
-        toast("Hubo un error al eliminar el producto.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
       })
       .finally(() => {
         setLoadingDelete(false);
@@ -557,7 +584,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
 
                 <FormField
                   control={form.control}
-                  name="id_unity"
+                  name="id_unit"
                   render={({field}) => (
                     <FormItem className="col-span-3 ">
                       <FormDescription>Unidad</FormDescription>
@@ -584,48 +611,13 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                 />
                 <FormField
                   control={form.control}
-                  name="amount"
-                  render={({field}) => (
-                    <FormItem className="col-span-3">
-                      <FormDescription>Cantidad</FormDescription>
-                      <FormControl>
-                        <Input
-                          placeholder="Cantidad"
-                          type="number"
-                          {...field}
-                          onChange={(event) => field.onChange(Number(event.target.value))}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="micronage"
-                  render={({field}) => (
-                    <FormItem className="col-span-3">
-                      <FormDescription>Micronaje</FormDescription>
-                      <FormControl>
-                        <Input
-                          placeholder="Micronaje"
-                          type="number"
-                          {...field}
-                          onChange={(event) => field.onChange(Number(event.target.value))}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
                   name="type_product"
                   render={({field}) => (
                     <FormItem className="col-span-3 ">
                       <FormDescription>Tipo</FormDescription>
                       <FormControl>
                         <Select
+                          defaultValue={field.value.toString()}
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                         >
                           <SelectTrigger className="w-full">
@@ -642,6 +634,87 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                             ))}
                           </SelectContent>
                         </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="id_equivalent_unit"
+                  render={({field}) => (
+                    <FormItem className="col-span-3 ">
+                      <FormDescription>Equivalente</FormDescription>
+                      <FormControl>
+                        <Select
+                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
+                          defaultValue={field.value.toString()}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Seleccionar Equivalente" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {unities?.map((product: IUnity) => (
+                              <SelectItem key={product.id} value={(product.id ?? "").toString()}>
+                                {product.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="equivalent_amount"
+                  render={({field}) => (
+                    <FormItem className="col-span-3">
+                      <FormDescription>Cantidad Equivalente</FormDescription>
+                      <FormControl>
+                        <Input
+                          placeholder="Cantidad"
+                          type="number"
+                          onChange={(event) => field.onChange(Number(event.target.value))}
+                          defaultValue={field.value ?? ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="weight"
+                  render={({field}) => (
+                    <FormItem className="col-span-3">
+                      <FormDescription>Peso</FormDescription>
+                      <FormControl>
+                        <Input
+                          placeholder="peso"
+                          type="number"
+                          onChange={(event) => field.onChange(Number(event.target.value))}
+                          defaultValue={field.value ?? ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="micronage"
+                  render={({field}) => (
+                    <FormItem className="col-span-3">
+                      <FormDescription>Micronaje</FormDescription>
+                      <FormControl>
+                        <Input
+                          placeholder="Micronaje"
+                          type="number"
+                          onChange={(event) => field.onChange(Number(event.target.value))}
+                          defaultValue={field.value ?? ""}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

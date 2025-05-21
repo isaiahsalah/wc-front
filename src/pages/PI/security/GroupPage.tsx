@@ -1,5 +1,5 @@
-import {IModel} from "@/utils/interfaces";
-import {useContext, useEffect, useMemo, useState} from "react";
+import {IGroup} from "@/utils/interfaces";
+import {useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
 import {Button} from "@/components/ui/button";
 import {
@@ -11,12 +11,7 @@ import {
   Trash2,
   TrendingUpIcon,
 } from "lucide-react";
-import {
-  CreateModelDialog,
-  DeleteModelDialog,
-  EditModelDialog,
-  RecoverModelDialog,
-} from "@/components/dialog/params/ModelDialogs";
+
 import {ColumnDef, Row} from "@tanstack/react-table";
 import {
   DropdownMenu,
@@ -36,28 +31,38 @@ import {
 import {Badge} from "@/components/ui/badge";
 import {countCurrentMonth} from "@/utils/funtions";
 import {format} from "date-fns";
-import {SectorContext} from "@/providers/sectorProvider";
-import {getModels} from "@/api/params/model.api";
+import {getGroups} from "@/api/security/group.api";
+import {
+  CreateGroupDialog,
+  DeleteGroupDialog,
+  EditGroupDialog,
+  RecoverGroupDialog,
+} from "@/components/dialog/security/GroupDialogs copy";
 
-const ModelPage = () => {
-  const [models, setModels] = useState<IModel[] | null>(null);
-  const {sector} = useContext(SectorContext);
+// interface Props {
+//   data: IGroup[];
+//   updateView: () => void;
+// }
+
+const GroupPage = () => {
+  const [groups, setGroups] = useState<IGroup[] | null>(null);
 
   useEffect(() => {
     updateView();
-  }, [sector]);
+  }, []);
 
   const updateView = async () => {
     try {
-      const modelsData = await getModels({id_sector: sector?.id, all: true});
-      setModels(modelsData);
+      const groupData = await getGroups({all: true});
+      setGroups(groupData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
     }
   };
 
-  const columnsModel: ColumnDef<IModel>[] = useMemo(() => {
-    if (!models) return [];
+  // Generar columnas dinámicamente
+  const columnsGroup: ColumnDef<IGroup>[] = useMemo(() => {
+    if (!groups) return [];
     return [
       {
         accessorFn: (row) => row.id?.toString().trim(),
@@ -76,26 +81,6 @@ const ModelPage = () => {
         cell: (info) => info.getValue(),
       },
 
-      {
-        accessorFn: (row) => row.process?.name.trim(),
-        accessorKey: "process",
-        header: "Proceso",
-        cell: (info) => (
-          <Badge variant={"secondary"} className="text-muted-foreground">
-            {info.getValue() as string}
-          </Badge>
-        ),
-      },
-      {
-        accessorFn: (row) => row.sector?.name.trim(),
-        accessorKey: "sector",
-        header: "Sector",
-        cell: (info) => (
-          <Badge variant={"secondary"} className="text-muted-foreground">
-            {info.getValue() as string}
-          </Badge>
-        ),
-      },
       {
         accessorFn: (row) => format(new Date(row.createdAt as Date), "dd/MM/yyyy HH:mm").trim(),
         accessorKey: "createdAt",
@@ -133,7 +118,7 @@ const ModelPage = () => {
         id: "actions",
         header: "",
         enableHiding: false,
-        cell: ({row}: {row: Row<IModel>}) => {
+        cell: ({row}: {row: Row<IGroup>}) => {
           return (
             <div className="flex gap-2 justify-end">
               <DropdownMenu>
@@ -143,30 +128,31 @@ const ModelPage = () => {
                     className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
                     size="icon"
                   >
+                    {" "}
                     <MoreVerticalIcon />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-32">
                   {!row.original.deletedAt ? (
                     <>
-                      <EditModelDialog id={row.original.id ?? 0} updateView={updateView}>
+                      <EditGroupDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Edit /> Editar
+                          <Edit /> Editar{" "}
                         </DropdownMenuItem>
-                      </EditModelDialog>
+                      </EditGroupDialog>
                       <DropdownMenuSeparator />
-                      <DeleteModelDialog id={row.original.id ?? 0} updateView={updateView}>
+                      <DeleteGroupDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          <Trash2 /> Eliminar
+                          <Trash2 /> Eliminar{" "}
                         </DropdownMenuItem>
-                      </DeleteModelDialog>
+                      </DeleteGroupDialog>
                     </>
                   ) : (
-                    <RecoverModelDialog id={row.original.id ?? 0} updateView={updateView}>
+                    <RecoverGroupDialog id={row.original.id ?? 0} updateView={updateView}>
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        <ArchiveRestore /> Recuperar
+                        <ArchiveRestore /> Recuperar{" "}
                       </DropdownMenuItem>
-                    </RecoverModelDialog>
+                    </RecoverGroupDialog>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -175,19 +161,20 @@ const ModelPage = () => {
         },
       },
     ];
-  }, [models]);
+  }, [groups]);
 
   return (
     <div className="flex flex-col gap-2">
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader className="relative">
-          <CardDescription>Modelos registrados</CardDescription>
+          <CardDescription>Grupos registrados</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            {models ? models.length : 0} Modelos
+            {groups ? groups.length : 0} Grupos
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-              <TrendingUpIcon className="size-3" />+{countCurrentMonth(models ?? [])} este mes
+              <TrendingUpIcon className="size-3" />+{countCurrentMonth(groups ? groups : [])} este
+              mes
             </Badge>
           </div>
         </CardHeader>
@@ -204,20 +191,20 @@ const ModelPage = () => {
 
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader>
-          <CardTitle>Modelos</CardTitle>
-          <CardDescription>Modelos registrados en sector de {sector?.name}</CardDescription>
+          <CardTitle>Grupos</CardTitle>
+          <CardDescription>Grupos registrados</CardDescription>
         </CardHeader>
         <CardContent>
           <DataTable
             actions={
-              <CreateModelDialog
+              <CreateGroupDialog
                 updateView={updateView}
                 children={
                   <Button
                     variant="outline"
                     size="sm"
                     onSelect={(event) => {
-                      event.preventDefault();
+                      event.preventDefault(); // Evita el cierre automático
                     }}
                   >
                     <PlusIcon />
@@ -226,8 +213,8 @@ const ModelPage = () => {
                 }
               />
             }
-            columns={columnsModel}
-            data={models}
+            columns={columnsGroup}
+            data={groups}
           />
         </CardContent>
       </Card>
@@ -235,4 +222,4 @@ const ModelPage = () => {
   );
 };
 
-export default ModelPage;
+export default GroupPage;

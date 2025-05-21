@@ -2,25 +2,19 @@ import {apiClient} from "../axiosConfig";
 import {IModel} from "@/utils/interfaces";
 import {toast} from "sonner";
 
-export const getModels = async ({id_sector}: {id_sector?: number | null}) => {
+export const getModels = async ({
+  id_sector,
+  all,
+}: {
+  id_sector?: number | null;
+  all?: boolean | null;
+}) => {
   try {
     const params = {
       id_sector,
+      all,
     };
     const response = await apiClient.get("/pr/model", {params}); // Cambia la URL según tu API
-    return response.data; // Devuelve la lista de modelos
-  } catch (error) {
-    console.error("Error al obtener los modelos:", error);
-    throw error;
-  }
-};
-
-export const getAllModels = async ({id_sector}: {id_sector?: number | null}) => {
-  try {
-    const params = {
-      id_sector,
-    };
-    const response = await apiClient.get("/pr/model/all", {params}); // Cambia la URL según tu API
     return response.data; // Devuelve la lista de modelos
   } catch (error) {
     console.error("Error al obtener los modelos:", error);
@@ -39,7 +33,7 @@ export const getModelById = async (id: number) => {
 };
 
 export const createModel = async ({data}: {data: IModel}) => {
-  toast("Se está procesando la petición", {
+  toast.info("Se está procesando la petición", {
     action: {
       label: "OK",
       onClick: () => console.log("Undo"),
@@ -47,105 +41,50 @@ export const createModel = async ({data}: {data: IModel}) => {
   });
   try {
     const response = await apiClient.post("/pr/model/", data);
-    toast("El modelo se creó correctamente.", {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.success("El modelo se creó correctamente.");
     return response.data; // Devuelve el modelo creado
   } catch (error) {
-    toast(`Error al crear el modelo con ID ${data.id}: ${error}`, {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.error(`Error al crear el modelo con ID ${data.id}: ${error}`);
     throw error;
   }
 };
 
 export const updateModel = async ({data}: {data: IModel}) => {
-  toast("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.put(`/pr/model/${data.id}`, data);
-    toast("El modelo se editó correctamente.", {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.success("El modelo se editó correctamente.");
     return response.data; // Devuelve el modelo actualizado
   } catch (error) {
-    toast(`Error al editar el modelo con ID ${data.id}: ${error}`, {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.error(`Error al editar el modelo con ID ${data.id}: ${error}`);
     throw error;
   }
 };
 
 export const deleteModel = async (id: number) => {
-  toast("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.delete(`/pr/model/${id}`);
-    toast("El modelo se eliminó correctamente.", {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.success("El modelo se eliminó correctamente.");
     return response.data; // Devuelve el mensaje de éxito
   } catch (error) {
-    toast(`Error al eliminar el modelo con ID ${id}: ${error}`, {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.error(`Error al eliminar el modelo con ID ${id}: ${error}`);
     throw error;
   }
 };
 
 export const recoverModel = async (id: number) => {
-  toast("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     // Realiza una solicitud PATCH o PUT al endpoint correspondiente
     const response = await apiClient.patch(`/pr/model/${id}`, {
       deletedAt: null, // Cambia el campo `deletedAt` a null para recuperar el dato
     });
 
-    toast("El modelo se recuperó correctamente.", {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.success("El modelo se recuperó correctamente.");
     return response.data; // Devuelve el dato actualizado o el mensaje de éxito
   } catch (error) {
-    toast(`Error al recuperar el modelo con ID ${id}: ${error}`, {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.error(`Error al recuperar el modelo con ID ${id}: ${error}`);
     throw error;
   }
 };

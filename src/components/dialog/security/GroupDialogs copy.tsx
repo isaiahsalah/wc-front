@@ -14,13 +14,7 @@ import {
 } from "@/components/ui/form";
 import {Textarea} from "@/components/ui/textarea";
 import {useState} from "react";
-import {
-  createColor,
-  deleteColor,
-  getColorById,
-  recoverColor,
-  updateColor,
-} from "@/api/product/color.api";
+import {toast} from "sonner";
 import {
   Dialog,
   DialogClose,
@@ -32,35 +26,54 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
-import {IColor, ColorSchema} from "@/utils/interfaces";
+import {IGroup, GroupSchema} from "@/utils/interfaces";
+import {
+  createGroup,
+  deleteGroup,
+  getGroupById,
+  recoverGroup,
+  updateGroup,
+} from "@/api/security/group.api";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
-  updateView: () => void; // Define the type as a function that returns void
+  updateView: () => void; // Define el tipo como una función que no retorna nada
 }
 
-export const CreateColorDialog: React.FC<PropsCreate> = ({children, updateView}) => {
-  //const [data, setData] = useState<IGeneral | never>();
+export const CreateGroupDialog: React.FC<PropsCreate> = ({children, updateView}) => {
   const [loadingSave, setLoadingSave] = useState(false); // Estado de carga
 
-  const form = useForm<IColor>({
-    resolver: zodResolver(ColorSchema),
+  const form = useForm<IGroup>({
+    resolver: zodResolver(GroupSchema),
     defaultValues: {
       name: "",
       description: "",
     },
   });
 
-  function onSubmit(values: IColor) {
+  function onSubmit(values: IGroup) {
     setLoadingSave(true); // Inicia la carga
-    createColor({data: values})
-      .then((updatedColor) => {
-        console.log("Color creado:", updatedColor);
+    createGroup({data: values})
+      .then((createdGroup) => {
+        console.log("Grupo creado:", createdGroup);
+
+        toast("El grupo se creó correctamente.", {
+          action: {
+            label: "OK",
+            onClick: () => console.log("Undo"),
+          },
+        });
 
         updateView();
       })
       .catch((error) => {
-        console.error("Error al crear el color:", error);
+        console.error("Error al crear el grupo:", error);
+        toast("Hubo un error al crear el grupo.", {
+          action: {
+            label: "OK",
+            onClick: () => console.log("Undo"),
+          },
+        });
       })
       .finally(() => {
         setLoadingSave(false); // Finaliza la carga
@@ -72,11 +85,11 @@ export const CreateColorDialog: React.FC<PropsCreate> = ({children, updateView})
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Gestión de color</DialogTitle>
-          <DialogDescription>Mostrando datos relacionados con el color.</DialogDescription>
+          <DialogTitle>Gestión de grupo</DialogTitle>
+          <DialogDescription>Creación de un nuevo grupo.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className=" grid grid-cols-6 gap-4 ">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-6 gap-4">
             <FormField
               control={form.control}
               name="name"
@@ -105,7 +118,7 @@ export const CreateColorDialog: React.FC<PropsCreate> = ({children, updateView})
               )}
             />
 
-            <DialogFooter className=" grid grid-cols-6 col-span-6">
+            <DialogFooter className="grid grid-cols-6 col-span-6">
               <Button
                 type="submit"
                 className="col-span-3"
@@ -129,19 +142,17 @@ export const CreateColorDialog: React.FC<PropsCreate> = ({children, updateView})
 interface PropsEdit {
   children: React.ReactNode; // Define el tipo de children
   id: number; // Clase personalizada opcional
-  updateView: () => void; // Define the type as a function that returns void
+  updateView: () => void; // Define el tipo como una función que no retorna nada
   onOpenChange?: (open: boolean) => void;
 }
 
-export const EditColorDialog: React.FC<PropsEdit> = ({children, id, updateView, onOpenChange}) => {
-  //const [data, setData] = useState<IGeneral | never>();
+export const EditGroupDialog: React.FC<PropsEdit> = ({children, id, updateView, onOpenChange}) => {
   const [loadingSave, setLoadingSave] = useState(false); // Estado de carga
   const [loadingDelete, setLoadingDelete] = useState(false); // Estado de carga
-
   const [loadingInit, setLoadingInit] = useState(false); // Estado de carga
 
-  const form = useForm<IColor>({
-    resolver: zodResolver(ColorSchema),
+  const form = useForm<IGroup>({
+    resolver: zodResolver(GroupSchema),
     defaultValues: {
       id: 0,
       name: "",
@@ -149,51 +160,75 @@ export const EditColorDialog: React.FC<PropsEdit> = ({children, id, updateView, 
     },
   });
 
-  function onSubmit(values: IColor) {
+  function onSubmit(values: IGroup) {
     setLoadingSave(true); // Inicia la carga
-    updateColor({data: values})
-      .then((updatedColor) => {
-        console.log("Color actualizado:", updatedColor);
+    updateGroup({data: values})
+      .then((updatedGroup) => {
+        console.log("Grupo actualizado:", updatedGroup);
+
+        toast("El grupo se actualizó correctamente.", {
+          action: {
+            label: "OK",
+            onClick: () => console.log("Undo"),
+          },
+        });
 
         updateView();
       })
       .catch((error) => {
-        console.error("Error al actualizar el color:", error);
+        console.error("Error al actualizar el grupo:", error);
+        toast("Hubo un error al actualizar el grupo.", {
+          action: {
+            label: "OK",
+            onClick: () => console.log("Undo"),
+          },
+        });
       })
       .finally(() => {
         setLoadingSave(false); // Finaliza la carga
       });
   }
 
-  const fetchColor = async () => {
+  const fetchGroup = async () => {
     setLoadingInit(true); // Inicia la carga
     try {
-      const colorData = await getColorById(id);
-      console.log("Colores:", colorData);
-      //setData(colorData);
+      const groupData = await getGroupById(id);
+      console.log("Grupos:", groupData);
       form.reset({
-        id: colorData.id,
-        name: colorData.name,
-        description: colorData.description,
+        id: groupData.id,
+        name: groupData.name,
+        description: groupData.description,
       });
     } catch (error) {
-      console.error("Error al cargar los colores:", error);
+      console.error("Error al cargar los grupos:", error);
     } finally {
       setLoadingInit(false); // Finaliza la carga
     }
   };
 
   function onDelete(id: number): void {
-    console.log("Color eliminado:");
     setLoadingDelete(true); // Inicia la carga
-    deleteColor(id)
-      .then((deleteColor) => {
-        console.log("Color eliminado:", deleteColor);
+    deleteGroup(id)
+      .then((deletedGroup) => {
+        console.log("Grupo eliminado:", deletedGroup);
+
+        toast("El grupo se eliminó correctamente.", {
+          action: {
+            label: "OK",
+            onClick: () => console.log("Undo"),
+          },
+        });
 
         updateView();
       })
       .catch((error) => {
-        console.error("Error al eliminar el color:", error);
+        console.error("Error al eliminar el grupo:", error);
+        toast("Hubo un error al eliminar el grupo.", {
+          action: {
+            label: "OK",
+            onClick: () => console.log("Undo"),
+          },
+        });
       })
       .finally(() => {
         setLoadingDelete(false); // Finaliza la carga
@@ -202,17 +237,17 @@ export const EditColorDialog: React.FC<PropsEdit> = ({children, id, updateView, 
 
   return (
     <Dialog onOpenChange={onOpenChange}>
-      <DialogTrigger asChild onClick={fetchColor}>
+      <DialogTrigger asChild onClick={fetchGroup}>
         {children}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Gestión de color</DialogTitle>
-          <DialogDescription>Mostrando datos relacionados con el color.</DialogDescription>
+          <DialogTitle>Gestión de grupo</DialogTitle>
+          <DialogDescription>Mostrando datos relacionados con el grupo.</DialogDescription>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid grid-cols-6 gap-4 ">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-6 gap-4">
               <FormField
                 control={form.control}
                 name="id"
@@ -260,7 +295,7 @@ export const EditColorDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                 )}
               />
 
-              <DialogFooter className=" grid grid-cols-6 col-span-6">
+              <DialogFooter className="grid grid-cols-6 col-span-6">
                 <Button
                   type="submit"
                   className="col-span-3"
@@ -299,28 +334,27 @@ export const EditColorDialog: React.FC<PropsEdit> = ({children, id, updateView, 
 interface PropsDelete {
   children: React.ReactNode; // Define el tipo de children
   id: number; // Clase personalizada opcional
-  updateView: () => void; // Define the type as a function that returns void
+  updateView: () => void; // Define el tipo como una función que no retorna nada
   onOpenChange?: (open: boolean) => void;
 }
 
-export const DeleteColorDialog: React.FC<PropsDelete> = ({
+export const DeleteGroupDialog: React.FC<PropsDelete> = ({
   children,
   id,
   updateView,
   onOpenChange,
 }) => {
-  //const [data, setData] = useState<IGeneral | never>();
   const [loadingDelete, setLoadingDelete] = useState(false); // Estado de carga
 
   function onDelete(): void {
     setLoadingDelete(true); // Inicia la carga
-    deleteColor(id)
-      .then((deleteColor) => {
-        console.log("Color eliminado:", deleteColor);
+    deleteGroup(id) // Llamada a la función de eliminación para grupos
+      .then((deleteGroup) => {
+        console.log("Grupo eliminado:", deleteGroup);
         updateView();
       })
       .catch((error) => {
-        console.error("Error al eliminar el color:", error);
+        console.error("Error al eliminar el grupo:", error);
       })
       .finally(() => {
         setLoadingDelete(false); // Finaliza la carga
@@ -332,11 +366,11 @@ export const DeleteColorDialog: React.FC<PropsDelete> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Eliminar color</DialogTitle>
-          <DialogDescription>¿Está seguro de eliminar este color?</DialogDescription>
+          <DialogTitle>Eliminar grupo</DialogTitle>
+          <DialogDescription>¿Está seguro de eliminar este grupo?</DialogDescription>
         </DialogHeader>
 
-        <DialogFooter className=" grid grid-cols-6 col-span-6">
+        <DialogFooter className="grid grid-cols-6 col-span-6">
           <Button
             type="submit"
             disabled={loadingDelete}
@@ -360,28 +394,27 @@ export const DeleteColorDialog: React.FC<PropsDelete> = ({
 interface PropsRecover {
   children: React.ReactNode; // Define el tipo de children
   id: number; // Clase personalizada opcional
-  updateView: () => void; // Define the type as a function that returns void
+  updateView: () => void; // Define el tipo como una función que no retorna nada
   onOpenChange?: (open: boolean) => void;
 }
 
-export const RecoverColorDialog: React.FC<PropsRecover> = ({
+export const RecoverGroupDialog: React.FC<PropsRecover> = ({
   children,
   id,
   updateView,
   onOpenChange,
 }) => {
-  //const [data, setData] = useState<IGeneral | never>();
   const [loadingRecover, setLoadingRecover] = useState(false); // Estado de carga
 
   function onRecover(): void {
     setLoadingRecover(true); // Inicia la carga
-    recoverColor(id)
-      .then((recoverColor) => {
-        console.log("Color eliminado:", recoverColor);
+    recoverGroup(id) // Llamada a la función de recuperación para grupos
+      .then((recoverGroup) => {
+        console.log("Grupo recuperado:", recoverGroup);
         updateView();
       })
       .catch((error) => {
-        console.error("Error al eliminar el color:", error);
+        console.error("Error al recuperar el grupo:", error);
       })
       .finally(() => {
         setLoadingRecover(false); // Finaliza la carga
@@ -393,11 +426,11 @@ export const RecoverColorDialog: React.FC<PropsRecover> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Recuperar color</DialogTitle>
-          <DialogDescription>¿Está seguro de recuperar este color?</DialogDescription>
+          <DialogTitle>Recuperar grupo</DialogTitle>
+          <DialogDescription>¿Está seguro de recuperar este grupo?</DialogDescription>
         </DialogHeader>
 
-        <DialogFooter className=" grid grid-cols-6 col-span-6">
+        <DialogFooter className="grid grid-cols-6 col-span-6">
           <Button
             type="submit"
             disabled={loadingRecover}

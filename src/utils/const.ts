@@ -1,94 +1,206 @@
+import InventoryPage from "@/pages/PI/inventory/InventoryPage";
+import MachinePage from "@/pages/PI/params/MachinePage";
+import ModelPage from "@/pages/PI/params/ModelPage";
+import ProcessPage from "@/pages/PI/params/ProcessPage";
+import SectorPage from "@/pages/PI/params/SectorPage";
+import ColorPage from "@/pages/PI/product/ColorPage";
+import FormulaPage from "@/pages/PI/product/FormulaPage";
+import ProductPage from "@/pages/PI/product/ProductPage";
+import UnityPage from "@/pages/PI/product/UnitPage";
+import OrderPage from "@/pages/PI/production/OrderPage";
+import ProductionPage from "@/pages/PI/production/ProductionPage";
+import GroupPage from "@/pages/PI/security/GroupPage";
+import UserPage from "@/pages/PI/security/UserPage";
 import {Blend, LucideProps, Package, PackagePlus, PackageSearch, UserLockIcon} from "lucide-react";
 import {RefAttributes} from "react";
 
-export interface IMenuItem {
+export interface IPageItem {
   id: number;
+  title: string;
+  label: string;
+  isActive?: boolean;
+  link: string;
+  page: React.FC<{pageId: number}>; // Componente de la página con props opcionales
+}
+
+export interface IMenuItem {
   title: string;
   url: string;
   icon: React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>;
-  isActive: boolean;
+  isActive?: boolean;
+  pages: IPageItem[];
+}
+
+export interface IModuleItem {
+  id: number;
+  title: string;
+  isActive?: boolean;
+  menu: IMenuItem[];
 }
 
 const typeMenuPI: IMenuItem[] = [
   {
-    id: 1,
     title: "Productos",
     url: "product",
     icon: Package,
-    isActive: false,
+    pages: [
+      {
+        id: 1,
+        title: "Producto",
+        label: "Productos",
+        link: "product",
+        page: ProductPage,
+      },
+      {
+        id: 2,
+        title: "Unidad de Medida",
+        label: "Unidad",
+        link: "unit",
+        page: UnityPage,
+      },
+      {
+        id: 3,
+        title: "Colores",
+        label: "Color",
+        link: "color",
+        page: ColorPage,
+      },
+      {
+        id: 4,
+        title: "Fórmula",
+        label: "Fórmula",
+        link: "formula",
+        page: FormulaPage,
+      },
+    ],
   },
   {
-    id: 2,
     title: "Producción",
     url: "production",
     icon: PackagePlus,
-    isActive: false,
+    pages: [
+      {
+        id: 11,
+        title: "Producción",
+        label: "Producción",
+        link: "production",
+        page: ProductionPage,
+      },
+      {
+        id: 12,
+        title: "Orden de Producción",
+        label: "Orden",
+        link: "production-order",
+        page: OrderPage,
+      },
+    ],
   },
 
   {
-    id: 3,
     title: "Inventario",
     url: "inventory",
     icon: PackageSearch,
-    isActive: false,
+    pages: [
+      {
+        id: 21,
+        title: "Inventario",
+        label: "Inventario",
+        link: "inventory",
+        page: InventoryPage,
+      },
+    ],
   },
   {
-    id: 4,
     title: "Parametros",
     url: "params",
     icon: Blend,
-    isActive: false,
+    pages: [
+      {
+        id: 31,
+        title: "Modelo",
+        label: "Modelo",
+        link: "model",
+        page: ModelPage,
+      },
+      {
+        id: 32,
+        title: "Maquina",
+        label: "Máquina",
+        link: "machine",
+        page: MachinePage,
+      },
+      {
+        id: 33,
+        title: "Proceso",
+        label: "Proceso",
+        link: "process",
+        page: ProcessPage,
+      },
+      {
+        id: 34,
+        title: "Sector",
+        label: "Sector",
+        link: "sector",
+        page: SectorPage,
+      },
+    ],
   },
   {
-    id: 5,
     title: "Seguridad",
     url: "security",
     icon: UserLockIcon,
-    isActive: false,
+    pages: [
+      {
+        id: 41,
+        title: "Usuario",
+        label: "Usuarios",
+        link: "user",
+        page: UserPage,
+      },
+      {
+        id: 42,
+        title: "Grupo",
+        label: "Grupos",
+        link: "group",
+        page: GroupPage,
+      },
+    ],
   },
 ];
-const typeMenuRA: IMenuItem[] = [
-  {id: 1, title: "Home", url: "home", icon: Package, isActive: true},
-];
-const typeMenuSL: IMenuItem[] = [
-  {id: 1, title: "Home", url: "home", icon: Package, isActive: true},
-];
-const typeMenuCQ: IMenuItem[] = [
-  {id: 1, title: "Home", url: "home", icon: Package, isActive: true},
-];
-const typeMenuAU: IMenuItem[] = [
-  {id: 1, title: "Home", url: "home", icon: Package, isActive: true},
-];
+const typeMenuRA: IMenuItem[] = [{title: "Home", url: "home", icon: Package, pages: []}];
+const typeMenuSL: IMenuItem[] = [{title: "Home", url: "home", icon: Package, pages: []}];
+const typeMenuCQ: IMenuItem[] = [{title: "Home", url: "home", icon: Package, pages: []}];
+const typeMenuAU: IMenuItem[] = [{title: "Home", url: "home", icon: Package, pages: []}];
 
-export const typeModule = [
+export const typeModule: IModuleItem[] = [
   {
     title: "Producción e Inventarios",
-    value: 1,
+    id: 1,
     isActive: true,
     menu: typeMenuPI,
   },
   {
     title: "Ventas y Logística",
-    value: 2,
-    isActive: true,
+    id: 2,
+    isActive: false,
     menu: typeMenuSL,
   },
   {
     title: "Costos y Calidad",
-    value: 3,
-    isActive: true,
+    id: 3,
+    isActive: false,
     menu: typeMenuCQ,
   },
   {
     title: "Administración y Usuarios",
-    value: 4,
-    isActive: true,
+    id: 4,
+    isActive: false,
     menu: typeMenuAU,
   },
   {
     title: "Reportes y Análisis",
-    value: 5,
-    isActive: true,
+    id: 5,
+    isActive: false,
     menu: typeMenuRA,
   },
 ];
@@ -130,4 +242,12 @@ export const typeTicket = [
     example: ["Nombre de Producto"],
     colums: ["name"],
   },
+];
+
+export const typePermission = [
+  {id: 0, name: "Sin Acceso"},
+  {id: 1, name: "Leer"},
+  {id: 2, name: "Crear"},
+  {id: 3, name: "Actualizar"},
+  {id: 4, name: "Eliminar"},
 ];

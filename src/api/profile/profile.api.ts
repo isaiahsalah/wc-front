@@ -3,28 +3,13 @@ import {apiClient} from "../axiosConfig";
 import {toast} from "sonner";
 
 export const updateProfile = async ({data}: {data: IUser}) => {
-  toast("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.put(`/profile/${data.id}`, data);
-    toast("El perfil se editó correctamente.", {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.success("El perfil se editó correctamente.");
     return response.data; // Devuelve el color actualizado
   } catch (error) {
-    toast(`Error al editar el perfil con ID ${data.id}: ${error}`, {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.error(`Error al editar el perfil con ID ${data.id}: ${error}`);
     throw error;
   }
 };

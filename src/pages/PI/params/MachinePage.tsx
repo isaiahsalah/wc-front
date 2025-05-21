@@ -33,10 +33,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {getAllMachines} from "@/api/params/machine.api";
 import {Badge} from "@/components/ui/badge";
 import {countCurrentMonth} from "@/utils/funtions";
 import {format} from "date-fns";
+import {getMachines} from "@/api/params/machine.api";
 
 const MachinePage = () => {
   const [machines, setMachines] = useState<IMachine[] | null>(null);
@@ -47,7 +47,7 @@ const MachinePage = () => {
 
   const updateView = async () => {
     try {
-      const machinesData = await getAllMachines();
+      const machinesData = await getMachines({all: true});
       setMachines(machinesData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
@@ -80,7 +80,7 @@ const MachinePage = () => {
         accessorKey: "process",
         header: "Proceso",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),
@@ -90,7 +90,7 @@ const MachinePage = () => {
         accessorKey: "createdAt",
         header: "Creado",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),
@@ -100,7 +100,7 @@ const MachinePage = () => {
         accessorKey: "updatedAt",
         header: "Editado",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),

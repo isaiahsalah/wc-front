@@ -1,5 +1,5 @@
-import {IColor} from "@/utils/interfaces";
-import {useEffect, useMemo, useState} from "react";
+import {IColor, IPermission} from "@/utils/interfaces";
+import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
 import {Button} from "@/components/ui/button";
 import {
@@ -33,28 +33,30 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {getAllColors} from "@/api/product/color.api";
 import {Badge} from "@/components/ui/badge";
 import {countCurrentMonth} from "@/utils/funtions";
 import {format} from "date-fns";
+import {getColors} from "@/api/product/color.api";
+import {SesionContext} from "@/providers/sesionProvider";
 
-// interface Props {
-//   data: IColor[];
-//   updateView: () => void;
-// }
+interface Props {
+  pageId: number;
+}
 
-const ColorPage = () => {
+const ColorPage: React.FC<Props> = ({pageId}) => {
   const [colors, setColors] = useState<IColor[] | null>(null);
 
+  const {sesion} = useContext(SesionContext);
+  const permissions = sesion?.user.permissions as IPermission[];
+  const degree = permissions?.find((perm) => perm.screen === pageId)?.degree ?? 0;
+
   useEffect(() => {
-    //setLoading(true);
     updateView();
-    //setLoading(false);
   }, []);
 
   const updateView = async () => {
     try {
-      const ProductionsData = await getAllColors();
+      const ProductionsData = await getColors({all: true});
       setColors(ProductionsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
@@ -87,7 +89,7 @@ const ColorPage = () => {
         accessorKey: "createdAt",
         header: "Creado",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),
@@ -97,7 +99,7 @@ const ColorPage = () => {
         accessorKey: "updatedAt",
         header: "Editado",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),
@@ -137,20 +139,29 @@ const ColorPage = () => {
                   {!row.original.deletedAt ? (
                     <>
                       <EditColorDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 3 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Edit /> Editar{" "}
                         </DropdownMenuItem>
                       </EditColorDialog>
                       <DropdownMenuSeparator />
                       <DeleteColorDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Trash2 /> Eliminar{" "}
                         </DropdownMenuItem>
                       </DeleteColorDialog>
                     </>
                   ) : (
                     <RecoverColorDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      <DropdownMenuItem
+                        disabled={degree < 4 ? true : false}
+                        onSelect={(e) => e.preventDefault()}
+                      >
                         <ArchiveRestore /> Recuperar{" "}
                       </DropdownMenuItem>
                     </RecoverColorDialog>
@@ -202,6 +213,7 @@ const ColorPage = () => {
                 updateView={updateView}
                 children={
                   <Button
+                    disabled={degree < 2 ? true : false}
                     variant="outline"
                     size="sm"
                     onSelect={(event) => {

@@ -1,19 +1,19 @@
 import {SidebarInset, SidebarProvider} from "./components/ui/sidebar";
 import {AppSidebar} from "@/components/nav/app-sidebar";
 import {BrowserRouter, Routes, Route, Outlet, Navigate, useNavigate} from "react-router-dom";
-import {ThemeProvider} from "./providers/theme-provider";
+import {ThemeProvider} from "./providers/themeProvider";
 
 import Header from "./components/nav/app-header";
 import {Toaster} from "./components/ui/sonner";
 import {useContext, useEffect, useState} from "react";
-import {SesionContext, SesionProvider} from "./providers/sesion-provider";
+import {SesionContext, SesionProvider} from "./providers/sesionProvider";
 import LoginPage from "./pages/LoginPage";
 import {getCheckToken} from "./api/login.api";
 import {ISesion} from "./utils/interfaces";
 import LoadingPage from "./pages/LoadingPage";
-import {TitleProvider} from "./providers/title-provider";
+import {PageProvider} from "./providers/pageProvider";
 import ModuleRoutes from "./ModuleRoutes";
-import {SectorProvider} from "./providers/sector-provider";
+import {SectorProvider} from "./providers/sectorProvider";
 
 function App() {
   const PrivateRoutes = () => {
@@ -57,7 +57,7 @@ function App() {
 
     return isAuthenticated ? (
       <SectorProvider>
-        <TitleProvider>
+        <PageProvider>
           <SidebarProvider>
             <AppSidebar />
             <SidebarInset>
@@ -69,7 +69,7 @@ function App() {
               </div>
             </SidebarInset>
           </SidebarProvider>
-        </TitleProvider>
+        </PageProvider>
       </SectorProvider>
     ) : (
       <Navigate to="/login" />

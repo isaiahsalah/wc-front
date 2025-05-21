@@ -2,29 +2,13 @@ import {apiClient} from "../axiosConfig";
 import {IOrderDetail, IOrder} from "@/utils/interfaces";
 import {toast} from "sonner";
 
-export const getOrders = async ({
-  id_sector,
-  paranoid,
-}: {
-  id_sector?: number | null;
-  paranoid?: boolean;
-}) => {
+export const getOrders = async ({id_sector, all}: {id_sector?: number | null; all?: boolean}) => {
   try {
     const params = {
       id_sector,
-      paranoid,
+      all,
     };
     const response = await apiClient.get("/pr/order", {params}); // Cambia la URL según tu API
-    return response.data; // Devuelve la lista de órdenes
-  } catch (error) {
-    console.error("Error al obtener las órdenes:", error);
-    throw error;
-  }
-};
-
-export const getAllOrders = async () => {
-  try {
-    const response = await apiClient.get("/pr/order/all"); // Cambia la URL según tu API
     return response.data; // Devuelve la lista de órdenes
   } catch (error) {
     console.error("Error al obtener las órdenes:", error);
@@ -43,104 +27,49 @@ export const getOrderById = async (id: number) => {
 };
 
 export const createOrder = async ({data}: {data: IOrder}) => {
-  toast("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.post("/pr/order/", data);
-    toast("La orden se creó correctamente.", {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.success("La orden se creó correctamente.");
     return response.data; // Devuelve la orden creada
   } catch (error) {
-    toast(`Error al crear la orden con ID ${data.id}: ${error}`, {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.error(`Error al crear la orden con ID ${data.id}: ${error}`);
     throw error;
   }
 };
 
 export const updateOrder = async ({order}: {order: IOrder}) => {
   if (!order.order_details?.length || order.order_details?.length <= 0) {
-    return toast("Selecciona al menos 1 producto", {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    return toast.warning("Selecciona al menos 1 producto");
   }
   if (order.init_date >= order.end_date) {
-    return toast("La fecha de inicio debe ser menor a la fecha de fin", {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    return toast.warning("La fecha de inicio debe ser menor a la fecha de fin");
   }
-  toast("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.put(`/pr/order/${order.id}`, order);
-    toast("La orden se editó correctamente.", {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.success("La orden se editó correctamente.");
     return response.data; // Devuelve la orden actualizada
   } catch (error) {
-    toast(`Error al editar la orden con ID ${order.id}: ${error}`, {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.error(`Error al editar la orden con ID ${order.id}: ${error}`);
     throw error;
   }
 };
 
 export const deleteOrder = async (id: number) => {
-  toast("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.delete(`/pr/order/${id}`);
-    toast("La orden se eliminó correctamente.", {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.success("La orden se eliminó correctamente.");
     return response.data; // Devuelve el mensaje de éxito
   } catch (error) {
-    toast(`Error al eliminar la orden con ID ${id}: ${error}`, {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.error(`Error al eliminar la orden con ID ${id}: ${error}`);
     throw error;
   }
 };
 
 export const recoverOrder = async (id: number) => {
-  toast("Se está procesando la petición", {
+  toast.info("Se está procesando la petición", {
     action: {
       label: "OK",
       onClick: () => console.log("Undo"),
@@ -152,20 +81,10 @@ export const recoverOrder = async (id: number) => {
       deletedAt: null, // Cambia el campo `deletedAt` a null para recuperar el dato
     });
 
-    toast("La orden se recuperó correctamente.", {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.success("La orden se recuperó correctamente.");
     return response.data; // Devuelve el dato actualizado o el mensaje de éxito
   } catch (error) {
-    toast(`Error al recuperar la orden con ID ${id}: ${error}`, {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.error(`Error al recuperar la orden con ID ${id}: ${error}`);
     throw error;
   }
 };
@@ -180,44 +99,19 @@ export const createOrderWithDetail = async ({
   orderDetails: IOrderDetail[];
 }) => {
   if (orderDetails.length <= 0) {
-    return toast("Selecciona al menos 1 producto", {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    return toast.warning("Selecciona al menos 1 producto");
   }
   if (order.init_date >= order.end_date) {
-    return toast("La fecha de inicio debe ser menor a la fecha de fin", {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    return toast.warning("La fecha de inicio debe ser menor a la fecha de fin");
   }
 
-  toast("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.post("/pr/order/withdetails", {order, orderDetails});
-    toast("La orden se creó correctamente.", {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.success("La orden se creó correctamente.");
     return response.data; // Devuelve la orden creada
   } catch (error) {
-    toast(`Error al crear la orden: ${error}`, {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.error(`Error al crear la orden: ${error}`);
     throw error;
   }
 };

@@ -19,7 +19,7 @@ import {
 import {SidebarMenu, SidebarMenuButton, SidebarMenuItem} from "@/components/ui/sidebar";
 import {ISector} from "@/utils/interfaces";
 import {useContext, useEffect} from "react";
-import {SectorContext} from "@/providers/sector-provider";
+import {SectorContext} from "@/providers/sectorProvider";
 
 export function SectorSidebar({items}: {items: ISector[]}) {
   const {sector, setSector} = useContext(SectorContext);

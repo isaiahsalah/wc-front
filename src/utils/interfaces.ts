@@ -87,7 +87,6 @@ export const GroupSchema = z.object({
   id: z.number().nullable().optional(),
   name: z.string(),
   description: z.string(),
-  type_turn: z.number().optional(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
@@ -98,8 +97,7 @@ export const UserSchema = z.object({
   id: z.number().nullable().optional(),
   name: z.string(),
   lastname: z.string(),
-  birthday: z.date(),
-  image: z.string(),
+  birthday: z.date(), 
   phone: z.string(),
   user: z.string(),
   pass: z.string(),
@@ -142,9 +140,13 @@ export const ProductSchema = z.object({
   description: z.string(),
   type_product: z.number(),
   micronage: z.number().optional(),
-  amount: z.number(),
-  id_unity: z.number(),
-  unity: UnitySchema.nullable().optional(),
+  weight: z.number(),
+  equivalent_amount: z.number(),
+  id_unit: z.number(),
+  id_equivalent_unit: z.number(),
+  product_unit: UnitySchema.nullable().optional(),
+  product_equivalent_unit: UnitySchema.nullable().optional(),
+
   id_color: z.number(),
   color: ColorSchema.nullable().optional(),
   id_model: z.number(),
@@ -196,6 +198,9 @@ export const OrderSchema = z.object({
   id: z.number().nullable().optional(),
   init_date: z.date(),
   end_date: z.date(),
+  type_turn: z.number().optional(),
+  id_group: z.number(),
+  group: GroupSchema.nullable().optional(),
   id_user: z.number(),
   user: UserSchema.nullable().optional(),
   order_details: z.array(z.any()).nullable().optional(),
@@ -240,17 +245,20 @@ export const ProductionSchema = z.object({
   date: z.date(),
   duration: z.number(),
   micronage: z.array(z.number()).nullable().optional(),
-  amount: z.number(),
   type_quality: z.number(),
-  id_unity: z.number(),
-  unity: UnitySchema.nullable().optional(),
+
+  weight: z.number(),
+  equivalent_amount: z.number(),
+  id_unit: z.number(),
+  id_equivalent_unit: z.number(),
+  production_unit: UnitySchema.nullable().optional(),
+  production_equivalent_unit: UnitySchema.nullable().optional(),
+
   id_machine: z.number(),
   machine: MachineSchema.nullable().optional(),
   lote: z.string().nullable().optional(),
   id_order_detail: z.number(),
   order_detail: OrderDetailSchema.nullable().optional(),
-  id_user: z.number(),
-  user: UserSchema.nullable().optional(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
@@ -266,6 +274,19 @@ export const ProductionDetailSchema = z.object({
   product_material: ProductSchema.nullable().optional(),
   id_production_material: z.number(),
   production_material: ProductionSchema.nullable().optional(),
+  createdAt: z.date().nullable().optional(),
+  updatedAt: z.date().nullable().optional(),
+  deletedAt: z.date().nullable().optional(),
+});
+
+// Tabla: Work
+export const WorkSchema = z.object({
+  id: z.number().nullable().optional(),
+  type_work: z.number(),
+  id_production: z.number(),
+  production: ProductionSchema.nullable().optional(),
+  id_user: z.number(),
+  user: UserSchema.nullable().optional(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
@@ -289,6 +310,7 @@ export type IProduction = z.infer<typeof ProductionSchema>;
 export type ISector = z.infer<typeof SectorSchema>;
 export type IUnity = z.infer<typeof UnitySchema>;
 export type IUser = z.infer<typeof UserSchema>;
+export type IWork = z.infer<typeof WorkSchema>;
 
 export type IGeneral =
   | IGroup
@@ -307,4 +329,5 @@ export type IGeneral =
   | IProduction
   | ISector
   | IUnity
-  | IUser;
+  | IUser
+  | IWork;

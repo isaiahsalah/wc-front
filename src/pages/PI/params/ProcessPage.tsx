@@ -33,10 +33,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {getAllProcesses} from "@/api/params/process.api";
 import {Badge} from "@/components/ui/badge";
 import {countCurrentMonth} from "@/utils/funtions";
 import {format} from "date-fns";
+import {getProcesses} from "@/api/params/process.api";
 
 const ProcessPage = () => {
   const [processes, setProcesses] = useState<IProcess[] | null>(null);
@@ -47,7 +47,7 @@ const ProcessPage = () => {
 
   const updateView = async () => {
     try {
-      const processesData = await getAllProcesses();
+      const processesData = await getProcesses({all: true});
       setProcesses(processesData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
@@ -78,7 +78,7 @@ const ProcessPage = () => {
         accessorKey: "createdAt",
         header: "Creado",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),
@@ -88,7 +88,7 @@ const ProcessPage = () => {
         accessorKey: "updatedAt",
         header: "Editado",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),

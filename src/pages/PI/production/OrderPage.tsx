@@ -39,7 +39,7 @@ import {getOrders} from "@/api/production/order.api";
 import {countCurrentMonth} from "@/utils/funtions";
 import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
-import {SectorContext} from "@/providers/sector-provider";
+import {SectorContext} from "@/providers/sectorProvider";
 
 const OrderPage = () => {
   const [orders, setOrders] = useState<IOrder[] | null>(null);
@@ -51,7 +51,7 @@ const OrderPage = () => {
 
   const updateView = async () => {
     try {
-      const ProductionsData = await getOrders({paranoid: true, id_sector: sector?.id});
+      const ProductionsData = await getOrders({all: true, id_sector: sector?.id});
       setOrders(ProductionsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
@@ -82,7 +82,7 @@ const OrderPage = () => {
         accessorKey: "user",
         header: "Usuario",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {(info.getValue() as IUser).name} {(info.getValue() as IUser).lastname}
           </Badge>
         ),
@@ -92,7 +92,7 @@ const OrderPage = () => {
         accessorKey: "createdAt",
         header: "Creado",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),
@@ -102,7 +102,7 @@ const OrderPage = () => {
         accessorKey: "updatedAt",
         header: "Editado",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),

@@ -2,7 +2,6 @@ import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 
 import {useForm} from "react-hook-form";
-import {IModel, ModelSchema, IProcess, ISector} from "@/utils/interfaces";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 import {
@@ -13,15 +12,8 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import {Textarea} from "@/components/ui/textarea";
-import {useContext, useState} from "react";
-import {
-  createModel,
-  deleteModel,
-  getModelById,
-  recoverModel,
-  updateModel,
-} from "@/api/params/model.api";
+import {useState} from "react";
+
 import {
   Dialog,
   DialogClose,
@@ -33,8 +25,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
-import {getProcesses} from "@/api/params/process.api";
-import {getSectors} from "@/api/params/sector.api";
+import {IGroup, IUser, UserSchema} from "@/utils/interfaces";
+import {
+  createUser,
+  deleteUser,
+  getUserById,
+  recoverUser,
+  updateUser,
+} from "@/api/security/user.api";
+import {getGroups} from "@/api/security/group.api";
+import {DatePicker} from "@/components/date-picker";
 import {
   Select,
   SelectContent,
@@ -42,51 +42,42 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {SectorContext} from "@/providers/sectorProvider";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
-  updateView: () => void; // Define the type as a function that returns void
+  updateView: () => void; // Define el tipo como una función que retorna void
 }
 
-export const CreateModelDialog: React.FC<PropsCreate> = ({children, updateView}) => {
-  const [loadingSave, setLoadingSave] = useState(false);
+export const CreateUserDialog: React.FC<PropsCreate> = ({children, updateView}) => {
+  const [loadingSave, setLoadingSave] = useState(false); // Estado de carga
   const [loadingInit, setLoadingInit] = useState(false);
-  const {sector} = useContext(SectorContext);
-  const [processes, setProcesses] = useState<IProcess[]>();
-  const [sectors, setSectors] = useState<ISector[]>();
+  const [groups, setGroups] = useState<IGroup[]>();
 
-  const form = useForm<IModel>({
-    resolver: zodResolver(ModelSchema),
-    defaultValues: {
-      name: "",
-      id_sector: sector?.id as number,
-    },
+  const form = useForm<IUser>({
+    resolver: zodResolver(UserSchema),
   });
 
-  function onSubmit(values: IModel) {
-    setLoadingSave(true);
-    createModel({data: values})
-      .then((updatedModel) => {
-        console.log("Modelo creado:", updatedModel);
+  function onSubmit(values: IUser) {
+    setLoadingSave(true); // Inicia la carga
+    createUser({data: values})
+      .then((updatedUser) => {
+        console.log("Usuario creado:", updatedUser);
         updateView();
       })
       .catch((error) => {
-        console.error("Error al crear el modelo:", error);
+        console.error("Error al crear el usuario:", error);
       })
       .finally(() => {
-        setLoadingSave(false);
+        setLoadingSave(false); // Finaliza la carga
       });
   }
 
   const fetchData = async () => {
     setLoadingInit(true);
     try {
-      const ProcessesData = await getProcesses({});
-      const SectorsData = await getSectors({});
+      const GroupsData = await getGroups({});
 
-      setProcesses(ProcessesData);
-      setSectors(SectorsData);
+      setGroups(GroupsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
     } finally {
@@ -101,18 +92,18 @@ export const CreateModelDialog: React.FC<PropsCreate> = ({children, updateView})
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Registro de modelo</DialogTitle>
-          <DialogDescription>Mostrando datos relacionados con el modelo.</DialogDescription>
+          <DialogTitle>Gestión de Usuario</DialogTitle>
+          <DialogDescription>Complete la información del nuevo usuario.</DialogDescription>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid  gap-4 ">
-              <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="grid   gap-4">
+              <div className="grid   grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
                   name="name"
                   render={({field}) => (
-                    <FormItem className="col-span-6">
+                    <FormItem className="col-span-2">
                       <FormDescription>Nombre</FormDescription>
                       <FormControl>
                         <Input placeholder="Nombre" {...field} />
@@ -124,12 +115,12 @@ export const CreateModelDialog: React.FC<PropsCreate> = ({children, updateView})
 
                 <FormField
                   control={form.control}
-                  name="description"
+                  name="lastname"
                   render={({field}) => (
-                    <FormItem className="col-span-6">
-                      <FormDescription>Descripción</FormDescription>
+                    <FormItem className="col-span-4">
+                      <FormDescription>Apellidos</FormDescription>
                       <FormControl>
-                        <Textarea placeholder="Notas adicionales" {...field} />
+                        <Input placeholder="Apellidos" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -138,49 +129,90 @@ export const CreateModelDialog: React.FC<PropsCreate> = ({children, updateView})
 
                 <FormField
                   control={form.control}
-                  name="id_process"
+                  name="birthday"
                   render={({field}) => (
-                    <FormItem className="col-span-3 ">
-                      <FormDescription>Proceso</FormDescription>
+                    <FormItem className="col-span-3">
+                      <FormDescription>Fecha de nacimiento</FormDescription>
+                      <FormControl>
+                        <DatePicker
+                          className="w-full"
+                          value={
+                            field.value && typeof field.value === "string"
+                              ? new Date(field.value)
+                              : field.value
+                          }
+                          onChange={(date) => {
+                            if (date) {
+                              field.onChange(date);
+                            } else {
+                              field.onChange(null);
+                            }
+                          }}
+                          placeholder="Selecciona una fecha"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({field}) => (
+                    <FormItem className="col-span-3">
+                      <FormDescription>Telefono</FormDescription>
+                      <FormControl>
+                        <Input placeholder="Telefono" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="user"
+                  render={({field}) => (
+                    <FormItem className="col-span-3">
+                      <FormDescription>Usuario</FormDescription>
+                      <FormControl>
+                        <Input placeholder="Usuario" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="pass"
+                  render={({field}) => (
+                    <FormItem className="col-span-3">
+                      <FormDescription>Contraseña</FormDescription>
+                      <FormControl>
+                        <Input type="password" placeholder="Contraseña" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="id_group"
+                  render={({field}) => (
+                    <FormItem className="col-span-6">
+                      <FormDescription>Grupo</FormDescription>
                       <FormControl>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Seleccionar Proceso" />
+                            <SelectValue placeholder="Seleccionar Tipo" />
                           </SelectTrigger>
                           <SelectContent>
-                            {processes?.map((process: IProcess) => (
-                              <SelectItem key={process.id} value={(process.id ?? "").toString()}>
-                                {process.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="id_sector"
-                  render={({field}) => (
-                    <FormItem className="col-span-3 ">
-                      <FormDescription>Sector</FormDescription>
-                      <FormControl>
-                        <Select
-                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
-                          value={sector?.id?.toString() as string}
-                        >
-                          <SelectTrigger className="w-full" disabled>
-                            <SelectValue placeholder="Seleccionar Sector" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {sectors?.map((product: ISector) => (
-                              <SelectItem key={product.id} value={(product.id ?? "").toString()}>
-                                {product.name}
+                            {groups?.map((group: IGroup) => (
+                              <SelectItem key={group.id} value={(group.id ?? "").toString()}>
+                                {group.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -191,7 +223,7 @@ export const CreateModelDialog: React.FC<PropsCreate> = ({children, updateView})
                   )}
                 />
               </div>
-              <DialogFooter className=" grid grid-cols-6  ">
+              <DialogFooter className="grid grid-cols-6 ">
                 <Button
                   type="submit"
                   className="col-span-3"
@@ -214,60 +246,54 @@ export const CreateModelDialog: React.FC<PropsCreate> = ({children, updateView})
 };
 
 interface PropsEdit {
-  children: React.ReactNode; // Define el tipo de children
-  id: number; // Clase personalizada opcional
-  updateView: () => void; // Define the type as a function that returns void
+  children: React.ReactNode;
+  id: number;
+  updateView: () => void;
   onOpenChange?: (open: boolean) => void;
 }
 
-export const EditModelDialog: React.FC<PropsEdit> = ({children, id, updateView, onOpenChange}) => {
+export const EditUserDialog: React.FC<PropsEdit> = ({children, id, updateView, onOpenChange}) => {
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
+  const [groups, setGroups] = useState<IGroup[]>();
 
-  const [processes, setProcesses] = useState<IProcess[]>();
-  const [sectors, setSectors] = useState<ISector[]>();
-
-  const form = useForm<IModel>({
-    resolver: zodResolver(ModelSchema),
+  const form = useForm<IUser>({
+    resolver: zodResolver(UserSchema),
   });
 
-  function onSubmit(values: IModel) {
+  function onSubmit(values: IUser) {
     setLoadingSave(true);
-    updateModel({data: values})
-      .then((updatedModel) => {
-        console.log("Modelo actualizado:", updatedModel);
-
+    updateUser({data: values})
+      .then((updatedUser) => {
+        console.log("Usuario actualizado:", updatedUser);
         updateView();
       })
       .catch((error) => {
-        console.error("Error al actualizar el modelo:", error);
+        console.error("Error al actualizar el usuario:", error);
       })
       .finally(() => {
         setLoadingSave(false);
       });
   }
 
-  const fetchModel = async () => {
+  const fetchUser = async () => {
     setLoadingInit(true);
     try {
-      const modelData: IModel = await getModelById(id);
-      console.log("Modelos:", modelData);
-
-      const ProcessesData = await getProcesses({});
-      const SectorsData = await getSectors({});
-
-      setProcesses(ProcessesData);
-      setSectors(SectorsData);
+      const userData = await getUserById(id);
+      console.log("Usuario:", userData);
       form.reset({
-        id: modelData.id,
-        name: modelData.name,
-        description: modelData.description,
-        id_process: modelData.id_process,
-        id_sector: modelData.id_sector,
+        ...userData,
+        birthday: userData.birthday ? new Date(userData.birthday) : null,
+        createdAt: null,
+        deletedAt: null,
+        updatedAt: null,
       });
+      const GroupsData = await getGroups({});
+
+      setGroups(GroupsData);
     } catch (error) {
-      console.error("Error al cargar los modelos:", error);
+      console.error("Error al cargar los datos del usuario:", error);
     } finally {
       setLoadingInit(false);
     }
@@ -275,14 +301,13 @@ export const EditModelDialog: React.FC<PropsEdit> = ({children, id, updateView, 
 
   function onDelete(id: number): void {
     setLoadingDelete(true);
-    deleteModel(id)
-      .then((deletedModel) => {
-        console.log("Modelo eliminado:", deletedModel);
-
+    deleteUser(id)
+      .then((deletedUser) => {
+        console.log("Usuario eliminado:", deletedUser);
         updateView();
       })
       .catch((error) => {
-        console.error("Error al eliminar el modelo:", error);
+        console.error("Error al eliminar el usuario:", error);
       })
       .finally(() => {
         setLoadingDelete(false);
@@ -291,42 +316,26 @@ export const EditModelDialog: React.FC<PropsEdit> = ({children, id, updateView, 
 
   return (
     <Dialog onOpenChange={onOpenChange}>
-      <DialogTrigger asChild onClick={fetchModel}>
+      <DialogTrigger asChild onClick={fetchUser}>
         {children}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Gestión de modelo</DialogTitle>
-          <DialogDescription>Mostrando datos relacionados con el modelo.</DialogDescription>
+          <DialogTitle>Editar Usuario</DialogTitle>
+          <DialogDescription>Edite los datos del usuario.</DialogDescription>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid   gap-4 ">
+            <form
+              onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
+              className="grid  gap-4"
+            >
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
-                <FormField
-                  control={form.control}
-                  name="id"
-                  render={({field}) => (
-                    <FormItem className={"col-span-2"}>
-                      <FormDescription>Id</FormDescription>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          placeholder="Id"
-                          disabled
-                          onChange={(event) => field.onChange(Number(event.target.value))}
-                          defaultValue={field.value ?? ""}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
                 <FormField
                   control={form.control}
                   name="name"
                   render={({field}) => (
-                    <FormItem className="col-span-4">
+                    <FormItem className="col-span-2">
                       <FormDescription>Nombre</FormDescription>
                       <FormControl>
                         <Input placeholder="Nombre" {...field} />
@@ -338,12 +347,12 @@ export const EditModelDialog: React.FC<PropsEdit> = ({children, id, updateView, 
 
                 <FormField
                   control={form.control}
-                  name="description"
+                  name="lastname"
                   render={({field}) => (
-                    <FormItem className="col-span-6">
-                      <FormDescription>Descripción</FormDescription>
+                    <FormItem className="col-span-4">
+                      <FormDescription>Apellidos</FormDescription>
                       <FormControl>
-                        <Textarea placeholder="Notas adicionales" {...field} />
+                        <Input placeholder="Apellidos" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -352,50 +361,79 @@ export const EditModelDialog: React.FC<PropsEdit> = ({children, id, updateView, 
 
                 <FormField
                   control={form.control}
-                  name="id_process"
+                  name="birthday"
                   render={({field}) => (
-                    <FormItem className="col-span-3 ">
-                      <FormDescription>Proceso</FormDescription>
+                    <FormItem className="col-span-3">
+                      <FormDescription>Fecha de nacimiento</FormDescription>
+                      <FormControl>
+                        <DatePicker
+                          className="w-full"
+                          value={
+                            field.value && typeof field.value === "string"
+                              ? new Date(field.value)
+                              : field.value
+                          }
+                          onChange={(date) => {
+                            if (date) {
+                              field.onChange(date);
+                            } else {
+                              field.onChange(null);
+                            }
+                          }}
+                          placeholder="Selecciona una fecha"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({field}) => (
+                    <FormItem className="col-span-3">
+                      <FormDescription>Telefono</FormDescription>
+                      <FormControl>
+                        <Input placeholder="Telefono" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="user"
+                  render={({field}) => (
+                    <FormItem className="col-span-3">
+                      <FormDescription>Usuario</FormDescription>
+                      <FormControl>
+                        <Input placeholder="Usuario" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="id_group"
+                  render={({field}) => (
+                    <FormItem className="col-span-3">
+                      <FormDescription>Grupo</FormDescription>
                       <FormControl>
                         <Select
+                          value={field.value?.toString() ?? ""} // Asegúrate de que el valor sea una cadena
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
-                          defaultValue={field.value.toString()}
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Seleccionar Proceso" />
+                            <SelectValue placeholder="Seleccionar Tipo" />
                           </SelectTrigger>
                           <SelectContent>
-                            {processes?.map((process: IProcess) => (
-                              <SelectItem key={process.id} value={(process.id ?? "").toString()}>
-                                {process.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="id_sector"
-                  render={({field}) => (
-                    <FormItem className="col-span-3 ">
-                      <FormDescription>Sector</FormDescription>
-                      <FormControl>
-                        <Select
-                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
-                          defaultValue={field.value.toString()}
-                        >
-                          <SelectTrigger className="w-full" disabled>
-                            <SelectValue placeholder="Seleccionar Sector" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {sectors?.map((product: ISector) => (
-                              <SelectItem key={product.id} value={(product.id ?? "").toString()}>
-                                {product.name}
+                            {groups?.map((group: IGroup) => (
+                              <SelectItem key={group.id} value={(group.id ?? "").toString()}>
+                                {group.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -406,8 +444,7 @@ export const EditModelDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                   )}
                 />
               </div>
-
-              <DialogFooter className=" grid grid-cols-6  ">
+              <DialogFooter className="grid grid-cols-6 ">
                 <Button
                   type="submit"
                   className="col-span-3"
@@ -444,33 +481,32 @@ export const EditModelDialog: React.FC<PropsEdit> = ({children, id, updateView, 
 };
 
 interface PropsDelete {
-  children: React.ReactNode; // Define el tipo de children
-  id: number; // Clase personalizada opcional
-  updateView: () => void; // Define el tipo como una función que retorna void
+  children: React.ReactNode;
+  id: number;
+  updateView: () => void;
   onOpenChange?: (open: boolean) => void;
 }
 
-// Componente para eliminar un modelo
-export const DeleteModelDialog: React.FC<PropsDelete> = ({
+export const DeleteUserDialog: React.FC<PropsDelete> = ({
   children,
   id,
   updateView,
   onOpenChange,
 }) => {
-  const [loadingDelete, setLoadingDelete] = useState(false); // Estado de carga
+  const [loadingDelete, setLoadingDelete] = useState(false);
 
   function onDelete(): void {
-    setLoadingDelete(true); // Inicia la carga
-    deleteModel(id)
-      .then((deletedModel) => {
-        console.log("Modelo eliminado:", deletedModel);
+    setLoadingDelete(true);
+    deleteUser(id)
+      .then((deletedUser) => {
+        console.log("Usuario eliminado:", deletedUser);
         updateView();
       })
       .catch((error) => {
-        console.error("Error al eliminar el modelo:", error);
+        console.error("Error al eliminar el usuario:", error);
       })
       .finally(() => {
-        setLoadingDelete(false); // Finaliza la carga
+        setLoadingDelete(false);
       });
   }
 
@@ -479,13 +515,12 @@ export const DeleteModelDialog: React.FC<PropsDelete> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Eliminar modelo</DialogTitle>
-          <DialogDescription>¿Está seguro de eliminar este modelo?</DialogDescription>
+          <DialogTitle>Eliminar usuario</DialogTitle>
+          <DialogDescription>¿Está seguro de eliminar este usuario?</DialogDescription>
         </DialogHeader>
-
         <DialogFooter className="grid grid-cols-6 col-span-6">
           <Button
-            type="submit"
+            type="button"
             disabled={loadingDelete}
             className="col-span-3"
             variant={"destructive"}
@@ -505,33 +540,32 @@ export const DeleteModelDialog: React.FC<PropsDelete> = ({
 };
 
 interface PropsRecover {
-  children: React.ReactNode; // Define el tipo de children
-  id: number; // Clase personalizada opcional
-  updateView: () => void; // Define el tipo como una función que retorna void
+  children: React.ReactNode;
+  id: number;
+  updateView: () => void;
   onOpenChange?: (open: boolean) => void;
 }
 
-// Componente para recuperar un modelo
-export const RecoverModelDialog: React.FC<PropsRecover> = ({
+export const RecoverUserDialog: React.FC<PropsRecover> = ({
   children,
   id,
   updateView,
   onOpenChange,
 }) => {
-  const [loadingRecover, setLoadingRecover] = useState(false); // Estado de carga
+  const [loadingRecover, setLoadingRecover] = useState(false);
 
   function onRecover(): void {
-    setLoadingRecover(true); // Inicia la carga
-    recoverModel(id)
-      .then((recoveredModel) => {
-        console.log("Modelo recuperado:", recoveredModel);
+    setLoadingRecover(true);
+    recoverUser(id)
+      .then((recoveredUser) => {
+        console.log("Usuario recuperado:", recoveredUser);
         updateView();
       })
       .catch((error) => {
-        console.error("Error al recuperar el modelo:", error);
+        console.error("Error al recuperar el usuario:", error);
       })
       .finally(() => {
-        setLoadingRecover(false); // Finaliza la carga
+        setLoadingRecover(false);
       });
   }
 
@@ -540,13 +574,12 @@ export const RecoverModelDialog: React.FC<PropsRecover> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Recuperar modelo</DialogTitle>
-          <DialogDescription>¿Está seguro de recuperar este modelo?</DialogDescription>
+          <DialogTitle>Recuperar usuario</DialogTitle>
+          <DialogDescription>¿Está seguro de recuperar este usuario?</DialogDescription>
         </DialogHeader>
-
         <DialogFooter className="grid grid-cols-6 col-span-6">
           <Button
-            type="submit"
+            type="button"
             disabled={loadingRecover}
             className="col-span-3"
             onClick={onRecover}

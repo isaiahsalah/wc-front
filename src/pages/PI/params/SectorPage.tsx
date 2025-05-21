@@ -33,10 +33,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {getAllSectors} from "@/api/params/sector.api";
 import {Badge} from "@/components/ui/badge";
 import {countCurrentMonth} from "@/utils/funtions";
 import {format} from "date-fns";
+import {getSectors} from "@/api/params/sector.api";
 
 const SectorPage = () => {
   const [sectors, setSectors] = useState<ISector[] | null>(null);
@@ -47,7 +47,7 @@ const SectorPage = () => {
 
   const updateView = async () => {
     try {
-      const sectorsData = await getAllSectors();
+      const sectorsData = await getSectors({all: true});
       setSectors(sectorsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
@@ -78,7 +78,7 @@ const SectorPage = () => {
         accessorKey: "createdAt",
         header: "Creado",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),
@@ -88,7 +88,7 @@ const SectorPage = () => {
         accessorKey: "updatedAt",
         header: "Editado",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),

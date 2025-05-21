@@ -1,47 +1,72 @@
-import { Select } from "@radix-ui/react-select";
-import React from "react";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
-import { TabsList, TabsTrigger } from "./ui/tabs";
+import {Select} from "@radix-ui/react-select";
+import React, {useContext, useEffect, useState} from "react";
+import {SelectContent, SelectItem, SelectTrigger, SelectValue} from "./ui/select";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "./ui/tabs";
+import {IPageItem} from "@/utils/const";
+import {PageContext} from "@/providers/pageProvider";
+import {Separator} from "./ui/separator";
 
 interface Props {
-  activeTab: string;
-  setActiveTab: (value: string) => void;
-  tabData: { id: string; label: string }[];
+  tabData: IPageItem[];
 }
 
-const SelectorTabPage: React.FC<Props> = ({
-  activeTab,
-  setActiveTab,
-  tabData,
-}) => {
-  return (
-    <div className="flex items-center justify-between ">
-      <Select value={activeTab} onValueChange={(value) => setActiveTab(value)}>
-        <SelectTrigger className="md:hidden   w-full " id="view-selector">
-          <SelectValue placeholder="Select a view" />
-        </SelectTrigger>
-        <SelectContent>
-          {tabData.map((tab) => (
-            <SelectItem key={tab.id} value={tab.id}>
-              {tab.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+const SelectorTabPage: React.FC<Props> = ({tabData}) => {
+  const [activeTab, setActiveTab] = useState(tabData[0]);
 
-      <TabsList className="md:flex hidden   w-full">
-        {tabData.map((tab) => (
-          <TabsTrigger key={tab.id} value={tab.id}>
-            {tab.label}
-          </TabsTrigger>
-        ))}
-      </TabsList>
-    </div>
+  const {setPage} = useContext(PageContext);
+
+  useEffect(() => {
+    setActiveTab(tabData[0]);
+  }, [tabData]);
+
+  useEffect(() => {
+    setPage(activeTab);
+  }, [activeTab, setPage]);
+
+  return (
+    <Tabs
+      value={activeTab.id.toString()}
+      onValueChange={(value) => {
+        const selectedTab = tabData.find((tab) => tab.id.toString() === value);
+        if (selectedTab) setActiveTab(selectedTab);
+      }}
+      className="flex w-full flex-col justify-start gap-2"
+    >
+      <div className="flex items-center justify-between ">
+        <Select
+          value={activeTab.id.toString()}
+          onValueChange={(value) => {
+            const selectedTab = tabData.find((tab) => tab.id.toString() === value);
+            if (selectedTab) setActiveTab(selectedTab);
+          }}
+        >
+          <SelectTrigger className="md:hidden   w-full " id="view-selector">
+            <SelectValue placeholder="Select a view" />
+          </SelectTrigger>
+          <SelectContent>
+            {tabData.map((tab) => (
+              <SelectItem key={tab.id} value={tab.id.toString()}>
+                {tab.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <TabsList className="md:flex hidden   w-full">
+          {tabData.map((tab) => (
+            <TabsTrigger key={tab.id} value={tab.id.toString()}>
+              {tab.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </div>
+      <Separator />
+      {tabData.map((tab) => (
+        <TabsContent key={tab.id} value={tab.id.toString()}>
+          <tab.page pageId={tab.id} />
+        </TabsContent>
+      ))}
+    </Tabs>
   );
 };
 

@@ -13,8 +13,8 @@ import {ProfileSidebar} from "./profile-sidebar";
 import {SectorSidebar} from "./sector-sidebar";
 import MenuSidebar from "./menu-sidebar";
 import {useContext, useEffect, useState} from "react";
-import {SesionContext} from "@/providers/sesion-provider";
-import {IMenuItem, typeModule} from "@/utils/const";
+import {SesionContext} from "@/providers/sesionProvider";
+import {IMenuItem, IModuleItem, typeModule} from "@/utils/const";
 import {IPermission, ISector} from "@/utils/interfaces";
 
 interface Props {
@@ -30,29 +30,16 @@ export const AppSidebar: React.FC<Props> = ({className}) => {
 
   const permisions = sesion?.user.permissions as IPermission[];
 
-  const menuActive = ({menu, permis}: {menu: IMenuItem[]; permis: IPermission[]}) => {
-    return menu.map((men) => {
-      const match = permis.find((per) => per.screen === men.id); // Encuentra coincidencias por ID
-      if (match) {
-        return {...men, isActive: true}; // Actualiza el valor si hay coincidencia
-      }
-      return men; // De lo contrario, regresa el elemento original
-    });
-  };
-
   useEffect(() => {
-    const module = permisions[0].type_module;
+    const moduleId = permisions[0].type_module;
+    const moduleSelected = typeModule.find((mod) => mod.id === moduleId) as IModuleItem;
+    setTitle(moduleSelected.title);
+    const tempMenu: IMenuItem[] = moduleSelected.menu.map((men) => {
+      const isActive = men.pages.some((page) => permisions.some((per) => per.screen === page.id));
+      return {...men, isActive}; // Devuelve un nuevo objeto con `isActive` actualizado
+    });
 
-    if (module === 1) {
-      setTitle(typeModule[0].title);
-      const tempMenu: IMenuItem[] = menuActive({menu: typeModule[0].menu, permis: permisions});
-
-      setMenu(tempMenu);
-    } else if (module === 2) setMenu(typeModule[1].menu);
-    else if (module === 3) setMenu(typeModule[2].menu);
-    else if (module === 4) setMenu(typeModule[3].menu);
-    else if (module === 5) setMenu(typeModule[4].menu);
-
+    setMenu(tempMenu);
     const uniqueObjects: ISector[] = Array.from(
       new Map(permisions.map((item) => [item.id_sector, item.sector])).values()
     ) as ISector[];

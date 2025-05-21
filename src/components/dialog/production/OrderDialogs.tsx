@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
 import {DateTimePicker} from "@/components/DateTimePicker";
-import {SectorContext} from "@/providers/sector-provider";
+import {SectorContext} from "@/providers/sectorProvider";
 import {getProducts} from "@/api/product/product.api";
 import {ColumnDef, Row} from "@tanstack/react-table";
 import {Plus, Trash2, X} from "lucide-react";
@@ -46,7 +46,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import DataTable from "@/components/table/DataTable";
-import {SesionContext} from "@/providers/sesion-provider";
+import {SesionContext} from "@/providers/sesionProvider";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children

@@ -11,7 +11,7 @@ import {Button} from "@/components/ui/button";
 import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
 import {ModeToggle} from "@/components/mode-toggle";
 import {useContext, useState} from "react";
-import {SesionContext} from "@/providers/sesion-provider";
+import {SesionContext} from "@/providers/sesionProvider";
 import {getLogin} from "@/api/login.api";
 import {ISesion} from "@/utils/interfaces";
 import {Navigate, useNavigate} from "react-router-dom";
@@ -121,7 +121,7 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
                           <SelectContent>
                             {typeModule.map((item, index) => (
                               <SelectItem
-                                value={item.value.toString()}
+                                value={item.id.toString()}
                                 className=" justify-center"
                                 key={index}
                                 disabled={!item.isActive}

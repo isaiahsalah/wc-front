@@ -39,7 +39,7 @@ import {
 import {countCurrentMonth} from "@/utils/funtions";
 import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
-import {SectorContext} from "@/providers/sector-provider";
+import {SectorContext} from "@/providers/sectorProvider";
 import {
   Select,
   SelectContent,
@@ -62,7 +62,7 @@ const FormulaPage = () => {
 
   const fetchFilter = async () => {
     try {
-      const ProductData = await getProducts({id_sector: sector?.id, paranoid: true});
+      const ProductData = await getProducts({id_sector: sector?.id});
 
       setProducts(ProductData);
     } catch (error) {
@@ -72,7 +72,11 @@ const FormulaPage = () => {
 
   const updateView = async () => {
     try {
-      const FormulasData = await getFormulas({id_sector: sector?.id, id_product: idProduct});
+      const FormulasData = await getFormulas({
+        id_sector: sector?.id,
+        id_product: idProduct,
+        all: true,
+      });
       setFormulas(FormulasData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
@@ -105,7 +109,7 @@ const FormulaPage = () => {
         accessorKey: "product",
         header: "Producto",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),
@@ -130,7 +134,7 @@ const FormulaPage = () => {
         accessorKey: "createdAt",
         header: "Creado",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),
@@ -140,7 +144,7 @@ const FormulaPage = () => {
         accessorKey: "updatedAt",
         header: "Editado",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),

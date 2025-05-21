@@ -4,15 +4,15 @@ import {toast} from "sonner";
 
 export const getProducts = async ({
   id_sector,
-  paranoid,
+  all,
 }: {
   id_sector?: number | null;
-  paranoid?: boolean | null;
+  all?: boolean | null;
 }) => {
   try {
     const params = {
       id_sector,
-      paranoid,
+      all,
     };
     const response = await apiClient.get("/pr/product", {params}); // Cambia la URL según tu API
     return response.data; // Devuelve la lista de productos
@@ -33,7 +33,7 @@ export const getProductById = async (id: number) => {
 };
 
 export const createProduct = async ({data}: {data: IProduct}) => {
-  toast("Se está procesando la petición", {
+  toast.info("Se está procesando la petición", {
     action: {
       label: "OK",
       onClick: () => console.log("Undo"),
@@ -41,26 +41,16 @@ export const createProduct = async ({data}: {data: IProduct}) => {
   });
   try {
     const response = await apiClient.post("/pr/product/", data);
-    toast("El producto se creó correctamente.", {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.success("El producto se creó correctamente.");
     return response.data; // Devuelve el producto creado
   } catch (error) {
-    toast(`Error al crear el producto con ID ${data.id}: ${error}`, {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.error(`Error al crear el producto con ID ${data.id}: ${error}`);
     throw error;
   }
 };
 
 export const updateProduct = async ({data}: {data: IProduct}) => {
-  toast("Se está procesando la petición", {
+  toast.info("Se está procesando la petición", {
     action: {
       label: "OK",
       onClick: () => console.log("Undo"),
@@ -68,26 +58,16 @@ export const updateProduct = async ({data}: {data: IProduct}) => {
   });
   try {
     const response = await apiClient.put(`/pr/product/${data.id}`, data);
-    toast("El producto se editó correctamente.", {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.success("El producto se editó correctamente.");
     return response.data; // Devuelve el producto actualizado
   } catch (error) {
-    toast(`Error al editar el producto con ID ${data.id}: ${error}`, {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.error(`Error al editar el producto con ID ${data.id}: ${error}`);
     throw error;
   }
 };
 
 export const deleteProduct = async (id: number) => {
-  toast("Se está procesando la petición", {
+  toast.info("Se está procesando la petición", {
     action: {
       label: "OK",
       onClick: () => console.log("Undo"),
@@ -95,26 +75,16 @@ export const deleteProduct = async (id: number) => {
   });
   try {
     const response = await apiClient.delete(`/pr/product/${id}`);
-    toast("El producto se eliminó correctamente.", {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.success("El producto se eliminó correctamente.");
     return response.data; // Devuelve el mensaje de éxito
   } catch (error) {
-    toast(`Error al eliminar el producto con ID ${id}: ${error}`, {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.error(`Error al eliminar el producto con ID ${id}: ${error}`);
     throw error;
   }
 };
 
 export const recoverProduct = async (id: number) => {
-  toast("Se está procesando la petición", {
+  toast.info("Se está procesando la petición", {
     action: {
       label: "OK",
       onClick: () => console.log("Undo"),
@@ -126,20 +96,10 @@ export const recoverProduct = async (id: number) => {
       deletedAt: null, // Cambia el campo `deletedAt` a null para recuperar el dato
     });
 
-    toast("El producto se recuperó correctamente.", {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.success("El producto se recuperó correctamente.");
     return response.data; // Devuelve el dato actualizado o el mensaje de éxito
   } catch (error) {
-    toast(`Error al recuperar el producto con ID ${id}: ${error}`, {
-      action: {
-        label: "OK",
-        onClick: () => console.log("Undo"),
-      },
-    });
+    toast.error(`Error al recuperar el producto con ID ${id}: ${error}`);
     throw error;
   }
 };

@@ -30,7 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {format} from "date-fns";
-import {SectorContext} from "@/providers/sector-provider";
+import {SectorContext} from "@/providers/sectorProvider";
 import {typeQuality} from "@/utils/const";
 import {Badge} from "@/components/ui/badge";
 
@@ -52,8 +52,8 @@ const InventoryPage = () => {
 
   const fetchFilter = async () => {
     try {
-      const ProcessesData = await getProcesses();
-      const SectorsData = await getSectors();
+      const ProcessesData = await getProcesses({});
+      const SectorsData = await getSectors({});
 
       setProcesses(ProcessesData);
       setSectors(SectorsData);
@@ -67,6 +67,7 @@ const InventoryPage = () => {
       const ProductionsData = await getProductions({
         id_process: process ?? null,
         id_sector: sector?.id ?? null,
+        all: true,
       });
       console.log(ProductionsData);
       setProductions(ProductionsData);
@@ -98,7 +99,7 @@ const InventoryPage = () => {
         accessorKey: "date",
         header: "Fecha",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {format(info.getValue() as Date, "dd/MM/yyyy HH:mm")}
           </Badge>
         ),
@@ -107,19 +108,45 @@ const InventoryPage = () => {
         accessorKey: "type_quality",
         header: "Calidad",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {typeQuality.find((item) => item.id === info.getValue())?.name}
           </Badge>
         ),
       },
 
       {
-        accessorKey: "amount",
-        header: "Cantidad",
-        cell: ({row}: {row: Row<IProduction>}) => {
+        accessorFn: (row) => ` ${row.production_unit?.name}`.trim(),
+        accessorKey: "production_unit",
+        header: "Unidad",
+        cell: (info) => {
           return (
-            <Badge variant={"outline"} className="text-muted-foreground">
-              {row.original.amount} {row.original.unity?.shortname}
+            <Badge variant={"secondary"} className="text-muted-foreground">
+              {info.getValue() as string}
+            </Badge>
+          );
+        },
+      },
+      {
+        accessorFn: (row) =>
+          `${row.equivalent_amount} ${row.production_equivalent_unit?.shortname}`.trim(),
+        accessorKey: "production_equivalent_unit",
+        header: "Equivalente",
+        cell: (info) => {
+          return (
+            <Badge variant={"secondary"} className="text-muted-foreground">
+              {info.getValue() as string}
+            </Badge>
+          );
+        },
+      },
+      {
+        accessorFn: (row) => `${row.weight} kg`.trim(),
+        accessorKey: "weight",
+        header: "Peso",
+        cell: (info) => {
+          return (
+            <Badge variant={"secondary"} className="text-muted-foreground">
+              {info.getValue() as string}
             </Badge>
           );
         },
@@ -128,7 +155,7 @@ const InventoryPage = () => {
         accessorKey: "micronage",
         header: "Micronaje",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {(info.getValue() as []) ? (info.getValue() as []).join(" - ") : " - "}
           </Badge>
         ),
@@ -137,7 +164,7 @@ const InventoryPage = () => {
         accessorKey: "machine",
         header: "Maquina",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {(info.getValue() as IMachine).name}
           </Badge>
         ),
@@ -147,7 +174,7 @@ const InventoryPage = () => {
         accessorKey: "user",
         header: "Usuario",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {(info.getValue() as IUser).name} {(info.getValue() as IUser).lastname}
           </Badge>
         ),
@@ -158,7 +185,7 @@ const InventoryPage = () => {
         accessorKey: "createdAt",
         header: "Creado",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),
@@ -168,7 +195,7 @@ const InventoryPage = () => {
         accessorKey: "updatedAt",
         header: "Editado",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),

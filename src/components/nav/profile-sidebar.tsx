@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar} from "@/components/ui/sidebar";
 import {useContext} from "react";
-import {SesionContext} from "@/providers/sesion-provider";
+import {SesionContext} from "@/providers/sesionProvider";
 import {useNavigate} from "react-router-dom";
 import {typeTurn} from "@/utils/const";
 import {EditProfileDialog} from "../dialog/profile/ProfileDialog";

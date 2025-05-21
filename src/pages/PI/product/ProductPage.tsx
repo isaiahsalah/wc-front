@@ -38,7 +38,7 @@ import {countCurrentMonth} from "@/utils/funtions";
 import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
 import {typeProduct} from "@/utils/const";
-import {SectorContext} from "@/providers/sector-provider";
+import {SectorContext} from "@/providers/sectorProvider";
 
 const ProductPage = () => {
   const [products, setProducts] = useState<IProduct[] | null>(null);
@@ -49,7 +49,7 @@ const ProductPage = () => {
 
   const updateView = async () => {
     try {
-      const ProductionsData = await getProducts({id_sector: sector?.id});
+      const ProductionsData = await getProducts({id_sector: sector?.id, all: true});
       setProducts(ProductionsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
@@ -76,40 +76,76 @@ const ProductPage = () => {
         header: "Descripción",
         cell: (info) => info.getValue(),
       },
-      {
-        accessorKey: "micronage",
-        header: "Micronaje",
-        cell: (info) => (info.getValue() ? info.getValue() : "-"),
-      },
+
       {
         accessorFn: (row) => typeProduct.find((obj) => obj.id === row.type_product)?.name.trim(),
         accessorKey: "type_product",
         header: "Tipo de Producto",
         cell: (info) => (
-          <Badge variant="outline" className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),
       },
-
       {
-        accessorFn: (row) => `${row.amount} ${row.unity?.shortname}`.trim(),
-        accessorKey: "amount",
-        header: "Cantidad",
+        accessorFn: (row) => `${row.product_unit?.name}`.trim(),
+        accessorKey: "unit",
+        header: "Unidad",
         cell: (info) => {
           return (
-            <Badge variant={"outline"} className="text-muted-foreground">
+            <Badge variant={"secondary"} className="text-muted-foreground">
+              {info.getValue() as string}
+            </Badge>
+          );
+        },
+      },
+
+      {
+        accessorFn: (row) =>
+          `${row.equivalent_amount} ${row.product_equivalent_unit?.shortname}`.trim(),
+        accessorKey: "equivalent_unit",
+        header: "Equivalente",
+        cell: (info) => {
+          return (
+            <Badge variant={"secondary"} className="text-muted-foreground">
               {info.getValue() as string}
             </Badge>
           );
         },
       },
       {
+        accessorFn: (row) => `${row.weight} kg`.trim(),
+        accessorKey: "weight",
+        header: "Peso",
+        cell: (info) => {
+          return (
+            <Badge variant={"secondary"} className="text-muted-foreground">
+              {info.getValue() as string}
+            </Badge>
+          );
+        },
+      },
+      {
+        accessorFn: (row) => `${row.micronage}`.trim(),
+        accessorKey: "micronage",
+        header: "Micronaje",
+        cell: (info) =>
+          info.getValue() != "null" ? (
+            <Badge variant={"secondary"} className="text-muted-foreground">
+              {info.getValue() as string}
+            </Badge>
+          ) : (
+            <Badge variant={"outline"} className="text-muted-foreground">
+              N/A
+            </Badge>
+          ),
+      },
+      {
         accessorFn: (row) => row.color?.name.trim(),
         accessorKey: "color",
         header: "Color",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),
@@ -120,7 +156,7 @@ const ProductPage = () => {
         accessorKey: "model",
         header: "Modelo",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),
@@ -130,7 +166,7 @@ const ProductPage = () => {
         accessorKey: "createdAt",
         header: "Creado",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),
@@ -140,7 +176,7 @@ const ProductPage = () => {
         accessorKey: "updatedAt",
         header: "Editado",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),

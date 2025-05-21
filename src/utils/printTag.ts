@@ -77,25 +77,30 @@ export const printTag = ({
     doc.addImage(QRs[index], "PNG", 1, 1, 23, 23);
 
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(7);
+    doc.setFontSize(6);
 
     ticketFormat.map((key, i) => {
       const line = rowInit + i * 3;
+      const col = 23.5;
       if (key === "date") {
         const formattedDate = format(new Date(production.date), "dd/LL/y - HH:mm", {locale: es});
 
-        return doc.text(`${formattedDate}`, 24, line);
+        return doc.text(`${formattedDate}`, col, line);
       }
-      if (key === "name") return doc.text(`${production.order_detail?.product?.name}`, 24, line);
+      if (key === "name") return doc.text(`${production.order_detail?.product?.name}`, col, line);
       if (key === "amount")
-        return doc.text(`${production.amount} ${production.unity?.shortname}.`, 24, line);
-      if (key === "micronage") return doc.text(`${production.micronage?.join(" - ")}`, 24, line);
-      return doc.text(`${production[key as keyof IProduction]}`, 24, line);
+        return doc.text(
+          `1${production.production_unit?.shortname} - ${production.equivalent_amount} ${production.production_equivalent_unit?.shortname}`,
+          col,
+          line
+        );
+      if (key === "micronage") return doc.text(`${production.micronage?.join(" - ")}`, col, line);
+      return doc.text(`${production[key as keyof IProduction]}`, col, line);
     });
 
     doc.setFont("helvetica", "bold"); // Usamos Helvetica y negrita
     doc.setFontSize(8);
-    doc.text(production.lote ?? "", 14, 27);
+    doc.text(production.lote ?? "", 12, 27.5);
 
     //if (production.order_detail?.product?.type_product === 1) doc.text(`PLÁSTICOS CARMEN`, 14, 27);
     //else doc.text(`PRODUCTO EN PROCESO`, 12, 27);

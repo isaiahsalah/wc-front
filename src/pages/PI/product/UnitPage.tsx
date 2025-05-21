@@ -33,12 +33,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {getAllUnities} from "@/api/product/unity.api";
 import {Badge} from "@/components/ui/badge";
 import {countCurrentMonth} from "@/utils/funtions";
 import {format} from "date-fns";
+import {getUnities} from "@/api/product/unity.api";
 
-const UnityPage = () => {
+const UnitPage = () => {
   const [unities, setUnities] = useState<IUnity[] | null>(null);
 
   useEffect(() => {
@@ -47,7 +47,7 @@ const UnityPage = () => {
 
   const updateView = async () => {
     try {
-      const ProductionsData = await getAllUnities();
+      const ProductionsData = await getUnities({all: true});
       setUnities(ProductionsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
@@ -79,7 +79,7 @@ const UnityPage = () => {
         accessorKey: "createdAt",
         header: "Creado",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),
@@ -89,7 +89,7 @@ const UnityPage = () => {
         accessorKey: "updatedAt",
         header: "Editado",
         cell: (info) => (
-          <Badge variant={"outline"} className="text-muted-foreground">
+          <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
           </Badge>
         ),
@@ -214,4 +214,4 @@ const UnityPage = () => {
   );
 };
 
-export default UnityPage;
+export default UnitPage;
