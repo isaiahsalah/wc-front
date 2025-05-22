@@ -4,14 +4,18 @@ import {toast} from "sonner";
 
 export const getProducts = async ({
   id_sector,
+  id_process,
   all,
 }: {
   id_sector?: number | null;
+  id_process?: number | null;
+
   all?: boolean | null;
 }) => {
   try {
     const params = {
       id_sector,
+      id_process,
       all,
     };
     const response = await apiClient.get("/pr/product", {params}); // Cambia la URL según tu API

@@ -37,8 +37,10 @@ import {Badge} from "@/components/ui/badge";
 import {countCurrentMonth} from "@/utils/funtions";
 import {format} from "date-fns";
 import {getProcesses} from "@/api/params/process.api";
-
-const ProcessPage = () => {
+interface Props {
+  degree: number;
+}
+const ProcessPage: React.FC<Props> = ({degree}) => {
   const [processes, setProcesses] = useState<IProcess[] | null>(null);
 
   useEffect(() => {
@@ -126,20 +128,29 @@ const ProcessPage = () => {
                   {!row.original.deletedAt ? (
                     <>
                       <EditProcessDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 3 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Edit /> Editar
                         </DropdownMenuItem>
                       </EditProcessDialog>
                       <DropdownMenuSeparator />
                       <DeleteProcessDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Trash2 /> Eliminar
                         </DropdownMenuItem>
                       </DeleteProcessDialog>
                     </>
                   ) : (
                     <RecoverProcessDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      <DropdownMenuItem
+                        disabled={degree < 4 ? true : false}
+                        onSelect={(e) => e.preventDefault()}
+                      >
                         <ArchiveRestore /> Recuperar
                       </DropdownMenuItem>
                     </RecoverProcessDialog>
@@ -190,6 +201,7 @@ const ProcessPage = () => {
                 updateView={updateView}
                 children={
                   <Button
+                    disabled={degree < 2 ? true : false}
                     variant="outline"
                     size="sm"
                     onSelect={(event) => {

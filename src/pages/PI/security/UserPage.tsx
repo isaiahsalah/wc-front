@@ -40,8 +40,10 @@ import {
 import {countCurrentMonth} from "@/utils/funtions";
 import {getUsers} from "@/api/security/user.api";
 import {EditPermissionUserDialog} from "@/components/dialog/security/PermissionDialog";
-
-const UserPage = () => {
+interface Props {
+  degree: number;
+}
+const UserPage: React.FC<Props> = ({degree}) => {
   const [users, setUsers] = useState<IUser[] | null>(null);
 
   useEffect(() => {
@@ -161,25 +163,37 @@ const UserPage = () => {
                   {!row.original.deletedAt ? (
                     <>
                       <EditUserDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 3 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Edit /> Editar
                         </DropdownMenuItem>
                       </EditUserDialog>
                       <EditPermissionUserDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 3 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <KeyRound /> Permisos
                         </DropdownMenuItem>
                       </EditPermissionUserDialog>
                       <DropdownMenuSeparator />
                       <DeleteUserDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Trash2 /> Eliminar
                         </DropdownMenuItem>
                       </DeleteUserDialog>
                     </>
                   ) : (
                     <RecoverUserDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      <DropdownMenuItem
+                        disabled={degree < 4 ? true : false}
+                        onSelect={(e) => e.preventDefault()}
+                      >
                         <ArchiveRestore /> Recuperar
                       </DropdownMenuItem>
                     </RecoverUserDialog>

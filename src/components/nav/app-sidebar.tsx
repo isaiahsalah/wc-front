@@ -44,7 +44,7 @@ export const AppSidebar: React.FC<Props> = ({className}) => {
       new Map(permisions.map((item) => [item.id_sector, item.sector])).values()
     ) as ISector[];
     setSectors(uniqueObjects);
-  }, []);
+  }, [sesion]);
 
   if (!menu || !sectors) {
     return <></>;

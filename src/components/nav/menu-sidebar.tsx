@@ -12,20 +12,23 @@ const MenuSidebar = ({items, title}: {items: IMenuItem[]; title: string}) => {
     <SidebarGroup>
       <SidebarGroupLabel>{title}</SidebarGroupLabel>
       <SidebarMenu className="pl-2 box-border">
-        {items.map((item, i) => (
-          <SidebarMenuItem key={i}>
-            <SidebarMenuButton
-              className={` ${!item.isActive ? "pointer-events-none opacity-50" : ""} `}
-              asChild
-              //isActive={!item.isActive}
-            >
-              <Link to={item.url}>
-                <item.icon />
-                {item.title}{" "}
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        ))}
+        {items.map((item, i) =>
+          !item.isActive ? null : (
+            <SidebarMenuItem key={i}>
+              <SidebarMenuButton
+                disabled={item.isActive}
+                // className={` ${!item.isActive ? "pointer-events-none opacity-50" : ""} `}
+                asChild
+                //isActive={!item.isActive}
+              >
+                <Link to={item.url}>
+                  <item.icon />
+                  {item.title}{" "}
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )
+        )}
       </SidebarMenu>
     </SidebarGroup>
   );

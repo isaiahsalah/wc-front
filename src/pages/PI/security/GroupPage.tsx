@@ -39,12 +39,11 @@ import {
   RecoverGroupDialog,
 } from "@/components/dialog/security/GroupDialogs copy";
 
-// interface Props {
-//   data: IGroup[];
-//   updateView: () => void;
-// }
+interface Props {
+  degree: number;
+}
 
-const GroupPage = () => {
+const GroupPage: React.FC<Props> = ({degree}) => {
   const [groups, setGroups] = useState<IGroup[] | null>(null);
 
   useEffect(() => {
@@ -136,20 +135,29 @@ const GroupPage = () => {
                   {!row.original.deletedAt ? (
                     <>
                       <EditGroupDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 3 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Edit /> Editar{" "}
                         </DropdownMenuItem>
                       </EditGroupDialog>
                       <DropdownMenuSeparator />
                       <DeleteGroupDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Trash2 /> Eliminar{" "}
                         </DropdownMenuItem>
                       </DeleteGroupDialog>
                     </>
                   ) : (
                     <RecoverGroupDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      <DropdownMenuItem
+                        disabled={degree < 4 ? true : false}
+                        onSelect={(e) => e.preventDefault()}
+                      >
                         <ArchiveRestore /> Recuperar{" "}
                       </DropdownMenuItem>
                     </RecoverGroupDialog>
@@ -201,6 +209,7 @@ const GroupPage = () => {
                 updateView={updateView}
                 children={
                   <Button
+                    disabled={degree < 2 ? true : false}
                     variant="outline"
                     size="sm"
                     onSelect={(event) => {

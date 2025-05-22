@@ -38,8 +38,10 @@ import {countCurrentMonth} from "@/utils/funtions";
 import {format} from "date-fns";
 import {SectorContext} from "@/providers/sectorProvider";
 import {getModels} from "@/api/params/model.api";
-
-const ModelPage = () => {
+interface Props {
+  degree: number;
+}
+const ModelPage: React.FC<Props> = ({degree}) => {
   const [models, setModels] = useState<IModel[] | null>(null);
   const {sector} = useContext(SectorContext);
 
@@ -150,20 +152,29 @@ const ModelPage = () => {
                   {!row.original.deletedAt ? (
                     <>
                       <EditModelDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 3 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Edit /> Editar
                         </DropdownMenuItem>
                       </EditModelDialog>
                       <DropdownMenuSeparator />
                       <DeleteModelDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Trash2 /> Eliminar
                         </DropdownMenuItem>
                       </DeleteModelDialog>
                     </>
                   ) : (
                     <RecoverModelDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      <DropdownMenuItem
+                        disabled={degree < 4 ? true : false}
+                        onSelect={(e) => e.preventDefault()}
+                      >
                         <ArchiveRestore /> Recuperar
                       </DropdownMenuItem>
                     </RecoverModelDialog>
@@ -214,6 +225,7 @@ const ModelPage = () => {
                 updateView={updateView}
                 children={
                   <Button
+                    disabled={degree < 2 ? true : false}
                     variant="outline"
                     size="sm"
                     onSelect={(event) => {

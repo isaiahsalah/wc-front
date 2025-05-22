@@ -93,8 +93,13 @@ export const updateUserPermissions = async ({
   permissions: IPermission[];
 }) => {
   toast.info("Se está procesando la petición");
+
+  const filteredArray = permissions.filter((item) => item.degree !== 0);
+
   try {
-    const response = await apiClient.put(`/pr/user/permission/${userId}`, {permissions});
+    const response = await apiClient.put(`/pr/user/permission/${userId}`, {
+      permissions: filteredArray,
+    });
     toast.success("El usuario se editó correctamente.");
     return response.data; // Devuelve el usuario actualizado
   } catch (error) {

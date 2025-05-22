@@ -40,7 +40,11 @@ import {format} from "date-fns";
 import {typeProduct} from "@/utils/const";
 import {SectorContext} from "@/providers/sectorProvider";
 
-const ProductPage = () => {
+interface Props {
+  degree: number;
+}
+
+const ProductPage: React.FC<Props> = ({degree}) => {
   const [products, setProducts] = useState<IProduct[] | null>(null);
   const {sector} = useContext(SectorContext);
   useEffect(() => {
@@ -214,20 +218,29 @@ const ProductPage = () => {
                   {!row.original.deletedAt ? (
                     <>
                       <EditProductDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 3 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Edit /> Editar{" "}
                         </DropdownMenuItem>
                       </EditProductDialog>
                       <DropdownMenuSeparator />
                       <DeleteProductDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Trash2 /> Eliminar{" "}
                         </DropdownMenuItem>
                       </DeleteProductDialog>
                     </>
                   ) : (
                     <RecoverProductDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      <DropdownMenuItem
+                        disabled={degree < 4 ? true : false}
+                        onSelect={(e) => e.preventDefault()}
+                      >
                         <ArchiveRestore /> Recuperar{" "}
                       </DropdownMenuItem>
                     </RecoverProductDialog>
@@ -276,6 +289,7 @@ const ProductPage = () => {
                 updateView={updateView}
                 children={
                   <Button
+                    disabled={degree < 2 ? true : false}
                     variant="outline"
                     size="sm"
                     onSelect={(event) => {

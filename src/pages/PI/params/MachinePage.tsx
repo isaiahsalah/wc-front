@@ -1,5 +1,5 @@
 import {IMachine} from "@/utils/interfaces";
-import {useEffect, useMemo, useState} from "react";
+import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
 import {Button} from "@/components/ui/button";
 import {
@@ -37,9 +37,13 @@ import {Badge} from "@/components/ui/badge";
 import {countCurrentMonth} from "@/utils/funtions";
 import {format} from "date-fns";
 import {getMachines} from "@/api/params/machine.api";
-
-const MachinePage = () => {
+import {SectorContext} from "@/providers/sectorProvider";
+interface Props {
+  degree: number;
+}
+const MachinePage: React.FC<Props> = ({degree}) => {
   const [machines, setMachines] = useState<IMachine[] | null>(null);
+  const {sector} = useContext(SectorContext);
 
   useEffect(() => {
     updateView();
@@ -47,7 +51,7 @@ const MachinePage = () => {
 
   const updateView = async () => {
     try {
-      const machinesData = await getMachines({all: true});
+      const machinesData = await getMachines({all: true, id_sector: sector?.id});
       setMachines(machinesData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
@@ -79,6 +83,17 @@ const MachinePage = () => {
         accessorFn: (row) => row.process?.name.trim(),
         accessorKey: "process",
         header: "Proceso",
+        cell: (info) => (
+          <Badge variant={"secondary"} className="text-muted-foreground">
+            {info.getValue() as string}
+          </Badge>
+        ),
+      },
+
+      {
+        accessorFn: (row) => row.sector?.name.trim(),
+        accessorKey: "sector",
+        header: "Sector",
         cell: (info) => (
           <Badge variant={"secondary"} className="text-muted-foreground">
             {info.getValue() as string}
@@ -139,20 +154,29 @@ const MachinePage = () => {
                   {!row.original.deletedAt ? (
                     <>
                       <EditMachineDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 3 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Edit /> Editar
                         </DropdownMenuItem>
                       </EditMachineDialog>
                       <DropdownMenuSeparator />
                       <DeleteMachineDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Trash2 /> Eliminar
                         </DropdownMenuItem>
                       </DeleteMachineDialog>
                     </>
                   ) : (
                     <RecoverMachineDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      <DropdownMenuItem
+                        disabled={degree < 4 ? true : false}
+                        onSelect={(e) => e.preventDefault()}
+                      >
                         <ArchiveRestore /> Recuperar
                       </DropdownMenuItem>
                     </RecoverMachineDialog>
@@ -203,6 +227,7 @@ const MachinePage = () => {
                 updateView={updateView}
                 children={
                   <Button
+                    disabled={degree < 2 ? true : false}
                     variant="outline"
                     size="sm"
                     onSelect={(event) => {

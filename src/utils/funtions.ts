@@ -1,4 +1,5 @@
-import {IGeneral} from "./interfaces";
+import {getCheckToken} from "@/api/login.api";
+import {IGeneral, ISesion} from "./interfaces";
 
 export function countCurrentMonth(data: IGeneral[]): number {
   const now = new Date();
@@ -20,4 +21,39 @@ export function countCurrentMonth(data: IGeneral[]): number {
 
 export const randomNumber = (from: number, to: number) => {
   return Math.floor(Math.random() * (to - from + 1)) + from;
+};
+
+export const checkToken = async ({
+  setSesion,
+}: {
+  setSesion: React.Dispatch<React.SetStateAction<ISesion | null>>;
+}) => {
+  const rawToken = window.localStorage.getItem("token-app");
+  if (!rawToken) {
+    //setIsAuthenticated(false);
+    //navigate("/login");
+    //setLoading(false);
+    return false;
+  }
+
+  const savedtoken = JSON.parse(rawToken).toString();
+
+  await getCheckToken({token: savedtoken})
+    .then((response) => {
+      if (response.token) {
+        // Almacena el token en localStorage
+        window.localStorage.setItem("token-app", JSON.stringify(response.token));
+        // Actualiza la sesión en el estado
+        setSesion(response as ISesion);
+        return true;
+        //setIsAuthenticated(true);
+        // Navega a la ruta deseada después de iniciar sesión
+        //navigate("/home");
+      }
+    })
+    .catch((e) => {
+      console.log(e);
+      return false;
+    });
+  //.finally(() => setLoading(false));
 };

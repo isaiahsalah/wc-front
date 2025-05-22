@@ -1,4 +1,4 @@
-import {LogOut, ScanFace, Settings, SquareAsterisk, UserPen} from "lucide-react";
+import {LogOut, Settings, SquareAsterisk, UserPen} from "lucide-react";
 
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {
@@ -14,8 +14,7 @@ import {SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar} from "@/com
 import {useContext} from "react";
 import {SesionContext} from "@/providers/sesionProvider";
 import {useNavigate} from "react-router-dom";
-import {typeTurn} from "@/utils/const";
-import {EditProfileDialog} from "../dialog/profile/ProfileDialog";
+import {EditPassDialog, EditProfileDialog} from "../dialog/profile/ProfileDialog";
 
 export function ProfileSidebar() {
   const {isMobile} = useSidebar();
@@ -58,7 +57,6 @@ export function ProfileSidebar() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={sesion?.user.image} alt={sesion?.user.name} />
                   <AvatarFallback className="rounded-lg">PC</AvatarFallback>
                 </Avatar>
 
@@ -66,13 +64,7 @@ export function ProfileSidebar() {
                   <span className="truncate  font-semibold">
                     {sesion?.user.name} {sesion?.user.lastname}
                   </span>
-                  <span className="truncate text-xs">
-                    {sesion?.user.group?.name} -{" "}
-                    {
-                      typeTurn.find((turn) => turn.id === (sesion?.user.group?.type_turn as number))
-                        ?.name
-                    }
-                  </span>
+                  <span className="truncate text-xs">{sesion?.user.group?.name}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -86,15 +78,12 @@ export function ProfileSidebar() {
                   Editar Información
                 </DropdownMenuItem>
               </EditProfileDialog>
-
-              <DropdownMenuItem>
-                <SquareAsterisk />
-                Cambiar Contraseña
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <ScanFace />
-                Actualizar Foto de Perfil
-              </DropdownMenuItem>
+              <EditPassDialog updateView={() => {}}>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  <SquareAsterisk />
+                  Cambiar Contraseña
+                </DropdownMenuItem>
+              </EditPassDialog>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={onLogOut}>

@@ -37,8 +37,10 @@ import {Badge} from "@/components/ui/badge";
 import {countCurrentMonth} from "@/utils/funtions";
 import {format} from "date-fns";
 import {getSectors} from "@/api/params/sector.api";
-
-const SectorPage = () => {
+interface Props {
+  degree: number;
+}
+const SectorPage: React.FC<Props> = ({degree}) => {
   const [sectors, setSectors] = useState<ISector[] | null>(null);
 
   useEffect(() => {
@@ -126,20 +128,29 @@ const SectorPage = () => {
                   {!row.original.deletedAt ? (
                     <>
                       <EditSectorDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 3 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Edit /> Editar
                         </DropdownMenuItem>
                       </EditSectorDialog>
                       <DropdownMenuSeparator />
                       <DeleteSectorDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Trash2 /> Eliminar
                         </DropdownMenuItem>
                       </DeleteSectorDialog>
                     </>
                   ) : (
                     <RecoverSectorDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      <DropdownMenuItem
+                        disabled={degree < 4 ? true : false}
+                        onSelect={(e) => e.preventDefault()}
+                      >
                         <ArchiveRestore /> Recuperar
                       </DropdownMenuItem>
                     </RecoverSectorDialog>
@@ -191,6 +202,7 @@ const SectorPage = () => {
                 updateView={updateView}
                 children={
                   <Button
+                    disabled={degree < 2 ? true : false}
                     variant="outline"
                     size="sm"
                     onSelect={(event) => {

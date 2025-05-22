@@ -45,8 +45,10 @@ import {SectorContext} from "@/providers/sectorProvider";
 import {typeQuality} from "@/utils/const";
 import {Badge} from "@/components/ui/badge";
 import {SesionContext} from "@/providers/sesionProvider";
-
-const ProductionPage = () => {
+interface Props {
+  degree: number;
+}
+const ProductionPage: React.FC<Props> = ({degree}) => {
   const [productions, setProductions] = useState<IProduction[] | null>(null);
   const [orderDetails, setOrderDetails] = useState<IOrderDetail[] | null>(null);
   const {sector} = useContext(SectorContext);
@@ -258,7 +260,10 @@ const ProductionPage = () => {
                   {!row.original.deletedAt ? (
                     <>
                       <PrintQRDialog production={row.original}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 2 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Printer /> Reimprimir{" "}
                         </DropdownMenuItem>
                       </PrintQRDialog>
@@ -266,19 +271,28 @@ const ProductionPage = () => {
                       <DropdownMenuSeparator />
 
                       <EditProductionDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 3 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Edit /> Editar{" "}
                         </DropdownMenuItem>
                       </EditProductionDialog>
                       <DeleteProductionDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Trash2 /> Eliminar{" "}
                         </DropdownMenuItem>
                       </DeleteProductionDialog>
                     </>
                   ) : (
                     <RecoverProductionDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      <DropdownMenuItem
+                        disabled={degree < 4 ? true : false}
+                        onSelect={(e) => e.preventDefault()}
+                      >
                         <ArchiveRestore /> Recuperar{" "}
                       </DropdownMenuItem>
                     </RecoverProductionDialog>
@@ -378,7 +392,10 @@ const ProductionPage = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-32">
                   <CreateProductionsDialog orderDetail={row.original} updateView={updateView}>
-                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <DropdownMenuItem
+                      disabled={degree < 2 ? true : false}
+                      onSelect={(e) => e.preventDefault()}
+                    >
                       <Edit /> Producir
                     </DropdownMenuItem>
                   </CreateProductionsDialog>

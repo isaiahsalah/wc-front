@@ -8,12 +8,12 @@ import {Toaster} from "./components/ui/sonner";
 import {useContext, useEffect, useState} from "react";
 import {SesionContext, SesionProvider} from "./providers/sesionProvider";
 import LoginPage from "./pages/LoginPage";
-import {getCheckToken} from "./api/login.api";
-import {ISesion} from "./utils/interfaces";
 import LoadingPage from "./pages/LoadingPage";
 import {PageProvider} from "./providers/pageProvider";
 import ModuleRoutes from "./ModuleRoutes";
 import {SectorProvider} from "./providers/sectorProvider";
+import {checkToken} from "./utils/funtions";
+import {toast} from "sonner";
 
 function App() {
   const PrivateRoutes = () => {
@@ -23,9 +23,20 @@ function App() {
     const navigate = useNavigate();
 
     useEffect(() => {
-      checkToken();
-    }, [setSesion]);
+      checkToken({setSesion}).then((tokenValid) => {
+        if (!tokenValid) {
+          setLoading(false);
+          setIsAuthenticated(false);
+          navigate("/login");
+        }
+        setIsAuthenticated(true);
+        toast.success("Bienvenido(a) de nuevo");
 
+        navigate("/home");
+        setLoading(false);
+      });
+    }, [setSesion]);
+    /*
     const checkToken = async () => {
       const rawToken = window.localStorage.getItem("token-app");
       if (!rawToken) {
@@ -52,7 +63,7 @@ function App() {
         .catch((e) => console.log(e))
         .finally(() => setLoading(false));
     };
-
+*/
     if (loading) return <LoadingPage />;
 
     return isAuthenticated ? (
@@ -62,8 +73,8 @@ function App() {
             <AppSidebar />
             <SidebarInset>
               <Header />
-              <div className=" @container/main flex flex-1 flex-col gap-4 p-4 animate-fadeIn md:mx-4">
-                <main className="h-full ">
+              <div className=" @container/main flex flex-1 flex-col gap-4 p-4 animate-fadeIn md:mx-4  ">
+                <main className="h-full  ">
                   <Outlet />
                 </main>
               </div>
@@ -89,7 +100,7 @@ function App() {
               {/*<Route path="*" element={<Navigate to="/login" />} />*/}
             </Routes>
           </div>
-          <Toaster />
+          <Toaster closeButton duration={2500} />
         </BrowserRouter>
       </SesionProvider>
     </ThemeProvider>

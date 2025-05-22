@@ -1,7 +1,7 @@
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {useForm} from "react-hook-form";
-import {IMachine, MachineSchema, IProcess} from "@/utils/interfaces";
+import {IMachine, MachineSchema, IProcess, ISector} from "@/utils/interfaces";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {
   Form,
@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {Textarea} from "@/components/ui/textarea";
-import {useState} from "react";
+import {useContext, useState} from "react";
 import {
   createMachine,
   deleteMachine,
@@ -39,6 +39,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {getSectors} from "@/api/params/sector.api";
+import {SectorContext} from "@/providers/sectorProvider";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -50,11 +52,15 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({children, updateView
   const [loadingInit, setLoadingInit] = useState(false);
 
   const [processes, setProcesses] = useState<IProcess[]>();
+  const [sectors, setSectors] = useState<ISector[]>();
+
+  const {sector} = useContext(SectorContext);
 
   const form = useForm<IMachine>({
     resolver: zodResolver(MachineSchema),
     defaultValues: {
       name: "",
+      id_sector: sector?.id as number,
     },
   });
 
@@ -62,7 +68,7 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({children, updateView
     setLoadingSave(true);
     createMachine({data: values})
       .then((updatedMachine) => {
-        console.log("Machineo creado:", updatedMachine);
+        console.log("Maquina creado:", updatedMachine);
         updateView();
       })
       .catch((error) => {
@@ -76,9 +82,11 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({children, updateView
   const fetchData = async () => {
     setLoadingInit(true);
     try {
-      const ProcessesData = await getProcesses();
+      const ProcessesData = await getProcesses({});
+      const SectorData = await getSectors({});
 
       setProcesses(ProcessesData);
+      setSectors(SectorData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
     } finally {
@@ -98,7 +106,12 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({children, updateView
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid  gap-4 ">
+            <form
+              onSubmit={form.handleSubmit(onSubmit, (ex) => {
+                console.log(ex);
+              })}
+              className=" grid  gap-4 "
+            >
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
@@ -131,7 +144,35 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({children, updateView
                   control={form.control}
                   name="id_process"
                   render={({field}) => (
-                    <FormItem className="col-span-6 ">
+                    <FormItem className="col-span-3">
+                      <FormDescription>Sector</FormDescription>
+                      <FormControl>
+                        <Select
+                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
+                          defaultValue={(sector?.id as number).toString()}
+                        >
+                          <SelectTrigger disabled className="w-full">
+                            <SelectValue placeholder="Seleccionar Sector" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {sectors?.map((sector: IProcess) => (
+                              <SelectItem key={sector.id} value={(sector.id ?? "").toString()}>
+                                {sector.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="id_process"
+                  render={({field}) => (
+                    <FormItem className="col-span-3 ">
                       <FormDescription>Proceso</FormDescription>
                       <FormControl>
                         <Select
@@ -194,6 +235,7 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
   const [loadingInit, setLoadingInit] = useState(false);
 
   const [processes, setProcesses] = useState<IProcess[]>();
+  const [sectors, setSectors] = useState<ISector[]>();
 
   const form = useForm<IMachine>({
     resolver: zodResolver(MachineSchema),
@@ -219,16 +261,18 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
     setLoadingInit(true);
     try {
       const MachineData: IMachine = await getMachineById(id);
-      console.log("Machineos:", MachineData);
 
-      const ProcessesData = await getProcesses();
+      const ProcessesData = await getProcesses({});
+      const SectorData = await getSectors({});
 
       setProcesses(ProcessesData);
+      setSectors(SectorData);
       form.reset({
         id: MachineData.id,
         name: MachineData.name,
         description: MachineData.description,
         id_process: MachineData.id_process,
+        id_sector: MachineData.id_sector,
         active: MachineData.active,
       });
     } catch (error) {
@@ -309,6 +353,34 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
                       <FormDescription>Descripción</FormDescription>
                       <FormControl>
                         <Textarea placeholder="Notas adicionales" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="id_process"
+                  render={({field}) => (
+                    <FormItem className="col-span-6 ">
+                      <FormDescription>Sector</FormDescription>
+                      <FormControl>
+                        <Select
+                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
+                          defaultValue={field.value.toString()}
+                        >
+                          <SelectTrigger disabled className="w-full">
+                            <SelectValue placeholder="Seleccionar Sector" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {sectors?.map((sector: IProcess) => (
+                              <SelectItem key={sector.id} value={(sector.id ?? "").toString()}>
+                                {sector.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

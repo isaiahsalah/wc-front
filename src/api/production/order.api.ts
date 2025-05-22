@@ -91,7 +91,7 @@ export const recoverOrder = async (id: number) => {
 
 ////////////////////////////////////////////////////////////////////////
 
-export const createOrderWithDetail = async ({
+export const createOrderWithDetails = async ({
   order,
   orderDetails,
 }: {
@@ -107,11 +107,29 @@ export const createOrderWithDetail = async ({
 
   toast.info("Se está procesando la petición");
   try {
-    const response = await apiClient.post("/pr/order/withdetails", {order, orderDetails});
+    const response = await apiClient.post("/pr/order/details", {order, orderDetails});
     toast.success("La orden se creó correctamente.");
     return response.data; // Devuelve la orden creada
   } catch (error) {
     toast.error(`Error al crear la orden: ${error}`);
+    throw error;
+  }
+};
+
+export const updateOrderWithDetails = async ({order}: {order: IOrder}) => {
+  if (!order.order_details?.length || order.order_details?.length <= 0) {
+    return toast.warning("Selecciona al menos 1 producto");
+  }
+  if (order.init_date >= order.end_date) {
+    return toast.warning("La fecha de inicio debe ser menor a la fecha de fin");
+  }
+  toast.info("Se está procesando la petición");
+  try {
+    const response = await apiClient.put(`/pr/order/details/${order.id}`, order);
+    toast.success("La orden se editó correctamente.");
+    return response.data; // Devuelve la orden actualizada
+  } catch (error) {
+    toast.error(`Error al editar la orden con ID ${order.id}: ${error}`);
     throw error;
   }
 };

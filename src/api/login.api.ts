@@ -36,10 +36,6 @@ export const getCheckToken = async ({token}: {token: string}) => {
       headers: {Authorization: `Bearer ${token}`},
     });
 
-    toast.success("Bienvenido(a) de nuevo", {
-      description: "Has ingresado correctamente a tu cuenta.",
-    });
-
     return response.data; // Devuelve los datos obtenidos de la API
   } catch (error) {
     window.localStorage.removeItem("token-app");

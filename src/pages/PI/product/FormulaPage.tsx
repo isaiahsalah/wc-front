@@ -48,8 +48,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {getProducts} from "@/api/product/product.api";
-
-const FormulaPage = () => {
+interface Props {
+  degree: number;
+}
+const FormulaPage: React.FC<Props> = ({degree}) => {
   const [formulas, setFormulas] = useState<IFormula[] | null>(null);
   const {sector} = useContext(SectorContext);
   const [products, setProducts] = useState<IProduct[]>();
@@ -183,20 +185,29 @@ const FormulaPage = () => {
                   {!row.original.deletedAt ? (
                     <>
                       <EditFormulaDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 3 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Edit /> Editar{" "}
                         </DropdownMenuItem>
                       </EditFormulaDialog>
                       <DropdownMenuSeparator />
                       <DeleteFormulaDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Trash2 /> Eliminar{" "}
                         </DropdownMenuItem>
                       </DeleteFormulaDialog>
                     </>
                   ) : (
                     <RecoverFormulaDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      <DropdownMenuItem
+                        disabled={degree < 4 ? true : false}
+                        onSelect={(e) => e.preventDefault()}
+                      >
                         <ArchiveRestore /> Recuperar{" "}
                       </DropdownMenuItem>
                     </RecoverFormulaDialog>
@@ -268,6 +279,7 @@ const FormulaPage = () => {
                 updateView={updateView}
                 children={
                   <Button
+                    disabled={degree < 2 ? true : false}
                     variant="outline"
                     size="sm"
                     onSelect={(event) => {

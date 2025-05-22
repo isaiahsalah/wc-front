@@ -5,6 +5,8 @@ import {Tabs, TabsContent, TabsList, TabsTrigger} from "./ui/tabs";
 import {IPageItem} from "@/utils/const";
 import {PageContext} from "@/providers/pageProvider";
 import {Separator} from "./ui/separator";
+import {SesionContext} from "@/providers/sesionProvider";
+import {IPermission} from "@/utils/interfaces";
 
 interface Props {
   tabData: IPageItem[];
@@ -14,6 +16,9 @@ const SelectorTabPage: React.FC<Props> = ({tabData}) => {
   const [activeTab, setActiveTab] = useState(tabData[0]);
 
   const {setPage} = useContext(PageContext);
+
+  const {sesion} = useContext(SesionContext);
+  const permissions = sesion?.user.permissions as IPermission[];
 
   useEffect(() => {
     setActiveTab(tabData[0]);
@@ -30,9 +35,9 @@ const SelectorTabPage: React.FC<Props> = ({tabData}) => {
         const selectedTab = tabData.find((tab) => tab.id.toString() === value);
         if (selectedTab) setActiveTab(selectedTab);
       }}
-      className="flex w-full flex-col justify-start gap-2"
+      className="flex w-full flex-col justify-start gap-2  h-full"
     >
-      <div className="flex items-center justify-between ">
+      <div className="flex items-center justify-between  ">
         <Select
           value={activeTab.id.toString()}
           onValueChange={(value) => {
@@ -53,19 +58,29 @@ const SelectorTabPage: React.FC<Props> = ({tabData}) => {
         </Select>
 
         <TabsList className="md:flex hidden   w-full">
-          {tabData.map((tab) => (
-            <TabsTrigger key={tab.id} value={tab.id.toString()}>
-              {tab.label}
-            </TabsTrigger>
-          ))}
+          {tabData.map((tab) => {
+            const degree = permissions?.find((perm) => perm.screen === tab.id)?.degree ?? 0;
+            if (degree < 1) return null;
+
+            return (
+              <TabsTrigger key={tab.id} value={tab.id.toString()}>
+                {tab.label}
+              </TabsTrigger>
+            );
+          })}
         </TabsList>
       </div>
       <Separator />
-      {tabData.map((tab) => (
-        <TabsContent key={tab.id} value={tab.id.toString()}>
-          <tab.page pageId={tab.id} />
-        </TabsContent>
-      ))}
+      {tabData.map((tab) => {
+        const degree = permissions?.find((perm) => perm.screen === tab.id)?.degree ?? 0;
+        if (degree < 1) return null;
+        else
+          return (
+            <TabsContent key={tab.id} value={tab.id.toString()}>
+              <tab.page degree={degree} />
+            </TabsContent>
+          );
+      })}
     </Tabs>
   );
 };

@@ -33,8 +33,10 @@ import {format} from "date-fns";
 import {SectorContext} from "@/providers/sectorProvider";
 import {typeQuality} from "@/utils/const";
 import {Badge} from "@/components/ui/badge";
-
-const InventoryPage = () => {
+interface Props {
+  degree: number;
+}
+const InventoryPage: React.FC<Props> = ({degree}) => {
   const [productions, setProductions] = useState<IProduction[] | null>(null);
   const {sector} = useContext(SectorContext);
 
@@ -234,7 +236,10 @@ const InventoryPage = () => {
                   {!row.original.deletedAt ? (
                     <>
                       <PrintQRDialog production={row.original}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 2 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Printer /> Reimprimir{" "}
                         </DropdownMenuItem>
                       </PrintQRDialog>
@@ -242,19 +247,28 @@ const InventoryPage = () => {
                       <DropdownMenuSeparator />
 
                       <EditProductionDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 3 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Edit /> Editar{" "}
                         </DropdownMenuItem>
                       </EditProductionDialog>
                       <DeleteProductionDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Trash2 /> Eliminar{" "}
                         </DropdownMenuItem>
                       </DeleteProductionDialog>
                     </>
                   ) : (
                     <RecoverProductionDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      <DropdownMenuItem
+                        disabled={degree < 4 ? true : false}
+                        onSelect={(e) => e.preventDefault()}
+                      >
                         <ArchiveRestore /> Recuperar{" "}
                       </DropdownMenuItem>
                     </RecoverProductionDialog>

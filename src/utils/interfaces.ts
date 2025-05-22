@@ -97,7 +97,7 @@ export const UserSchema = z.object({
   id: z.number().nullable().optional(),
   name: z.string(),
   lastname: z.string(),
-  birthday: z.date(), 
+  birthday: z.date(),
   phone: z.string(),
   user: z.string(),
   pass: z.string(),
@@ -187,6 +187,10 @@ export const MachineSchema = z.object({
   description: z.string(),
   id_process: z.number(),
   process: ProcessSchema.nullable().optional(),
+
+  id_sector: z.number(),
+  sector: SectorSchema.nullable().optional(),
+
   active: z.boolean().optional(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
@@ -218,6 +222,9 @@ export const OrderDetailSchema = z.object({
   productions: z.array(z.any()).nullable().optional(),
   id_order: z.number(),
   order: OrderSchema.nullable().optional(),
+  id_machine: z.number(),
+  machine: MachineSchema.nullable().optional(),
+
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),

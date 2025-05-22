@@ -1,5 +1,5 @@
-import {IColor, IPermission} from "@/utils/interfaces";
-import {useContext, useEffect, useMemo, useState} from "react";
+import {IColor} from "@/utils/interfaces";
+import {useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
 import {Button} from "@/components/ui/button";
 import {
@@ -37,18 +37,13 @@ import {Badge} from "@/components/ui/badge";
 import {countCurrentMonth} from "@/utils/funtions";
 import {format} from "date-fns";
 import {getColors} from "@/api/product/color.api";
-import {SesionContext} from "@/providers/sesionProvider";
 
 interface Props {
-  pageId: number;
+  degree: number;
 }
 
-const ColorPage: React.FC<Props> = ({pageId}) => {
+const ColorPage: React.FC<Props> = ({degree}) => {
   const [colors, setColors] = useState<IColor[] | null>(null);
-
-  const {sesion} = useContext(SesionContext);
-  const permissions = sesion?.user.permissions as IPermission[];
-  const degree = permissions?.find((perm) => perm.screen === pageId)?.degree ?? 0;
 
   useEffect(() => {
     updateView();

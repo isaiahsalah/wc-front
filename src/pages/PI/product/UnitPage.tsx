@@ -37,8 +37,11 @@ import {Badge} from "@/components/ui/badge";
 import {countCurrentMonth} from "@/utils/funtions";
 import {format} from "date-fns";
 import {getUnities} from "@/api/product/unity.api";
+interface Props {
+  degree: number;
+}
 
-const UnitPage = () => {
+const UnitPage: React.FC<Props> = ({degree}) => {
   const [unities, setUnities] = useState<IUnity[] | null>(null);
 
   useEffect(() => {
@@ -129,20 +132,29 @@ const UnitPage = () => {
                   {!row.original.deletedAt ? (
                     <>
                       <EditUnityDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 3 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Edit /> Editar{" "}
                         </DropdownMenuItem>
                       </EditUnityDialog>
                       <DropdownMenuSeparator />
                       <DeleteUnityDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Trash2 /> Eliminar{" "}
                         </DropdownMenuItem>
                       </DeleteUnityDialog>
                     </>
                   ) : (
                     <RecoverUnityDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      <DropdownMenuItem
+                        disabled={degree < 4 ? true : false}
+                        onSelect={(e) => e.preventDefault()}
+                      >
                         <ArchiveRestore /> Recuperar{" "}
                       </DropdownMenuItem>
                     </RecoverUnityDialog>
@@ -193,6 +205,7 @@ const UnitPage = () => {
                 updateView={updateView}
                 children={
                   <Button
+                    disabled={degree < 2 ? true : false}
                     variant="outline"
                     size="sm"
                     onSelect={(event) => {

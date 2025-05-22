@@ -40,8 +40,10 @@ import {countCurrentMonth} from "@/utils/funtions";
 import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
 import {SectorContext} from "@/providers/sectorProvider";
-
-const OrderPage = () => {
+interface Props {
+  degree: number;
+}
+const OrderPage: React.FC<Props> = ({degree}) => {
   const [orders, setOrders] = useState<IOrder[] | null>(null);
   const {sector} = useContext(SectorContext);
 
@@ -141,20 +143,29 @@ const OrderPage = () => {
                   {!row.original.deletedAt ? (
                     <>
                       <EditOrderDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 3 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Edit /> Editar{" "}
                         </DropdownMenuItem>
                       </EditOrderDialog>
                       <DropdownMenuSeparator />
                       <DeleteOrderDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
                           <Trash2 /> Eliminar{" "}
                         </DropdownMenuItem>
                       </DeleteOrderDialog>
                     </>
                   ) : (
                     <RecoverOrderDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                      <DropdownMenuItem
+                        disabled={degree < 4 ? true : false}
+                        onSelect={(e) => e.preventDefault()}
+                      >
                         <ArchiveRestore /> Recuperar{" "}
                       </DropdownMenuItem>
                     </RecoverOrderDialog>
@@ -204,6 +215,7 @@ const OrderPage = () => {
                 updateView={updateView}
                 children={
                   <Button
+                    disabled={degree < 2 ? true : false}
                     variant="outline"
                     size="sm"
                     onSelect={(event) => {

@@ -20,7 +20,7 @@ export interface IPageItem {
   label: string;
   isActive?: boolean;
   link: string;
-  page: React.FC<{pageId: number}>; // Componente de la página con props opcionales
+  page: React.FC<{degree: number}>; // Componente de la página con props opcionales
 }
 
 export interface IMenuItem {

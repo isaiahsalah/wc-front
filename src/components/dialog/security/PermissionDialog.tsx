@@ -1,6 +1,6 @@
 import {Button} from "@/components/ui/button";
 
-import {useContext, useState} from "react";
+import {useContext, useMemo, useState} from "react";
 
 import {
   Dialog,
@@ -28,6 +28,8 @@ import {Separator} from "@/components/ui/separator";
 import {SectorContext} from "@/providers/sectorProvider";
 import {getSectors} from "@/api/params/sector.api";
 import {toast} from "sonner";
+import {SesionContext} from "@/providers/sesionProvider";
+import {checkToken} from "@/utils/funtions";
 
 interface PropsPermissionEdit {
   children: React.ReactNode;
@@ -47,6 +49,7 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
 
   //const {sesion} = useContext(SesionContext);
   const {sector} = useContext(SectorContext);
+  const {sesion, setSesion} = useContext(SesionContext);
 
   const [permissions, setPermissions] = useState<IPermission[]>();
 
@@ -64,6 +67,7 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
     updateUserPermissions({userId: id, permissions: permissions})
       .then((updatedUser) => {
         console.log("Usuario actualizado:", updatedUser);
+        if (sesion?.user.id === id) checkToken({setSesion});
         updateView();
       })
       .catch((error) => {
@@ -79,15 +83,10 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
     try {
       const userData: IUser = await getUserById(id);
       console.log("Usuario:", userData);
-
       setPermissions(userData.permissions as IPermission[]);
-
       setModuleId((userData.permissions as IPermission[])[0].type_module);
-
       console.log("👌✖️🤞:", userData.permissions);
-
       const SectorsData = await getSectors({});
-
       setSectors(SectorsData);
     } catch (error) {
       console.error("Error al cargar los datos del usuario:", error);
@@ -95,6 +94,15 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
       setLoadingInit(false);
     }
   };
+
+  const memoizedSelectedValues = useMemo(() => {
+    const map: Record<number, string> = {};
+    permissions?.forEach((item) => {
+      map[item.screen] = item.degree.toString();
+    });
+    console.log("📍");
+    return map;
+  }, [permissions]);
 
   return (
     <Dialog onOpenChange={onOpenChange}>
@@ -165,19 +173,22 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
                           <div className="col-span-2 gap-2">
                             <CardDescription>{page.label}</CardDescription>
                             <Select
-                              value={permissions
+                              value={memoizedSelectedValues[page.id] || "0"}
+                              /*value={permissions
                                 ?.find((item) => {
                                   //console.log("item👌👌", item);
+                                  console.log("📍");
                                   return item.screen === page.id;
                                 })
-                                ?.degree.toString()} // Asegúrate de que el valor sea una cadena
+                                ?.degree.toString()} // Asegúrate de que el valor sea una cadena*/
                               onValueChange={(value) => {
+                                console.log("📌");
                                 let found = false; // Bandera para verificar si el objeto existe
 
                                 const updatedArray: IPermission[] = (
                                   permissions as IPermission[]
                                 ).map((item) => {
-                                  if (item.id === page.id) {
+                                  if (item.screen === page.id) {
                                     found = true; // Marcar como encontrado
                                     return {...item, degree: Number(value)}; // Actualizar el objeto
                                   }
@@ -198,7 +209,11 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
                                 setPermissions(updatedArray);
                               }} // Convertir el valor a número
                             >
-                              <SelectTrigger className="w-full">
+                              <SelectTrigger
+                                className={`w-full ${
+                                  memoizedSelectedValues[page.id] ? "" : "text-muted"
+                                } `}
+                              >
                                 <SelectValue placeholder="Seleccionar" />
                               </SelectTrigger>
                               <SelectContent>

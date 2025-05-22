@@ -27,8 +27,10 @@ import {
 import LoadingCircle from "@/components/LoadingCircle";
 import {IUser, UserSchema} from "@/utils/interfaces";
 import {SesionContext} from "@/providers/sesionProvider";
-import {updateProfile} from "@/api/profile/profile.api";
+import {updatePassword, updateProfile} from "@/api/profile/profile.api";
 import {DatePicker} from "@/components/date-picker";
+import {CardDescription} from "@/components/ui/card";
+import {toast} from "sonner";
 
 interface PropsEditProfile {
   children: React.ReactNode; // Define el tipo de children
@@ -75,7 +77,6 @@ export const EditProfileDialog: React.FC<PropsEditProfile> = ({children, updateV
         birthday: new Date(sesion?.user.birthday as Date),
         id_group: sesion?.user.id_group,
         phone: sesion?.user.phone,
-        image: sesion?.user.image,
       });
     } catch (error) {
       console.error("Error al cargar los datos:", error);
@@ -188,6 +189,93 @@ export const EditProfileDialog: React.FC<PropsEditProfile> = ({children, updateV
             </form>
           </Form>
         )}
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+interface PropsEditPass {
+  children: React.ReactNode; // Define el tipo de children
+  updateView: () => void; // Define the type as a function that returns void
+}
+
+export const EditPassDialog: React.FC<PropsEditPass> = ({children, updateView}) => {
+  const {sesion} = useContext(SesionContext);
+  const [newPass2, setNewPass2] = useState<string>();
+
+  const [oldPass, setOldPass] = useState<string>();
+  const [newPass, setNewPass] = useState<string>();
+
+  const [loadingSave, setLoadingSave] = useState(false); // Estado de carga
+
+  function onSubmit() {
+    if (!newPass || !oldPass) return toast.warning("Introduce los datos");
+    if (newPass != newPass2)
+      return toast.warning("La nueva contraseña debe ser idéntida en ambos campos");
+
+    setLoadingSave(true); // Inicia la carga
+    updatePassword({id: sesion?.user.id as number, newPassword: newPass, oldPassword: oldPass})
+      .then((updatedProfile) => {
+        console.log("Perfil actualizado:", updatedProfile);
+
+        //setSesion({user: updatedProfile, token: sesion?.token as string});
+        updateView();
+      })
+      .catch((error) => {
+        console.error("Error al actualizar el Perfil:", error);
+      })
+      .finally(() => {
+        setLoadingSave(false); // Finaliza la carga
+      });
+  }
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Gestión de Contraseña</DialogTitle>
+          <DialogDescription>Edite su contraseña.</DialogDescription>
+        </DialogHeader>
+
+        <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
+          <div className="col-span-6 grid gap-2">
+            <CardDescription>Contraseña Antigüa</CardDescription>
+            <Input
+              type="password"
+              placeholder="****"
+              onChange={(e) => setOldPass(e.target.value)}
+            />
+          </div>
+          <div className="col-span-3 grid gap-2">
+            <CardDescription>Contraseña Nueva</CardDescription>
+            <Input
+              type="password"
+              placeholder="****"
+              onChange={(e) => setNewPass(e.target.value)}
+            />
+          </div>
+          <div className="col-span-3 grid gap-2">
+            <CardDescription> Repita la Contraseña Nueva</CardDescription>
+            <Input
+              type="password"
+              placeholder="****"
+              onChange={(e) => setNewPass2(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <DialogFooter className=" grid grid-cols-6  ">
+          <Button type="submit" onClick={onSubmit} className="col-span-3" disabled={loadingSave}>
+            {loadingSave ? <LoadingCircle /> : "Guardar"}
+          </Button>
+
+          <DialogClose className="col-span-3" asChild>
+            <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
+              Cerrar
+            </Button>
+          </DialogClose>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
