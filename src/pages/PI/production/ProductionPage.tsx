@@ -1,13 +1,4 @@
-import {
-  IOrderDetail,
-  IOrder,
-  IProcess,
-  IProduct,
-  IProduction,
-  ISector,
-  IMachine,
-  IUser,
-} from "@/utils/interfaces";
+import {IOrderDetail, IOrder, IProduct, IProduction, IMachine, ISector} from "@/utils/interfaces";
 import {ColumnDef, Row} from "@tanstack/react-table";
 import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
@@ -27,8 +18,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {getProcesses} from "@/api/params/process.api";
-import {getSectors} from "@/api/params/sector.api";
 import {getOrderDetails_date} from "@/api/production/orderDetail.api";
 import {getProductions} from "@/api/production/production.api";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
@@ -41,9 +30,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {format} from "date-fns";
-import {SectorContext} from "@/providers/sectorProvider";
 import {typeQuality} from "@/utils/const";
 import {Badge} from "@/components/ui/badge";
+import {getMachines} from "@/api/params/machine.api";
+import {ProcessContext} from "@/providers/processProvider";
+import {getSectorBySesion} from "@/utils/funtions";
 import {SesionContext} from "@/providers/sesionProvider";
 interface Props {
   degree: number;
@@ -51,47 +42,41 @@ interface Props {
 const ProductionPage: React.FC<Props> = ({degree}) => {
   const [productions, setProductions] = useState<IProduction[] | null>(null);
   const [orderDetails, setOrderDetails] = useState<IOrderDetail[] | null>(null);
-  const {sector} = useContext(SectorContext);
+  const {process} = useContext(ProcessContext);
   const {sesion} = useContext(SesionContext);
 
-  const [process, setProcess] = useState<number | null>(null);
-  const [sectors, setSectors] = useState<ISector[]>();
-  const [processes, setProcesses] = useState<IProcess[]>();
+  const [idMachine, setIdMachine] = useState<number>();
+
+  const [machines, setMachines] = useState<IMachine[]>();
+  const [sector, setSector] = useState<ISector>();
+
+  useEffect(() => {
+    if (sesion) getSectorBySesion({sesion}).then((sectorBySesion) => setSector(sectorBySesion));
+  }, []);
+
+  useEffect(() => {
+    getMachines({id_process: process?.id}).then((MachinesData) => setMachines(MachinesData));
+  }, [process]);
 
   useEffect(() => {
     updateView();
-  }, [sector, process]);
-
-  useEffect(() => {
-    fetchFilter();
-  }, []);
-
-  const fetchFilter = async () => {
-    try {
-      const ProcessesData = await getProcesses({});
-      const SectorsData = await getSectors({});
-
-      setProcesses(ProcessesData);
-      setSectors(SectorsData);
-    } catch (error) {
-      console.error("Error al cargar los datos:", error);
-    }
-  };
+  }, [idMachine]);
 
   const updateView = async () => {
     try {
       const date = new Date().toISOString();
       const OrderDetailsData = await getOrderDetails_date({
         date: date,
-        id_process: process ?? null,
+        id_process: process?.id ?? null,
         id_sector: sector?.id ?? null,
+        id_machine: idMachine ?? null,
       });
 
       setOrderDetails(OrderDetailsData);
 
       const ProductionsData = await getProductions({
-        id_user: sesion?.user.id,
-        id_process: process ?? null,
+        id_process: process?.id ?? null,
+        id_machine: idMachine ?? null,
         id_sector: sector?.id ?? null,
         all: true,
       });
@@ -192,16 +177,6 @@ const ProductionPage: React.FC<Props> = ({degree}) => {
         cell: (info) => (
           <Badge variant={"secondary"} className="text-muted-foreground">
             {(info.getValue() as IMachine).name}
-          </Badge>
-        ),
-      },
-
-      {
-        accessorKey: "user",
-        header: "Usuario",
-        cell: (info) => (
-          <Badge variant={"secondary"} className="text-muted-foreground">
-            {(info.getValue() as IUser).name} {(info.getValue() as IUser).lastname}
           </Badge>
         ),
       },
@@ -311,12 +286,6 @@ const ProductionPage: React.FC<Props> = ({degree}) => {
     if (!orderDetails) return [];
     return [
       {
-        accessorFn: (row) => row.id?.toString().trim(),
-        accessorKey: "id",
-        header: "Id",
-        cell: (info) => info.getValue(),
-      },
-      {
         accessorKey: "amount",
         header: "Cant. Ordenada",
         cell: (info) => info.getValue(),
@@ -341,6 +310,15 @@ const ProductionPage: React.FC<Props> = ({degree}) => {
         cell: (info) => (
           <Badge variant={"secondary"} className="text-muted-foreground">
             {(info.getValue() as IProduct).name}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: "machine",
+        header: "Maquina",
+        cell: (info) => (
+          <Badge variant={"secondary"} className="text-muted-foreground">
+            {(info.getValue() as IMachine).name}
           </Badge>
         ),
       },
@@ -431,30 +409,15 @@ const ProductionPage: React.FC<Props> = ({degree}) => {
           <CardDescription>Selecciona el sector y proceso</CardDescription>
           <div className="grid grid-cols-6 gap-2">
             <Select
-              value={sector?.id?.toString() as string}
-              //onValueChange={(value) => setSector(Number(value))} // Convertir el valor a número
-            >
-              <SelectTrigger className="w-full col-span-3" disabled>
-                <SelectValue placeholder="Sector" />
-              </SelectTrigger>
-              <SelectContent>
-                {sectors?.map((sector: ISector) => (
-                  <SelectItem key={sector.id} value={(sector.id ?? "").toString()}>
-                    {sector.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select
-              onValueChange={(value) => setProcess(Number(value))} // Convertir el valor a número
+              onValueChange={(value) => setIdMachine(Number(value))} // Convertir el valor a número
             >
               <SelectTrigger className="w-full col-span-3">
-                <SelectValue placeholder="Proceso" />
+                <SelectValue placeholder="Máquina" />
               </SelectTrigger>
               <SelectContent>
-                {processes?.map((process: IProcess) => (
-                  <SelectItem key={process.id} value={(process.id ?? "").toString()}>
-                    {process.name}
+                {machines?.map((machine: IMachine) => (
+                  <SelectItem key={machine.id} value={(machine.id ?? "").toString()}>
+                    {machine.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -468,12 +431,14 @@ const ProductionPage: React.FC<Props> = ({degree}) => {
           <CardDescription>Ordenes de producción pendientes</CardDescription>
         </CardHeader>
         <CardContent>
-          <DataTable
-            hasOptions={false}
-            actions={<></>}
-            columns={columnsOrderDetails}
-            data={orderDetails}
-          />
+          {idMachine ? (
+            <DataTable
+              hasOptions={false}
+              actions={<></>}
+              columns={columnsOrderDetails}
+              data={orderDetails}
+            />
+          ) : null}
         </CardContent>
       </Card>
 
@@ -483,7 +448,9 @@ const ProductionPage: React.FC<Props> = ({degree}) => {
           <CardDescription>Producción registrada por el usuario activo</CardDescription>
         </CardHeader>
         <CardContent>
-          <DataTable actions={<></>} columns={columnsProduction} data={productions} />
+          {idMachine ? (
+            <DataTable actions={<></>} columns={columnsProduction} data={productions} />
+          ) : null}
         </CardContent>
       </Card>
     </div>

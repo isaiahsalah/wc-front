@@ -42,7 +42,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {getProducts} from "@/api/product/product.api";
-import {SectorContext} from "@/providers/sectorProvider";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -53,8 +52,7 @@ export const CreateFormulaDialog: React.FC<PropsCreate> = ({children, updateView
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
   const [products, setProducts] = useState<IProduct[]>();
-  const {sector} = useContext(SectorContext);
-
+  const {process} = useContext(ProcessContext);
   const form = useForm<IFormula>({
     resolver: zodResolver(FormulaSchema),
     defaultValues: {
@@ -204,7 +202,7 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
   const [products, setProducts] = useState<IProduct[]>();
-  const {sector} = useContext(SectorContext);
+  const {process} = useContext(ProcessContext);
   const form = useForm<IFormula>({
     resolver: zodResolver(FormulaSchema),
     defaultValues: {

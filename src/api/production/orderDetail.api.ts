@@ -81,16 +81,19 @@ export const getOrderDetails_date = async ({
   date,
   id_sector,
   id_process,
+  id_machine,
 }: {
   date: string | null;
   id_sector?: number | null;
   id_process?: number | null;
+  id_machine?: number | null;
 }) => {
   try {
     const params = {
       date,
       id_sector,
       id_process,
+      id_machine,
     };
     const response = await apiClient.get("/pr/order-detail/date", {params}); // Cambia la URL según tu API
     return response.data; // Devuelve la lista de detalles de pedido

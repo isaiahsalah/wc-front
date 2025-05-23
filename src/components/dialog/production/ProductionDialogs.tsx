@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {Textarea} from "@/components/ui/textarea";
-import {useContext, useState} from "react";
+import {useState} from "react";
 import {
   createProduction,
   createProductions,
@@ -48,7 +48,6 @@ import {typeQuality, typeTicket} from "@/utils/const";
 import {DateTimePicker} from "@/components/DateTimePicker";
 import {generateQR, printTag} from "@/utils/printTag";
 import {getUnities} from "@/api/product/unity.api";
-import {SesionContext} from "@/providers/sesionProvider";
 import {MoveRight} from "lucide-react";
 import TicketView from "@/components/TicketView";
 import {toast} from "sonner";
@@ -89,8 +88,8 @@ export const CreateProductionDialog: React.FC<PropsCreate> = ({children, updateV
   const fetchData = async () => {
     setLoadingInit(true);
     try {
-      const MachinesData = await getMachines();
-      const OrderDetailsData = await getOrderDetails();
+      const MachinesData = await getMachines({});
+      const OrderDetailsData = await getOrderDetails({});
 
       setMachines(MachinesData);
       setOrderDetails(OrderDetailsData);
@@ -297,18 +296,17 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
   const [micronage, setMicronage] = useState<number>(orderDetail.product?.micronage ?? 0);
   //const [micronages, setMicronages] = useState<number[]>();
   const [selectTicket, setSelectTicket] = useState<number>(1);
-  const {sesion} = useContext(SesionContext);
   const [open, setOpen] = useState(false);
 
   const form = useForm<IProduction>({
     resolver: zodResolver(ProductionSchema),
     defaultValues: {
       id_order_detail: orderDetail.id as number,
-      id_user: sesion?.user.id as number,
+      id_machine: orderDetail.id_machine as number,
       id_unit: orderDetail.product?.id_unit,
       id_equivalent_unit: orderDetail.product?.id_equivalent_unit,
-      equivalent_amount: orderDetail.product?.equivalent_amount,
-      weight: orderDetail.product?.weight,
+      equivalent_amount: Number(orderDetail.product?.equivalent_amount),
+      weight: Number(orderDetail.product?.weight),
     },
   });
 
@@ -320,8 +318,6 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
 
   function onSubmit(values: IProduction) {
     if (!amount || amount <= 0) return toast.error("La cantidad debe ser mayor a 0");
-    console.log("✖️✖️✖️", orderDetail.product?.micronage);
-    console.log("✖️✖️", (form.getValues().micronage ?? []).length);
 
     if (orderDetail.product?.micronage && (form.getValues().micronage ?? []).length === 0)
       return toast.error("El micronaje no puede estar vacío");
@@ -345,7 +341,6 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
         duration: duration,
         id_machine: values.id_machine,
         id_order_detail: values.id_order_detail,
-        id_user: values.id_user,
         id_unit: values.id_unit,
         id_equivalent_unit: values.id_equivalent_unit,
         equivalent_amount: values.equivalent_amount,
@@ -380,10 +375,10 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
   const fetchData = async () => {
     setLoadingInit(true);
     try {
-      const MachinesData = await getMachines();
+      const MachinesData = await getMachines({});
       //const LotesData = await getLotes();
       //const OrderDetailsData = await getOrderDetails();
-      const UnitiesData = await getUnities();
+      const UnitiesData = await getUnities({});
 
       setMachines(MachinesData);
       setUnities(UnitiesData);
@@ -401,7 +396,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
       <DialogTrigger asChild onClick={fetchData}>
         {children}
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="md:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Registro de producción</DialogTitle>
           <DialogDescription>Mostrando datos relacionados con la producción.</DialogDescription>
@@ -434,6 +429,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                       <FormDescription>Maquina</FormDescription>
                       <FormControl>
                         <Select
+                          defaultValue={field.value.toString()}
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                         >
                           <SelectTrigger className="w-full">
@@ -777,7 +773,7 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
     try {
       const productionData: IProduction = await getProductionById(id);
       console.log("Producciones:", productionData);
-      const MachinesData = await getMachines();
+      const MachinesData = await getMachines({});
 
       setMachines(MachinesData);
       form.reset({

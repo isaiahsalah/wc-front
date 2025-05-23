@@ -1,6 +1,6 @@
 import {Button} from "@/components/ui/button";
 
-import {useContext, useMemo, useState} from "react";
+import {useContext, useEffect, useMemo, useState} from "react";
 
 import {
   Dialog,
@@ -25,11 +25,11 @@ import {
 import {IModuleItem, typeModule, typePermission} from "@/utils/const";
 import {CardDescription} from "@/components/ui/card";
 import {Separator} from "@/components/ui/separator";
-import {SectorContext} from "@/providers/sectorProvider";
 import {getSectors} from "@/api/params/sector.api";
 import {toast} from "sonner";
 import {SesionContext} from "@/providers/sesionProvider";
-import {checkToken} from "@/utils/funtions";
+import {checkToken, getSectorBySesion} from "@/utils/funtions";
+import {ProcessContext} from "@/providers/processProvider";
 
 interface PropsPermissionEdit {
   children: React.ReactNode;
@@ -48,13 +48,19 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
   const [loadingInit, setLoadingInit] = useState(true);
 
   //const {sesion} = useContext(SesionContext);
-  const {sector} = useContext(SectorContext);
+  const {process} = useContext(ProcessContext);
   const {sesion, setSesion} = useContext(SesionContext);
 
   const [permissions, setPermissions] = useState<IPermission[]>();
+  const [sector, setSector] = useState<ISector>();
 
   const [sectors, setSectors] = useState<ISector[]>();
   const [moduleId, setModuleId] = useState<number>();
+
+  useEffect(() => {
+    if (sesion)
+      getSectorBySesion({sesion: sesion}).then((sectorBySesion) => setSector(sectorBySesion));
+  }, []);
 
   // const ()=useContext(mod)
 
@@ -109,7 +115,7 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
       <DialogTrigger asChild onClick={fetchUser}>
         {children}
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="md:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Editar Permisos de Usuario</DialogTitle>
           <DialogDescription>Edite los datos del usuario.</DialogDescription>
@@ -117,57 +123,15 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
         {loadingInit ? null : (
           <div className="grid  gap-4">
             <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
-              <div className="col-span-3">
-                <CardDescription>Módulo</CardDescription>
-                <div>
-                  <Select
-                    value={(permissions ?? [])[0].type_module.toString()} // Asegúrate de que el valor sea una cadena
-                    //onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
-                  >
-                    <SelectTrigger disabled className="w-full">
-                      <SelectValue placeholder="Seleccionar Tipo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {typeModule?.map((group: IModuleItem) => (
-                        <SelectItem key={group.id} value={(group.id ?? "").toString()}>
-                          {group.title}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="col-span-3">
-                <CardDescription>Sector</CardDescription>
-                <div>
-                  <Select
-                    value={sector?.id?.toString() ?? ""} // Asegúrate de que el valor sea una cadena
-                    //onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
-                  >
-                    <SelectTrigger disabled className="w-full">
-                      <SelectValue placeholder="Seleccionar Tipo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {sectors?.map((group: ISector) => (
-                        <SelectItem key={group.id} value={(group.id ?? "").toString()}>
-                          {group.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
               {typeModule
                 .find((mod) => mod.id === moduleId)
                 ?.menu.map((menu, i) => {
                   return (
                     <div key={i} className="grid grid-cols-6 col-span-6 gap-2  ">
-                      <Separator className="col-span-6" />
-
                       <CardDescription className="col-span-6  ">
                         Paginas de {menu.title}
                       </CardDescription>
+                      <Separator className="col-span-6" />
                       {menu.pages.map((page) => {
                         return (
                           <div className="col-span-2 gap-2">
@@ -198,6 +162,7 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
                                 // Si no se encontró, añadir el nuevo objeto al array
                                 if (!found) {
                                   updatedArray.push({
+                                    id_process: process?.id as number,
                                     id_sector: sector?.id as number,
                                     id_user: (permissions as IPermission[])[0].id_user as number,
                                     screen: page.id,

@@ -11,7 +11,7 @@ const MenuSidebar = ({items, title}: {items: IMenuItem[]; title: string}) => {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{title}</SidebarGroupLabel>
-      <SidebarMenu className="pl-2 box-border">
+      <SidebarMenu className=" box-border">
         {items.map((item, i) =>
           !item.isActive ? null : (
             <SidebarMenuItem key={i}>

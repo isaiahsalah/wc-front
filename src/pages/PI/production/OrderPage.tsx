@@ -39,14 +39,13 @@ import {getOrders} from "@/api/production/order.api";
 import {countCurrentMonth} from "@/utils/funtions";
 import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
-import {SectorContext} from "@/providers/sectorProvider";
+import {ParamsContext} from "@/providers/processProvider";
 interface Props {
   degree: number;
 }
 const OrderPage: React.FC<Props> = ({degree}) => {
   const [orders, setOrders] = useState<IOrder[] | null>(null);
-  const {sector} = useContext(SectorContext);
-
+  const {process} = useContext(ProcessContext);
   useEffect(() => {
     updateView();
   }, [sector]);

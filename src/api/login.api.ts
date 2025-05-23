@@ -5,16 +5,19 @@ export const getLogin = async ({
   user,
   pass,
   type_module,
+  id_sector,
 }: {
   user: string;
   pass: string;
   type_module: number;
+  id_sector: number;
 }) => {
   try {
     const response = await apiClient.post("/auth/login", {
       user,
       pass,
       type_module,
+      id_sector,
     });
     toast.success("Inicio de sesión exitoso", {
       description: "Bienvenido(a) de nuevo. Has ingresado correctamente a tu cuenta.",

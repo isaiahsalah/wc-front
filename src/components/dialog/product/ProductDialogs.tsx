@@ -44,7 +44,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {SectorContext} from "@/providers/sectorProvider";
 import {typeProduct} from "@/utils/const";
 
 interface PropsCreate {
@@ -58,7 +57,7 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
   const [colors, setColors] = useState<IColor[]>();
   const [models, setModels] = useState<IModel[]>();
   const [unities, setUnities] = useState<IUnity[]>();
-  const {sector} = useContext(SectorContext);
+  const {process} = useContext(ProcessContext);
   const [open, setOpen] = useState(false);
   const form = useForm<IProduct>({
     resolver: zodResolver(ProductSchema),
@@ -396,8 +395,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
   const [colors, setColors] = useState<IColor[]>();
   const [models, setModels] = useState<IModel[]>();
   const [unities, setUnities] = useState<IUnity[]>();
-  const {sector} = useContext(SectorContext);
-
+  const {process} = useContext(ProcessContext);
   const form = useForm<IProduct>({
     resolver: zodResolver(ProductSchema),
   });

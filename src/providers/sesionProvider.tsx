@@ -1,5 +1,5 @@
 import {ISesion} from "@/utils/interfaces";
-import React, {createContext, JSX} from "react";
+import {createContext, JSX, useState} from "react";
 
 type contextProps = {
   sesion: ISesion | null;
@@ -13,7 +13,7 @@ interface props {
 }
 
 export const SesionProvider = ({children}: props) => {
-  const [sesion, setSesion] = React.useState<ISesion | null>(null);
+  const [sesion, setSesion] = useState<ISesion | null>(null);
 
   return <SesionContext.Provider value={{sesion, setSesion}}>{children}</SesionContext.Provider>;
 };

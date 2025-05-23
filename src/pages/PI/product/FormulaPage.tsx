@@ -39,7 +39,6 @@ import {
 import {countCurrentMonth} from "@/utils/funtions";
 import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
-import {SectorContext} from "@/providers/sectorProvider";
 import {
   Select,
   SelectContent,
@@ -53,7 +52,7 @@ interface Props {
 }
 const FormulaPage: React.FC<Props> = ({degree}) => {
   const [formulas, setFormulas] = useState<IFormula[] | null>(null);
-  const {sector} = useContext(SectorContext);
+  const {process} = useContext(ProcessContext);
   const [products, setProducts] = useState<IProduct[]>();
   const [idProduct, setIdProduct] = useState<number>();
 

@@ -40,7 +40,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {getSectors} from "@/api/params/sector.api";
-import {SectorContext} from "@/providers/sectorProvider";
+import {ParamsContext} from "@/providers/processProvider";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -54,13 +54,12 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({children, updateView
   const [processes, setProcesses] = useState<IProcess[]>();
   const [sectors, setSectors] = useState<ISector[]>();
 
-  const {sector} = useContext(SectorContext);
-
+  const {process} = useContext(ProcessContext);
   const form = useForm<IMachine>({
     resolver: zodResolver(MachineSchema),
     defaultValues: {
       name: "",
-      id_sector: sector?.id as number,
+      id_sector: params?.sector?.id as number,
     },
   });
 
@@ -149,7 +148,7 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({children, updateView
                       <FormControl>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
-                          defaultValue={(sector?.id as number).toString()}
+                          defaultValue={(params?.sector?.id as number).toString()}
                         >
                           <SelectTrigger disabled className="w-full">
                             <SelectValue placeholder="Seleccionar Sector" />

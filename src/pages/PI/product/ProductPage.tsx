@@ -38,7 +38,6 @@ import {countCurrentMonth} from "@/utils/funtions";
 import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
 import {typeProduct} from "@/utils/const";
-import {SectorContext} from "@/providers/sectorProvider";
 
 interface Props {
   degree: number;
@@ -46,7 +45,7 @@ interface Props {
 
 const ProductPage: React.FC<Props> = ({degree}) => {
   const [products, setProducts] = useState<IProduct[] | null>(null);
-  const {sector} = useContext(SectorContext);
+  const {process} = useContext(ProcessContext);
   useEffect(() => {
     updateView();
   }, [sector]);

@@ -1,5 +1,7 @@
 import {getCheckToken} from "@/api/login.api";
-import {IGeneral, ISesion} from "./interfaces";
+import {IGeneral, IPermission, ISector, ISesion} from "./interfaces";
+import {typeModule} from "./const";
+import {getSectors} from "@/api/params/sector.api";
 
 export function countCurrentMonth(data: IGeneral[]): number {
   const now = new Date();
@@ -29,6 +31,7 @@ export const checkToken = async ({
   setSesion: React.Dispatch<React.SetStateAction<ISesion | null>>;
 }) => {
   const rawToken = window.localStorage.getItem("token-app");
+
   if (!rawToken) {
     //setIsAuthenticated(false);
     //navigate("/login");
@@ -38,12 +41,13 @@ export const checkToken = async ({
 
   const savedtoken = JSON.parse(rawToken).toString();
 
-  await getCheckToken({token: savedtoken})
+  return await getCheckToken({token: savedtoken})
     .then((response) => {
       if (response.token) {
         // Almacena el token en localStorage
         window.localStorage.setItem("token-app", JSON.stringify(response.token));
         // Actualiza la sesión en el estado
+
         setSesion(response as ISesion);
         return true;
         //setIsAuthenticated(true);
@@ -56,4 +60,15 @@ export const checkToken = async ({
       return false;
     });
   //.finally(() => setLoading(false));
+};
+
+export const getModuleBySesion = ({sesion}: {sesion: ISesion}) => {
+  const moduleId = (sesion?.user.permissions as IPermission[])[0].type_module;
+  return typeModule.find((module) => module.id === moduleId);
+};
+
+export const getSectorBySesion = async ({sesion}: {sesion: ISesion}) => {
+  const sectorId = (sesion?.user.permissions as IPermission[])[0].id_sector;
+  const sectors = await getSectors({});
+  return sectors.find((sector: ISector) => sector.id === sectorId);
 };

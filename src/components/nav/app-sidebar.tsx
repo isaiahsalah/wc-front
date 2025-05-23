@@ -10,12 +10,12 @@ import {
 
 import clsx from "clsx";
 import {ProfileSidebar} from "./profile-sidebar";
-import {SectorSidebar} from "./sector-sidebar";
 import MenuSidebar from "./menu-sidebar";
 import {useContext, useEffect, useState} from "react";
 import {SesionContext} from "@/providers/sesionProvider";
 import {IMenuItem, IModuleItem, typeModule} from "@/utils/const";
-import {IPermission, ISector} from "@/utils/interfaces";
+import {IPermission, IProcess} from "@/utils/interfaces";
+import {ProcessSidebar} from "./process-sidebar";
 
 interface Props {
   className?: string; // Clase personalizada opcional
@@ -26,7 +26,7 @@ export const AppSidebar: React.FC<Props> = ({className}) => {
   const [menu, setMenu] = useState<IMenuItem[]>();
   const [title, setTitle] = useState<string>("");
 
-  const [sectors, setSectors] = useState<ISector[] | null>(null);
+  const [process, setProcess] = useState<IProcess[] | null>(null);
 
   const permisions = sesion?.user.permissions as IPermission[];
 
@@ -40,27 +40,33 @@ export const AppSidebar: React.FC<Props> = ({className}) => {
     });
 
     setMenu(tempMenu);
-    const uniqueObjects: ISector[] = Array.from(
-      new Map(permisions.map((item) => [item.id_sector, item.sector])).values()
-    ) as ISector[];
-    setSectors(uniqueObjects);
+    const uniqueObjects: IProcess[] = Array.from(
+      new Map(permisions.map((item) => [item.id_process, item.process])).values()
+    ) as IProcess[];
+    console.log("🥳🥳🚩", uniqueObjects);
+
+    console.log("🥳🥳", permisions);
+    setProcess(uniqueObjects);
   }, [sesion]);
 
-  if (!menu || !sectors) {
+  if (!menu || !process) {
     return <></>;
   }
 
   return (
     <Sidebar className={clsx("animate-fadeIn", className)}>
-      <SidebarHeader>
+      {/*<SidebarHeader>
         <SidebarMenu className="flex ">
           <SidebarMenuItem></SidebarMenuItem>
           <SectorSidebar items={sectors} />
-          {/* <SectorSidebar items={section} />
-         <SidebarMenuItem className="">
-            <ProcesoSwitcher items={sector} />
-          </SidebarMenuItem>
-         */}
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarSeparator className=" m-0" />*/}
+      <SidebarHeader>
+        <SidebarMenu className="flex ">
+          <SidebarMenuItem></SidebarMenuItem>
+
+          <ProcessSidebar processes={process} />
         </SidebarMenu>
       </SidebarHeader>
       <SidebarSeparator className=" m-0" />

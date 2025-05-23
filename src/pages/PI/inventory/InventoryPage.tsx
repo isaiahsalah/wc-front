@@ -30,17 +30,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {format} from "date-fns";
-import {SectorContext} from "@/providers/sectorProvider";
 import {typeQuality} from "@/utils/const";
 import {Badge} from "@/components/ui/badge";
+import {ProcessContext} from "@/providers/processProvider";
 interface Props {
   degree: number;
 }
 const InventoryPage: React.FC<Props> = ({degree}) => {
   const [productions, setProductions] = useState<IProduction[] | null>(null);
-  const {sector} = useContext(SectorContext);
-
-  const [process, setProcess] = useState<number | null>(null);
+  const {process} = useContext(ProcessContext);
   const [sectors, setSectors] = useState<ISector[]>();
   const [processes, setProcesses] = useState<IProcess[]>();
 

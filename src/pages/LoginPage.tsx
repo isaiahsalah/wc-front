@@ -10,44 +10,44 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {Button} from "@/components/ui/button";
 import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
 import {ModeToggle} from "@/components/mode-toggle";
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {SesionContext} from "@/providers/sesionProvider";
 import {getLogin} from "@/api/login.api";
-import {ISesion} from "@/utils/interfaces";
+import {ISector, ISesion} from "@/utils/interfaces";
 import {Navigate, useNavigate} from "react-router-dom";
 import {Select} from "@radix-ui/react-select";
 import {SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import LoadingCircle from "@/components/LoadingCircle";
 import {Eye, EyeOff, SquareDashed} from "lucide-react";
 import {typeModule} from "@/utils/const";
+import {getSectors} from "@/api/params/sector.api";
 
 const formSchema = z.object({
-  type_module: z.string().min(1, {
-    message: "Selecciones un modulo",
-  }),
+  type_module: z.number(),
   user: z.string().min(2, {
     message: "El campo de usuario es obligatorio.",
   }),
   pass: z.string().nonempty({
     message: "El campo de contraseña es obligatorio.",
   }),
+  id_sector: z.number(),
 });
 
 export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<"div">) => {
   const {setSesion} = useContext(SesionContext);
   const [loadingLogin, setLoadingLogin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [sectors, setSectors] = useState<ISector[]>();
 
   const navigate = useNavigate(); // Obtienes la función navigate
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      type_module: "",
-      user: "",
-      pass: "",
-    },
   });
+
+  useEffect(() => {
+    getSectors({}).then((response) => setSectors(response));
+  }, []);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoadingLogin(true);
@@ -56,7 +56,8 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
     getLogin({
       user: values.user.toLowerCase(),
       pass: values.pass,
-      type_module: parseInt(values.type_module),
+      type_module: values.type_module,
+      id_sector: values.id_sector,
     })
       .then((response) => {
         if (response.token) {
@@ -112,7 +113,7 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
                   render={({field}) => (
                     <FormItem>
                       <FormControl>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={(value) => field.onChange(Number(value))}>
                           <SelectTrigger className="w-full">
                             <div className="w-full ml-5">
                               <SelectValue placeholder="Módulo" className="w-full ml-7 " />
@@ -127,6 +128,35 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
                                 disabled={!item.isActive}
                               >
                                 {item.title}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="id_sector"
+                  render={({field}) => (
+                    <FormItem>
+                      <FormControl>
+                        <Select onValueChange={(value) => field.onChange(Number(value))}>
+                          <SelectTrigger className="w-full">
+                            <div className="w-full ml-5">
+                              <SelectValue placeholder="Sector" className="w-full ml-7 " />
+                            </div>
+                          </SelectTrigger>
+                          <SelectContent>
+                            {sectors?.map((item, index) => (
+                              <SelectItem
+                                value={item.id?.toString() ?? ""}
+                                className=" justify-center"
+                                key={index}
+                              >
+                                {item.name}
                               </SelectItem>
                             ))}
                           </SelectContent>

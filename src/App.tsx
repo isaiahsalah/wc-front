@@ -11,9 +11,9 @@ import LoginPage from "./pages/LoginPage";
 import LoadingPage from "./pages/LoadingPage";
 import {PageProvider} from "./providers/pageProvider";
 import ModuleRoutes from "./ModuleRoutes";
-import {SectorProvider} from "./providers/sectorProvider";
 import {checkToken} from "./utils/funtions";
 import {toast} from "sonner";
+import {ProcessProvider} from "./providers/processProvider";
 
 function App() {
   const PrivateRoutes = () => {
@@ -24,10 +24,12 @@ function App() {
 
     useEffect(() => {
       checkToken({setSesion}).then((tokenValid) => {
+        //console.log("🤑🤑", tokenValid);
+
         if (!tokenValid) {
           setLoading(false);
           setIsAuthenticated(false);
-          navigate("/login");
+          return navigate("/login");
         }
         setIsAuthenticated(true);
         toast.success("Bienvenido(a) de nuevo");
@@ -67,7 +69,7 @@ function App() {
     if (loading) return <LoadingPage />;
 
     return isAuthenticated ? (
-      <SectorProvider>
+      <ProcessProvider>
         <PageProvider>
           <SidebarProvider>
             <AppSidebar />
@@ -81,7 +83,7 @@ function App() {
             </SidebarInset>
           </SidebarProvider>
         </PageProvider>
-      </SectorProvider>
+      </ProcessProvider>
     ) : (
       <Navigate to="/login" />
     );

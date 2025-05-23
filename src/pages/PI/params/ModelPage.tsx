@@ -36,15 +36,13 @@ import {
 import {Badge} from "@/components/ui/badge";
 import {countCurrentMonth} from "@/utils/funtions";
 import {format} from "date-fns";
-import {SectorContext} from "@/providers/sectorProvider";
 import {getModels} from "@/api/params/model.api";
 interface Props {
   degree: number;
 }
 const ModelPage: React.FC<Props> = ({degree}) => {
   const [models, setModels] = useState<IModel[] | null>(null);
-  const {sector} = useContext(SectorContext);
-
+  const {process} = useContext(ProcessContext);
   useEffect(() => {
     updateView();
   }, [sector]);

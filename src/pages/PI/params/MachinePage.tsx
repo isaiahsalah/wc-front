@@ -37,14 +37,12 @@ import {Badge} from "@/components/ui/badge";
 import {countCurrentMonth} from "@/utils/funtions";
 import {format} from "date-fns";
 import {getMachines} from "@/api/params/machine.api";
-import {SectorContext} from "@/providers/sectorProvider";
 interface Props {
   degree: number;
 }
 const MachinePage: React.FC<Props> = ({degree}) => {
   const [machines, setMachines] = useState<IMachine[] | null>(null);
-  const {sector} = useContext(SectorContext);
-
+  const {process} = useContext(ProcessContext);
   useEffect(() => {
     updateView();
   }, []);

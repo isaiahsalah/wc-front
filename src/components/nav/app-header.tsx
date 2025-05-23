@@ -17,6 +17,7 @@ const Header = () => {
       <div className=" mr-auto">
         <TypographyH5>{page.title}</TypographyH5>
       </div>
+
       <ModeToggle />
     </header>
   );

@@ -24,7 +24,6 @@ import {
 } from "@/components/ui/form";
 import {useContext, useEffect, useMemo, useState} from "react";
 import {
-  createOrderWithDetail,
   createOrderWithDetails,
   deleteOrder,
   getOrderById,
@@ -44,10 +43,9 @@ import {
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
 import {DateTimePicker} from "@/components/DateTimePicker";
-import {SectorContext} from "@/providers/sectorProvider";
 import {getProducts} from "@/api/product/product.api";
 import {ColumnDef, Row} from "@tanstack/react-table";
-import {ChevronsDown, Plus, Trash2, X} from "lucide-react";
+import {ChevronsDown, Trash2} from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -60,6 +58,8 @@ import {SesionContext} from "@/providers/sesionProvider";
 import {getMachines} from "@/api/params/machine.api";
 import {getProcesses} from "@/api/params/process.api";
 import {getGroups} from "@/api/security/group.api";
+import {typeTurn} from "@/utils/const";
+import {ParamsContext} from "@/providers/processProvider";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -82,7 +82,7 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
 
   const [amount, setAmount] = useState<number>();
 
-  const {sector} = useContext(SectorContext);
+  const {process} = useContext(ProcessContext);
   const {sesion} = useContext(SesionContext);
 
   const form = useForm<IOrder>({
@@ -119,11 +119,11 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
   const fetchData = async () => {
     try {
       const ProductsData = await getProducts({
-        id_sector: sector?.id,
+        id_sector: params?.sector?.id,
         id_process: processSelected?.id,
       });
       const MachinesData = await getMachines({
-        id_sector: sector?.id,
+        id_sector: params?.sector?.id,
         id_process: processSelected?.id,
       });
 
@@ -218,28 +218,6 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
             className=" grid  gap-4 "
           >
             <div className=" grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm">
-              <div className="w-full col-span-3 grid gap-2">
-                <FormDescription>Proceso</FormDescription>
-                <Select
-                  onValueChange={(value) => {
-                    const processProduct = processes?.find(
-                      (process: IProcess) => process.id?.toString() === value
-                    );
-                    setProcessSelected(processProduct); // Guarda el objeto completo
-                  }} // Convertir el valor a número
-                >
-                  <SelectTrigger className="w-full  ">
-                    <SelectValue placeholder="Selecciona" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {processes?.map((process: IProcess) => (
-                      <SelectItem key={process.id} value={(process.id ?? "").toString()}>
-                        {process.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
               <FormField
                 control={form.control}
                 name="id_group"
@@ -257,6 +235,32 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
                           {groups?.map((group: IGroup) => (
                             <SelectItem key={group.id} value={(group.id ?? "").toString()}>
                               {group.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="type_turn"
+                render={({field}) => (
+                  <FormItem className="col-span-3">
+                    <FormDescription>Turno de trabajo</FormDescription>
+                    <FormControl>
+                      <Select
+                        onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Seleccionar Turno" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {typeTurn?.map((turn) => (
+                            <SelectItem key={turn.id} value={(turn.id ?? "").toString()}>
+                              {turn.name}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -324,9 +328,32 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
               />
 
               <div className="w-full col-span-6 grid grid-cols-6 gap-2 rounded-lg border shadow-sm p-4 bg-muted/30">
+                <div className="w-full col-span-6 grid gap-2">
+                  <FormDescription>Proceso</FormDescription>
+                  <Select
+                    onValueChange={(value) => {
+                      const processProduct = processes?.find(
+                        (process: IProcess) => process.id?.toString() === value
+                      );
+                      setProcessSelected(processProduct); // Guarda el objeto completo
+                    }} // Convertir el valor a número
+                  >
+                    <SelectTrigger className="w-full  ">
+                      <SelectValue placeholder="Selecciona" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {processes?.map((process: IProcess) => (
+                        <SelectItem key={process.id} value={(process.id ?? "").toString()}>
+                          {process.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="w-full col-span-3 grid gap-2">
                   <FormDescription>Producto a ordear</FormDescription>
                   <Select
+                    disabled={!processSelected}
                     onValueChange={(value) => {
                       const selectedProduct = products?.find(
                         (product: IProduct) => product.id?.toString() === value
@@ -350,6 +377,7 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
                 <div className="w-full col-span-2 grid gap-2">
                   <FormDescription>Máquina</FormDescription>
                   <Select
+                    disabled={!processSelected}
                     onValueChange={(value) => {
                       const selectedMachine = machines?.find(
                         (machine: IMachine) => machine.id?.toString() === value
@@ -373,6 +401,7 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
                 <div className="w-full col-span-1 grid gap-2">
                   <FormDescription>Cant.</FormDescription>
                   <Input
+                    disabled={!processSelected}
                     placeholder="Cantidad"
                     type="number"
                     onChange={(event) => setAmount(Number(event.target.value))}
@@ -433,15 +462,13 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
   const [machineSelected, setMachineSelected] = useState<IMachine>();
   const [processSelected, setProcessSelected] = useState<IProcess>();
 
-  const [orderDetailsSelected, setOrderDetailsSelected] = useState<IOrderDetail[]>();
   const [amount, setAmount] = useState<number>();
   const [products, setProducts] = useState<IProduct[]>([]);
   const [machines, setMachines] = useState<IMachine[]>([]);
   const [processes, setProcesses] = useState<IProcess[]>([]);
   const [groups, setGroups] = useState<IGroup[]>([]);
 
-  const {sector} = useContext(SectorContext);
-
+  const {process} = useContext(ProcessContext);
   const form = useForm<IOrder>({
     resolver: zodResolver(OrderSchema),
   });
@@ -484,15 +511,18 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
         end_date: new Date(orderData.end_date),
         id_user: orderData.id_user,
         id_group: orderData.id_group,
+        type_turn: orderData.type_turn,
+
         order_details: orderData.order_details,
       });
+      console.log("🤑🤑🤑", orderData.order_details);
 
       const ProductsData = await getProducts({
-        id_sector: sector?.id,
+        id_sector: params?.sector?.id,
         id_process: processSelected?.id,
       });
       const MachinesData = await getMachines({
-        id_sector: sector?.id,
+        id_sector: params?.sector?.id,
         id_process: processSelected?.id,
       });
 
@@ -528,13 +558,15 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
       form.reset({
         ...form.getValues(),
         order_details: [
-          ...(orderDetailTemp ?? []),
           {
             amount: amount,
             id_product: productSelected.id,
             product: productSelected,
+            id_machine: machineSelected?.id,
+            machine: machineSelected,
             id_order: 0,
           },
+          ...(orderDetailTemp ?? []),
         ],
       });
     }
@@ -561,12 +593,12 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
       {
         accessorKey: "product",
         header: "Nombre de producto",
-        cell: (info) => (info.getValue() as IProduct).name,
+        cell: (info) => (info.getValue() as IProduct).name ?? "",
       },
       {
         accessorKey: "machine",
         header: "Nombre de máquina",
-        cell: (info) => (info.getValue() as IMachine).name,
+        cell: (info) => (info.getValue() as IMachine).name ?? "",
       },
       {
         accessorKey: "amount",
@@ -599,6 +631,9 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
           return (
             <div className="flex gap-2  justify-end  ">
               <Button
+                disabled={
+                  row.original.productions && row.original.productions.length > 0 ? true : false
+                }
                 variant={"outline"}
                 type="button"
                 onClick={() => deleteProductSelected(row.index)}
@@ -618,16 +653,127 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
       <DialogTrigger asChild onClick={fetchOrder}>
         {children}
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="md:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Editar orden</DialogTitle>
           <DialogDescription>Mostrando datos relacionados con la orden.</DialogDescription>
         </DialogHeader>
-        {loadingInit ? null : (
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid   gap-4 ">
-              <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
-                <div className="w-full col-span-3 grid gap-2">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className=" grid   gap-4 ">
+            <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
+              <FormField
+                control={form.control}
+                name="id_group"
+                render={({field}) => (
+                  <FormItem className="col-span-3">
+                    <FormDescription>Grupo de trabajo</FormDescription>
+                    <FormControl>
+                      <Select
+                        onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
+                        defaultValue={field.value.toString()}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Seleccionar Grupo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {groups?.map((group: IGroup) => (
+                            <SelectItem key={group.id} value={(group.id ?? "").toString()}>
+                              {group.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="type_turn"
+                render={({field}) => (
+                  <FormItem className="col-span-3">
+                    <FormDescription>Turno de trabajo</FormDescription>
+                    <FormControl>
+                      <Select
+                        onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
+                        defaultValue={field.value.toString()}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Seleccionar Turno" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {typeTurn?.map((turn) => (
+                            <SelectItem key={turn.id} value={(turn.id ?? "").toString()}>
+                              {turn.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="init_date"
+                render={({field}) => (
+                  <FormItem className="col-span-3">
+                    <FormDescription>Inicio</FormDescription>
+                    <FormControl>
+                      <DateTimePicker
+                        className="w-full"
+                        value={
+                          field.value && typeof field.value === "string"
+                            ? new Date(field.value)
+                            : field.value
+                        }
+                        onChange={(date) => {
+                          if (date) {
+                            field.onChange(date);
+                          } else {
+                            field.onChange(null);
+                          }
+                        }}
+                        placeholder="Selecciona una fecha"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="end_date"
+                render={({field}) => (
+                  <FormItem className="col-span-3">
+                    <FormDescription>fin</FormDescription>
+                    <FormControl>
+                      <DateTimePicker
+                        className="w-full"
+                        value={
+                          field.value && typeof field.value === "string"
+                            ? new Date(field.value)
+                            : field.value
+                        }
+                        onChange={(date) => {
+                          if (date) {
+                            field.onChange(date);
+                          } else {
+                            field.onChange(null);
+                          }
+                        }}
+                        placeholder="Selecciona una fecha"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="w-full col-span-6 grid grid-cols-6 gap-2 rounded-lg border shadow-sm p-4 bg-muted/30">
+                <div className="w-full col-span-6 grid gap-2">
                   <FormDescription>Proceso</FormDescription>
                   <Select
                     onValueChange={(value) => {
@@ -649,153 +795,10 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                     </SelectContent>
                   </Select>
                 </div>
-                <FormField
-                  control={form.control}
-                  name="id_group"
-                  render={({field}) => (
-                    <FormItem className="col-span-3">
-                      <FormDescription>Grupo de trabajo</FormDescription>
-                      <FormControl>
-                        <Select
-                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Seleccionar Grupo" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {groups?.map((group: IGroup) => (
-                              <SelectItem key={group.id} value={(group.id ?? "").toString()}>
-                                {group.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="init_date"
-                  render={({field}) => (
-                    <FormItem className="col-span-3">
-                      <FormDescription>Inicio</FormDescription>
-                      <FormControl>
-                        <DateTimePicker
-                          className="w-full"
-                          value={
-                            field.value && typeof field.value === "string"
-                              ? new Date(field.value)
-                              : field.value
-                          }
-                          onChange={(date) => {
-                            if (date) {
-                              field.onChange(date);
-                            } else {
-                              field.onChange(null);
-                            }
-                          }}
-                          placeholder="Selecciona una fecha"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="end_date"
-                  render={({field}) => (
-                    <FormItem className="col-span-3">
-                      <FormDescription>fin</FormDescription>
-                      <FormControl>
-                        <DateTimePicker
-                          className="w-full"
-                          value={
-                            field.value && typeof field.value === "string"
-                              ? new Date(field.value)
-                              : field.value
-                          }
-                          onChange={(date) => {
-                            if (date) {
-                              field.onChange(date);
-                            } else {
-                              field.onChange(null);
-                            }
-                          }}
-                          placeholder="Selecciona una fecha"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="w-full col-span-6 grid grid-cols-6 gap-2 rounded-lg border shadow-sm p-4 bg-muted/30">
-                  <div className="w-full col-span-3 grid gap-2">
-                    <FormDescription>Producto a ordear</FormDescription>
-                    <Select
-                      onValueChange={(value) => {
-                        const selectedProduct = products?.find(
-                          (product: IProduct) => product.id?.toString() === value
-                        );
-                        setProductSelected(selectedProduct); // Guarda el objeto completo
-                      }} // Convertir el valor a número
-                    >
-                      <SelectTrigger className="w-full  ">
-                        <SelectValue placeholder="Selecciona" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {products?.map((product: IProduct) => (
-                          <SelectItem key={product.id} value={(product.id ?? "").toString()}>
-                            {product.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="w-full col-span-2 grid gap-2">
-                    <FormDescription>Máquina</FormDescription>
-                    <Select
-                      onValueChange={(value) => {
-                        const selectedMachine = machines?.find(
-                          (machine: IMachine) => machine.id?.toString() === value
-                        );
-                        setMachineSelected(selectedMachine); // Guarda el objeto completo
-                      }} // Convertir el valor a número
-                    >
-                      <SelectTrigger className="w-full  ">
-                        <SelectValue placeholder="Selecciona" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {machines?.map((machine: IMachine) => (
-                          <SelectItem key={machine.id} value={(machine.id ?? "").toString()}>
-                            {machine.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="w-full col-span-1 grid gap-2">
-                    <FormDescription>Cant.</FormDescription>
-                    <Input
-                      placeholder="Cantidad"
-                      type="number"
-                      onChange={(event) => setAmount(Number(event.target.value))}
-                    />
-                  </div>
-                  <div className="w-full col-span-6 grid gap-2">
-                    <Button type="button" variant={"outline"} onClick={addProductSelected}>
-                      <ChevronsDown />
-                    </Button>
-                  </div>
-                  {/*
-                <div className="w-full col-span-4 grid gap-2">
-                  <FormDescription>Producto</FormDescription>
+                <div className="w-full col-span-3 grid gap-2">
+                  <FormDescription>Producto a ordear</FormDescription>
                   <Select
+                    disabled={!processSelected}
                     onValueChange={(value) => {
                       const selectedProduct = products?.find(
                         (product: IProduct) => product.id?.toString() === value
@@ -804,100 +807,95 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                     }} // Convertir el valor a número
                   >
                     <SelectTrigger className="w-full  ">
-                      <SelectValue placeholder="Seleccionar Producto" />
+                      <SelectValue placeholder="Selecciona" />
                     </SelectTrigger>
                     <SelectContent>
-                      {products?.map((process: IProduct) => (
-                        <SelectItem key={process.id} value={(process.id ?? "").toString()}>
-                          {process.name}
+                      {products?.map((product: IProduct) => (
+                        <SelectItem key={product.id} value={(product.id ?? "").toString()}>
+                          {product.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="w-full col-span-2 flex gap-2">
-                  <div className="w-full col-span-full grid gap-2">
-                    <FormDescription>Cant.</FormDescription>
-                    <Input
-                      placeholder="Cantidad"
-                      type="number"
-                      onChange={(event) => setAmount(Number(event.target.value))}
-                    />
-                  </div>
 
-                  <FormField
-                    control={form.control}
-                    name="order_details"
-                    render={({field}) => (
-                      <FormItem className="">
-                        <FormDescription>Añadir</FormDescription>
-                        <FormControl>
-                          <Button
-                            type="button"
-                            variant={"outline"}
-                            onClick={() => {
-                              if (productSelected && productSelected.id && amount && amount > 0) {
-                                const orderDetailTemp = field.value;
-
-                                field.onChange([
-                                  ...(orderDetailTemp ?? []),
-                                  {
-                                    amount: amount,
-                                    id_product: productSelected.id,
-                                    product: productSelected,
-                                    id_order: 0,
-                                  },
-                                ]);
-                              }
-                            }}
-                          >
-                            <Plus />
-                          </Button>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />*/}
+                <div className="w-full col-span-2 grid gap-2">
+                  <FormDescription>Máquina</FormDescription>
+                  <Select
+                    disabled={!processSelected}
+                    onValueChange={(value) => {
+                      const selectedMachine = machines?.find(
+                        (machine: IMachine) => machine.id?.toString() === value
+                      );
+                      setMachineSelected(selectedMachine); // Guarda el objeto completo
+                    }} // Convertir el valor a número
+                  >
+                    <SelectTrigger className="w-full  ">
+                      <SelectValue placeholder="Selecciona" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {machines?.map((machine: IMachine) => (
+                        <SelectItem key={machine.id} value={(machine.id ?? "").toString()}>
+                          {machine.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
-                <div className="w-full col-span-6 grid gap-2   ">
-                  <FormDescription>Orden Detalle</FormDescription>
-                  <DataTable
-                    hasOptions={false}
-                    hasPaginated={false}
-                    actions={<></>}
-                    columns={columnsOrderDetailsSelected}
-                    data={orderDetails ?? []}
+                <div className="w-full col-span-1 grid gap-2">
+                  <FormDescription>Cant.</FormDescription>
+                  <Input
+                    disabled={!processSelected}
+                    placeholder="Cantidad"
+                    type="number"
+                    onChange={(event) => setAmount(Number(event.target.value))}
                   />
                 </div>
+                <div className="w-full col-span-6 grid gap-2">
+                  <Button type="button" variant={"outline"} onClick={addProductSelected}>
+                    <ChevronsDown />
+                  </Button>
+                </div>
               </div>
-              <DialogFooter className=" grid grid-cols-6  ">
-                <Button type="submit" className="col-span-3" disabled={loadingSave}>
-                  {loadingSave ? <LoadingCircle /> : "Guardar"}
-                </Button>
+
+              <div className="w-full col-span-6 grid gap-2   ">
+                <FormDescription>Orden Detalle</FormDescription>
+                <DataTable
+                  hasOptions={false}
+                  hasPaginated={false}
+                  actions={<></>}
+                  columns={columnsOrderDetailsSelected}
+                  data={orderDetails ?? []}
+                />
+              </div>
+            </div>
+            <DialogFooter className=" grid grid-cols-6  ">
+              <Button type="submit" className="col-span-3" disabled={loadingSave || loadingInit}>
+                {loadingSave ? <LoadingCircle /> : "Guardar"}
+              </Button>
+              <Button
+                type="button"
+                disabled={loadingDelete || loadingInit}
+                className="col-span-3"
+                variant={"destructive"}
+                onClick={() => onDelete(form.getValues().id ?? 0)}
+              >
+                {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+              </Button>
+              <DialogClose className="col-span-6" asChild>
                 <Button
                   type="button"
-                  disabled={loadingDelete}
-                  className="col-span-3"
-                  variant={"destructive"}
-                  onClick={() => onDelete(form.getValues().id ?? 0)}
+                  variant="outline"
+                  className="w-full"
+                  disabled={loadingDelete || loadingSave || loadingInit}
                 >
-                  {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+                  Cerrar
                 </Button>
-                <DialogClose className="col-span-6" asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    disabled={loadingDelete || loadingSave}
-                  >
-                    Cerrar
-                  </Button>
-                </DialogClose>
-              </DialogFooter>
-            </form>
-          </Form>
-        )}
+              </DialogClose>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
