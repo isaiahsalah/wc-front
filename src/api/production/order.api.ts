@@ -2,10 +2,19 @@ import {apiClient} from "../axiosConfig";
 import {IOrderDetail, IOrder} from "@/utils/interfaces";
 import {toast} from "sonner";
 
-export const getOrders = async ({id_sector, all}: {id_sector?: number | null; all?: boolean}) => {
+export const getOrders = async ({
+  id_sector,
+  id_process,
+  all,
+}: {
+  id_sector?: number | null;
+  id_process?: number | null;
+  all?: boolean;
+}) => {
   try {
     const params = {
       id_sector,
+      id_process,
       all,
     };
     const response = await apiClient.get("/pr/order", {params}); // Cambia la URL según tu API
@@ -69,12 +78,7 @@ export const deleteOrder = async (id: number) => {
 };
 
 export const recoverOrder = async (id: number) => {
-  toast.info("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     // Realiza una solicitud PATCH o PUT al endpoint correspondiente
     const response = await apiClient.patch(`/pr/order/${id}`, {

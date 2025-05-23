@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {Textarea} from "@/components/ui/textarea";
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {
   createMachine,
   deleteMachine,
@@ -40,7 +40,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {getSectors} from "@/api/params/sector.api";
-import {ParamsContext} from "@/providers/processProvider";
+import {SesionContext} from "@/providers/sesionProvider";
+import {getSectorBySesion} from "@/utils/funtions";
+import {ProcessContext} from "@/providers/processProvider";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -53,13 +55,25 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({children, updateView
 
   const [processes, setProcesses] = useState<IProcess[]>();
   const [sectors, setSectors] = useState<ISector[]>();
-
   const {process} = useContext(ProcessContext);
+
+  const [sector, setSector] = useState<ISector>();
+  const {sesion} = useContext(SesionContext);
+
+  useEffect(() => {
+    if (sesion) getSectorBySesion({sesion: sesion}).then((sec) => setSector(sec));
+  }, []);
+
+  useEffect(() => {
+    form.reset({...form.getValues(), id_process: process?.id as number});
+  }, [process]);
+
   const form = useForm<IMachine>({
     resolver: zodResolver(MachineSchema),
     defaultValues: {
       name: "",
-      id_sector: params?.sector?.id as number,
+      id_sector: sector?.id as number,
+      id_process: process?.id as number,
     },
   });
 
@@ -105,12 +119,7 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({children, updateView
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit, (ex) => {
-                console.log(ex);
-              })}
-              className=" grid  gap-4 "
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid  gap-4 ">
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
@@ -148,7 +157,7 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({children, updateView
                       <FormControl>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
-                          defaultValue={(params?.sector?.id as number).toString()}
+                          defaultValue={(sector?.id as number).toString()}
                         >
                           <SelectTrigger disabled className="w-full">
                             <SelectValue placeholder="Seleccionar Sector" />
@@ -176,6 +185,8 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({children, updateView
                       <FormControl>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
+                          defaultValue={field.value.toString()}
+                          disabled
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Seleccionar Proceso" />

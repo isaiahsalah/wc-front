@@ -24,8 +24,6 @@ function App() {
 
     useEffect(() => {
       checkToken({setSesion}).then((tokenValid) => {
-        //console.log("🤑🤑", tokenValid);
-
         if (!tokenValid) {
           setLoading(false);
           setIsAuthenticated(false);
@@ -38,34 +36,7 @@ function App() {
         setLoading(false);
       });
     }, [setSesion]);
-    /*
-    const checkToken = async () => {
-      const rawToken = window.localStorage.getItem("token-app");
-      if (!rawToken) {
-        setIsAuthenticated(false);
-        navigate("/login");
-        setLoading(false);
-        return;
-      }
 
-      const savedtoken = JSON.parse(rawToken).toString();
-
-      await getCheckToken({token: savedtoken})
-        .then((response) => {
-          if (response.token) {
-            // Almacena el token en localStorage
-            window.localStorage.setItem("token-app", JSON.stringify(response.token));
-            // Actualiza la sesión en el estado
-            setSesion(response as ISesion);
-            setIsAuthenticated(true);
-            // Navega a la ruta deseada después de iniciar sesión
-            navigate("/home");
-          }
-        })
-        .catch((e) => console.log(e))
-        .finally(() => setLoading(false));
-    };
-*/
     if (loading) return <LoadingPage />;
 
     return isAuthenticated ? (

@@ -37,12 +37,7 @@ export const getMachineById = async (id: number) => {
 };
 
 export const createMachine = async ({data}: {data: IMachine}) => {
-  toast.info("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.post("/pr/machine/", data);
     toast.success("La máquina se creó correctamente.");
@@ -54,12 +49,7 @@ export const createMachine = async ({data}: {data: IMachine}) => {
 };
 
 export const updateMachine = async ({data}: {data: IMachine}) => {
-  toast.info("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.put(`/pr/machine/${data.id}`, data);
     toast.success("La máquina se editó correctamente.");
@@ -71,12 +61,7 @@ export const updateMachine = async ({data}: {data: IMachine}) => {
 };
 
 export const deleteMachine = async (id: number) => {
-  toast.info("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.delete(`/pr/machine/${id}`);
     toast.success("La máquina se eliminó correctamente.");
@@ -88,12 +73,7 @@ export const deleteMachine = async (id: number) => {
 };
 
 export const recoverMachine = async (id: number) => {
-  toast.info("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     // Realiza una solicitud PATCH o PUT al endpoint correspondiente
     const response = await apiClient.patch(`/pr/machine/${id}`, {

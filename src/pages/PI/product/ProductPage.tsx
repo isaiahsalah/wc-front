@@ -1,4 +1,4 @@
-import {IProduct} from "@/utils/interfaces";
+import {IProduct, ISector} from "@/utils/interfaces";
 import DataTable from "@/components/table/DataTable";
 import {
   CreateProductDialog,
@@ -34,10 +34,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {getProducts} from "@/api/product/product.api";
-import {countCurrentMonth} from "@/utils/funtions";
+import {countCurrentMonth, getSectorBySesion} from "@/utils/funtions";
 import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
 import {typeProduct} from "@/utils/const";
+import {ProcessContext} from "@/providers/processProvider";
+import {SesionContext} from "@/providers/sesionProvider";
 
 interface Props {
   degree: number;
@@ -46,17 +48,26 @@ interface Props {
 const ProductPage: React.FC<Props> = ({degree}) => {
   const [products, setProducts] = useState<IProduct[] | null>(null);
   const {process} = useContext(ProcessContext);
+  const {sesion} = useContext(SesionContext);
+
   useEffect(() => {
     updateView();
-  }, [sector]);
+  }, [process]);
 
   const updateView = async () => {
-    try {
-      const ProductionsData = await getProducts({id_sector: sector?.id, all: true});
-      setProducts(ProductionsData);
-    } catch (error) {
-      console.error("Error al cargar los datos:", error);
-    }
+    if (sesion)
+      getSectorBySesion({sesion: sesion}).then(async (sector: ISector) => {
+        try {
+          const ProductionsData = await getProducts({
+            id_sector: sector?.id,
+            id_process: process?.id,
+            all: true,
+          });
+          setProducts(ProductionsData);
+        } catch (error) {
+          console.error("Error al cargar los datos:", error);
+        }
+      });
   };
 
   // Generar columnas dinámicamente

@@ -67,8 +67,7 @@ export const getModuleBySesion = ({sesion}: {sesion: ISesion}) => {
   return typeModule.find((module) => module.id === moduleId);
 };
 
-export const getSectorBySesion = async ({sesion}: {sesion: ISesion}) => {
+export const getSectorBySesion = ({sesion, sectors}: {sesion: ISesion; sectors: ISector[]}) => {
   const sectorId = (sesion?.user.permissions as IPermission[])[0].id_sector;
-  const sectors = await getSectors({});
   return sectors.find((sector: ISector) => sector.id === sectorId);
 };

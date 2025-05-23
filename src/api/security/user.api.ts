@@ -16,9 +16,20 @@ export const getUsers = async ({all}: {all?: boolean | null}) => {
 };
 
 // Obtener usuario por ID
-export const getUserById = async (id: number) => {
+export const getUserById = async ({
+  id,
+  id_sector,
+  id_process,
+  type_module,
+}: {
+  id: number;
+  id_sector?: number | null;
+  id_process?: number | null;
+  type_module?: number | null;
+}) => {
   try {
-    const response = await apiClient.get(`/pr/user/${id}`);
+    const params = {id_sector, id_process, type_module};
+    const response = await apiClient.get(`/pr/user/${id}`, {params});
     return response.data; // Devuelve el usuario encontrado
   } catch (error) {
     console.error(`Error al obtener el usuario con ID ${id}:`, error);
@@ -88,18 +99,22 @@ export const recoverUser = async (id: number) => {
 export const updateUserPermissions = async ({
   userId,
   permissions,
+  id_sector,
+  id_process,
 }: {
   userId: number;
   permissions: IPermission[];
+  id_sector: number;
+  id_process: number;
 }) => {
   toast.info("Se está procesando la petición");
 
-  const filteredArray = permissions.filter((item) => item.degree !== 0);
+  permissions = permissions.filter((item) => item.degree !== 0);
 
   try {
-    const response = await apiClient.put(`/pr/user/permission/${userId}`, {
-      permissions: filteredArray,
-    });
+    console.log("🚩🚩🚩🚩", id_sector);
+    const body = {permissions, id_sector, id_process};
+    const response = await apiClient.put(`/pr/user/permission/${userId}`, body);
     toast.success("El usuario se editó correctamente.");
     return response.data; // Devuelve el usuario actualizado
   } catch (error) {

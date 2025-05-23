@@ -37,12 +37,7 @@ export const getProductById = async (id: number) => {
 };
 
 export const createProduct = async ({data}: {data: IProduct}) => {
-  toast.info("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.post("/pr/product/", data);
     toast.success("El producto se creó correctamente.");
@@ -54,12 +49,7 @@ export const createProduct = async ({data}: {data: IProduct}) => {
 };
 
 export const updateProduct = async ({data}: {data: IProduct}) => {
-  toast.info("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.put(`/pr/product/${data.id}`, data);
     toast.success("El producto se editó correctamente.");
@@ -71,12 +61,7 @@ export const updateProduct = async ({data}: {data: IProduct}) => {
 };
 
 export const deleteProduct = async (id: number) => {
-  toast.info("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.delete(`/pr/product/${id}`);
     toast.success("El producto se eliminó correctamente.");
@@ -88,12 +73,7 @@ export const deleteProduct = async (id: number) => {
 };
 
 export const recoverProduct = async (id: number) => {
-  toast.info("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     // Realiza una solicitud PATCH o PUT al endpoint correspondiente
     const response = await apiClient.patch(`/pr/product/${id}`, {

@@ -2,7 +2,7 @@ import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 
 import {useForm} from "react-hook-form";
-import {IColor, IModel, IProduct, ProductSchema, IUnity} from "@/utils/interfaces";
+import {IColor, IModel, IProduct, ProductSchema, IUnity, ISector} from "@/utils/interfaces";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 import {
@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {Textarea} from "@/components/ui/textarea";
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {
   createProduct,
   deleteProduct,
@@ -45,6 +45,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {typeProduct} from "@/utils/const";
+import {SesionContext} from "@/providers/sesionProvider";
+import {getSectorBySesion} from "@/utils/funtions";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -57,8 +59,13 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
   const [colors, setColors] = useState<IColor[]>();
   const [models, setModels] = useState<IModel[]>();
   const [unities, setUnities] = useState<IUnity[]>();
-  const {process} = useContext(ProcessContext);
   const [open, setOpen] = useState(false);
+  const [sector, setSector] = useState<ISector>();
+  const {sesion} = useContext(SesionContext);
+
+  useEffect(() => {
+    if (sesion) getSectorBySesion({sesion: sesion}).then((sec) => setSector(sec));
+  }, []);
   const form = useForm<IProduct>({
     resolver: zodResolver(ProductSchema),
     defaultValues: {
@@ -395,7 +402,14 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
   const [colors, setColors] = useState<IColor[]>();
   const [models, setModels] = useState<IModel[]>();
   const [unities, setUnities] = useState<IUnity[]>();
-  const {process} = useContext(ProcessContext);
+
+  const [sector, setSector] = useState<ISector>();
+  const {sesion} = useContext(SesionContext);
+
+  useEffect(() => {
+    if (sesion) getSectorBySesion({sesion: sesion}).then((sec) => setSector(sec));
+  }, []);
+
   const form = useForm<IProduct>({
     resolver: zodResolver(ProductSchema),
   });
@@ -777,22 +791,11 @@ export const DeleteProductDialog: React.FC<PropsDelete> = ({
     deleteProduct(id)
       .then((deletedProduct) => {
         console.log("Producto eliminado:", deletedProduct);
-        toast("El producto se eliminó correctamente.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
+
         updateView();
       })
       .catch((error) => {
         console.error("Error al eliminar el producto:", error);
-        toast("Hubo un error al eliminar el producto.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
       })
       .finally(() => {
         setLoadingDelete(false); // Finaliza la carga
@@ -850,22 +853,11 @@ export const RecoverProductDialog: React.FC<PropsRecover> = ({
     recoverProduct(id)
       .then((recoveredProduct) => {
         console.log("Producto recuperado:", recoveredProduct);
-        toast("El producto se recuperó correctamente.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
+
         updateView();
       })
       .catch((error) => {
         console.error("Error al recuperar el producto:", error);
-        toast("Hubo un error al recuperar el producto.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
       })
       .finally(() => {
         setLoadingRecover(false); // Finaliza la carga

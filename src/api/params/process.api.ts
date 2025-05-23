@@ -24,12 +24,7 @@ export const getProcessById = async (id: number) => {
 };
 
 export const createProcess = async ({data}: {data: IProcess}) => {
-  toast.info("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.post("/pr/process/", data);
     toast.success("El proceso se creó correctamente.");
@@ -41,12 +36,7 @@ export const createProcess = async ({data}: {data: IProcess}) => {
 };
 
 export const updateProcess = async ({data}: {data: IProcess}) => {
-  toast.info("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.put(`/pr/process/${data.id}`, data);
     toast.success("El proceso se editó correctamente.");
@@ -58,12 +48,7 @@ export const updateProcess = async ({data}: {data: IProcess}) => {
 };
 
 export const deleteProcess = async (id: number) => {
-  toast.info("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.delete(`/pr/process/${id}`);
     toast.success("El proceso se eliminó correctamente.");
@@ -75,12 +60,7 @@ export const deleteProcess = async (id: number) => {
 };
 
 export const recoverProcess = async (id: number) => {
-  toast.info("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     // Realiza una solicitud PATCH o PUT al endpoint correspondiente
     const response = await apiClient.patch(`/pr/process/${id}`, {

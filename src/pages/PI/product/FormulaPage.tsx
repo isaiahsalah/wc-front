@@ -1,4 +1,4 @@
-import {IFormula, IProduct} from "@/utils/interfaces";
+import {IFormula, IProduct, ISector} from "@/utils/interfaces";
 import {
   CreateFormulaDialog,
   DeleteFormulaDialog,
@@ -36,7 +36,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {countCurrentMonth} from "@/utils/funtions";
+import {countCurrentMonth, getSectorBySesion} from "@/utils/funtions";
 import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
 import {
@@ -47,19 +47,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {getProducts} from "@/api/product/product.api";
+import {SesionContext} from "@/providers/sesionProvider";
 interface Props {
   degree: number;
 }
 const FormulaPage: React.FC<Props> = ({degree}) => {
   const [formulas, setFormulas] = useState<IFormula[] | null>(null);
-  const {process} = useContext(ProcessContext);
+  const {sesion} = useContext(SesionContext);
   const [products, setProducts] = useState<IProduct[]>();
+  const [sector, setSector] = useState<ISector>();
+
   const [idProduct, setIdProduct] = useState<number>();
 
   useEffect(() => {
+    if (sesion) getSectorBySesion({sesion: sesion}).then((sec) => setSector(sec));
+
     updateView();
     fetchFilter();
-  }, [sector]);
+  }, []);
 
   const fetchFilter = async () => {
     try {

@@ -33,17 +33,30 @@ import {format} from "date-fns";
 import {typeQuality} from "@/utils/const";
 import {Badge} from "@/components/ui/badge";
 import {ProcessContext} from "@/providers/processProvider";
+import {getSectorBySesion} from "@/utils/funtions";
+import {SesionContext} from "@/providers/sesionProvider";
+import DateRangePicker from "@/components/DataRangePicker";
+import {DateRange} from "react-day-picker";
 interface Props {
   degree: number;
 }
 const InventoryPage: React.FC<Props> = ({degree}) => {
   const [productions, setProductions] = useState<IProduction[] | null>(null);
   const {process} = useContext(ProcessContext);
+  const {sesion} = useContext(SesionContext);
+
   const [sectors, setSectors] = useState<ISector[]>();
+  const [sector, setSector] = useState<ISector>();
+  const [rangeDate, setRangeDate] = useState<DateRange>();
+
   const [processes, setProcesses] = useState<IProcess[]>();
 
   useEffect(() => {
-    updateView();
+    if (sesion) getSectorBySesion({sesion}).then((sectorBySesion) => setSector(sectorBySesion));
+  }, [sesion]);
+
+  useEffect(() => {
+    if (sector) updateView();
   }, [sector, process]);
 
   useEffect(() => {
@@ -65,7 +78,7 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
   const updateView = async () => {
     try {
       const ProductionsData = await getProductions({
-        id_process: process ?? null,
+        id_process: process?.id ?? null,
         id_sector: sector?.id ?? null,
         all: true,
       });
@@ -284,7 +297,8 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
     <div className="grid grid-cols-6 gap-4">
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardContent className=" flex flex-col gap-2">
-          <CardDescription>Selecciona el sector y proceso</CardDescription>
+          <CardDescription>Selecciona la máquina</CardDescription>
+
           <div className="grid grid-cols-6 gap-2">
             <Select
               value={sector?.id?.toString() as string}
@@ -301,20 +315,7 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
                 ))}
               </SelectContent>
             </Select>
-            <Select
-              onValueChange={(value) => setProcess(Number(value))} // Convertir el valor a número
-            >
-              <SelectTrigger className="w-full col-span-3">
-                <SelectValue placeholder="Proceso" />
-              </SelectTrigger>
-              <SelectContent>
-                {processes?.map((process: IProcess) => (
-                  <SelectItem key={process.id} value={(process.id ?? "").toString()}>
-                    {process.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <DateRangePicker dateRange={rangeDate} setRange={setRangeDate} />
           </div>
         </CardContent>
       </Card>

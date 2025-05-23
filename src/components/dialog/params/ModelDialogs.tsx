@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {Textarea} from "@/components/ui/textarea";
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {
   createModel,
   deleteModel,
@@ -42,7 +42,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {ParamsContext} from "@/providers/processProvider";
+import {SesionContext} from "@/providers/sesionProvider";
+import {getSectorBySesion} from "@/utils/funtions";
+import {ProcessContext} from "@/providers/processProvider";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -52,15 +54,28 @@ interface PropsCreate {
 export const CreateModelDialog: React.FC<PropsCreate> = ({children, updateView}) => {
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
-  const {process} = useContext(ProcessContext);
   const [processes, setProcesses] = useState<IProcess[]>();
   const [sectors, setSectors] = useState<ISector[]>();
+
+  const [sector, setSector] = useState<ISector>();
+  const {process} = useContext(ProcessContext);
+
+  const {sesion} = useContext(SesionContext);
+
+  useEffect(() => {
+    if (sesion) getSectorBySesion({sesion: sesion}).then((sec) => setSector(sec));
+  }, []);
+
+  useEffect(() => {
+    form.reset({...form.getValues(), id_process: process?.id as number});
+  }, [process]);
 
   const form = useForm<IModel>({
     resolver: zodResolver(ModelSchema),
     defaultValues: {
       name: "",
-      id_sector: params?.sector?.id as number,
+      id_sector: sector?.id as number,
+      id_process: process?.id as number,
     },
   });
 
@@ -138,21 +153,22 @@ export const CreateModelDialog: React.FC<PropsCreate> = ({children, updateView})
 
                 <FormField
                   control={form.control}
-                  name="id_process"
+                  name="id_sector"
                   render={({field}) => (
                     <FormItem className="col-span-3 ">
-                      <FormDescription>Proceso</FormDescription>
+                      <FormDescription>Sector</FormDescription>
                       <FormControl>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
+                          value={sector?.id?.toString() as string}
                         >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Seleccionar Proceso" />
+                          <SelectTrigger className="w-full" disabled>
+                            <SelectValue placeholder="Seleccionar Sector" />
                           </SelectTrigger>
                           <SelectContent>
-                            {processes?.map((process: IProcess) => (
-                              <SelectItem key={process.id} value={(process.id ?? "").toString()}>
-                                {process.name}
+                            {sectors?.map((product: ISector) => (
+                              <SelectItem key={product.id} value={(product.id ?? "").toString()}>
+                                {product.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -162,25 +178,25 @@ export const CreateModelDialog: React.FC<PropsCreate> = ({children, updateView})
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
-                  name="id_sector"
+                  name="id_process"
                   render={({field}) => (
                     <FormItem className="col-span-3 ">
-                      <FormDescription>Sector</FormDescription>
+                      <FormDescription>Proceso</FormDescription>
                       <FormControl>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
-                          value={params?.sector?.id?.toString() as string}
+                          defaultValue={field.value.toString()}
+                          disabled
                         >
-                          <SelectTrigger className="w-full" disabled>
-                            <SelectValue placeholder="Seleccionar Sector" />
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Seleccionar Proceso" />
                           </SelectTrigger>
                           <SelectContent>
-                            {sectors?.map((product: ISector) => (
-                              <SelectItem key={product.id} value={(product.id ?? "").toString()}>
-                                {product.name}
+                            {processes?.map((process: IProcess) => (
+                              <SelectItem key={process.id} value={(process.id ?? "").toString()}>
+                                {process.name}
                               </SelectItem>
                             ))}
                           </SelectContent>

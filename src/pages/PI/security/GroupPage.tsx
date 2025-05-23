@@ -37,7 +37,7 @@ import {
   DeleteGroupDialog,
   EditGroupDialog,
   RecoverGroupDialog,
-} from "@/components/dialog/security/GroupDialogs copy";
+} from "@/components/dialog/security/GroupDialogs";
 
 interface Props {
   degree: number;

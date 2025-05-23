@@ -16,6 +16,7 @@ import {SesionContext} from "@/providers/sesionProvider";
 import {IMenuItem, IModuleItem, typeModule} from "@/utils/const";
 import {IPermission, IProcess} from "@/utils/interfaces";
 import {ProcessSidebar} from "./process-sidebar";
+import {ProcessContext} from "@/providers/processProvider";
 
 interface Props {
   className?: string; // Clase personalizada opcional
@@ -23,10 +24,12 @@ interface Props {
 
 export const AppSidebar: React.FC<Props> = ({className}) => {
   const {sesion} = useContext(SesionContext);
+  const {process} = useContext(ProcessContext);
+
   const [menu, setMenu] = useState<IMenuItem[]>();
   const [title, setTitle] = useState<string>("");
 
-  const [process, setProcess] = useState<IProcess[] | null>(null);
+  const [processes, setProcesses] = useState<IProcess[] | null>(null);
 
   const permisions = sesion?.user.permissions as IPermission[];
 
@@ -34,8 +37,11 @@ export const AppSidebar: React.FC<Props> = ({className}) => {
     const moduleId = permisions[0].type_module;
     const moduleSelected = typeModule.find((mod) => mod.id === moduleId) as IModuleItem;
     setTitle(moduleSelected.title);
+
     const tempMenu: IMenuItem[] = moduleSelected.menu.map((men) => {
-      const isActive = men.pages.some((page) => permisions.some((per) => per.screen === page.id));
+      const isActive = men.pages.some((page) =>
+        permisions.some((per) => per.screen === page.id && per.id_process === process?.id)
+      );
       return {...men, isActive}; // Devuelve un nuevo objeto con `isActive` actualizado
     });
 
@@ -43,13 +49,11 @@ export const AppSidebar: React.FC<Props> = ({className}) => {
     const uniqueObjects: IProcess[] = Array.from(
       new Map(permisions.map((item) => [item.id_process, item.process])).values()
     ) as IProcess[];
-    console.log("🥳🥳🚩", uniqueObjects);
 
-    console.log("🥳🥳", permisions);
-    setProcess(uniqueObjects);
-  }, [sesion]);
+    setProcesses(uniqueObjects);
+  }, [sesion, process]);
 
-  if (!menu || !process) {
+  if (!menu || !processes) {
     return <></>;
   }
 
@@ -66,7 +70,7 @@ export const AppSidebar: React.FC<Props> = ({className}) => {
         <SidebarMenu className="flex ">
           <SidebarMenuItem></SidebarMenuItem>
 
-          <ProcessSidebar processes={process} />
+          <ProcessSidebar processes={processes} />
         </SidebarMenu>
       </SidebarHeader>
       <SidebarSeparator className=" m-0" />

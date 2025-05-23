@@ -24,12 +24,7 @@ export const getSectorById = async (id: number) => {
 };
 
 export const createSector = async ({data}: {data: ISector}) => {
-  toast.info("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.post("/pr/sector/", data);
     toast.success("El sector se creó correctamente.");
@@ -41,12 +36,7 @@ export const createSector = async ({data}: {data: ISector}) => {
 };
 
 export const updateSector = async ({data}: {data: ISector}) => {
-  toast.info("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.put(`/pr/sector/${data.id}`, data);
     toast.success("El sector se editó correctamente.");
@@ -58,12 +48,7 @@ export const updateSector = async ({data}: {data: ISector}) => {
 };
 
 export const deleteSector = async (id: number) => {
-  toast.info("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.delete(`/pr/sector/${id}`);
     toast.success("El sector se eliminó correctamente.");
@@ -75,12 +60,7 @@ export const deleteSector = async (id: number) => {
 };
 
 export const recoverSector = async (id: number) => {
-  toast.info("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     // Realiza una solicitud PATCH o PUT al endpoint correspondiente
     const response = await apiClient.patch(`/pr/sector/${id}`, {

@@ -1,4 +1,4 @@
-import {IModel} from "@/utils/interfaces";
+import {IModel, ISector} from "@/utils/interfaces";
 import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
 import {Button} from "@/components/ui/button";
@@ -34,26 +34,31 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
-import {countCurrentMonth} from "@/utils/funtions";
+import {countCurrentMonth, getSectorBySesion} from "@/utils/funtions";
 import {format} from "date-fns";
 import {getModels} from "@/api/params/model.api";
+import {SesionContext} from "@/providers/sesionProvider";
 interface Props {
   degree: number;
 }
 const ModelPage: React.FC<Props> = ({degree}) => {
   const [models, setModels] = useState<IModel[] | null>(null);
-  const {process} = useContext(ProcessContext);
+  const {sesion} = useContext(SesionContext);
+
   useEffect(() => {
     updateView();
-  }, [sector]);
+  }, [sesion]);
 
-  const updateView = async () => {
-    try {
-      const modelsData = await getModels({id_sector: sector?.id, all: true});
-      setModels(modelsData);
-    } catch (error) {
-      console.error("Error al cargar los datos:", error);
-    }
+  const updateView = () => {
+    if (sesion)
+      getSectorBySesion({sesion: sesion}).then(async (sector: ISector) => {
+        try {
+          const modelsData = await getModels({id_sector: sector?.id, all: true});
+          setModels(modelsData);
+        } catch (error) {
+          console.error("Error al cargar los datos:", error);
+        }
+      });
   };
 
   const columnsModel: ColumnDef<IModel>[] = useMemo(() => {
@@ -214,7 +219,7 @@ const ModelPage: React.FC<Props> = ({degree}) => {
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader>
           <CardTitle>Modelos</CardTitle>
-          <CardDescription>Modelos registrados en sector de {sector?.name}</CardDescription>
+          <CardDescription>Modelos registrados </CardDescription>
         </CardHeader>
         <CardContent>
           <DataTable

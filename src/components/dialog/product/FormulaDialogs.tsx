@@ -2,7 +2,7 @@ import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 
 import {useForm} from "react-hook-form";
-import {IFormula, FormulaSchema, IProduct} from "@/utils/interfaces";
+import {IFormula, FormulaSchema, IProduct, ISector} from "@/utils/interfaces";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 import {
@@ -13,7 +13,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {
   createFormula,
   deleteFormula,
@@ -21,7 +21,6 @@ import {
   recoverFormula,
   updateFormula,
 } from "@/api/product/formula.api";
-import {toast} from "sonner";
 import {
   Dialog,
   DialogClose,
@@ -42,6 +41,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {getProducts} from "@/api/product/product.api";
+import {SesionContext} from "@/providers/sesionProvider";
+import {getSectorBySesion} from "@/utils/funtions";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -52,7 +53,14 @@ export const CreateFormulaDialog: React.FC<PropsCreate> = ({children, updateView
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
   const [products, setProducts] = useState<IProduct[]>();
-  const {process} = useContext(ProcessContext);
+
+  const [sector, setSector] = useState<ISector>();
+  const {sesion} = useContext(SesionContext);
+
+  useEffect(() => {
+    if (sesion) getSectorBySesion({sesion: sesion}).then((sec) => setSector(sec));
+  }, []);
+
   const form = useForm<IFormula>({
     resolver: zodResolver(FormulaSchema),
     defaultValues: {
@@ -202,7 +210,14 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
   const [products, setProducts] = useState<IProduct[]>();
-  const {process} = useContext(ProcessContext);
+
+  const [sector, setSector] = useState<ISector>();
+  const {sesion} = useContext(SesionContext);
+
+  useEffect(() => {
+    if (sesion) getSectorBySesion({sesion: sesion}).then((sec) => setSector(sec));
+  }, []);
+
   const form = useForm<IFormula>({
     resolver: zodResolver(FormulaSchema),
     defaultValues: {
@@ -219,23 +234,10 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
       .then((updatedFormula) => {
         console.log("Fórmula actualizada:", updatedFormula);
 
-        toast("La fórmula se actualizó correctamente.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
-
         updateView();
       })
       .catch((error) => {
         console.error("Error al actualizar la fórmula:", error);
-        toast("Hubo un error al actualizar la fórmula.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
       })
       .finally(() => {
         setLoadingSave(false);
@@ -268,23 +270,10 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
       .then((deletedFormula) => {
         console.log("Fórmula eliminada:", deletedFormula);
 
-        toast("La fórmula se eliminó correctamente.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
-
         updateView();
       })
       .catch((error) => {
         console.error("Error al eliminar la fórmula:", error);
-        toast("Hubo un error al eliminar la fórmula.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
       })
       .finally(() => {
         setLoadingDelete(false);

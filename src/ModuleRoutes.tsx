@@ -1,4 +1,4 @@
-import {useContext, useEffect} from "react";
+import {useContext} from "react";
 import {SesionContext} from "./providers/sesionProvider";
 import {Route, Routes} from "react-router-dom";
 import {IPermission} from "./utils/interfaces";
@@ -11,10 +11,6 @@ const ModuleRoutes = () => {
 
   const moduleId = (sesion?.user.permissions as IPermission[])[0].type_module;
   const permissions = sesion?.user.permissions as IPermission[];
-
-  useEffect(() => {
-    console.log("hola:", permissions);
-  }, []);
 
   return (
     <Routes>

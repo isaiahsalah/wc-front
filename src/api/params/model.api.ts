@@ -33,12 +33,7 @@ export const getModelById = async (id: number) => {
 };
 
 export const createModel = async ({data}: {data: IModel}) => {
-  toast.info("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.post("/pr/model/", data);
     toast.success("El modelo se creó correctamente.");

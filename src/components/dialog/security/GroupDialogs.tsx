@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/form";
 import {Textarea} from "@/components/ui/textarea";
 import {useState} from "react";
-import {toast} from "sonner";
 import {
   Dialog,
   DialogClose,
@@ -57,23 +56,10 @@ export const CreateGroupDialog: React.FC<PropsCreate> = ({children, updateView})
       .then((createdGroup) => {
         console.log("Grupo creado:", createdGroup);
 
-        toast("El grupo se creó correctamente.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
-
         updateView();
       })
       .catch((error) => {
         console.error("Error al crear el grupo:", error);
-        toast("Hubo un error al crear el grupo.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
       })
       .finally(() => {
         setLoadingSave(false); // Finaliza la carga
@@ -166,23 +152,10 @@ export const EditGroupDialog: React.FC<PropsEdit> = ({children, id, updateView, 
       .then((updatedGroup) => {
         console.log("Grupo actualizado:", updatedGroup);
 
-        toast("El grupo se actualizó correctamente.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
-
         updateView();
       })
       .catch((error) => {
         console.error("Error al actualizar el grupo:", error);
-        toast("Hubo un error al actualizar el grupo.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
       })
       .finally(() => {
         setLoadingSave(false); // Finaliza la carga
@@ -212,23 +185,10 @@ export const EditGroupDialog: React.FC<PropsEdit> = ({children, id, updateView, 
       .then((deletedGroup) => {
         console.log("Grupo eliminado:", deletedGroup);
 
-        toast("El grupo se eliminó correctamente.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
-
         updateView();
       })
       .catch((error) => {
         console.error("Error al eliminar el grupo:", error);
-        toast("Hubo un error al eliminar el grupo.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
       })
       .finally(() => {
         setLoadingDelete(false); // Finaliza la carga

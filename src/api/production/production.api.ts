@@ -3,13 +3,15 @@ import {IProduction} from "@/utils/interfaces";
 import {toast} from "sonner";
 
 export const getProductions = async ({
-  date,
+  init_date,
+  end_date,
   id_sector,
   id_process,
   id_machine,
   all,
 }: {
-  date?: string | null;
+  init_date?: string | null;
+  end_date?: string | null;
   id_sector?: number | null;
   id_machine?: number | null;
   id_process?: number | null;
@@ -17,7 +19,8 @@ export const getProductions = async ({
 }) => {
   try {
     const params = {
-      date,
+      init_date,
+      end_date,
       id_sector,
       id_process,
       id_machine,
@@ -34,7 +37,6 @@ export const getProductions = async ({
 export const getProductionById = async (id: number) => {
   try {
     const response = await apiClient.get(`/pr/production/${id}`);
-    console.log("✔️✔️✔️", response.data);
     return response.data; // Devuelve la producción encontrada
   } catch (error) {
     console.error(`Error al obtener la producción con ID ${id}:`, error);
@@ -97,12 +99,7 @@ export const recoverProduction = async (id: number) => {
 ////////////////////////////////////////////////////////////////////////
 
 export const createProductions = async ({data}: {data: IProduction[]}) => {
-  toast("Se está procesando la petición", {
-    action: {
-      label: "OK",
-      onClick: () => console.log("Undo"),
-    },
-  });
+  toast("Se está procesando la petición");
   try {
     const response = await apiClient.post("/pr/production/bulk", data);
     toast("Las producciones se creó correctamente.");

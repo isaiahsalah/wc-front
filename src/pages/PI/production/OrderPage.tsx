@@ -1,4 +1,4 @@
-import {IOrder, IUser} from "@/utils/interfaces";
+import {IGroup, IOrder, ISector, IUser} from "@/utils/interfaces";
 import {ColumnDef, Row} from "@tanstack/react-table";
 import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
@@ -36,23 +36,35 @@ import {
 } from "@/components/ui/card";
 
 import {getOrders} from "@/api/production/order.api";
-import {countCurrentMonth} from "@/utils/funtions";
+import {countCurrentMonth, getSectorBySesion} from "@/utils/funtions";
 import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
-import {ParamsContext} from "@/providers/processProvider";
+import {ProcessContext} from "@/providers/processProvider";
+import {SesionContext} from "@/providers/sesionProvider";
 interface Props {
   degree: number;
 }
 const OrderPage: React.FC<Props> = ({degree}) => {
   const [orders, setOrders] = useState<IOrder[] | null>(null);
   const {process} = useContext(ProcessContext);
+  const {sesion} = useContext(SesionContext);
+  const [sector, setSector] = useState<ISector>();
+
   useEffect(() => {
-    updateView();
-  }, [sector]);
+    if (sesion) getSectorBySesion({sesion}).then((sectorBySesion) => setSector(sectorBySesion));
+  }, []);
+
+  useEffect(() => {
+    if (sector) updateView();
+  }, [sector, process]);
 
   const updateView = async () => {
     try {
-      const ProductionsData = await getOrders({all: true, id_sector: sector?.id});
+      const ProductionsData = await getOrders({
+        all: true,
+        id_sector: sector?.id,
+        id_process: process?.id,
+      });
       setOrders(ProductionsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
@@ -70,10 +82,16 @@ const OrderPage: React.FC<Props> = ({degree}) => {
         cell: (info) => info.getValue(),
       },
       {
+        accessorKey: "group",
+        header: "Grupo",
+        cell: (info) => (info.getValue() as IGroup).name,
+      },
+      {
         accessorKey: "init_date",
         header: "Fecha de inicio",
         cell: (info) => format(new Date(info.getValue() as Date), "dd/MM/yyyy HH:mm"),
       },
+
       {
         accessorKey: "end_date",
         header: "Fecha de fin",

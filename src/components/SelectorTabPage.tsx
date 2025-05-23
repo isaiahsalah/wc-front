@@ -7,6 +7,7 @@ import {PageContext} from "@/providers/pageProvider";
 import {Separator} from "./ui/separator";
 import {SesionContext} from "@/providers/sesionProvider";
 import {IPermission} from "@/utils/interfaces";
+import {ProcessContext} from "@/providers/processProvider";
 
 interface Props {
   tabData: IPageItem[];
@@ -18,7 +19,14 @@ const SelectorTabPage: React.FC<Props> = ({tabData}) => {
   const {setPage} = useContext(PageContext);
 
   const {sesion} = useContext(SesionContext);
-  const permissions = sesion?.user.permissions as IPermission[];
+  const {process} = useContext(ProcessContext);
+
+  const permissions = (sesion?.user.permissions as IPermission[]).filter(
+    (per) => per.id_process === (process?.id as number)
+  );
+  useEffect(() => {
+    console.log("🅿️", process?.id, "🅿️", permissions);
+  }, [process]);
 
   useEffect(() => {
     setActiveTab(tabData[0]);
@@ -73,7 +81,7 @@ const SelectorTabPage: React.FC<Props> = ({tabData}) => {
       <Separator />
       {tabData.map((tab) => {
         const degree = permissions?.find((perm) => perm.screen === tab.id)?.degree ?? 0;
-        if (degree < 1) return null;
+        if (degree < 1) return;
         else
           return (
             <TabsContent key={tab.id} value={tab.id.toString()}>

@@ -10,6 +10,7 @@ import {
   IProcess,
   IProduct,
   IProduction,
+  ISector,
   OrderSchema,
 } from "@/utils/interfaces";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -30,7 +31,6 @@ import {
   recoverOrder,
   updateOrder,
 } from "@/api/production/order.api";
-import {toast} from "sonner";
 import {
   Dialog,
   DialogClose,
@@ -59,7 +59,8 @@ import {getMachines} from "@/api/params/machine.api";
 import {getProcesses} from "@/api/params/process.api";
 import {getGroups} from "@/api/security/group.api";
 import {typeTurn} from "@/utils/const";
-import {ParamsContext} from "@/providers/processProvider";
+import {ProcessContext} from "@/providers/processProvider";
+import {getSectorBySesion} from "@/utils/funtions";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -76,14 +77,27 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
 
   const [productSelected, setProductSelected] = useState<IProduct>();
   const [machineSelected, setMachineSelected] = useState<IMachine>();
-  const [processSelected, setProcessSelected] = useState<IProcess>();
 
   const [orderDetailsSelected, setOrderDetailsSelected] = useState<IOrderDetail[]>([]);
 
   const [amount, setAmount] = useState<number>();
+  const [sector, setSector] = useState<ISector>();
 
   const {process} = useContext(ProcessContext);
   const {sesion} = useContext(SesionContext);
+
+  useEffect(() => {
+    if (sesion) {
+      getSectorBySesion({sesion}).then((sectorBySesion) => setSector(sectorBySesion));
+
+      getProcesses({}).then((ProcessesData) => setProcesses(ProcessesData));
+      getGroups({}).then((GroupsData) => setGroups(GroupsData));
+    }
+  }, [sesion]);
+
+  useEffect(() => {
+    if (process) fetchData();
+  }, [process]);
 
   const form = useForm<IOrder>({
     resolver: zodResolver(OrderSchema),
@@ -107,24 +121,15 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
         setLoadingSave(false);
       });
   }
-  useEffect(() => {
-    getProcesses({}).then((ProcessesData) => setProcesses(ProcessesData));
-    getGroups({}).then((GroupsData) => setGroups(GroupsData));
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-  }, [processSelected]);
-
   const fetchData = async () => {
     try {
       const ProductsData = await getProducts({
-        id_sector: params?.sector?.id,
-        id_process: processSelected?.id,
+        id_sector: sector?.id,
+        id_process: process?.id,
       });
       const MachinesData = await getMachines({
-        id_sector: params?.sector?.id,
-        id_process: processSelected?.id,
+        id_sector: sector?.id,
+        id_process: process?.id,
       });
 
       setProducts(ProductsData);
@@ -330,14 +335,7 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
               <div className="w-full col-span-6 grid grid-cols-6 gap-2 rounded-lg border shadow-sm p-4 bg-muted/30">
                 <div className="w-full col-span-6 grid gap-2">
                   <FormDescription>Proceso</FormDescription>
-                  <Select
-                    onValueChange={(value) => {
-                      const processProduct = processes?.find(
-                        (process: IProcess) => process.id?.toString() === value
-                      );
-                      setProcessSelected(processProduct); // Guarda el objeto completo
-                    }} // Convertir el valor a número
-                  >
+                  <Select disabled>
                     <SelectTrigger className="w-full  ">
                       <SelectValue placeholder="Selecciona" />
                     </SelectTrigger>
@@ -353,7 +351,6 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
                 <div className="w-full col-span-3 grid gap-2">
                   <FormDescription>Producto a ordear</FormDescription>
                   <Select
-                    disabled={!processSelected}
                     onValueChange={(value) => {
                       const selectedProduct = products?.find(
                         (product: IProduct) => product.id?.toString() === value
@@ -377,7 +374,6 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
                 <div className="w-full col-span-2 grid gap-2">
                   <FormDescription>Máquina</FormDescription>
                   <Select
-                    disabled={!processSelected}
                     onValueChange={(value) => {
                       const selectedMachine = machines?.find(
                         (machine: IMachine) => machine.id?.toString() === value
@@ -401,7 +397,6 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
                 <div className="w-full col-span-1 grid gap-2">
                   <FormDescription>Cant.</FormDescription>
                   <Input
-                    disabled={!processSelected}
                     placeholder="Cantidad"
                     type="number"
                     onChange={(event) => setAmount(Number(event.target.value))}
@@ -467,12 +462,27 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
   const [machines, setMachines] = useState<IMachine[]>([]);
   const [processes, setProcesses] = useState<IProcess[]>([]);
   const [groups, setGroups] = useState<IGroup[]>([]);
+  const [sector, setSector] = useState<ISector>();
+
+  const {sesion} = useContext(SesionContext);
 
   const {process} = useContext(ProcessContext);
   const form = useForm<IOrder>({
     resolver: zodResolver(OrderSchema),
   });
   const orderDetails = form.watch("order_details");
+
+  useEffect(() => {
+    if (sesion) {
+      getSectorBySesion({sesion}).then((sectorBySesion) => setSector(sectorBySesion));
+      getProcesses({}).then((ProcessesData) => setProcesses(ProcessesData));
+      getGroups({}).then((GroupsData) => setGroups(GroupsData));
+    }
+  }, [sesion]);
+
+  useEffect(() => {
+    if (process) fetchOrder();
+  }, [process]);
 
   function onSubmit(values: IOrder) {
     setLoadingSave(true);
@@ -490,15 +500,6 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
         setLoadingSave(false);
       });
   }
-
-  useEffect(() => {
-    getProcesses({}).then((ProcessesData) => setProcesses(ProcessesData));
-    getGroups({}).then((GroupsData) => setGroups(GroupsData));
-  }, []);
-
-  useEffect(() => {
-    fetchOrder();
-  }, [processSelected]);
 
   const fetchOrder = async () => {
     setLoadingInit(true);
@@ -518,11 +519,11 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
       console.log("🤑🤑🤑", orderData.order_details);
 
       const ProductsData = await getProducts({
-        id_sector: params?.sector?.id,
+        id_sector: sector?.id,
         id_process: processSelected?.id,
       });
       const MachinesData = await getMachines({
-        id_sector: params?.sector?.id,
+        id_sector: sector?.id,
         id_process: processSelected?.id,
       });
 
@@ -922,22 +923,11 @@ export const DeleteOrderDialog: React.FC<PropsDelete> = ({
     deleteOrder(id)
       .then((deletedOrder) => {
         console.log("Orden eliminada:", deletedOrder);
-        toast("La orden se eliminó correctamente.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
+
         updateView();
       })
       .catch((error) => {
         console.error("Error al eliminar la orden:", error);
-        toast("Hubo un error al eliminar la orden.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
       })
       .finally(() => {
         setLoadingDelete(false); // Finaliza la carga
@@ -995,22 +985,11 @@ export const RecoverOrderDialog: React.FC<PropsRecover> = ({
     recoverOrder(id)
       .then((recoveredOrder) => {
         console.log("Orden recuperada:", recoveredOrder);
-        toast("La orden se recuperó correctamente.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
+
         updateView();
       })
       .catch((error) => {
         console.error("Error al recuperar la orden:", error);
-        toast("Hubo un error al recuperar la orden.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
       })
       .finally(() => {
         setLoadingRecover(false); // Finaliza la carga

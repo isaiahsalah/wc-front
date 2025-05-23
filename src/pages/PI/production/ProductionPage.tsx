@@ -52,11 +52,14 @@ const ProductionPage: React.FC<Props> = ({degree}) => {
 
   useEffect(() => {
     if (sesion) getSectorBySesion({sesion}).then((sectorBySesion) => setSector(sectorBySesion));
-  }, []);
+  }, [sesion]);
 
   useEffect(() => {
-    getMachines({id_process: process?.id}).then((MachinesData) => setMachines(MachinesData));
-  }, [process]);
+    if (sector)
+      getMachines({id_process: process?.id, id_sector: sector?.id}).then((MachinesData) =>
+        setMachines(MachinesData)
+      );
+  }, [process, sector]);
 
   useEffect(() => {
     updateView();
@@ -406,12 +409,13 @@ const ProductionPage: React.FC<Props> = ({degree}) => {
     <div className="grid grid-cols-6 gap-4">
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardContent className=" flex flex-col gap-2">
-          <CardDescription>Selecciona el sector y proceso</CardDescription>
+          <CardDescription>Selecciona la máquina</CardDescription>
+
           <div className="grid grid-cols-6 gap-2">
             <Select
               onValueChange={(value) => setIdMachine(Number(value))} // Convertir el valor a número
             >
-              <SelectTrigger className="w-full col-span-3">
+              <SelectTrigger className="w-full col-span-6">
                 <SelectValue placeholder="Máquina" />
               </SelectTrigger>
               <SelectContent>
@@ -425,34 +429,34 @@ const ProductionPage: React.FC<Props> = ({degree}) => {
           </div>
         </CardContent>
       </Card>
-      <Card className="@container/card col-span-6 lg:col-span-6">
-        <CardHeader>
-          <CardTitle>Ordenes Pendientes</CardTitle>
-          <CardDescription>Ordenes de producción pendientes</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {idMachine ? (
-            <DataTable
-              hasOptions={false}
-              actions={<></>}
-              columns={columnsOrderDetails}
-              data={orderDetails}
-            />
-          ) : null}
-        </CardContent>
-      </Card>
+      {idMachine ? (
+        <>
+          <Card className="@container/card col-span-6 lg:col-span-6">
+            <CardHeader>
+              <CardTitle>Ordenes Pendientes</CardTitle>
+              <CardDescription>Ordenes de producción pendientes</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <DataTable
+                hasOptions={false}
+                actions={<></>}
+                columns={columnsOrderDetails}
+                data={orderDetails}
+              />
+            </CardContent>
+          </Card>
 
-      <Card className="@container/card col-span-6 lg:col-span-6">
-        <CardHeader>
-          <CardTitle>Producción</CardTitle>
-          <CardDescription>Producción registrada por el usuario activo</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {idMachine ? (
-            <DataTable actions={<></>} columns={columnsProduction} data={productions} />
-          ) : null}
-        </CardContent>
-      </Card>
+          <Card className="@container/card col-span-6 lg:col-span-6">
+            <CardHeader>
+              <CardTitle>Producción</CardTitle>
+              <CardDescription>Producción registrada por el usuario activo</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <DataTable actions={<></>} columns={columnsProduction} data={productions} />
+            </CardContent>
+          </Card>
+        </>
+      ) : null}
     </div>
   );
 };

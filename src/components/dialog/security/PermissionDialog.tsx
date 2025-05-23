@@ -28,7 +28,7 @@ import {Separator} from "@/components/ui/separator";
 import {getSectors} from "@/api/params/sector.api";
 import {toast} from "sonner";
 import {SesionContext} from "@/providers/sesionProvider";
-import {checkToken, getSectorBySesion} from "@/utils/funtions";
+import {checkToken, getModuleBySesion, getSectorBySesion} from "@/utils/funtions";
 import {ProcessContext} from "@/providers/processProvider";
 
 interface PropsPermissionEdit {
@@ -53,14 +53,21 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
 
   const [permissions, setPermissions] = useState<IPermission[]>();
   const [sector, setSector] = useState<ISector>();
+  const [module, setModule] = useState<IModuleItem>();
 
   const [sectors, setSectors] = useState<ISector[]>();
   const [moduleId, setModuleId] = useState<number>();
 
   useEffect(() => {
-    if (sesion)
-      getSectorBySesion({sesion: sesion}).then((sectorBySesion) => setSector(sectorBySesion));
+    getSectors({}).then((sectorsData) => setSectors(sectorsData));
   }, []);
+
+  useEffect(() => {
+    if (sesion && sectors) {
+      setSector(getSectorBySesion({sesion: sesion, sectors: sectors}));
+      setModule(getModuleBySesion({sesion: sesion}));
+    }
+  }, [sesion, sectors]);
 
   // const ()=useContext(mod)
 
@@ -69,8 +76,16 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
 
   function onSubmit() {
     if (!permissions) return toast.warning("No hay permisos para guardar");
+    if (!sector?.id || !process?.id) return toast.warning("No hay Sector ni Proceso");
+
     setLoadingSave(true);
-    updateUserPermissions({userId: id, permissions: permissions})
+
+    updateUserPermissions({
+      userId: id,
+      permissions: permissions,
+      id_sector: sector?.id,
+      id_process: process?.id,
+    })
       .then((updatedUser) => {
         console.log("Usuario actualizado:", updatedUser);
         if (sesion?.user.id === id) checkToken({setSesion});
@@ -87,13 +102,14 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
   const fetchUser = async () => {
     setLoadingInit(true);
     try {
-      const userData: IUser = await getUserById(id);
-      console.log("Usuario:", userData);
+      const userData: IUser = await getUserById({
+        id: id,
+        id_process: process?.id,
+        id_sector: sector?.id,
+        type_module: module?.id,
+      });
       setPermissions(userData.permissions as IPermission[]);
       setModuleId((userData.permissions as IPermission[])[0].type_module);
-      console.log("👌✖️🤞:", userData.permissions);
-      const SectorsData = await getSectors({});
-      setSectors(SectorsData);
     } catch (error) {
       console.error("Error al cargar los datos del usuario:", error);
     } finally {

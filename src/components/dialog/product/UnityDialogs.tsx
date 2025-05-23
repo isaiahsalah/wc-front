@@ -15,7 +15,6 @@ import {
   recoverUnity,
   updateUnity,
 } from "@/api/product/unity.api";
-import {toast} from "sonner";
 import {
   Dialog,
   DialogClose,
@@ -302,22 +301,11 @@ export const DeleteUnityDialog: React.FC<PropsDelete> = ({
     deleteUnity(id)
       .then((deletedUnity) => {
         console.log("Unidad eliminada:", deletedUnity);
-        toast("La unidad se eliminó correctamente.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
+
         updateView();
       })
       .catch((error) => {
         console.error("Error al eliminar la unidad:", error);
-        toast("Hubo un error al eliminar la unidad.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
       })
       .finally(() => {
         setLoadingDelete(false); // Finaliza la carga
@@ -375,22 +363,11 @@ export const RecoverUnityDialog: React.FC<PropsRecover> = ({
     recoverUnity(id)
       .then((recoveredUnity) => {
         console.log("Unidad recuperada:", recoveredUnity);
-        toast("La unidad se recuperó correctamente.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
+
         updateView();
       })
       .catch((error) => {
         console.error("Error al recuperar la unidad:", error);
-        toast("Hubo un error al recuperar la unidad.", {
-          action: {
-            label: "OK",
-            onClick: () => console.log("Undo"),
-          },
-        });
       })
       .finally(() => {
         setLoadingRecover(false); // Finaliza la carga

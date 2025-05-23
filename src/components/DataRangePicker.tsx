@@ -1,24 +1,20 @@
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import {format} from "date-fns";
+import {CalendarIcon} from "lucide-react";
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { es } from "date-fns/locale";
-import { DateRange } from "react-day-picker";
+import {cn} from "@/lib/utils";
+import {Button} from "@/components/ui/button";
+import {Calendar} from "@/components/ui/calendar";
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
+import {es} from "date-fns/locale";
+import {DateRange} from "react-day-picker";
 
 interface Props {
   dateRange: DateRange | undefined;
   setRange: (dateRange: DateRange | undefined) => void;
-  placeholder:string
+  placeholder?: string;
 }
 
-const DateRangePicker: React.FC<Props> = ({ dateRange, setRange,placeholder }) => {
+const DateRangePicker: React.FC<Props> = ({dateRange, setRange, placeholder = "Fecha"}) => {
   //const { dateRange, setRange } = useContext(DateRangeContext);
 
   /*const [date, setDate] = useState<DateRange | undefined>({
@@ -28,10 +24,10 @@ const DateRangePicker: React.FC<Props> = ({ dateRange, setRange,placeholder }) =
 
   return (
     <div className="grid gap-2">
-      <Popover >
+      <Popover>
         <PopoverTrigger asChild>
           <Button
-            id="date" 
+            id="date"
             size={"sm"}
             variant={"outline"}
             className={cn(
@@ -43,11 +39,11 @@ const DateRangePicker: React.FC<Props> = ({ dateRange, setRange,placeholder }) =
             {dateRange?.from ? (
               dateRange.to ? (
                 <>
-                  {format(dateRange.from, "dd/LL/yy", { locale: es })} -{" "}
-                  {format(dateRange.to, "dd/LL/yy", { locale: es })}
+                  {format(dateRange.from, "dd/LL/yy", {locale: es})} -{" "}
+                  {format(dateRange.to, "dd/LL/yy", {locale: es})}
                 </>
               ) : (
-                format(dateRange.from, "dd/LL/yy", { locale: es })
+                format(dateRange.from, "dd/LL/yy", {locale: es})
               )
             ) : (
               <span>{placeholder}</span>
