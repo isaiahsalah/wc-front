@@ -34,11 +34,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {getProducts} from "@/api/product/product.api";
-import {countCurrentMonth, getSectorBySesion} from "@/utils/funtions";
+import {countCurrentMonth} from "@/utils/funtions";
 import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
 import {typeProduct} from "@/utils/const";
-import {ProcessContext} from "@/providers/processProvider";
+import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 import {SesionContext} from "@/providers/sesionProvider";
 
 interface Props {
@@ -47,7 +47,7 @@ interface Props {
 
 const ProductPage: React.FC<Props> = ({degree}) => {
   const [products, setProducts] = useState<IProduct[] | null>(null);
-  const {process} = useContext(ProcessContext);
+  const {sectorProcess} = useContext(SectorProcessContext);
   const {sesion} = useContext(SesionContext);
 
   useEffect(() => {
@@ -55,19 +55,18 @@ const ProductPage: React.FC<Props> = ({degree}) => {
   }, [process]);
 
   const updateView = async () => {
-    if (sesion)
-      getSectorBySesion({sesion: sesion}).then(async (sector: ISector) => {
-        try {
-          const ProductionsData = await getProducts({
-            id_sector: sector?.id,
-            id_process: process?.id,
-            all: true,
-          });
-          setProducts(ProductionsData);
-        } catch (error) {
-          console.error("Error al cargar los datos:", error);
-        }
-      });
+    if (sesion && sectorProcess) {
+      try {
+        const ProductionsData = await getProducts({
+          id_sector: sector?.id,
+          id_process: process?.id,
+          all: true,
+        });
+        setProducts(ProductionsData);
+      } catch (error) {
+        console.error("Error al cargar los datos:", error);
+      }
+    }
   };
 
   // Generar columnas dinámicamente

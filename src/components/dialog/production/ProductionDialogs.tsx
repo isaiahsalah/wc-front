@@ -112,7 +112,10 @@ export const CreateProductionDialog: React.FC<PropsCreate> = ({children, updateV
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid   gap-4 ">
+            <form
+              onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
+              className=" grid   gap-4 "
+            >
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
@@ -617,7 +620,6 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                           onChange={(event) => setMicronage(Number(event.target.value))}
                           onKeyDown={(event) => {
                             if (event.key === "Enter") {
-                              console.log("Micronaje:", field.value);
                               field.onChange([
                                 ...(field.value ?? []),
                                 parseFloat(micronage.toString()),

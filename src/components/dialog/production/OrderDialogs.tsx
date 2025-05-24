@@ -59,8 +59,7 @@ import {getMachines} from "@/api/params/machine.api";
 import {getProcesses} from "@/api/params/process.api";
 import {getGroups} from "@/api/security/group.api";
 import {typeTurn} from "@/utils/const";
-import {ProcessContext} from "@/providers/processProvider";
-import {getSectorBySesion} from "@/utils/funtions";
+import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -83,13 +82,11 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
   const [amount, setAmount] = useState<number>();
   const [sector, setSector] = useState<ISector>();
 
-  const {process} = useContext(ProcessContext);
+  const {sectorProcess} = useContext(SectorProcessContext);
   const {sesion} = useContext(SesionContext);
 
   useEffect(() => {
     if (sesion) {
-      getSectorBySesion({sesion}).then((sectorBySesion) => setSector(sectorBySesion));
-
       getProcesses({}).then((ProcessesData) => setProcesses(ProcessesData));
       getGroups({}).then((GroupsData) => setGroups(GroupsData));
     }
@@ -466,7 +463,7 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
 
   const {sesion} = useContext(SesionContext);
 
-  const {process} = useContext(ProcessContext);
+  const {sectorProcess} = useContext(SectorProcessContext);
   const form = useForm<IOrder>({
     resolver: zodResolver(OrderSchema),
   });
@@ -474,7 +471,6 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
 
   useEffect(() => {
     if (sesion) {
-      getSectorBySesion({sesion}).then((sectorBySesion) => setSector(sectorBySesion));
       getProcesses({}).then((ProcessesData) => setProcesses(ProcessesData));
       getGroups({}).then((GroupsData) => setGroups(GroupsData));
     }
@@ -516,7 +512,6 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
 
         order_details: orderData.order_details,
       });
-      console.log("🤑🤑🤑", orderData.order_details);
 
       const ProductsData = await getProducts({
         id_sector: sector?.id,
@@ -660,7 +655,10 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
           <DialogDescription>Mostrando datos relacionados con la orden.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className=" grid   gap-4 ">
+          <form
+            onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
+            className=" grid   gap-4 "
+          >
             <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
               <FormField
                 control={form.control}

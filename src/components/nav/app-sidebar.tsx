@@ -14,9 +14,9 @@ import MenuSidebar from "./menu-sidebar";
 import {useContext, useEffect, useState} from "react";
 import {SesionContext} from "@/providers/sesionProvider";
 import {IMenuItem, IModuleItem, typeModule} from "@/utils/const";
-import {IPermission, IProcess} from "@/utils/interfaces";
-import {ProcessSidebar} from "./process-sidebar";
-import {ProcessContext} from "@/providers/processProvider";
+import {IPermission, ISectorProcess} from "@/utils/interfaces";
+import {SectorProcessSidebar} from "./sectorProcess-sidebar";
+import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 
 interface Props {
   className?: string; // Clase personalizada opcional
@@ -24,36 +24,40 @@ interface Props {
 
 export const AppSidebar: React.FC<Props> = ({className}) => {
   const {sesion} = useContext(SesionContext);
-  const {process} = useContext(ProcessContext);
+  const {sectorProcess} = useContext(SectorProcessContext);
 
   const [menu, setMenu] = useState<IMenuItem[]>();
   const [title, setTitle] = useState<string>("");
 
-  const [processes, setProcesses] = useState<IProcess[] | null>(null);
+  const [sectorProcesses, setSectorProcesses] = useState<ISectorProcess[] | null>(null);
 
   const permisions = sesion?.user.permissions as IPermission[];
-
+  console.log("🚩🚩", permisions);
   useEffect(() => {
-    const moduleId = permisions[0].type_module;
-    const moduleSelected = typeModule.find((mod) => mod.id === moduleId) as IModuleItem;
+    const moduleSelected = typeModule.find(
+      (mod) => mod.id === permisions[0].type_module
+    ) as IModuleItem;
     setTitle(moduleSelected.title);
 
     const tempMenu: IMenuItem[] = moduleSelected.menu.map((men) => {
       const isActive = men.pages.some((page) =>
-        permisions.some((per) => per.screen === page.id && per.id_process === process?.id)
+        permisions.some(
+          (per) =>
+            per.type_screen === page.id && per.id_sector_process === sectorProcess?.process?.id
+        )
       );
       return {...men, isActive}; // Devuelve un nuevo objeto con `isActive` actualizado
     });
 
     setMenu(tempMenu);
-    const uniqueObjects: IProcess[] = Array.from(
-      new Map(permisions.map((item) => [item.id_process, item.process])).values()
-    ) as IProcess[];
+    const uniqueObjects: ISectorProcess[] = Array.from(
+      new Map(permisions.map((item) => [item.id_sector_process, item.sector_process])).values()
+    ) as ISectorProcess[];
 
-    setProcesses(uniqueObjects);
-  }, [sesion, process]);
+    setSectorProcesses(uniqueObjects);
+  }, [sesion, sectorProcess]);
 
-  if (!menu || !processes) {
+  if (!menu || !sectorProcesses) {
     return <></>;
   }
 
@@ -70,7 +74,7 @@ export const AppSidebar: React.FC<Props> = ({className}) => {
         <SidebarMenu className="flex ">
           <SidebarMenuItem></SidebarMenuItem>
 
-          <ProcessSidebar processes={processes} />
+          <SectorProcessSidebar sectorProcesses={sectorProcesses} />
         </SidebarMenu>
       </SidebarHeader>
       <SidebarSeparator className=" m-0" />

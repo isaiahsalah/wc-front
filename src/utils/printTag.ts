@@ -25,14 +25,11 @@ export const generateQR = async ({
         width: 256, // Ancho de la imagen en píxeles (aumenta para mayor resolución)
       })
         .then((url) => {
-          //console.log(url);
           qrCodes.push(url);
         })
         .catch((err) => {
           console.error(err);
         });
-
-      //console.log(`Código QR generado para: ${qrText}`);
     }
 
     // Retornar los QR Codes generados

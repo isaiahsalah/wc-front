@@ -66,7 +66,6 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
 
           // Actualiza la sesión en el estado
           setSesion(response as ISesion);
-          console.log("😒😒login: ", response);
           // Navega a la ruta deseada después de iniciar sesión
           navigate("/home");
         }
@@ -106,7 +105,10 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
               </CardDescription>
             </div>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="grid  gap-2  text-center">
+              <form
+                onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
+                className="grid  gap-2  text-center"
+              >
                 <FormField
                   control={form.control}
                   name="type_module"

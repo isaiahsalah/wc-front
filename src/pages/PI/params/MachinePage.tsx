@@ -34,11 +34,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
-import {countCurrentMonth, getSectorBySesion} from "@/utils/funtions";
+import {countCurrentMonth} from "@/utils/funtions";
 import {format} from "date-fns";
 import {getMachines} from "@/api/params/machine.api";
 import {SesionContext} from "@/providers/sesionProvider";
-import {ProcessContext} from "@/providers/processProvider";
+import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 interface Props {
   degree: number;
 }
@@ -46,28 +46,25 @@ const MachinePage: React.FC<Props> = ({degree}) => {
   const [machines, setMachines] = useState<IMachine[] | null>(null);
 
   const {sesion} = useContext(SesionContext);
-  const {process} = useContext(ProcessContext);
+  const {sectorProcess} = useContext(SectorProcessContext);
 
   useEffect(() => {
-    // if (sesion) getSectorBySesion({sesion: sesion}).then((sec) => setSector(sec));
-
     updateView();
   }, [process]);
 
   const updateView = async () => {
-    if (sesion)
-      getSectorBySesion({sesion: sesion}).then(async (sector: ISector) => {
-        try {
-          const machinesData = await getMachines({
-            all: true,
-            id_sector: sector?.id,
-            id_process: process?.id,
-          });
-          setMachines(machinesData);
-        } catch (error) {
-          console.error("Error al cargar los datos:", error);
-        }
-      });
+    if (sesion && sectorProcess) {
+      try {
+        const machinesData = await getMachines({
+          all: true,
+          id_sector: sector?.id,
+          id_process: process?.id,
+        });
+        setMachines(machinesData);
+      } catch (error) {
+        console.error("Error al cargar los datos:", error);
+      }
+    }
   };
 
   // Generar columnas dinámicamente

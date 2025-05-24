@@ -75,7 +75,10 @@ export const CreateGroupDialog: React.FC<PropsCreate> = ({children, updateView})
           <DialogDescription>Creación de un nuevo grupo.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-6 gap-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
+            className="grid grid-cols-6 gap-4"
+          >
             <FormField
               control={form.control}
               name="name"
@@ -207,7 +210,10 @@ export const EditGroupDialog: React.FC<PropsEdit> = ({children, id, updateView, 
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-6 gap-4">
+            <form
+              onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
+              className="grid grid-cols-6 gap-4"
+            >
               <FormField
                 control={form.control}
                 name="id"

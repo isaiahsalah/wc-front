@@ -34,31 +34,32 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
-import {countCurrentMonth, getSectorBySesion} from "@/utils/funtions";
+import {countCurrentMonth} from "@/utils/funtions";
 import {format} from "date-fns";
 import {getModels} from "@/api/params/model.api";
 import {SesionContext} from "@/providers/sesionProvider";
+import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 interface Props {
   degree: number;
 }
 const ModelPage: React.FC<Props> = ({degree}) => {
   const [models, setModels] = useState<IModel[] | null>(null);
   const {sesion} = useContext(SesionContext);
+  const {sectorProcess} = useContext(SectorProcessContext);
 
   useEffect(() => {
     updateView();
   }, [sesion]);
 
-  const updateView = () => {
-    if (sesion)
-      getSectorBySesion({sesion: sesion}).then(async (sector: ISector) => {
-        try {
-          const modelsData = await getModels({id_sector: sector?.id, all: true});
-          setModels(modelsData);
-        } catch (error) {
-          console.error("Error al cargar los datos:", error);
-        }
-      });
+  const updateView = async () => {
+    if (sesion && sectorProcess) {
+      try {
+        const modelsData = await getModels({id_sector: sector?.id, all: true});
+        setModels(modelsData);
+      } catch (error) {
+        console.error("Error al cargar los datos:", error);
+      }
+    }
   };
 
   const columnsModel: ColumnDef<IModel>[] = useMemo(() => {

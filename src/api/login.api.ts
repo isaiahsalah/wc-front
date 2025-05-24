@@ -45,7 +45,6 @@ export const getCheckToken = async ({token}: {token: string}) => {
     toast.error("Sesión caducada", {
       description: "Vuelva a iniciar sesión",
     });
-    console.log("token erroneo o caducado", error);
     throw error; // Lanza el error para que pueda manejarse fuera
   }
 };

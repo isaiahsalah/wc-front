@@ -33,8 +33,7 @@ import {format} from "date-fns";
 import {typeQuality} from "@/utils/const";
 import {Badge} from "@/components/ui/badge";
 import {getMachines} from "@/api/params/machine.api";
-import {ProcessContext} from "@/providers/processProvider";
-import {getSectorBySesion} from "@/utils/funtions";
+import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 import {SesionContext} from "@/providers/sesionProvider";
 interface Props {
   degree: number;
@@ -42,17 +41,13 @@ interface Props {
 const ProductionPage: React.FC<Props> = ({degree}) => {
   const [productions, setProductions] = useState<IProduction[] | null>(null);
   const [orderDetails, setOrderDetails] = useState<IOrderDetail[] | null>(null);
-  const {process} = useContext(ProcessContext);
+  const {sectorProcess} = useContext(SectorProcessContext);
   const {sesion} = useContext(SesionContext);
 
   const [idMachine, setIdMachine] = useState<number>();
 
   const [machines, setMachines] = useState<IMachine[]>();
   const [sector, setSector] = useState<ISector>();
-
-  useEffect(() => {
-    if (sesion) getSectorBySesion({sesion}).then((sectorBySesion) => setSector(sectorBySesion));
-  }, [sesion]);
 
   useEffect(() => {
     if (sector)
@@ -83,7 +78,6 @@ const ProductionPage: React.FC<Props> = ({degree}) => {
         id_sector: sector?.id ?? null,
         all: true,
       });
-      console.log(ProductionsData);
       setProductions(ProductionsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);

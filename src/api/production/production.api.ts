@@ -5,24 +5,21 @@ import {toast} from "sonner";
 export const getProductions = async ({
   init_date,
   end_date,
-  id_sector,
-  id_process,
+  id_sector_process,
   id_machine,
   all,
 }: {
   init_date?: string | null;
   end_date?: string | null;
-  id_sector?: number | null;
+  id_sector_process?: number | null;
   id_machine?: number | null;
-  id_process?: number | null;
   all?: boolean;
 }) => {
   try {
     const params = {
       init_date,
       end_date,
-      id_sector,
-      id_process,
+      id_sector_process,
       id_machine,
       all,
     };

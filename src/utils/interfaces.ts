@@ -82,6 +82,18 @@ export const ProcessSchema = z.object({
   deletedAt: z.date().nullable().optional(),
 });
 
+// Tabla: SectorProces
+export const SectorProcessSchema = z.object({
+  id: z.number().nullable().optional(),
+  id_sector: z.number(),
+  id_process: z.number(),
+  sector: SectorSchema.nullable().optional(),
+  process: ProcessSchema.nullable().optional(),
+  createdAt: z.date().nullable().optional(),
+  updatedAt: z.date().nullable().optional(),
+  deletedAt: z.date().nullable().optional(),
+});
+
 // Tabla: Group
 export const GroupSchema = z.object({
   id: z.number().nullable().optional(),
@@ -124,10 +136,8 @@ export const ModelSchema = z.object({
   id: z.number().nullable().optional(),
   name: z.string(),
   description: z.string(),
-  id_process: z.number(),
-  process: ProcessSchema.nullable().optional(),
-  id_sector: z.number(),
-  sector: SectorSchema.nullable().optional(),
+  id_sector_process: z.number(),
+  sector_process: SectorProcessSchema.nullable().optional(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
@@ -185,11 +195,9 @@ export const MachineSchema = z.object({
   id: z.number().nullable().optional(),
   name: z.string(),
   description: z.string(),
-  id_process: z.number(),
-  process: ProcessSchema.nullable().optional(),
 
-  id_sector: z.number(),
-  sector: SectorSchema.nullable().optional(),
+  id_sector_process: z.number(),
+  sector_process: SectorProcessSchema.nullable().optional(),
 
   active: z.boolean().optional(),
   createdAt: z.date().nullable().optional(),
@@ -235,12 +243,10 @@ export const PermissionSchema = z.object({
   id: z.number().nullable().optional(),
   id_user: z.number(),
   user: UserSchema.nullable().optional(),
-  id_sector: z.number(),
-  sector: SectorSchema.nullable().optional(),
-  id_process: z.number(),
-  process: ProcessSchema.nullable().optional(),
-  degree: z.number(),
-  screen: z.number(),
+  id_sector_process: z.number(),
+  sector_process: SectorProcessSchema.nullable().optional(),
+  type_degree: z.number(),
+  type_screen: z.number(),
   type_module: z.number(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
@@ -316,10 +322,13 @@ export type IProcess = z.infer<typeof ProcessSchema>;
 export type IProduct = z.infer<typeof ProductSchema>;
 export type IProductionDetail = z.infer<typeof ProductionDetailSchema>;
 export type IProduction = z.infer<typeof ProductionSchema>;
+
 export type ISector = z.infer<typeof SectorSchema>;
+
 export type IUnity = z.infer<typeof UnitySchema>;
 export type IUser = z.infer<typeof UserSchema>;
 export type IWork = z.infer<typeof WorkSchema>;
+export type ISectorProcess = z.infer<typeof SectorProcessSchema>;
 
 export type IGeneral =
   | IGroup
@@ -339,4 +348,5 @@ export type IGeneral =
   | ISector
   | IUnity
   | IUser
-  | IWork;
+  | IWork
+  | ISectorProcess;

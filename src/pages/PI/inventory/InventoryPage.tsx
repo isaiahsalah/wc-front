@@ -32,8 +32,7 @@ import {
 import {format} from "date-fns";
 import {typeQuality} from "@/utils/const";
 import {Badge} from "@/components/ui/badge";
-import {ProcessContext} from "@/providers/processProvider";
-import {getSectorBySesion} from "@/utils/funtions";
+import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 import {SesionContext} from "@/providers/sesionProvider";
 import DateRangePicker from "@/components/DataRangePicker";
 import {DateRange} from "react-day-picker";
@@ -42,22 +41,15 @@ interface Props {
 }
 const InventoryPage: React.FC<Props> = ({degree}) => {
   const [productions, setProductions] = useState<IProduction[] | null>(null);
-  const {process} = useContext(ProcessContext);
+  const {sectorProcess} = useContext(SectorProcessContext);
   const {sesion} = useContext(SesionContext);
 
   const [sectors, setSectors] = useState<ISector[]>();
-  const [sector, setSector] = useState<ISector>();
   const [rangeDate, setRangeDate] = useState<DateRange>();
 
-  const [processes, setProcesses] = useState<IProcess[]>();
-
   useEffect(() => {
-    if (sesion) getSectorBySesion({sesion}).then((sectorBySesion) => setSector(sectorBySesion));
-  }, [sesion]);
-
-  useEffect(() => {
-    if (sector) updateView();
-  }, [sector, process]);
+    if (sectorProcess) updateView();
+  }, [sectorProcess]);
 
   useEffect(() => {
     fetchFilter();
@@ -65,10 +57,8 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
 
   const fetchFilter = async () => {
     try {
-      const ProcessesData = await getProcesses({});
       const SectorsData = await getSectors({});
 
-      setProcesses(ProcessesData);
       setSectors(SectorsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
@@ -78,11 +68,9 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
   const updateView = async () => {
     try {
       const ProductionsData = await getProductions({
-        id_process: process?.id ?? null,
-        id_sector: sector?.id ?? null,
+        id_sector_process: sectorProcess?.id ?? null,
         all: true,
       });
-      console.log(ProductionsData);
       setProductions(ProductionsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);

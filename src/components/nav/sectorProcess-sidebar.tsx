@@ -17,14 +17,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {SidebarMenu, SidebarMenuButton, SidebarMenuItem} from "@/components/ui/sidebar";
-import {IProcess} from "@/utils/interfaces";
+import {ISectorProcess} from "@/utils/interfaces";
 import {useContext, useEffect} from "react";
-import {ProcessContext} from "@/providers/processProvider";
+import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 
-export function ProcessSidebar({processes}: {processes: IProcess[]}) {
-  const {process, setProcess} = useContext(ProcessContext);
+export function SectorProcessSidebar({sectorProcesses}: {sectorProcesses: ISectorProcess[]}) {
+  const {sectorProcess, setSectorProcess} = useContext(SectorProcessContext);
   useEffect(() => {
-    setProcess(processes[0]);
+    setSectorProcess(sectorProcesses[0]);
   }, []);
 
   const icon = (id: number) => {
@@ -47,7 +47,7 @@ export function ProcessSidebar({processes}: {processes: IProcess[]}) {
     );
   };
 
-  if (!process) {
+  if (!sectorProcess) {
     return null;
   }
 
@@ -59,10 +59,10 @@ export function ProcessSidebar({processes}: {processes: IProcess[]}) {
             <SidebarMenuButton size="default" asChild>
               <a href="#">
                 <div className="flex aspect-square size-6 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
-                  {icon(process?.id as number)}
+                  {icon(sectorProcess?.process?.id as number)}
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold"> {process?.name}</span>
+                  <span className="truncate font-semibold"> {sectorProcess?.process?.name}</span>
                 </div>
                 <div className="ml-auto">
                   <span
@@ -84,12 +84,16 @@ export function ProcessSidebar({processes}: {processes: IProcess[]}) {
             <DropdownMenuLabel className="text-xs text-muted-foreground">
               Procesos
             </DropdownMenuLabel>
-            {processes.map((item, index) => (
-              <DropdownMenuItem key={index} onClick={() => setProcess(item)} className="gap-2 p-2">
+            {sectorProcesses.map((item, index) => (
+              <DropdownMenuItem
+                key={index}
+                onClick={() => setSectorProcess(item)}
+                className="gap-2 p-2"
+              >
                 <div className="flex size-6 items-center justify-center rounded-sm border">
                   {icon(item.id as number)}
                 </div>
-                {item.name}
+                {item.process?.name}
                 <DropdownMenuShortcut>Id: {item.id}</DropdownMenuShortcut>
               </DropdownMenuItem>
             ))}

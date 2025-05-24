@@ -43,8 +43,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {SesionContext} from "@/providers/sesionProvider";
-import {getSectorBySesion} from "@/utils/funtions";
-import {ProcessContext} from "@/providers/processProvider";
+import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -58,13 +57,9 @@ export const CreateModelDialog: React.FC<PropsCreate> = ({children, updateView})
   const [sectors, setSectors] = useState<ISector[]>();
 
   const [sector, setSector] = useState<ISector>();
-  const {process} = useContext(ProcessContext);
+  const {sectorProcess} = useContext(SectorProcessContext);
 
   const {sesion} = useContext(SesionContext);
-
-  useEffect(() => {
-    if (sesion) getSectorBySesion({sesion: sesion}).then((sec) => setSector(sec));
-  }, []);
 
   useEffect(() => {
     form.reset({...form.getValues(), id_process: process?.id as number});
@@ -121,7 +116,10 @@ export const CreateModelDialog: React.FC<PropsCreate> = ({children, updateView})
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid  gap-4 ">
+            <form
+              onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
+              className=" grid  gap-4 "
+            >
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
@@ -279,8 +277,7 @@ export const EditModelDialog: React.FC<PropsEdit> = ({children, id, updateView, 
         id: modelData.id,
         name: modelData.name,
         description: modelData.description,
-        id_process: modelData.id_process,
-        id_sector: modelData.id_sector,
+        id_sector_process: modelData.id_sector_process,
       });
     } catch (error) {
       console.error("Error al cargar los modelos:", error);
@@ -317,7 +314,10 @@ export const EditModelDialog: React.FC<PropsEdit> = ({children, id, updateView, 
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid   gap-4 ">
+            <form
+              onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
+              className=" grid   gap-4 "
+            >
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}

@@ -13,7 +13,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
-import {IPermission, ISector, IUser} from "@/utils/interfaces";
+import {IPermission, IUser} from "@/utils/interfaces";
 import {getUserById, updateUserPermissions} from "@/api/security/user.api";
 import {
   Select,
@@ -25,11 +25,10 @@ import {
 import {IModuleItem, typeModule, typePermission} from "@/utils/const";
 import {CardDescription} from "@/components/ui/card";
 import {Separator} from "@/components/ui/separator";
-import {getSectors} from "@/api/params/sector.api";
 import {toast} from "sonner";
 import {SesionContext} from "@/providers/sesionProvider";
-import {checkToken, getModuleBySesion, getSectorBySesion} from "@/utils/funtions";
-import {ProcessContext} from "@/providers/processProvider";
+import {checkToken, getModuleBySesion} from "@/utils/funtions";
+import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 
 interface PropsPermissionEdit {
   children: React.ReactNode;
@@ -48,26 +47,19 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
   const [loadingInit, setLoadingInit] = useState(true);
 
   //const {sesion} = useContext(SesionContext);
-  const {process} = useContext(ProcessContext);
+  const {sectorProcess} = useContext(SectorProcessContext);
   const {sesion, setSesion} = useContext(SesionContext);
 
   const [permissions, setPermissions] = useState<IPermission[]>();
-  const [sector, setSector] = useState<ISector>();
   const [module, setModule] = useState<IModuleItem>();
 
-  const [sectors, setSectors] = useState<ISector[]>();
-  const [moduleId, setModuleId] = useState<number>();
+  // const [moduleId, setModuleId] = useState<number>();
 
   useEffect(() => {
-    getSectors({}).then((sectorsData) => setSectors(sectorsData));
-  }, []);
-
-  useEffect(() => {
-    if (sesion && sectors) {
-      setSector(getSectorBySesion({sesion: sesion, sectors: sectors}));
+    if (sesion) {
       setModule(getModuleBySesion({sesion: sesion}));
     }
-  }, [sesion, sectors]);
+  }, [sesion]);
 
   // const ()=useContext(mod)
 
@@ -76,15 +68,14 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
 
   function onSubmit() {
     if (!permissions) return toast.warning("No hay permisos para guardar");
-    if (!sector?.id || !process?.id) return toast.warning("No hay Sector ni Proceso");
+    if (!sectorProcess?.id) return toast.warning("No hay Sector ni Proceso");
 
     setLoadingSave(true);
 
     updateUserPermissions({
       userId: id,
       permissions: permissions,
-      id_sector: sector?.id,
-      id_process: process?.id,
+      id_sector_process: sectorProcess?.id,
     })
       .then((updatedUser) => {
         console.log("Usuario actualizado:", updatedUser);
@@ -104,12 +95,9 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
     try {
       const userData: IUser = await getUserById({
         id: id,
-        id_process: process?.id,
-        id_sector: sector?.id,
-        type_module: module?.id,
       });
       setPermissions(userData.permissions as IPermission[]);
-      setModuleId((userData.permissions as IPermission[])[0].type_module);
+      //setModuleId((userData.permissions as IPermission[])[0].type_module);
     } catch (error) {
       console.error("Error al cargar los datos del usuario:", error);
     } finally {
@@ -120,9 +108,8 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
   const memoizedSelectedValues = useMemo(() => {
     const map: Record<number, string> = {};
     permissions?.forEach((item) => {
-      map[item.screen] = item.degree.toString();
+      map[item.type_screen] = item.type_degree.toString();
     });
-    console.log("📍");
     return map;
   }, [permissions]);
 
@@ -140,7 +127,7 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
           <div className="grid  gap-4">
             <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
               {typeModule
-                .find((mod) => mod.id === moduleId)
+                .find((mod) => mod.id === module?.id)
                 ?.menu.map((menu, i) => {
                   return (
                     <div key={i} className="grid grid-cols-6 col-span-6 gap-2  ">
@@ -148,27 +135,19 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
                         Paginas de {menu.title}
                       </CardDescription>
                       <Separator className="col-span-6" />
-                      {menu.pages.map((page) => {
+                      {menu.pages.map((page, i) => {
                         return (
-                          <div className="col-span-2 gap-2">
+                          <div key={i} className="col-span-2 gap-2">
                             <CardDescription>{page.label}</CardDescription>
                             <Select
                               value={memoizedSelectedValues[page.id] || "0"}
-                              /*value={permissions
-                                ?.find((item) => {
-                                  //console.log("item👌👌", item);
-                                  console.log("📍");
-                                  return item.screen === page.id;
-                                })
-                                ?.degree.toString()} // Asegúrate de que el valor sea una cadena*/
                               onValueChange={(value) => {
-                                console.log("📌");
                                 let found = false; // Bandera para verificar si el objeto existe
 
                                 const updatedArray: IPermission[] = (
                                   permissions as IPermission[]
                                 ).map((item) => {
-                                  if (item.screen === page.id) {
+                                  if (item.type_screen === page.id) {
                                     found = true; // Marcar como encontrado
                                     return {...item, degree: Number(value)}; // Actualizar el objeto
                                   }
@@ -178,11 +157,10 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
                                 // Si no se encontró, añadir el nuevo objeto al array
                                 if (!found) {
                                   updatedArray.push({
-                                    id_process: process?.id as number,
-                                    id_sector: sector?.id as number,
+                                    id_sector_process: sectorProcess?.id as number,
                                     id_user: (permissions as IPermission[])[0].id_user as number,
-                                    screen: page.id,
-                                    degree: Number(value),
+                                    type_screen: page.id,
+                                    type_degree: Number(value),
                                     type_module: moduleId as number,
                                   });
                                 }

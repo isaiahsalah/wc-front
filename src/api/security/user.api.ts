@@ -3,9 +3,17 @@ import {IPermission, IUser} from "@/utils/interfaces"; // Asegúrate de tener un
 import {toast} from "sonner";
 
 // Obtener usuarios
-export const getUsers = async ({all}: {all?: boolean | null}) => {
+export const getUsers = async ({
+  all,
+  id_sector_process,
+  type_module,
+}: {
+  all?: boolean | null;
+  id_sector_process?: number | null;
+  type_module?: number | null;
+}) => {
   try {
-    const params = {all};
+    const params = {all, id_sector_process, type_module};
 
     const response = await apiClient.get("/pr/user", {params}); // Cambia la URL según tu API
     return response.data; // Devuelve la lista de usuarios
@@ -18,17 +26,15 @@ export const getUsers = async ({all}: {all?: boolean | null}) => {
 // Obtener usuario por ID
 export const getUserById = async ({
   id,
-  id_sector,
-  id_process,
+  id_sector_process,
   type_module,
 }: {
   id: number;
-  id_sector?: number | null;
-  id_process?: number | null;
+  id_sector_process?: number | null;
   type_module?: number | null;
 }) => {
   try {
-    const params = {id_sector, id_process, type_module};
+    const params = {id_sector_process, type_module};
     const response = await apiClient.get(`/pr/user/${id}`, {params});
     return response.data; // Devuelve el usuario encontrado
   } catch (error) {
@@ -99,21 +105,18 @@ export const recoverUser = async (id: number) => {
 export const updateUserPermissions = async ({
   userId,
   permissions,
-  id_sector,
-  id_process,
+  id_sector_process,
 }: {
   userId: number;
   permissions: IPermission[];
-  id_sector: number;
-  id_process: number;
+  id_sector_process: number;
 }) => {
   toast.info("Se está procesando la petición");
 
-  permissions = permissions.filter((item) => item.degree !== 0);
+  permissions = permissions.filter((item) => item.type_degree !== 0);
 
   try {
-    console.log("🚩🚩🚩🚩", id_sector);
-    const body = {permissions, id_sector, id_process};
+    const body = {permissions, id_sector_process};
     const response = await apiClient.put(`/pr/user/permission/${userId}`, body);
     toast.success("El usuario se editó correctamente.");
     return response.data; // Devuelve el usuario actualizado

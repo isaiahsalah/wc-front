@@ -1,7 +1,6 @@
 import {getCheckToken} from "@/api/login.api";
-import {IGeneral, IPermission, ISector, ISesion} from "./interfaces";
+import {IGeneral, IPermission, ISesion} from "./interfaces";
 import {typeModule} from "./const";
-import {getSectors} from "@/api/params/sector.api";
 
 export function countCurrentMonth(data: IGeneral[]): number {
   const now = new Date();
@@ -55,8 +54,7 @@ export const checkToken = async ({
         //navigate("/home");
       }
     })
-    .catch((e) => {
-      console.log(e);
+    .catch(() => {
       return false;
     });
   //.finally(() => setLoading(false));
@@ -65,9 +63,4 @@ export const checkToken = async ({
 export const getModuleBySesion = ({sesion}: {sesion: ISesion}) => {
   const moduleId = (sesion?.user.permissions as IPermission[])[0].type_module;
   return typeModule.find((module) => module.id === moduleId);
-};
-
-export const getSectorBySesion = ({sesion, sectors}: {sesion: ISesion; sectors: ISector[]}) => {
-  const sectorId = (sesion?.user.permissions as IPermission[])[0].id_sector;
-  return sectors.find((sector: ISector) => sector.id === sectorId);
 };

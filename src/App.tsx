@@ -13,7 +13,7 @@ import {PageProvider} from "./providers/pageProvider";
 import ModuleRoutes from "./ModuleRoutes";
 import {checkToken} from "./utils/funtions";
 import {toast} from "sonner";
-import {ProcessProvider} from "./providers/processProvider";
+import {SectorProcessProvider} from "./providers/sectorProcessProvider";
 
 function App() {
   const PrivateRoutes = () => {
@@ -40,7 +40,7 @@ function App() {
     if (loading) return <LoadingPage />;
 
     return isAuthenticated ? (
-      <ProcessProvider>
+      <SectorProcessProvider>
         <PageProvider>
           <SidebarProvider>
             <AppSidebar />
@@ -54,7 +54,7 @@ function App() {
             </SidebarInset>
           </SidebarProvider>
         </PageProvider>
-      </ProcessProvider>
+      </SectorProcessProvider>
     ) : (
       <Navigate to="/login" />
     );

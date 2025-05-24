@@ -36,7 +36,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {countCurrentMonth, getSectorBySesion} from "@/utils/funtions";
+import {countCurrentMonth} from "@/utils/funtions";
 import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
 import {
@@ -60,8 +60,6 @@ const FormulaPage: React.FC<Props> = ({degree}) => {
   const [idProduct, setIdProduct] = useState<number>();
 
   useEffect(() => {
-    if (sesion) getSectorBySesion({sesion: sesion}).then((sec) => setSector(sec));
-
     updateView();
     fetchFilter();
   }, []);

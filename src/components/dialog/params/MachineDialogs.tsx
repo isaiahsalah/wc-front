@@ -41,8 +41,7 @@ import {
 } from "@/components/ui/select";
 import {getSectors} from "@/api/params/sector.api";
 import {SesionContext} from "@/providers/sesionProvider";
-import {getSectorBySesion} from "@/utils/funtions";
-import {ProcessContext} from "@/providers/processProvider";
+import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -55,14 +54,10 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({children, updateView
 
   const [processes, setProcesses] = useState<IProcess[]>();
   const [sectors, setSectors] = useState<ISector[]>();
-  const {process} = useContext(ProcessContext);
+  const {sectorProcess} = useContext(SectorProcessContext);
 
   const [sector, setSector] = useState<ISector>();
   const {sesion} = useContext(SesionContext);
-
-  useEffect(() => {
-    if (sesion) getSectorBySesion({sesion: sesion}).then((sec) => setSector(sec));
-  }, []);
 
   useEffect(() => {
     form.reset({...form.getValues(), id_process: process?.id as number});
@@ -119,7 +114,10 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({children, updateView
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid  gap-4 ">
+            <form
+              onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
+              className=" grid  gap-4 "
+            >
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
@@ -281,8 +279,7 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
         id: MachineData.id,
         name: MachineData.name,
         description: MachineData.description,
-        id_process: MachineData.id_process,
-        id_sector: MachineData.id_sector,
+        id_sector_process: MachineData.id_sector_process,
         active: MachineData.active,
       });
     } catch (error) {
@@ -320,7 +317,10 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid   gap-4 ">
+            <form
+              onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
+              className=" grid   gap-4 "
+            >
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}

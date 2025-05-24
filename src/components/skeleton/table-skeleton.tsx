@@ -1,7 +1,6 @@
 import {Table, TableHeader, TableRow, TableHead, TableBody, TableCell} from "@/components/ui/table";
 import {Skeleton} from "@/components/ui/skeleton";
 import {randomNumber} from "@/utils/funtions";
-import {useEffect} from "react";
 
 interface Props {
   rows: number;
@@ -11,10 +10,6 @@ interface Props {
 }
 
 const TableSkeleton: React.FC<Props> = ({rows, colums, hasOptions, hasPaginated}) => {
-  useEffect(() => {
-    console.log("render");
-  });
-
   return (
     <div className="flex flex-col gap-2">
       {/* Barra superior con filtros y opciones */}

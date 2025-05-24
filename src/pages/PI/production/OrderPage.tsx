@@ -36,23 +36,19 @@ import {
 } from "@/components/ui/card";
 
 import {getOrders} from "@/api/production/order.api";
-import {countCurrentMonth, getSectorBySesion} from "@/utils/funtions";
+import {countCurrentMonth} from "@/utils/funtions";
 import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
-import {ProcessContext} from "@/providers/processProvider";
+import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 import {SesionContext} from "@/providers/sesionProvider";
 interface Props {
   degree: number;
 }
 const OrderPage: React.FC<Props> = ({degree}) => {
   const [orders, setOrders] = useState<IOrder[] | null>(null);
-  const {process} = useContext(ProcessContext);
+  const {sectorProcess} = useContext(SectorProcessContext);
   const {sesion} = useContext(SesionContext);
   const [sector, setSector] = useState<ISector>();
-
-  useEffect(() => {
-    if (sesion) getSectorBySesion({sesion}).then((sectorBySesion) => setSector(sectorBySesion));
-  }, []);
 
   useEffect(() => {
     if (sector) updateView();

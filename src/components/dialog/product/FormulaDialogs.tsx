@@ -42,7 +42,6 @@ import {
 } from "@/components/ui/select";
 import {getProducts} from "@/api/product/product.api";
 import {SesionContext} from "@/providers/sesionProvider";
-import {getSectorBySesion} from "@/utils/funtions";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -56,10 +55,6 @@ export const CreateFormulaDialog: React.FC<PropsCreate> = ({children, updateView
 
   const [sector, setSector] = useState<ISector>();
   const {sesion} = useContext(SesionContext);
-
-  useEffect(() => {
-    if (sesion) getSectorBySesion({sesion: sesion}).then((sec) => setSector(sec));
-  }, []);
 
   const form = useForm<IFormula>({
     resolver: zodResolver(FormulaSchema),
@@ -110,7 +105,10 @@ export const CreateFormulaDialog: React.FC<PropsCreate> = ({children, updateView
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid  gap-4 ">
+            <form
+              onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
+              className=" grid  gap-4 "
+            >
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
@@ -214,10 +212,6 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
   const [sector, setSector] = useState<ISector>();
   const {sesion} = useContext(SesionContext);
 
-  useEffect(() => {
-    if (sesion) getSectorBySesion({sesion: sesion}).then((sec) => setSector(sec));
-  }, []);
-
   const form = useForm<IFormula>({
     resolver: zodResolver(FormulaSchema),
     defaultValues: {
@@ -292,7 +286,10 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid  gap-4 ">
+            <form
+              onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
+              className=" grid  gap-4 "
+            >
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}

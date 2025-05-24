@@ -52,8 +52,6 @@ export const EditProfileDialog: React.FC<PropsEditProfile> = ({children, updateV
     setLoadingSave(true); // Inicia la carga
     updateProfile({data: values})
       .then((updatedProfile) => {
-        console.log("Perfil actualizado:", updatedProfile);
-
         setSesion({user: updatedProfile, token: sesion?.token as string});
         updateView();
       })
@@ -97,7 +95,10 @@ export const EditProfileDialog: React.FC<PropsEditProfile> = ({children, updateV
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className=" grid  gap-4 ">
+            <form
+              onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
+              className=" grid  gap-4 "
+            >
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
@@ -216,8 +217,6 @@ export const EditPassDialog: React.FC<PropsEditPass> = ({children, updateView}) 
     setLoadingSave(true); // Inicia la carga
     updatePassword({id: sesion?.user.id as number, newPassword: newPass, oldPassword: oldPass})
       .then((updatedProfile) => {
-        console.log("Perfil actualizado:", updatedProfile);
-
         //setSesion({user: updatedProfile, token: sesion?.token as string});
         updateView();
       })
