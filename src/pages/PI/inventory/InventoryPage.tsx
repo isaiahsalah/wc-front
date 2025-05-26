@@ -1,4 +1,4 @@
-import {IOrderDetail, IProcess, IProduction, ISector, IMachine, IUser} from "@/utils/interfaces";
+import {IOrderDetail, IProduction, IMachine, IProductionUser} from "@/utils/interfaces";
 import {ColumnDef, Row} from "@tanstack/react-table";
 import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
@@ -17,8 +17,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {getProcesses} from "@/api/params/process.api";
-import {getSectors} from "@/api/params/sector.api";
 import {getProductions} from "@/api/production/production.api";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 
@@ -33,42 +31,45 @@ import {format} from "date-fns";
 import {typeQuality} from "@/utils/const";
 import {Badge} from "@/components/ui/badge";
 import {SectorProcessContext} from "@/providers/sectorProcessProvider";
-import {SesionContext} from "@/providers/sesionProvider";
-import DateRangePicker from "@/components/DataRangePicker";
-import {DateRange} from "react-day-picker";
+import {getMachines} from "@/api/params/machine.api";
+import {DateTimePicker} from "@/components/DateTimePicker";
 interface Props {
   degree: number;
 }
 const InventoryPage: React.FC<Props> = ({degree}) => {
   const [productions, setProductions] = useState<IProduction[] | null>(null);
   const {sectorProcess} = useContext(SectorProcessContext);
-  const {sesion} = useContext(SesionContext);
 
-  const [sectors, setSectors] = useState<ISector[]>();
-  const [rangeDate, setRangeDate] = useState<DateRange>();
+  const [initDate, setInitDate] = useState<Date>();
+  const [endDate, setEndDate] = useState<Date>();
+
+  const [machines, setMachines] = useState<IMachine[]>();
+  const [idMachine, setIdMachine] = useState<number>();
 
   useEffect(() => {
-    if (sectorProcess) updateView();
+    getMachines({id_sector_process: sectorProcess?.id}).then((MachinesData) =>
+      setMachines(MachinesData)
+    );
   }, [sectorProcess]);
 
   useEffect(() => {
-    fetchFilter();
-  }, []);
-
-  const fetchFilter = async () => {
-    try {
-      const SectorsData = await getSectors({});
-
-      setSectors(SectorsData);
-    } catch (error) {
-      console.error("Error al cargar los datos:", error);
-    }
-  };
+    updateView();
+  }, [idMachine, initDate, endDate]);
 
   const updateView = async () => {
     try {
       const ProductionsData = await getProductions({
+        init_date: initDate?.toISOString() ?? null,
+        end_date: endDate?.toISOString() ?? null,
         id_sector_process: sectorProcess?.id ?? null,
+        id_machine: idMachine ?? null,
+        all: true,
+      });
+      console.log({
+        init_date: initDate?.toISOString() ?? null,
+        end_date: endDate?.toISOString() ?? null,
+        id_sector_process: sectorProcess?.id ?? null,
+        id_machine: idMachine ?? null,
         all: true,
       });
       setProductions(ProductionsData);
@@ -155,11 +156,21 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
       {
         accessorKey: "micronage",
         header: "Micronaje",
-        cell: (info) => (
-          <Badge variant={"secondary"} className="text-muted-foreground">
-            {(info.getValue() as []) ? (info.getValue() as []).join(" - ") : " - "}
-          </Badge>
-        ),
+        cell: (info) => {
+          const micronaje = info.getValue() as [];
+          if (micronaje)
+            return (
+              <Badge variant={"secondary"} className="text-muted-foreground">
+                {micronaje.join(" - ")}
+              </Badge>
+            );
+          else
+            return (
+              <Badge variant={"outline"} className="text-muted-foreground">
+                {"N/A"}
+              </Badge>
+            );
+        },
       },
       {
         accessorKey: "machine",
@@ -172,13 +183,16 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
       },
 
       {
-        accessorKey: "user",
-        header: "Usuario",
-        cell: (info) => (
-          <Badge variant={"secondary"} className="text-muted-foreground">
-            {(info.getValue() as IUser).name} {(info.getValue() as IUser).lastname}
-          </Badge>
-        ),
+        accessorKey: "production_users",
+        header: "Operadores",
+        cell: (info) => {
+          const productionUsers = info.getValue() as IProductionUser[];
+          return (
+            <Badge variant={"secondary"} className="text-muted-foreground">
+              {productionUsers.map((productionUser) => productionUser.user?.name).join(" - ")}
+            </Badge>
+          );
+        },
       },
 
       {
@@ -289,21 +303,32 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
 
           <div className="grid grid-cols-6 gap-2">
             <Select
-              value={sector?.id?.toString() as string}
-              //onValueChange={(value) => setSector(Number(value))} // Convertir el valor a número
+              onValueChange={(value) => setIdMachine(Number(value))} // Convertir el valor a número
             >
-              <SelectTrigger className="w-full col-span-3" disabled>
-                <SelectValue placeholder="Sector" />
+              <SelectTrigger className="w-full col-span-2">
+                <SelectValue placeholder="Máquina" />
               </SelectTrigger>
               <SelectContent>
-                {sectors?.map((sector: ISector) => (
-                  <SelectItem key={sector.id} value={(sector.id ?? "").toString()}>
-                    {sector.name}
+                {machines?.map((machine: IMachine) => (
+                  <SelectItem key={machine.id} value={(machine.id ?? "").toString()}>
+                    {machine.name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            <DateRangePicker dateRange={rangeDate} setRange={setRangeDate} />
+            <DateTimePicker
+              className="col-span-2"
+              value={initDate}
+              onChange={setInitDate}
+              placeholder=" Inicio"
+            />
+
+            <DateTimePicker
+              className="col-span-2"
+              value={endDate}
+              onChange={setEndDate}
+              placeholder="Fin"
+            />
           </div>
         </CardContent>
       </Card>

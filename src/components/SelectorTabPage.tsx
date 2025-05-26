@@ -83,7 +83,7 @@ const SelectorTabPage: React.FC<Props> = ({tabData}) => {
         else
           return (
             <TabsContent key={tab.id} value={tab.id.toString()}>
-              <tab.page degree={degree} />
+              <tab.page degree={degree} type_screen={tab.id} />
             </TabsContent>
           );
       })}

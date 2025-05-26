@@ -1,10 +1,9 @@
-import {ISector} from "@/utils/interfaces";
-import {useEffect, useMemo, useState} from "react";
+import {ISectorProcess} from "@/utils/interfaces";
+import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
 import {Button} from "@/components/ui/button";
 import {
   ArchiveRestore,
-  Edit,
   MoreVerticalIcon,
   PlusIcon,
   Tally5,
@@ -12,17 +11,15 @@ import {
   TrendingUpIcon,
 } from "lucide-react";
 import {
-  CreateSectorDialog,
-  DeleteSectorDialog,
-  EditSectorDialog,
-  RecoverSectorDialog,
-} from "@/components/dialog/params/SectorDialogs";
+  CreateSectorProcessDialog,
+  DeleteSectorProcessDialog,
+  RecoverSectorProcessDialog,
+} from "@/components/dialog/params/SectorProcessDialogs";
 import {ColumnDef, Row} from "@tanstack/react-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -36,12 +33,14 @@ import {
 import {Badge} from "@/components/ui/badge";
 import {countCurrentMonth} from "@/utils/funtions";
 import {format} from "date-fns";
-import {getSectors} from "@/api/params/sector.api";
+import {getSectorProcesses} from "@/api/params/sectorProcess.api";
+import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 interface Props {
   degree: number;
 }
-const SectorPage: React.FC<Props> = ({degree}) => {
-  const [sectors, setSectors] = useState<ISector[] | null>(null);
+const SectorProcessPage: React.FC<Props> = ({degree}) => {
+  const [sectorProcesses, setSectorProcesses] = useState<ISectorProcess[] | null>(null);
+  const {sectorProcess} = useContext(SectorProcessContext);
 
   useEffect(() => {
     updateView();
@@ -49,28 +48,34 @@ const SectorPage: React.FC<Props> = ({degree}) => {
 
   const updateView = async () => {
     try {
-      const sectorsData = await getSectors({all: true});
-      setSectors(sectorsData);
+      const sectorProcessesData = await getSectorProcesses({
+        all: true,
+        id_process: sectorProcess?.process?.id,
+      });
+      setSectorProcesses(sectorProcessesData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
     }
   };
 
-  const columnsSector: ColumnDef<ISector>[] = useMemo(() => {
-    if (!sectors) return [];
+  const columnsProcess: ColumnDef<ISectorProcess>[] = useMemo(() => {
+    if (!sectorProcesses) return [];
     return [
       {
-        accessorFn: (row) => row.id?.toString().trim(),
+        accessorFn: (row) => row.process?.id?.toString().trim(),
         accessorKey: "id",
         header: "Id",
         cell: (info) => info.getValue(),
       },
       {
+        accessorFn: (row) => row.process?.name?.toString().trim(),
+
         accessorKey: "name",
         header: "Nombre",
         cell: (info) => info.getValue(),
       },
       {
+        accessorFn: (row) => row.process?.description?.toString().trim(),
         accessorKey: "description",
         header: "Descripción",
         cell: (info) => info.getValue(),
@@ -111,7 +116,7 @@ const SectorPage: React.FC<Props> = ({degree}) => {
         id: "actions",
         header: "",
         enableHiding: false,
-        cell: ({row}: {row: Row<ISector>}) => {
+        cell: ({row}: {row: Row<ISectorProcess>}) => {
           return (
             <div className="flex gap-2 justify-end">
               <DropdownMenu>
@@ -127,33 +132,24 @@ const SectorPage: React.FC<Props> = ({degree}) => {
                 <DropdownMenuContent align="end" className="w-32">
                   {!row.original.deletedAt ? (
                     <>
-                      <EditSectorDialog id={row.original.id ?? 0} updateView={updateView}>
-                        <DropdownMenuItem
-                          disabled={degree < 3 ? true : false}
-                          onSelect={(e) => e.preventDefault()}
-                        >
-                          <Edit /> Editar
-                        </DropdownMenuItem>
-                      </EditSectorDialog>
-                      <DropdownMenuSeparator />
-                      <DeleteSectorDialog id={row.original.id ?? 0} updateView={updateView}>
+                      <DeleteSectorProcessDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem
                           disabled={degree < 4 ? true : false}
                           onSelect={(e) => e.preventDefault()}
                         >
                           <Trash2 /> Eliminar
                         </DropdownMenuItem>
-                      </DeleteSectorDialog>
+                      </DeleteSectorProcessDialog>
                     </>
                   ) : (
-                    <RecoverSectorDialog id={row.original.id ?? 0} updateView={updateView}>
+                    <RecoverSectorProcessDialog id={row.original.id ?? 0} updateView={updateView}>
                       <DropdownMenuItem
                         disabled={degree < 4 ? true : false}
                         onSelect={(e) => e.preventDefault()}
                       >
                         <ArchiveRestore /> Recuperar
                       </DropdownMenuItem>
-                    </RecoverSectorDialog>
+                    </RecoverSectorProcessDialog>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -162,19 +158,19 @@ const SectorPage: React.FC<Props> = ({degree}) => {
         },
       },
     ];
-  }, [sectors]);
+  }, [sectorProcesses]);
 
   return (
     <div className="flex flex-col gap-2">
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader className="relative">
-          <CardDescription>Sectores registrados</CardDescription>
+          <CardDescription>Procesos registrados</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            {sectors ? sectors.length : 0} Sectores
+            {sectorProcesses ? sectorProcesses.length : 0} Procesos
           </CardTitle>
           <div className="absolute right-4 top-4">
             <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-              <TrendingUpIcon className="size-3" />+{countCurrentMonth(sectors ? sectors : [])} este
+              <TrendingUpIcon className="size-3" />+{countCurrentMonth(sectorProcesses ?? [])} este
               mes
             </Badge>
           </div>
@@ -192,13 +188,13 @@ const SectorPage: React.FC<Props> = ({degree}) => {
 
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader>
-          <CardTitle>Sectores</CardTitle>
-          <CardDescription>Sectores registrados</CardDescription>
+          <CardTitle>Procesos</CardTitle>
+          <CardDescription>Procesos registrados</CardDescription>
         </CardHeader>
         <CardContent>
           <DataTable
             actions={
-              <CreateSectorDialog
+              <CreateSectorProcessDialog
                 updateView={updateView}
                 children={
                   <Button
@@ -215,8 +211,8 @@ const SectorPage: React.FC<Props> = ({degree}) => {
                 }
               />
             }
-            columns={columnsSector}
-            data={sectors}
+            columns={columnsProcess}
+            data={sectorProcesses}
           />
         </CardContent>
       </Card>
@@ -224,4 +220,4 @@ const SectorPage: React.FC<Props> = ({degree}) => {
   );
 };
 
-export default SectorPage;
+export default SectorProcessPage;

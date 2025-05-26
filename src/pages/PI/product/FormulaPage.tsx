@@ -1,4 +1,4 @@
-import {IFormula, IProduct, ISector} from "@/utils/interfaces";
+import {IFormula, IProduct} from "@/utils/interfaces";
 import {
   CreateFormulaDialog,
   DeleteFormulaDialog,
@@ -47,15 +47,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {getProducts} from "@/api/product/product.api";
-import {SesionContext} from "@/providers/sesionProvider";
+import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 interface Props {
   degree: number;
 }
 const FormulaPage: React.FC<Props> = ({degree}) => {
   const [formulas, setFormulas] = useState<IFormula[] | null>(null);
-  const {sesion} = useContext(SesionContext);
+  const {sectorProcess} = useContext(SectorProcessContext);
+
   const [products, setProducts] = useState<IProduct[]>();
-  const [sector, setSector] = useState<ISector>();
 
   const [idProduct, setIdProduct] = useState<number>();
 
@@ -66,7 +66,7 @@ const FormulaPage: React.FC<Props> = ({degree}) => {
 
   const fetchFilter = async () => {
     try {
-      const ProductData = await getProducts({id_sector: sector?.id});
+      const ProductData = await getProducts({id_sector_process: sectorProcess?.id});
 
       setProducts(ProductData);
     } catch (error) {
@@ -77,7 +77,7 @@ const FormulaPage: React.FC<Props> = ({degree}) => {
   const updateView = async () => {
     try {
       const FormulasData = await getFormulas({
-        id_sector: sector?.id,
+        id_sector: sectorProcess?.sector?.id,
         id_product: idProduct,
         all: true,
       });

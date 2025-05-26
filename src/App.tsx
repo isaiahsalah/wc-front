@@ -14,6 +14,7 @@ import ModuleRoutes from "./ModuleRoutes";
 import {checkToken} from "./utils/funtions";
 import {toast} from "sonner";
 import {SectorProcessProvider} from "./providers/sectorProcessProvider";
+import {CircleCheck, CircleX, Info, Loader, TriangleAlert} from "lucide-react";
 
 function App() {
   const PrivateRoutes = () => {
@@ -73,7 +74,17 @@ function App() {
               {/*<Route path="*" element={<Navigate to="/login" />} />*/}
             </Routes>
           </div>
-          <Toaster closeButton duration={2500} />
+          <Toaster
+            closeButton
+            duration={2500}
+            icons={{
+              success: <CircleCheck className="text-green-500 bg" size={20} />, // Ícono predeterminado con color verde
+              info: <Info className="text-blue-500" size={20} />, // Ícono predeterminado con color azul
+              warning: <TriangleAlert className="text-yellow-500" size={20} />, // Ícono predeterminado con color amarillo
+              error: <CircleX className="text-red-500" size={20} />, // Ícono predeterminado con color rojo
+              loading: <Loader className="text-gray-500 animate-spin" size={20} />, // Ícono con animación
+            }}
+          />
         </BrowserRouter>
       </SesionProvider>
     </ThemeProvider>

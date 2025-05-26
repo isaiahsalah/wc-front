@@ -95,14 +95,17 @@ export const recoverProduction = async (id: number) => {
 
 ////////////////////////////////////////////////////////////////////////
 
-export const createProductions = async ({data}: {data: IProduction[]}) => {
+export const createProductions = async ({productions}: {productions: IProduction[]}) => {
   toast("Se está procesando la petición");
   try {
-    const response = await apiClient.post("/pr/production/bulk", data);
+    const body = {
+      productions,
+    };
+    const response = await apiClient.post("/pr/production/bulk", body);
     toast("Las producciones se creó correctamente.");
     return response.data; // Devuelve la producción creada
   } catch (error) {
-    toast(`Error al crear las ${data.length} producciones: ${error}`);
+    toast(`Error al crear las ${productions.length} producciones: ${error}`);
     throw error;
   }
 };

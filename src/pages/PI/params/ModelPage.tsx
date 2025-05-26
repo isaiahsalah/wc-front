@@ -1,4 +1,4 @@
-import {IModel, ISector} from "@/utils/interfaces";
+import {IModel} from "@/utils/interfaces";
 import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
 import {Button} from "@/components/ui/button";
@@ -49,12 +49,12 @@ const ModelPage: React.FC<Props> = ({degree}) => {
 
   useEffect(() => {
     updateView();
-  }, [sesion]);
+  }, [sesion, sectorProcess]);
 
   const updateView = async () => {
     if (sesion && sectorProcess) {
       try {
-        const modelsData = await getModels({id_sector: sector?.id, all: true});
+        const modelsData = await getModels({id_sector_process: sectorProcess?.id, all: true});
         setModels(modelsData);
       } catch (error) {
         console.error("Error al cargar los datos:", error);
@@ -83,7 +83,7 @@ const ModelPage: React.FC<Props> = ({degree}) => {
       },
 
       {
-        accessorFn: (row) => row.process?.name.trim(),
+        accessorFn: (row) => row.sector_process?.process?.name.trim(),
         accessorKey: "process",
         header: "Proceso",
         cell: (info) => (
@@ -93,7 +93,7 @@ const ModelPage: React.FC<Props> = ({degree}) => {
         ),
       },
       {
-        accessorFn: (row) => row.sector?.name.trim(),
+        accessorFn: (row) => row.sector_process?.sector?.name.trim(),
         accessorKey: "sector",
         header: "Sector",
         cell: (info) => (

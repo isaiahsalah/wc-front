@@ -91,7 +91,10 @@ export const printTag = ({
           col,
           line
         );
-      if (key === "micronage") return doc.text(`${production.micronage?.join(" - ")}`, col, line);
+      if (key === "micronage")
+        return production.micronage
+          ? doc.text(`${production.micronage?.join(" - ")}`, col, line)
+          : "";
       return doc.text(`${production[key as keyof IProduction]}`, col, line);
     });
 

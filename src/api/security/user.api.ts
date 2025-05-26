@@ -6,14 +6,16 @@ import {toast} from "sonner";
 export const getUsers = async ({
   all,
   id_sector_process,
+  type_screen,
   type_module,
 }: {
   all?: boolean | null;
   id_sector_process?: number | null;
   type_module?: number | null;
+  type_screen?: number | null;
 }) => {
   try {
-    const params = {all, id_sector_process, type_module};
+    const params = {all, id_sector_process, type_module, type_screen};
 
     const response = await apiClient.get("/pr/user", {params}); // Cambia la URL según tu API
     return response.data; // Devuelve la lista de usuarios

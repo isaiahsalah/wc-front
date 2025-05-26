@@ -157,7 +157,7 @@ export const ProductSchema = z.object({
   product_unit: UnitySchema.nullable().optional(),
   product_equivalent_unit: UnitySchema.nullable().optional(),
 
-  id_color: z.number(),
+  id_color: z.number().nullable().optional(),
   color: ColorSchema.nullable().optional(),
   id_model: z.number(),
   model: ModelSchema.nullable().optional(),
@@ -261,19 +261,36 @@ export const ProductionSchema = z.object({
   duration: z.number(),
   micronage: z.array(z.number()).nullable().optional(),
   type_quality: z.number(),
-
   weight: z.number(),
   equivalent_amount: z.number(),
+  lote: z.string().nullable().optional(),
+
   id_unit: z.number(),
   id_equivalent_unit: z.number(),
+  id_machine: z.number(),
+  id_order_detail: z.number(),
+
   production_unit: UnitySchema.nullable().optional(),
   production_equivalent_unit: UnitySchema.nullable().optional(),
-
-  id_machine: z.number(),
   machine: MachineSchema.nullable().optional(),
-  lote: z.string().nullable().optional(),
-  id_order_detail: z.number(),
   order_detail: OrderDetailSchema.nullable().optional(),
+
+  production_users: z.array(z.any()).nullable().optional(),
+
+  createdAt: z.date().nullable().optional(),
+  updatedAt: z.date().nullable().optional(),
+  deletedAt: z.date().nullable().optional(),
+});
+
+// Tabla: Production
+export const ProductionUserSchema = z.object({
+  id: z.number().nullable().optional(),
+
+  id_user: z.number().nullable().optional(),
+  id_production: z.number().nullable().optional(),
+  user: UserSchema.nullable().optional(),
+  production: ProductSchema.nullable().optional(),
+
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
@@ -308,6 +325,7 @@ export const WorkSchema = z.object({
 });
 
 export type IGroup = z.infer<typeof GroupSchema>;
+export type IProductionUser = z.infer<typeof ProductionUserSchema>;
 
 export type IColor = z.infer<typeof ColorSchema>;
 export type IFormulaDetail = z.infer<typeof FormulaDetailSchema>;
@@ -349,4 +367,5 @@ export type IGeneral =
   | IUnity
   | IUser
   | IWork
-  | ISectorProcess;
+  | ISectorProcess
+  | IProductionUser;

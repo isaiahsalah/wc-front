@@ -7,10 +7,8 @@ import {
   IMachine,
   IOrder,
   IOrderDetail,
-  IProcess,
   IProduct,
   IProduction,
-  ISector,
   OrderSchema,
 } from "@/utils/interfaces";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -56,10 +54,10 @@ import {
 import DataTable from "@/components/table/DataTable";
 import {SesionContext} from "@/providers/sesionProvider";
 import {getMachines} from "@/api/params/machine.api";
-import {getProcesses} from "@/api/params/process.api";
 import {getGroups} from "@/api/security/group.api";
 import {typeTurn} from "@/utils/const";
 import {SectorProcessContext} from "@/providers/sectorProcessProvider";
+import {toast} from "sonner";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -71,7 +69,6 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
 
   const [products, setProducts] = useState<IProduct[]>([]);
   const [machines, setMachines] = useState<IMachine[]>([]);
-  const [processes, setProcesses] = useState<IProcess[]>([]);
   const [groups, setGroups] = useState<IGroup[]>([]);
 
   const [productSelected, setProductSelected] = useState<IProduct>();
@@ -80,21 +77,19 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
   const [orderDetailsSelected, setOrderDetailsSelected] = useState<IOrderDetail[]>([]);
 
   const [amount, setAmount] = useState<number>();
-  const [sector, setSector] = useState<ISector>();
 
   const {sectorProcess} = useContext(SectorProcessContext);
   const {sesion} = useContext(SesionContext);
 
   useEffect(() => {
     if (sesion) {
-      getProcesses({}).then((ProcessesData) => setProcesses(ProcessesData));
       getGroups({}).then((GroupsData) => setGroups(GroupsData));
     }
   }, [sesion]);
 
   useEffect(() => {
-    if (process) fetchData();
-  }, [process]);
+    fetchData();
+  }, [sectorProcess]);
 
   const form = useForm<IOrder>({
     resolver: zodResolver(OrderSchema),
@@ -121,12 +116,10 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
   const fetchData = async () => {
     try {
       const ProductsData = await getProducts({
-        id_sector: sector?.id,
-        id_process: process?.id,
+        id_sector_process: sectorProcess?.id,
       });
       const MachinesData = await getMachines({
-        id_sector: sector?.id,
-        id_process: process?.id,
+        id_sector_process: sectorProcess?.id,
       });
 
       setProducts(ProductsData);
@@ -156,6 +149,7 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
         },
         ...orderDetailsSelected,
       ]);
+    else toast.warning("Selcciona el producto, máquina y cantidad");
   };
 
   const deleteProductSelected = (index: number) => {
@@ -193,7 +187,7 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
                 variant={"outline"}
                 type="button"
                 onClick={() => deleteProductSelected(row.index)}
-                className="   text-red-600 dark:text-red-400"
+                className="bg-red-500/20 hover:bg-red-500/70 hover:text-white dark:bg-red-500/20 dark:hover:bg-red-500/70 dark:hover:text-black"
               >
                 <Trash2 />
               </Button>
@@ -330,21 +324,6 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
               />
 
               <div className="w-full col-span-6 grid grid-cols-6 gap-2 rounded-lg border shadow-sm p-4 bg-muted/30">
-                <div className="w-full col-span-6 grid gap-2">
-                  <FormDescription>Proceso</FormDescription>
-                  <Select disabled>
-                    <SelectTrigger className="w-full  ">
-                      <SelectValue placeholder="Selecciona" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {processes?.map((process: IProcess) => (
-                        <SelectItem key={process.id} value={(process.id ?? "").toString()}>
-                          {process.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
                 <div className="w-full col-span-3 grid gap-2">
                   <FormDescription>Producto a ordear</FormDescription>
                   <Select
@@ -400,7 +379,12 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
                   />
                 </div>
                 <div className="w-full col-span-6 grid gap-2">
-                  <Button type="button" variant={"outline"} onClick={addProductSelected}>
+                  <Button
+                    type="button"
+                    variant={"outline"}
+                    className="  bg-green-600/20 hover:bg-green-600/70  hover:text-white dark:bg-green-600/20 dark:hover:bg-green-600/70  dark:hover:text-black"
+                    onClick={addProductSelected}
+                  >
                     <ChevronsDown />
                   </Button>
                 </div>
@@ -452,14 +436,11 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
 
   const [productSelected, setProductSelected] = useState<IProduct>();
   const [machineSelected, setMachineSelected] = useState<IMachine>();
-  const [processSelected, setProcessSelected] = useState<IProcess>();
 
   const [amount, setAmount] = useState<number>();
   const [products, setProducts] = useState<IProduct[]>([]);
   const [machines, setMachines] = useState<IMachine[]>([]);
-  const [processes, setProcesses] = useState<IProcess[]>([]);
   const [groups, setGroups] = useState<IGroup[]>([]);
-  const [sector, setSector] = useState<ISector>();
 
   const {sesion} = useContext(SesionContext);
 
@@ -471,14 +452,13 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
 
   useEffect(() => {
     if (sesion) {
-      getProcesses({}).then((ProcessesData) => setProcesses(ProcessesData));
       getGroups({}).then((GroupsData) => setGroups(GroupsData));
     }
   }, [sesion]);
 
   useEffect(() => {
-    if (process) fetchOrder();
-  }, [process]);
+    fetchOrder();
+  }, [sectorProcess]);
 
   function onSubmit(values: IOrder) {
     setLoadingSave(true);
@@ -514,12 +494,10 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
       });
 
       const ProductsData = await getProducts({
-        id_sector: sector?.id,
-        id_process: processSelected?.id,
+        id_sector_process: sectorProcess?.id,
       });
       const MachinesData = await getMachines({
-        id_sector: sector?.id,
-        id_process: processSelected?.id,
+        id_sector_process: sectorProcess?.id,
       });
 
       setProducts(ProductsData);
@@ -565,7 +543,7 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
           ...(orderDetailTemp ?? []),
         ],
       });
-    }
+    } else toast.warning("Selcciona el producto, máquina y cantidad");
   };
 
   const deleteProductSelected = (index: number) => {
@@ -633,7 +611,7 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                 variant={"outline"}
                 type="button"
                 onClick={() => deleteProductSelected(row.index)}
-                className="   text-red-600 dark:text-red-400"
+                className="bg-red-500/20 hover:bg-red-500/70 hover:text-white dark:bg-red-500/20 dark:hover:bg-red-500/70 dark:hover:text-black"
               >
                 <Trash2 />
               </Button>
@@ -772,32 +750,9 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
               />
 
               <div className="w-full col-span-6 grid grid-cols-6 gap-2 rounded-lg border shadow-sm p-4 bg-muted/30">
-                <div className="w-full col-span-6 grid gap-2">
-                  <FormDescription>Proceso</FormDescription>
-                  <Select
-                    onValueChange={(value) => {
-                      const processProduct = processes?.find(
-                        (process: IProcess) => process.id?.toString() === value
-                      );
-                      setProcessSelected(processProduct); // Guarda el objeto completo
-                    }} // Convertir el valor a número
-                  >
-                    <SelectTrigger className="w-full  ">
-                      <SelectValue placeholder="Selecciona" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {processes?.map((process: IProcess) => (
-                        <SelectItem key={process.id} value={(process.id ?? "").toString()}>
-                          {process.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
                 <div className="w-full col-span-3 grid gap-2">
                   <FormDescription>Producto a ordear</FormDescription>
                   <Select
-                    disabled={!processSelected}
                     onValueChange={(value) => {
                       const selectedProduct = products?.find(
                         (product: IProduct) => product.id?.toString() === value
@@ -821,7 +776,6 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                 <div className="w-full col-span-2 grid gap-2">
                   <FormDescription>Máquina</FormDescription>
                   <Select
-                    disabled={!processSelected}
                     onValueChange={(value) => {
                       const selectedMachine = machines?.find(
                         (machine: IMachine) => machine.id?.toString() === value
@@ -845,14 +799,18 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                 <div className="w-full col-span-1 grid gap-2">
                   <FormDescription>Cant.</FormDescription>
                   <Input
-                    disabled={!processSelected}
                     placeholder="Cantidad"
                     type="number"
                     onChange={(event) => setAmount(Number(event.target.value))}
                   />
                 </div>
                 <div className="w-full col-span-6 grid gap-2">
-                  <Button type="button" variant={"outline"} onClick={addProductSelected}>
+                  <Button
+                    type="button"
+                    variant={"outline"}
+                    className="  bg-green-600/20 hover:bg-green-600/70  hover:text-white dark:bg-green-600/20 dark:hover:bg-green-600/70  dark:hover:text-black"
+                    onClick={addProductSelected}
+                  >
                     <ChevronsDown />
                   </Button>
                 </div>

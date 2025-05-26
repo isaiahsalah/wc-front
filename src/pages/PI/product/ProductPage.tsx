@@ -1,4 +1,4 @@
-import {IProduct, ISector} from "@/utils/interfaces";
+import {IProduct} from "@/utils/interfaces";
 import DataTable from "@/components/table/DataTable";
 import {
   CreateProductDialog,
@@ -52,14 +52,13 @@ const ProductPage: React.FC<Props> = ({degree}) => {
 
   useEffect(() => {
     updateView();
-  }, [process]);
+  }, [sesion, sectorProcess]);
 
   const updateView = async () => {
     if (sesion && sectorProcess) {
       try {
         const ProductionsData = await getProducts({
-          id_sector: sector?.id,
-          id_process: process?.id,
+          id_sector_process: sectorProcess?.id,
           all: true,
         });
         setProducts(ProductionsData);
@@ -154,14 +153,19 @@ const ProductPage: React.FC<Props> = ({degree}) => {
           ),
       },
       {
-        accessorFn: (row) => row.color?.name.trim(),
+        accessorFn: (row) => `${row.color?.name}`.trim(),
         accessorKey: "color",
         header: "Color",
-        cell: (info) => (
-          <Badge variant={"secondary"} className="text-muted-foreground">
-            {info.getValue() as string}
-          </Badge>
-        ),
+        cell: (info) =>
+          info.getValue() != "null" && info.getValue() != "undefined" ? (
+            <Badge variant={"secondary"} className="text-muted-foreground">
+              {info.getValue() as string}
+            </Badge>
+          ) : (
+            <Badge variant={"outline"} className="text-muted-foreground">
+              N/A
+            </Badge>
+          ),
       },
 
       {

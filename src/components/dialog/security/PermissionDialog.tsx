@@ -95,6 +95,8 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
     try {
       const userData: IUser = await getUserById({
         id: id,
+        id_sector_process: sectorProcess?.id,
+        type_module: module?.id,
       });
       setPermissions(userData.permissions as IPermission[]);
       //setModuleId((userData.permissions as IPermission[])[0].type_module);
@@ -149,7 +151,7 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
                                 ).map((item) => {
                                   if (item.type_screen === page.id) {
                                     found = true; // Marcar como encontrado
-                                    return {...item, degree: Number(value)}; // Actualizar el objeto
+                                    return {...item, type_degree: Number(value)}; // Actualizar el objeto
                                   }
                                   return item; // Devolver el objeto sin cambios
                                 });
@@ -158,10 +160,10 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
                                 if (!found) {
                                   updatedArray.push({
                                     id_sector_process: sectorProcess?.id as number,
-                                    id_user: (permissions as IPermission[])[0].id_user as number,
+                                    id_user: id as number,
                                     type_screen: page.id,
                                     type_degree: Number(value),
-                                    type_module: moduleId as number,
+                                    type_module: module?.id as number,
                                   });
                                 }
 

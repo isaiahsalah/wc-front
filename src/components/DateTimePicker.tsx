@@ -24,8 +24,6 @@ export const DateTimePicker: React.FC<Props> = ({
   placeholder = "Pick a date",
   className,
 }) => {
-  const hours = Array.from({length: 24}, (_, i) => i);
-
   const handleTimeChange = (type: "hour" | "minute", newValue: string) => {
     if (newValue) {
       // Aseguramos que el valor sea un número válido
@@ -59,7 +57,7 @@ export const DateTimePicker: React.FC<Props> = ({
         <Button
           variant={"outline"}
           className={cn(
-            "w-[280px] justify-start text-left font-normal",
+            " justify-start text-left font-normal",
             !value && "text-muted-foreground",
             className
           )}
@@ -74,28 +72,29 @@ export const DateTimePicker: React.FC<Props> = ({
           <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
             <ScrollArea className="w-64 sm:w-auto">
               <div className="flex sm:flex-col p-2">
-                {hours.reverse().map((hour) => (
-                  <Button
-                    key={hour}
-                    size="icon"
-                    variant={value && value.getHours() === hour ? "default" : "ghost"}
-                    className="sm:w-full shrink-0 aspect-square"
-                    onClick={() => handleTimeChange("hour", hour.toString())}
-                  >
-                    {hour}
-                  </Button>
-                ))}
+                {Array.from({length: 24}, (_, i) => i)
+                  .reverse()
+                  .map((hour) => (
+                    <Button
+                      key={hour}
+                      variant={value && value.getHours() === hour ? "default" : "ghost"}
+                      className="sm:w-full shrink-0   h-6 px-2"
+                      onClick={() => handleTimeChange("hour", hour.toString())}
+                    >
+                      {hour}
+                    </Button>
+                  ))}
               </div>
               <ScrollBar orientation="horizontal" className="sm:hidden" />
             </ScrollArea>
-            <ScrollArea className="w-64 sm:w-auto">
+            <ScrollArea className="w-64 sm:w-auto ">
               <div className="flex sm:flex-col p-2">
-                {Array.from({length: 12}, (_, i) => i * 5).map((minute) => (
+                {Array.from({length: 60}, (_, i) => i).map((minute) => (
                   <Button
                     key={minute}
                     size="icon"
                     variant={value && value.getMinutes() === minute ? "default" : "ghost"}
-                    className="sm:w-full shrink-0 aspect-square"
+                    className="sm:w-full shrink-0  h-6 px-2"
                     onClick={() => handleTimeChange("minute", minute.toString())}
                   >
                     {minute.toString().padStart(2, "0")}

@@ -2,7 +2,7 @@ import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 
 import {useForm} from "react-hook-form";
-import {IColor, IModel, IProduct, ProductSchema, IUnity, ISector} from "@/utils/interfaces";
+import {IColor, IModel, IProduct, ProductSchema, IUnity} from "@/utils/interfaces";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 import {
@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {Textarea} from "@/components/ui/textarea";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useState} from "react";
 import {
   createProduct,
   deleteProduct,
@@ -45,7 +45,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {typeProduct} from "@/utils/const";
-import {SesionContext} from "@/providers/sesionProvider";
+import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -59,19 +59,10 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
   const [models, setModels] = useState<IModel[]>();
   const [unities, setUnities] = useState<IUnity[]>();
   const [open, setOpen] = useState(false);
-  const [sector, setSector] = useState<ISector>();
-  const {sesion} = useContext(SesionContext);
+  const {sectorProcess} = useContext(SectorProcessContext);
 
   const form = useForm<IProduct>({
     resolver: zodResolver(ProductSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      id_color: 0,
-      id_model: 0,
-      id_unit: 0,
-      id_equivalent_unit: 0,
-    },
   });
 
   function onSubmit(values: IProduct) {
@@ -103,7 +94,7 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
     setLoadingInit(true);
     try {
       const ColorsData = await getColors({});
-      const ModelsData = await getModels({id_sector: sector?.id});
+      const ModelsData = await getModels({id_sector_process: sectorProcess?.id});
       const UnitiesData = await getUnities({});
 
       setColors(ColorsData);
@@ -170,7 +161,6 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
                       <FormControl>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
-                          defaultValue={field.value.toString()}
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Seleccionar producto" />
@@ -198,7 +188,6 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
                       <FormControl>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
-                          defaultValue={field.value.toString()}
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Seleccionar Modelo" />
@@ -254,7 +243,6 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
                       <FormControl>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
-                          defaultValue={field.value.toString()}
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Seleccionar Unidad" />
@@ -282,7 +270,6 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
                       <FormControl>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
-                          defaultValue={field.value.toString()}
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Seleccionar Equivalente" />
@@ -399,8 +386,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
   const [models, setModels] = useState<IModel[]>();
   const [unities, setUnities] = useState<IUnity[]>();
 
-  const [sector, setSector] = useState<ISector>();
-  const {sesion} = useContext(SesionContext);
+  const {sectorProcess} = useContext(SectorProcessContext);
 
   const form = useForm<IProduct>({
     resolver: zodResolver(ProductSchema),
@@ -428,7 +414,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
       const productData: IProduct = await getProductById(id);
       console.log("Productos:", productData);
       const ColorsData = await getColors({});
-      const ModelsData = await getModels({id_sector: sector?.id});
+      const ModelsData = await getModels({id_sector_process: sectorProcess?.id});
       const UnitiesData = await getUnities({});
 
       setColors(ColorsData);
@@ -440,7 +426,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
         description: productData.description,
         equivalent_amount: parseFloat(productData.equivalent_amount.toString()),
         weight: parseFloat(productData.weight.toString()),
-        micronage: parseFloat((productData.micronage ?? 0).toString()),
+        micronage: productData.micronage ? parseFloat(productData.micronage.toString()) : undefined,
         id_color: productData.id_color,
         id_model: productData.id_model,
         id_unit: productData.id_unit,
@@ -542,10 +528,10 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                       <FormControl>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
-                          defaultValue={field.value.toString()}
+                          defaultValue={field.value ? field.value.toString() : undefined}
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Seleccionar producto" />
+                            <SelectValue placeholder="Selecciona Color" />
                           </SelectTrigger>
                           <SelectContent>
                             {colors?.map((product: IColor) => (

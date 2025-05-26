@@ -1,4 +1,11 @@
-import {IOrderDetail, IOrder, IProduct, IProduction, IMachine, ISector} from "@/utils/interfaces";
+import {
+  IOrderDetail,
+  IOrder,
+  IProduct,
+  IProduction,
+  IMachine,
+  IProductionUser,
+} from "@/utils/interfaces";
 import {ColumnDef, Row} from "@tanstack/react-table";
 import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
@@ -18,7 +25,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {getOrderDetails_date} from "@/api/production/orderDetail.api";
+import {getOrderDetails} from "@/api/production/orderDetail.api";
 import {getProductions} from "@/api/production/production.api";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 
@@ -36,9 +43,10 @@ import {getMachines} from "@/api/params/machine.api";
 import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 import {SesionContext} from "@/providers/sesionProvider";
 interface Props {
+  type_screen: number;
   degree: number;
 }
-const ProductionPage: React.FC<Props> = ({degree}) => {
+const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
   const [productions, setProductions] = useState<IProduction[] | null>(null);
   const [orderDetails, setOrderDetails] = useState<IOrderDetail[] | null>(null);
   const {sectorProcess} = useContext(SectorProcessContext);
@@ -47,14 +55,12 @@ const ProductionPage: React.FC<Props> = ({degree}) => {
   const [idMachine, setIdMachine] = useState<number>();
 
   const [machines, setMachines] = useState<IMachine[]>();
-  const [sector, setSector] = useState<ISector>();
 
   useEffect(() => {
-    if (sector)
-      getMachines({id_process: process?.id, id_sector: sector?.id}).then((MachinesData) =>
-        setMachines(MachinesData)
-      );
-  }, [process, sector]);
+    getMachines({id_sector_process: sectorProcess?.id}).then((MachinesData) =>
+      setMachines(MachinesData)
+    );
+  }, [sesion, sectorProcess]);
 
   useEffect(() => {
     updateView();
@@ -63,19 +69,17 @@ const ProductionPage: React.FC<Props> = ({degree}) => {
   const updateView = async () => {
     try {
       const date = new Date().toISOString();
-      const OrderDetailsData = await getOrderDetails_date({
+      const OrderDetailsData = await getOrderDetails({
         date: date,
-        id_process: process?.id ?? null,
-        id_sector: sector?.id ?? null,
+        id_sector_process: sectorProcess?.id ?? null,
         id_machine: idMachine ?? null,
       });
 
       setOrderDetails(OrderDetailsData);
 
       const ProductionsData = await getProductions({
-        id_process: process?.id ?? null,
+        id_sector_process: sectorProcess?.id,
         id_machine: idMachine ?? null,
-        id_sector: sector?.id ?? null,
         all: true,
       });
       setProductions(ProductionsData);
@@ -162,11 +166,21 @@ const ProductionPage: React.FC<Props> = ({degree}) => {
       {
         accessorKey: "micronage",
         header: "Micronaje",
-        cell: (info) => (
-          <Badge variant={"secondary"} className="text-muted-foreground">
-            {(info.getValue() as []) ? (info.getValue() as []).join(" - ") : " - "}
-          </Badge>
-        ),
+        cell: (info) => {
+          const micronaje = info.getValue() as [];
+          if (micronaje)
+            return (
+              <Badge variant={"secondary"} className="text-muted-foreground">
+                {micronaje.join(" - ")}
+              </Badge>
+            );
+          else
+            return (
+              <Badge variant={"outline"} className="text-muted-foreground">
+                {"N/A"}
+              </Badge>
+            );
+        },
       },
       {
         accessorKey: "machine",
@@ -176,6 +190,18 @@ const ProductionPage: React.FC<Props> = ({degree}) => {
             {(info.getValue() as IMachine).name}
           </Badge>
         ),
+      },
+      {
+        accessorKey: "production_users",
+        header: "Operadores",
+        cell: (info) => {
+          const productionUsers = info.getValue() as IProductionUser[];
+          return (
+            <Badge variant={"secondary"} className="text-muted-foreground">
+              {productionUsers.map((productionUser) => productionUser.user?.name).join(" - ")}
+            </Badge>
+          );
+        },
       },
 
       {
@@ -325,7 +351,7 @@ const ProductionPage: React.FC<Props> = ({degree}) => {
         header: "Proceso",
         cell: (info) => (
           <Badge variant={"secondary"} className="text-muted-foreground">
-            {(info.getValue() as IProduct).model?.process?.name}
+            {(info.getValue() as IProduct).model?.sector_process?.process?.name}
           </Badge>
         ),
       },
@@ -335,7 +361,7 @@ const ProductionPage: React.FC<Props> = ({degree}) => {
         header: "Sector",
         cell: (info) => (
           <Badge variant={"secondary"} className="text-muted-foreground">
-            {(info.getValue() as IProduct).model?.sector?.name}
+            {(info.getValue() as IProduct).model?.sector_process?.sector?.name}
           </Badge>
         ),
       },
@@ -366,7 +392,11 @@ const ProductionPage: React.FC<Props> = ({degree}) => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-32">
-                  <CreateProductionsDialog orderDetail={row.original} updateView={updateView}>
+                  <CreateProductionsDialog
+                    orderDetail={row.original}
+                    updateView={updateView}
+                    type_screen={type_screen}
+                  >
                     <DropdownMenuItem
                       disabled={degree < 2 ? true : false}
                       onSelect={(e) => e.preventDefault()}

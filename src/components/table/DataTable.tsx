@@ -166,7 +166,7 @@ const DataTable = <T extends IGeneral>({
                 <TableRow
                   key={i}
                   data-state={row.getIsSelected() && "selected"}
-                  className={row.original.deletedAt ? "bg-red-500/30 " : ""}
+                  className={row.original.deletedAt ? "bg-red-500/30 hover:bg-red-500/50" : ""}
                 >
                   {row.getVisibleCells().map((cell) => {
                     return (

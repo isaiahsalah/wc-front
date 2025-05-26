@@ -32,7 +32,6 @@ export const AppSidebar: React.FC<Props> = ({className}) => {
   const [sectorProcesses, setSectorProcesses] = useState<ISectorProcess[] | null>(null);
 
   const permisions = sesion?.user.permissions as IPermission[];
-  console.log("🚩🚩", permisions);
   useEffect(() => {
     const moduleSelected = typeModule.find(
       (mod) => mod.id === permisions[0].type_module

@@ -1,4 +1,4 @@
-import {IGroup, IOrder, ISector, IUser} from "@/utils/interfaces";
+import {IGroup, IOrder, IUser} from "@/utils/interfaces";
 import {ColumnDef, Row} from "@tanstack/react-table";
 import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
@@ -40,26 +40,22 @@ import {countCurrentMonth} from "@/utils/funtions";
 import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
 import {SectorProcessContext} from "@/providers/sectorProcessProvider";
-import {SesionContext} from "@/providers/sesionProvider";
 interface Props {
   degree: number;
 }
 const OrderPage: React.FC<Props> = ({degree}) => {
   const [orders, setOrders] = useState<IOrder[] | null>(null);
   const {sectorProcess} = useContext(SectorProcessContext);
-  const {sesion} = useContext(SesionContext);
-  const [sector, setSector] = useState<ISector>();
 
   useEffect(() => {
-    if (sector) updateView();
-  }, [sector, process]);
+    updateView();
+  }, [sectorProcess]);
 
   const updateView = async () => {
     try {
       const ProductionsData = await getOrders({
         all: true,
-        id_sector: sector?.id,
-        id_process: process?.id,
+        id_sector_process: sectorProcess?.id,
       });
       setOrders(ProductionsData);
     } catch (error) {

@@ -1,4 +1,4 @@
-import {IMachine, ISector} from "@/utils/interfaces";
+import {IMachine} from "@/utils/interfaces";
 import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
 import {Button} from "@/components/ui/button";
@@ -50,15 +50,14 @@ const MachinePage: React.FC<Props> = ({degree}) => {
 
   useEffect(() => {
     updateView();
-  }, [process]);
+  }, [sesion, sectorProcess]);
 
   const updateView = async () => {
     if (sesion && sectorProcess) {
       try {
         const machinesData = await getMachines({
           all: true,
-          id_sector: sector?.id,
-          id_process: process?.id,
+          id_sector_process: sectorProcess?.id,
         });
         setMachines(machinesData);
       } catch (error) {
@@ -89,7 +88,7 @@ const MachinePage: React.FC<Props> = ({degree}) => {
       },
 
       {
-        accessorFn: (row) => row.process?.name.trim(),
+        accessorFn: (row) => row.sector_process?.process?.name.trim(),
         accessorKey: "process",
         header: "Proceso",
         cell: (info) => (
@@ -100,7 +99,7 @@ const MachinePage: React.FC<Props> = ({degree}) => {
       },
 
       {
-        accessorFn: (row) => row.sector?.name.trim(),
+        accessorFn: (row) => row.sector_process?.sector?.name.trim(),
         accessorKey: "sector",
         header: "Sector",
         cell: (info) => (

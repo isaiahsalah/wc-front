@@ -1,8 +1,6 @@
 import InventoryPage from "@/pages/PI/inventory/InventoryPage";
 import MachinePage from "@/pages/PI/params/MachinePage";
 import ModelPage from "@/pages/PI/params/ModelPage";
-import ProcessPage from "@/pages/PI/params/ProcessPage";
-import SectorPage from "@/pages/PI/params/SectorPage";
 import ColorPage from "@/pages/PI/product/ColorPage";
 import FormulaPage from "@/pages/PI/product/FormulaPage";
 import ProductPage from "@/pages/PI/product/ProductPage";
@@ -13,6 +11,7 @@ import GroupPage from "@/pages/PI/security/GroupPage";
 import UserPage from "@/pages/PI/security/UserPage";
 import {Blend, LucideProps, Package, PackagePlus, PackageSearch, UserLockIcon} from "lucide-react";
 import {RefAttributes} from "react";
+import SectorProcessPage from "@/pages/PI/params/SectorProcessPage";
 
 export interface IPageItem {
   id: number;
@@ -20,7 +19,7 @@ export interface IPageItem {
   label: string;
   isActive?: boolean;
   link: string;
-  page: React.FC<{degree: number}>; // Componente de la página con props opcionales
+  page: React.FC<{degree: number; type_screen: number}>; // Componente de la página con props opcionales
 }
 
 export interface IMenuItem {
@@ -131,17 +130,10 @@ const typeMenuPI: IMenuItem[] = [
       },
       {
         id: 33,
-        title: "Proceso",
-        label: "Proceso",
+        title: "Procesos del sector",
+        label: "Procesos del sector",
         link: "process",
-        page: ProcessPage,
-      },
-      {
-        id: 34,
-        title: "Sector",
-        label: "Sector",
-        link: "sector",
-        page: SectorPage,
+        page: SectorProcessPage,
       },
     ],
   },
