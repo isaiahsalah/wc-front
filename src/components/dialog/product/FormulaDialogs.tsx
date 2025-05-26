@@ -2,7 +2,7 @@ import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 
 import {useForm} from "react-hook-form";
-import {IFormula, FormulaSchema, IProduct, ISector} from "@/utils/interfaces";
+import {IFormula, FormulaSchema, IProduct} from "@/utils/interfaces";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 import {
@@ -13,7 +13,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useState} from "react";
 import {
   createFormula,
   deleteFormula,
@@ -41,7 +41,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {getProducts} from "@/api/product/product.api";
-import {SesionContext} from "@/providers/sesionProvider";
+import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -52,9 +52,7 @@ export const CreateFormulaDialog: React.FC<PropsCreate> = ({children, updateView
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
   const [products, setProducts] = useState<IProduct[]>();
-
-  const [sector, setSector] = useState<ISector>();
-  const {sesion} = useContext(SesionContext);
+  const {sectorProcess} = useContext(SectorProcessContext);
 
   const form = useForm<IFormula>({
     resolver: zodResolver(FormulaSchema),
@@ -84,7 +82,7 @@ export const CreateFormulaDialog: React.FC<PropsCreate> = ({children, updateView
   const fetchData = async () => {
     setLoadingInit(true);
     try {
-      const ProductsData = await getProducts({id_sector: sector?.id});
+      const ProductsData = await getProducts({id_sector_process: sectorProcess?.id});
       setProducts(ProductsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
@@ -209,8 +207,7 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
   const [loadingInit, setLoadingInit] = useState(false);
   const [products, setProducts] = useState<IProduct[]>();
 
-  const [sector, setSector] = useState<ISector>();
-  const {sesion} = useContext(SesionContext);
+  const {sectorProcess} = useContext(SectorProcessContext);
 
   const form = useForm<IFormula>({
     resolver: zodResolver(FormulaSchema),
@@ -243,7 +240,7 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
     try {
       const formulaData = await getFormulaById(id);
       console.log("Fórmulas:", formulaData);
-      const ProductsData = await getProducts({id_sector: sector?.id});
+      const ProductsData = await getProducts({id_sector_process: sectorProcess?.id});
       setProducts(ProductsData);
       form.reset({
         id: formulaData.id,

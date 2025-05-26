@@ -216,7 +216,7 @@ export const EditPassDialog: React.FC<PropsEditPass> = ({children, updateView}) 
 
     setLoadingSave(true); // Inicia la carga
     updatePassword({id: sesion?.user.id as number, newPassword: newPass, oldPassword: oldPass})
-      .then((updatedProfile) => {
+      .then(() => {
         //setSesion({user: updatedProfile, token: sesion?.token as string});
         updateView();
       })
