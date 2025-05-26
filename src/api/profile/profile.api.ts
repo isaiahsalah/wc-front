@@ -1,8 +1,8 @@
-import {IUser} from "@/utils/interfaces";
+import {ISystemUser} from "@/utils/interfaces";
 import {apiClient} from "../axiosConfig";
 import {toast} from "sonner";
 
-export const updateProfile = async ({data}: {data: IUser}) => {
+export const updateProfile = async ({data}: {data: ISystemUser}) => {
   toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.put(`/profile/${data.id}`, data);

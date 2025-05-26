@@ -1,4 +1,4 @@
-import {IGroup, IOrder, IUser} from "@/utils/interfaces";
+import {IWorkGroup, IProductionOrder, ISystemUser} from "@/utils/interfaces";
 import {ColumnDef, Row} from "@tanstack/react-table";
 import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
@@ -44,7 +44,7 @@ interface Props {
   degree: number;
 }
 const OrderPage: React.FC<Props> = ({degree}) => {
-  const [orders, setOrders] = useState<IOrder[] | null>(null);
+  const [orders, setOrders] = useState<IProductionOrder[] | null>(null);
   const {sectorProcess} = useContext(SectorProcessContext);
 
   useEffect(() => {
@@ -64,7 +64,7 @@ const OrderPage: React.FC<Props> = ({degree}) => {
   };
 
   // Generar columnas dinámicamente
-  const columnsOrder: ColumnDef<IOrder>[] = useMemo(() => {
+  const columnsOrder: ColumnDef<IProductionOrder>[] = useMemo(() => {
     if (!orders) return [];
     return [
       {
@@ -74,9 +74,9 @@ const OrderPage: React.FC<Props> = ({degree}) => {
         cell: (info) => info.getValue(),
       },
       {
-        accessorKey: "group",
+        accessorKey: "work_group",
         header: "Grupo",
-        cell: (info) => (info.getValue() as IGroup).name,
+        cell: (info) => (info.getValue() as IWorkGroup).name,
       },
       {
         accessorKey: "init_date",
@@ -90,11 +90,11 @@ const OrderPage: React.FC<Props> = ({degree}) => {
         cell: (info) => format(new Date(info.getValue() as Date), "dd/MM/yyyy HH:mm"),
       },
       {
-        accessorKey: "user",
+        accessorKey: "sys_user",
         header: "Usuario",
         cell: (info) => (
           <Badge variant={"secondary"} className="text-muted-foreground">
-            {(info.getValue() as IUser).name} {(info.getValue() as IUser).lastname}
+            {(info.getValue() as ISystemUser).name} {(info.getValue() as ISystemUser).lastname}
           </Badge>
         ),
       },
@@ -134,7 +134,7 @@ const OrderPage: React.FC<Props> = ({degree}) => {
         id: "actions",
         header: "",
         enableHiding: false,
-        cell: ({row}: {row: Row<IOrder>}) => {
+        cell: ({row}: {row: Row<IProductionOrder>}) => {
           return (
             <div className="flex gap-2  justify-end  ">
               <DropdownMenu>

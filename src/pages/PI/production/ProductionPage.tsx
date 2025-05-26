@@ -1,6 +1,6 @@
 import {
-  IOrderDetail,
-  IOrder,
+  IProductionOrderDetail,
+  IProductionOrder,
   IProduct,
   IProduction,
   IMachine,
@@ -48,7 +48,7 @@ interface Props {
 }
 const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
   const [productions, setProductions] = useState<IProduction[] | null>(null);
-  const [orderDetails, setOrderDetails] = useState<IOrderDetail[] | null>(null);
+  const [orderDetails, setOrderDetails] = useState<IProductionOrderDetail[] | null>(null);
   const {sectorProcess} = useContext(SectorProcessContext);
   const {sesion} = useContext(SesionContext);
 
@@ -103,9 +103,9 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
         cell: (info) => info.getValue(),
       },
       {
-        accessorKey: "order_detail",
+        accessorKey: "production_order_detail",
         header: "Producto",
-        cell: (info) => (info.getValue() as IOrderDetail).product?.name,
+        cell: (info) => (info.getValue() as IProductionOrderDetail).product?.name,
       },
       {
         accessorKey: "date",
@@ -198,7 +198,7 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
           const productionUsers = info.getValue() as IProductionUser[];
           return (
             <Badge variant={"secondary"} className="text-muted-foreground">
-              {productionUsers.map((productionUser) => productionUser.user?.name).join(" - ")}
+              {productionUsers.map((productionUser) => productionUser.sys_user?.name).join(" - ")}
             </Badge>
           );
         },
@@ -305,28 +305,9 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
   }, [productions]);
 
   // Generar columnas dinámicamente
-  const columnsOrderDetails: ColumnDef<IOrderDetail>[] = useMemo(() => {
+  const columnsOrderDetails: ColumnDef<IProductionOrderDetail>[] = useMemo(() => {
     if (!orderDetails) return [];
     return [
-      {
-        accessorKey: "amount",
-        header: "Cant. Ordenada",
-        cell: (info) => info.getValue(),
-      },
-      {
-        accessorKey: "productionsGod",
-        header: "Cant. Buena",
-        cell: ({row}: {row: Row<IOrderDetail>}) =>
-          (row.original.productions as IProduction[]).filter((obj) => obj.type_quality === 1)
-            .length,
-      },
-      {
-        accessorKey: "productionsBad",
-        header: "Cant. Mala",
-        cell: ({row}: {row: Row<IOrderDetail>}) =>
-          (row.original.productions as IProduction[]).filter((obj) => obj.type_quality !== 1)
-            .length,
-      },
       {
         accessorKey: "product",
         header: "Producto",
@@ -336,6 +317,26 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
           </Badge>
         ),
       },
+      {
+        accessorKey: "amount",
+        header: "Cant. Ordenada",
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "productionsGod",
+        header: "Cant. Buena",
+        cell: ({row}: {row: Row<IProductionOrderDetail>}) =>
+          (row.original.productions as IProduction[]).filter((obj) => obj.type_quality === 1)
+            .length,
+      },
+      {
+        accessorKey: "productionsBad",
+        header: "Cant. Mala",
+        cell: ({row}: {row: Row<IProductionOrderDetail>}) =>
+          (row.original.productions as IProduction[]).filter((obj) => obj.type_quality !== 1)
+            .length,
+      },
+
       {
         accessorKey: "machine",
         header: "Maquina",
@@ -351,7 +352,7 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
         header: "Proceso",
         cell: (info) => (
           <Badge variant={"secondary"} className="text-muted-foreground">
-            {(info.getValue() as IProduct).model?.sector_process?.process?.name}
+            {(info.getValue() as IProduct).product_model?.sector_process?.process?.name}
           </Badge>
         ),
       },
@@ -361,16 +362,16 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
         header: "Sector",
         cell: (info) => (
           <Badge variant={"secondary"} className="text-muted-foreground">
-            {(info.getValue() as IProduct).model?.sector_process?.sector?.name}
+            {(info.getValue() as IProduct).product_model?.sector_process?.sector?.name}
           </Badge>
         ),
       },
       {
-        accessorKey: "order",
+        accessorKey: "production_order",
         header: "Fecha Límite",
         cell: (info) => (
           <Badge variant={"secondary"} className="text-muted-foreground">
-            {format((info.getValue() as IOrder).end_date as Date, "dd/MM/yyyy HH:mm")}
+            {format((info.getValue() as IProductionOrder).end_date as Date, "dd/MM/yyyy HH:mm")}
           </Badge>
         ),
       },
@@ -378,7 +379,7 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
         id: "actions",
         header: "",
         enableHiding: false,
-        cell: ({row}: {row: Row<IOrderDetail>}) => {
+        cell: ({row}: {row: Row<IProductionOrderDetail>}) => {
           return (
             <div className="flex gap-2 justify-end">
               <DropdownMenu>

@@ -31,7 +31,8 @@ export const AppSidebar: React.FC<Props> = ({className}) => {
 
   const [sectorProcesses, setSectorProcesses] = useState<ISectorProcess[] | null>(null);
 
-  const permisions = sesion?.user.permissions as IPermission[];
+  const permisions = sesion?.sys_user.permissions as IPermission[];
+
   useEffect(() => {
     const moduleSelected = typeModule.find(
       (mod) => mod.id === permisions[0].type_module
@@ -41,8 +42,8 @@ export const AppSidebar: React.FC<Props> = ({className}) => {
     const tempMenu: IMenuItem[] = moduleSelected.menu.map((men) => {
       const isActive = men.pages.some((page) =>
         permisions.some(
-          (per) =>
-            per.type_screen === page.id && per.id_sector_process === sectorProcess?.process?.id
+          (per: IPermission) =>
+            per.type_screen === page.id && per.id_sector_process === sectorProcess?.id
         )
       );
       return {...men, isActive}; // Devuelve un nuevo objeto con `isActive` actualizado

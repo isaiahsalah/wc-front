@@ -1,5 +1,5 @@
 import {apiClient} from "../axiosConfig";
-import {IOrderDetail, IOrder} from "@/utils/interfaces";
+import {IProductionOrderDetail, IProductionOrder} from "@/utils/interfaces";
 import {toast} from "sonner";
 
 export const getOrders = async ({
@@ -32,7 +32,7 @@ export const getOrderById = async (id: number) => {
   }
 };
 
-export const createOrder = async ({data}: {data: IOrder}) => {
+export const createOrder = async ({data}: {data: IProductionOrder}) => {
   toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.post("/pr/order/", data);
@@ -44,8 +44,8 @@ export const createOrder = async ({data}: {data: IOrder}) => {
   }
 };
 
-export const updateOrder = async ({order}: {order: IOrder}) => {
-  if (!order.order_details?.length || order.order_details?.length <= 0) {
+export const updateOrder = async ({order}: {order: IProductionOrder}) => {
+  if (!order.production_order_details?.length || order.production_order_details?.length <= 0) {
     return toast.warning("Selecciona al menos 1 producto");
   }
   if (order.init_date >= order.end_date) {
@@ -96,8 +96,8 @@ export const createOrderWithDetails = async ({
   order,
   orderDetails,
 }: {
-  order: IOrder;
-  orderDetails: IOrderDetail[];
+  order: IProductionOrder;
+  orderDetails: IProductionOrderDetail[];
 }) => {
   if (orderDetails.length <= 0) {
     return toast.warning("Selecciona al menos 1 producto");
@@ -117,8 +117,8 @@ export const createOrderWithDetails = async ({
   }
 };
 
-export const updateOrderWithDetails = async ({order}: {order: IOrder}) => {
-  if (!order.order_details?.length || order.order_details?.length <= 0) {
+export const updateOrderWithDetails = async ({order}: {order: IProductionOrder}) => {
+  if (!order.production_order_details?.length || order.production_order_details?.length <= 0) {
     return toast.warning("Selecciona al menos 1 producto");
   }
   if (order.init_date >= order.end_date) {

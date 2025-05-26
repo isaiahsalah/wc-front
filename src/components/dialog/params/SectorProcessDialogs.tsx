@@ -88,7 +88,7 @@ export const CreateSectorProcessDialog: React.FC<PropsCreate> = ({children, upda
 
       const processDataFilter = processData.filter(
         (process) =>
-          !sesion?.user.permissions?.some(
+          !sesion?.sys_user.permissions?.some(
             (perm: IPermission) => perm.sector_process?.id_process === process.id
           )
       );

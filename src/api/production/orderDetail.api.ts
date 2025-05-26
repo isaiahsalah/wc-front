@@ -1,5 +1,5 @@
 import {apiClient} from "../axiosConfig";
-import {IOrderDetail} from "@/utils/interfaces";
+import {IProductionOrderDetail} from "@/utils/interfaces";
 import {toast} from "sonner";
 
 export const getOrderDetails = async ({
@@ -38,7 +38,7 @@ export const getOrderDetailById = async (id: number) => {
   }
 };
 
-export const createOrderDetail = async ({data}: {data: IOrderDetail}) => {
+export const createOrderDetail = async ({data}: {data: IProductionOrderDetail}) => {
   toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.post("/pr/order_detail/", data);
@@ -50,7 +50,7 @@ export const createOrderDetail = async ({data}: {data: IOrderDetail}) => {
   }
 };
 
-export const updateOrderDetail = async ({data}: {data: IOrderDetail}) => {
+export const updateOrderDetail = async ({data}: {data: IProductionOrderDetail}) => {
   toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.put(`/pr/order_detail/${data.id}`, data);

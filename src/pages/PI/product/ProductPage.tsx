@@ -169,8 +169,8 @@ const ProductPage: React.FC<Props> = ({degree}) => {
       },
 
       {
-        accessorFn: (row) => row.model?.name.trim(),
-        accessorKey: "model",
+        accessorFn: (row) => row.product_model?.name.trim(),
+        accessorKey: "product_model",
         header: "Modelo",
         cell: (info) => (
           <Badge variant={"secondary"} className="text-muted-foreground">

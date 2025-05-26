@@ -4,13 +4,13 @@ import {toast} from "sonner";
 
 export const getSectorProcesses = async ({
   all,
-  id_process,
+  id_sector,
 }: {
   all?: boolean | null;
-  id_process?: number | null;
+  id_sector?: number | null;
 }) => {
   try {
-    const params = {all, id_process};
+    const params = {all, id_sector};
     const response = await apiClient.get("/pr/sector_process", {params}); // Cambia la URL según tu API
     return response.data; // Devuelve la lista de sectores
   } catch (error) {

@@ -25,7 +25,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
-import {IGroup, GroupSchema} from "@/utils/interfaces";
+import {IWorkGroup, WorkGroupSchema} from "@/utils/interfaces";
 import {
   createGroup,
   deleteGroup,
@@ -42,15 +42,15 @@ interface PropsCreate {
 export const CreateGroupDialog: React.FC<PropsCreate> = ({children, updateView}) => {
   const [loadingSave, setLoadingSave] = useState(false); // Estado de carga
 
-  const form = useForm<IGroup>({
-    resolver: zodResolver(GroupSchema),
+  const form = useForm<IWorkGroup>({
+    resolver: zodResolver(WorkGroupSchema),
     defaultValues: {
       name: "",
       description: "",
     },
   });
 
-  function onSubmit(values: IGroup) {
+  function onSubmit(values: IWorkGroup) {
     setLoadingSave(true); // Inicia la carga
     createGroup({data: values})
       .then((createdGroup) => {
@@ -140,8 +140,8 @@ export const EditGroupDialog: React.FC<PropsEdit> = ({children, id, updateView, 
   const [loadingDelete, setLoadingDelete] = useState(false); // Estado de carga
   const [loadingInit, setLoadingInit] = useState(false); // Estado de carga
 
-  const form = useForm<IGroup>({
-    resolver: zodResolver(GroupSchema),
+  const form = useForm<IWorkGroup>({
+    resolver: zodResolver(WorkGroupSchema),
     defaultValues: {
       id: 0,
       name: "",
@@ -149,7 +149,7 @@ export const EditGroupDialog: React.FC<PropsEdit> = ({children, id, updateView, 
     },
   });
 
-  function onSubmit(values: IGroup) {
+  function onSubmit(values: IWorkGroup) {
     setLoadingSave(true); // Inicia la carga
     updateGroup({data: values})
       .then((updatedGroup) => {

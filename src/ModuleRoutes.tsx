@@ -9,8 +9,8 @@ import SelectorTabPage from "./components/SelectorTabPage";
 const ModuleRoutes = () => {
   const {sesion} = useContext(SesionContext);
 
-  const moduleId = (sesion?.user.permissions as IPermission[])[0].type_module;
-  const permissions = sesion?.user.permissions as IPermission[];
+  const moduleId = (sesion?.sys_user.permissions as IPermission[])[0].type_module;
+  const permissions = sesion?.sys_user.permissions as IPermission[];
 
   return (
     <Routes>
@@ -22,11 +22,11 @@ const ModuleRoutes = () => {
           );
           const tabData: IPageItem[] = menu.pages;
 
-          if (existPermission)
+          if (existPermission) {
             return (
               <Route key={i} path={menu.url} element={<SelectorTabPage tabData={tabData} />} />
             );
-          else return null;
+          } else return null;
         })}
     </Routes>
   );

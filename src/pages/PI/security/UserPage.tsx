@@ -1,4 +1,4 @@
-import {IUser} from "@/utils/interfaces";
+import {ISystemUser} from "@/utils/interfaces";
 import {useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
 import {Button} from "@/components/ui/button";
@@ -44,7 +44,7 @@ interface Props {
   degree: number;
 }
 const UserPage: React.FC<Props> = ({degree}) => {
-  const [users, setUsers] = useState<IUser[] | null>(null);
+  const [users, setUsers] = useState<ISystemUser[] | null>(null);
 
   useEffect(() => {
     updateView();
@@ -60,7 +60,7 @@ const UserPage: React.FC<Props> = ({degree}) => {
   };
 
   // Generar columnas dinámicamente
-  const columnsUser: ColumnDef<IUser>[] = useMemo(() => {
+  const columnsUser: ColumnDef<ISystemUser>[] = useMemo(() => {
     if (!users) return [];
     return [
       {
@@ -100,8 +100,8 @@ const UserPage: React.FC<Props> = ({degree}) => {
         cell: (info) => info.getValue(),
       },
       {
-        accessorFn: (row) => `${row.group?.name}`.trim(),
-        accessorKey: "group",
+        accessorFn: (row) => `${row.work_group?.name}`.trim(),
+        accessorKey: "work_group",
         header: "Grupo",
         cell: (info) => {
           return (
@@ -146,7 +146,7 @@ const UserPage: React.FC<Props> = ({degree}) => {
         id: "actions",
         header: "",
         enableHiding: false,
-        cell: ({row}: {row: Row<IUser>}) => {
+        cell: ({row}: {row: Row<ISystemUser>}) => {
           return (
             <div className="flex gap-2 justify-end">
               <DropdownMenu>

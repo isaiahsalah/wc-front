@@ -2,7 +2,7 @@ import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 
 import {useForm} from "react-hook-form";
-import {IModel, ModelSchema} from "@/utils/interfaces";
+import {IProductModel, ProductModelSchema} from "@/utils/interfaces";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 import {
@@ -49,15 +49,15 @@ export const CreateModelDialog: React.FC<PropsCreate> = ({children, updateView})
     form.reset({...form.getValues(), id_sector_process: sectorProcess?.id as number});
   }, [sectorProcess]);
 
-  const form = useForm<IModel>({
-    resolver: zodResolver(ModelSchema),
+  const form = useForm<IProductModel>({
+    resolver: zodResolver(ProductModelSchema),
     defaultValues: {
       name: "",
       id_sector_process: sectorProcess?.id as number,
     },
   });
 
-  function onSubmit(values: IModel) {
+  function onSubmit(values: IProductModel) {
     setLoadingSave(true);
     createModel({data: values})
       .then((updatedModel) => {
@@ -147,11 +147,11 @@ export const EditModelDialog: React.FC<PropsEdit> = ({children, id, updateView, 
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
 
-  const form = useForm<IModel>({
-    resolver: zodResolver(ModelSchema),
+  const form = useForm<IProductModel>({
+    resolver: zodResolver(ProductModelSchema),
   });
 
-  function onSubmit(values: IModel) {
+  function onSubmit(values: IProductModel) {
     setLoadingSave(true);
     updateModel({data: values})
       .then((updatedModel) => {
@@ -170,7 +170,7 @@ export const EditModelDialog: React.FC<PropsEdit> = ({children, id, updateView, 
   const fetchModel = async () => {
     setLoadingInit(true);
     try {
-      const modelData: IModel = await getModelById(id);
+      const modelData: IProductModel = await getModelById(id);
 
       form.reset({
         id: modelData.id,

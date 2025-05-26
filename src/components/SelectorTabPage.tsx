@@ -21,7 +21,7 @@ const SelectorTabPage: React.FC<Props> = ({tabData}) => {
   const {sesion} = useContext(SesionContext);
   const {sectorProcess} = useContext(SectorProcessContext);
 
-  const permissions = (sesion?.user.permissions as IPermission[]).filter(
+  const permissions = (sesion?.sys_user.permissions as IPermission[]).filter(
     (per) => per.sector_process?.id_process === (sectorProcess?.process?.id as number)
   );
 

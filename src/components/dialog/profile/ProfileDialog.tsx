@@ -25,7 +25,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
-import {IUser, UserSchema} from "@/utils/interfaces";
+import {ISystemUser, SystemUserSchema} from "@/utils/interfaces";
 import {SesionContext} from "@/providers/sesionProvider";
 import {updatePassword, updateProfile} from "@/api/profile/profile.api";
 import {DatePicker} from "@/components/date-picker";
@@ -44,15 +44,15 @@ export const EditProfileDialog: React.FC<PropsEditProfile> = ({children, updateV
   const [loadingSave, setLoadingSave] = useState(false); // Estado de carga
   const [loadingInit, setLoadingInit] = useState(false); // Estado de carga
 
-  const form = useForm<IUser>({
-    resolver: zodResolver(UserSchema),
+  const form = useForm<ISystemUser>({
+    resolver: zodResolver(SystemUserSchema),
   });
 
-  function onSubmit(values: IUser) {
+  function onSubmit(values: ISystemUser) {
     setLoadingSave(true); // Inicia la carga
     updateProfile({data: values})
       .then((updatedProfile) => {
-        setSesion({user: updatedProfile, token: sesion?.token as string});
+        setSesion({sys_user: updatedProfile, token: sesion?.token as string});
         updateView();
       })
       .catch((error) => {
@@ -67,14 +67,14 @@ export const EditProfileDialog: React.FC<PropsEditProfile> = ({children, updateV
     setLoadingInit(true);
     try {
       form.reset({
-        id: sesion?.user.id,
-        name: sesion?.user.name,
-        lastname: sesion?.user.lastname,
-        user: sesion?.user.user,
+        id: sesion?.sys_user.id,
+        name: sesion?.sys_user.name,
+        lastname: sesion?.sys_user.lastname,
+        user: sesion?.sys_user.user,
         pass: "",
-        birthday: new Date(sesion?.user.birthday as Date),
-        id_group: sesion?.user.id_group,
-        phone: sesion?.user.phone,
+        birthday: new Date(sesion?.sys_user.birthday as Date),
+        id_work_group: sesion?.sys_user.id_work_group,
+        phone: sesion?.sys_user.phone,
       });
     } catch (error) {
       console.error("Error al cargar los datos:", error);
@@ -215,7 +215,11 @@ export const EditPassDialog: React.FC<PropsEditPass> = ({children, updateView}) 
       return toast.warning("La nueva contraseña debe ser idéntida en ambos campos");
 
     setLoadingSave(true); // Inicia la carga
-    updatePassword({id: sesion?.user.id as number, newPassword: newPass, oldPassword: oldPass})
+    updatePassword({
+      id: sesion?.sys_user.id as number,
+      newPassword: newPass,
+      oldPassword: oldPass,
+    })
       .then(() => {
         //setSesion({user: updatedProfile, token: sesion?.token as string});
         updateView();

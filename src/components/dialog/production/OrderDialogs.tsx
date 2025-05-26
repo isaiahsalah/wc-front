@@ -3,13 +3,13 @@ import {Input} from "@/components/ui/input";
 
 import {useForm} from "react-hook-form";
 import {
-  IGroup,
+  IWorkGroup,
   IMachine,
-  IOrder,
-  IOrderDetail,
+  IProductionOrder,
+  IProductionOrderDetail,
   IProduct,
   IProduction,
-  OrderSchema,
+  ProductionOrderSchema,
 } from "@/utils/interfaces";
 import {zodResolver} from "@hookform/resolvers/zod";
 
@@ -69,12 +69,12 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
 
   const [products, setProducts] = useState<IProduct[]>([]);
   const [machines, setMachines] = useState<IMachine[]>([]);
-  const [groups, setGroups] = useState<IGroup[]>([]);
+  const [groups, setGroups] = useState<IWorkGroup[]>([]);
 
   const [productSelected, setProductSelected] = useState<IProduct>();
   const [machineSelected, setMachineSelected] = useState<IMachine>();
 
-  const [orderDetailsSelected, setOrderDetailsSelected] = useState<IOrderDetail[]>([]);
+  const [orderDetailsSelected, setOrderDetailsSelected] = useState<IProductionOrderDetail[]>([]);
 
   const [amount, setAmount] = useState<number>();
 
@@ -91,14 +91,14 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
     fetchData();
   }, [sectorProcess]);
 
-  const form = useForm<IOrder>({
-    resolver: zodResolver(OrderSchema),
+  const form = useForm<IProductionOrder>({
+    resolver: zodResolver(ProductionOrderSchema),
     defaultValues: {
-      id_user: sesion?.user.id as number,
+      id_sys_user: sesion?.sys_user.id as number,
     },
   });
 
-  function onSubmit(values: IOrder) {
+  function onSubmit(values: IProductionOrder) {
     setLoadingSave(true);
 
     createOrderWithDetails({order: values, orderDetails: orderDetailsSelected})
@@ -143,7 +143,7 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
           amount: amount,
           id_product: productSelected.id,
           product: productSelected,
-          id_order: 0,
+          id_production_order: 0,
           id_machine: machineSelected.id,
           machine: machineSelected,
         },
@@ -158,7 +158,7 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
   };
 
   // Generar columnas dinámicamente
-  const columnsOrderDetailsSelected: ColumnDef<IOrderDetail>[] = useMemo(() => {
+  const columnsOrderDetailsSelected: ColumnDef<IProductionOrderDetail>[] = useMemo(() => {
     if (orderDetailsSelected.length === 0) return [];
     return [
       {
@@ -180,7 +180,7 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
         id: "actions",
         header: "",
         enableHiding: false,
-        cell: ({row}: {row: Row<IOrderDetail>}) => {
+        cell: ({row}: {row: Row<IProductionOrderDetail>}) => {
           return (
             <div className="flex gap-2  justify-end  ">
               <Button
@@ -216,7 +216,7 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
             <div className=" grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm">
               <FormField
                 control={form.control}
-                name="id_group"
+                name="id_work_group"
                 render={({field}) => (
                   <FormItem className="col-span-3">
                     <FormDescription>Grupo de trabajo</FormDescription>
@@ -228,7 +228,7 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
                           <SelectValue placeholder="Seleccionar Grupo" />
                         </SelectTrigger>
                         <SelectContent>
-                          {groups?.map((group: IGroup) => (
+                          {groups?.map((group: IWorkGroup) => (
                             <SelectItem key={group.id} value={(group.id ?? "").toString()}>
                               {group.name}
                             </SelectItem>
@@ -440,15 +440,15 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
   const [amount, setAmount] = useState<number>();
   const [products, setProducts] = useState<IProduct[]>([]);
   const [machines, setMachines] = useState<IMachine[]>([]);
-  const [groups, setGroups] = useState<IGroup[]>([]);
+  const [groups, setGroups] = useState<IWorkGroup[]>([]);
 
   const {sesion} = useContext(SesionContext);
 
   const {sectorProcess} = useContext(SectorProcessContext);
-  const form = useForm<IOrder>({
-    resolver: zodResolver(OrderSchema),
+  const form = useForm<IProductionOrder>({
+    resolver: zodResolver(ProductionOrderSchema),
   });
-  const orderDetails = form.watch("order_details");
+  const orderDetails = form.watch("production_order_details");
 
   useEffect(() => {
     if (sesion) {
@@ -460,9 +460,8 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
     fetchOrder();
   }, [sectorProcess]);
 
-  function onSubmit(values: IOrder) {
+  function onSubmit(values: IProductionOrder) {
     setLoadingSave(true);
-    //values.order_details = orderDetailsSelected;
     updateOrder({order: values})
       .then((updatedOrder) => {
         console.log("Orden actualizada:", updatedOrder);
@@ -480,17 +479,17 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
   const fetchOrder = async () => {
     setLoadingInit(true);
     try {
-      const orderData: IOrder = await getOrderById(id);
+      const orderData: IProductionOrder = await getOrderById(id);
       console.log("Órdenes:", orderData);
       form.reset({
         id: orderData.id,
         init_date: new Date(orderData.init_date),
         end_date: new Date(orderData.end_date),
-        id_user: orderData.id_user,
-        id_group: orderData.id_group,
+        id_sys_user: orderData.id_sys_user,
+        id_work_group: orderData.id_work_group,
         type_turn: orderData.type_turn,
 
-        order_details: orderData.order_details,
+        production_order_details: orderData.production_order_details,
       });
 
       const ProductsData = await getProducts({
@@ -527,18 +526,18 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
 
   const addProductSelected = () => {
     if (productSelected && productSelected.id && amount && amount > 0) {
-      const orderDetailTemp = form.getValues().order_details;
+      const orderDetailTemp = form.getValues().production_order_details;
 
       form.reset({
         ...form.getValues(),
-        order_details: [
+        production_order_details: [
           {
             amount: amount,
             id_product: productSelected.id,
             product: productSelected,
             id_machine: machineSelected?.id,
             machine: machineSelected,
-            id_order: 0,
+            id_production_order: 0,
           },
           ...(orderDetailTemp ?? []),
         ],
@@ -551,12 +550,12 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
     //setOrderDetailsSelected(orderDetailsSelected?.filter((_item, idx) => idx !== index));
     form.reset({
       ...form.getValues(),
-      order_details: orderDetails?.filter((_item, idx) => idx !== index),
+      production_order_details: orderDetails?.filter((_item, idx) => idx !== index),
     });
   };
 
   // Generar columnas dinámicamente
-  const columnsOrderDetailsSelected: ColumnDef<IOrderDetail>[] = useMemo(() => {
+  const columnsOrderDetailsSelected: ColumnDef<IProductionOrderDetail>[] = useMemo(() => {
     if (!orderDetails) return [];
     return [
       {
@@ -582,7 +581,7 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
       {
         accessorKey: "productionsGod",
         header: "Cant. Buena",
-        cell: ({row}: {row: Row<IOrderDetail>}) =>
+        cell: ({row}: {row: Row<IProductionOrderDetail>}) =>
           row.original.productions
             ? (row.original.productions as IProduction[]).filter((obj) => obj.type_quality === 1)
                 .length
@@ -591,7 +590,7 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
       {
         accessorKey: "productionsBad",
         header: "Cant. Mala",
-        cell: ({row}: {row: Row<IOrderDetail>}) =>
+        cell: ({row}: {row: Row<IProductionOrderDetail>}) =>
           row.original.productions
             ? (row.original.productions as IProduction[]).filter((obj) => obj.type_quality !== 1)
                 .length
@@ -601,7 +600,7 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
         id: "actions",
         header: "",
         enableHiding: false,
-        cell: ({row}: {row: Row<IOrderDetail>}) => {
+        cell: ({row}: {row: Row<IProductionOrderDetail>}) => {
           return (
             <div className="flex gap-2  justify-end  ">
               <Button
@@ -640,7 +639,7 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
             <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
               <FormField
                 control={form.control}
-                name="id_group"
+                name="id_work_group"
                 render={({field}) => (
                   <FormItem className="col-span-3">
                     <FormDescription>Grupo de trabajo</FormDescription>
@@ -653,7 +652,7 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                           <SelectValue placeholder="Seleccionar Grupo" />
                         </SelectTrigger>
                         <SelectContent>
-                          {groups?.map((group: IGroup) => (
+                          {groups?.map((group: IWorkGroup) => (
                             <SelectItem key={group.id} value={(group.id ?? "").toString()}>
                               {group.name}
                             </SelectItem>

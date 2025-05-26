@@ -2,7 +2,7 @@ import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 
 import {useForm} from "react-hook-form";
-import {IColor, IModel, IProduct, ProductSchema, IUnity} from "@/utils/interfaces";
+import {IColor, IProductModel, IProduct, ProductSchema, IUnity} from "@/utils/interfaces";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 import {
@@ -56,7 +56,7 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
   const [colors, setColors] = useState<IColor[]>();
-  const [models, setModels] = useState<IModel[]>();
+  const [models, setModels] = useState<IProductModel[]>();
   const [unities, setUnities] = useState<IUnity[]>();
   const [open, setOpen] = useState(false);
   const {sectorProcess} = useContext(SectorProcessContext);
@@ -181,7 +181,7 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
 
                 <FormField
                   control={form.control}
-                  name="id_model"
+                  name="id_product_model"
                   render={({field}) => (
                     <FormItem className="col-span-3 ">
                       <FormDescription>Modelo</FormDescription>
@@ -193,7 +193,7 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
                             <SelectValue placeholder="Seleccionar Modelo" />
                           </SelectTrigger>
                           <SelectContent>
-                            {models?.map((product: IModel) => (
+                            {models?.map((product: IProductModel) => (
                               <SelectItem key={product.id} value={(product.id ?? "").toString()}>
                                 {product.name}
                               </SelectItem>
@@ -383,7 +383,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
   const [colors, setColors] = useState<IColor[]>();
-  const [models, setModels] = useState<IModel[]>();
+  const [models, setModels] = useState<IProductModel[]>();
   const [unities, setUnities] = useState<IUnity[]>();
 
   const {sectorProcess} = useContext(SectorProcessContext);
@@ -428,7 +428,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
         weight: parseFloat(productData.weight.toString()),
         micronage: productData.micronage ? parseFloat(productData.micronage.toString()) : undefined,
         id_color: productData.id_color,
-        id_model: productData.id_model,
+        id_product_model: productData.id_product_model,
         id_unit: productData.id_unit,
         id_equivalent_unit: productData.id_equivalent_unit,
         type_product: productData.type_product,
@@ -549,7 +549,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
 
                 <FormField
                   control={form.control}
-                  name="id_model"
+                  name="id_product_model"
                   render={({field}) => (
                     <FormItem className="col-span-3 ">
                       <FormDescription>Modelo</FormDescription>
@@ -562,7 +562,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                             <SelectValue placeholder="Seleccionar producto" />
                           </SelectTrigger>
                           <SelectContent>
-                            {models?.map((product: IModel) => (
+                            {models?.map((product: IProductModel) => (
                               <SelectItem key={product.id} value={(product.id ?? "").toString()}>
                                 {product.name}
                               </SelectItem>

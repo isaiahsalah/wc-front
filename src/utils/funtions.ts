@@ -46,6 +46,7 @@ export const checkToken = async ({
         // Almacena el token en localStorage
         window.localStorage.setItem("token-app", JSON.stringify(response.token));
         // Actualiza la sesión en el estado
+        console.log("Permisos del usuario:", response);
 
         setSesion(response as ISesion);
         return true;
@@ -61,6 +62,6 @@ export const checkToken = async ({
 };
 
 export const getModuleBySesion = ({sesion}: {sesion: ISesion}) => {
-  const moduleId = (sesion?.user.permissions as IPermission[])[0].type_module;
+  const moduleId = (sesion?.sys_user.permissions as IPermission[])[0].type_module;
   return typeModule.find((module) => module.id === moduleId);
 };

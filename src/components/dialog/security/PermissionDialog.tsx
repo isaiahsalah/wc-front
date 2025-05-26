@@ -13,7 +13,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
-import {IPermission, IUser} from "@/utils/interfaces";
+import {IPermission, ISystemUser} from "@/utils/interfaces";
 import {getUserById, updateUserPermissions} from "@/api/security/user.api";
 import {
   Select,
@@ -61,11 +61,6 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
     }
   }, [sesion]);
 
-  // const ()=useContext(mod)
-
-  //const moduleId = (sesion?.user.permissions as IPermission[])[0].type_module;
-  //const permissions = sesion?.user.permissions as IPermission[];
-
   function onSubmit() {
     if (!permissions) return toast.warning("No hay permisos para guardar");
     if (!sectorProcess?.id) return toast.warning("No hay Sector ni Proceso");
@@ -79,7 +74,7 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
     })
       .then((updatedUser) => {
         console.log("Usuario actualizado:", updatedUser);
-        if (sesion?.user.id === id) checkToken({setSesion});
+        if (sesion?.sys_user.id === id) checkToken({setSesion});
         updateView();
       })
       .catch((error) => {
@@ -93,7 +88,7 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
   const fetchUser = async () => {
     setLoadingInit(true);
     try {
-      const userData: IUser = await getUserById({
+      const userData: ISystemUser = await getUserById({
         id: id,
         id_sector_process: sectorProcess?.id,
         type_module: module?.id,
@@ -160,7 +155,7 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
                                 if (!found) {
                                   updatedArray.push({
                                     id_sector_process: sectorProcess?.id as number,
-                                    id_user: id as number,
+                                    id_sys_user: id as number,
                                     type_screen: page.id,
                                     type_degree: Number(value),
                                     type_module: module?.id as number,

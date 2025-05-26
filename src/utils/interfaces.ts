@@ -1,7 +1,7 @@
 import {z} from "zod";
 
 export interface ISesion {
-  user: IUser;
+  sys_user: ISystemUser;
   token: string;
 }
 
@@ -94,8 +94,8 @@ export const SectorProcessSchema = z.object({
   deletedAt: z.date().nullable().optional(),
 });
 
-// Tabla: Group
-export const GroupSchema = z.object({
+// Tabla: WorkGroupSchema
+export const WorkGroupSchema = z.object({
   id: z.number().nullable().optional(),
   name: z.string(),
   description: z.string(),
@@ -105,7 +105,7 @@ export const GroupSchema = z.object({
 });
 
 // Tabla: User
-export const UserSchema = z.object({
+export const SystemUserSchema = z.object({
   id: z.number().nullable().optional(),
   name: z.string(),
   lastname: z.string(),
@@ -113,8 +113,8 @@ export const UserSchema = z.object({
   phone: z.string(),
   user: z.string(),
   pass: z.string(),
-  id_group: z.number(),
-  group: GroupSchema.nullable().optional(),
+  id_work_group: z.number(),
+  work_group: WorkGroupSchema.nullable().optional(),
   permissions: z.array(z.any()).nullable().optional(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
@@ -132,7 +132,7 @@ export const InventorySchema = z.object({
 });
 
 // Tabla: Model
-export const ModelSchema = z.object({
+export const ProductModelSchema = z.object({
   id: z.number().nullable().optional(),
   name: z.string(),
   description: z.string(),
@@ -159,8 +159,8 @@ export const ProductSchema = z.object({
 
   id_color: z.number().nullable().optional(),
   color: ColorSchema.nullable().optional(),
-  id_model: z.number(),
-  model: ModelSchema.nullable().optional(),
+  id_product_model: z.number(),
+  product_model: ProductModelSchema.nullable().optional(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
@@ -206,30 +206,30 @@ export const MachineSchema = z.object({
 });
 
 // Tabla: Order
-export const OrderSchema = z.object({
+export const ProductionOrderSchema = z.object({
   id: z.number().nullable().optional(),
   init_date: z.date(),
   end_date: z.date(),
   type_turn: z.number(),
-  id_group: z.number(),
-  group: GroupSchema.nullable().optional(),
-  id_user: z.number(),
-  user: UserSchema.nullable().optional(),
-  order_details: z.array(z.any()).nullable().optional(),
+  id_work_group: z.number(),
+  work_group: WorkGroupSchema.nullable().optional(),
+  id_sys_user: z.number(),
+  sys_user: SystemUserSchema.nullable().optional(),
+  production_order_details: z.array(z.any()).nullable().optional(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
 });
 
 // Tabla: OrderDetail
-export const OrderDetailSchema = z.object({
+export const ProductionOrderDetailSchema = z.object({
   id: z.number().nullable().optional(),
   amount: z.number(),
   id_product: z.number(),
   product: ProductSchema.nullable().optional(),
   productions: z.array(z.any()).nullable().optional(),
-  id_order: z.number(),
-  order: OrderSchema.nullable().optional(),
+  id_production_order: z.number(),
+  production_order: ProductionOrderSchema.nullable().optional(),
   id_machine: z.number(),
   machine: MachineSchema.nullable().optional(),
 
@@ -241,8 +241,8 @@ export const OrderDetailSchema = z.object({
 // Tabla: Permission
 export const PermissionSchema = z.object({
   id: z.number().nullable().optional(),
-  id_user: z.number(),
-  user: UserSchema.nullable().optional(),
+  id_sys_user: z.number(),
+  sys_user: SystemUserSchema.nullable().optional(),
   id_sector_process: z.number(),
   sector_process: SectorProcessSchema.nullable().optional(),
   type_degree: z.number(),
@@ -268,12 +268,12 @@ export const ProductionSchema = z.object({
   id_unit: z.number(),
   id_equivalent_unit: z.number(),
   id_machine: z.number(),
-  id_order_detail: z.number(),
+  id_production_order_detail: z.number(),
 
   production_unit: UnitySchema.nullable().optional(),
   production_equivalent_unit: UnitySchema.nullable().optional(),
   machine: MachineSchema.nullable().optional(),
-  order_detail: OrderDetailSchema.nullable().optional(),
+  production_order_detail: ProductionOrderDetailSchema.nullable().optional(),
 
   production_users: z.array(z.any()).nullable().optional(),
 
@@ -286,9 +286,9 @@ export const ProductionSchema = z.object({
 export const ProductionUserSchema = z.object({
   id: z.number().nullable().optional(),
 
-  id_user: z.number().nullable().optional(),
+  id_sys_user: z.number().nullable().optional(),
   id_production: z.number().nullable().optional(),
-  user: UserSchema.nullable().optional(),
+  sys_user: SystemUserSchema.nullable().optional(),
   production: ProductSchema.nullable().optional(),
 
   createdAt: z.date().nullable().optional(),
@@ -317,14 +317,14 @@ export const WorkSchema = z.object({
   type_work: z.number(),
   id_production: z.number(),
   production: ProductionSchema.nullable().optional(),
-  id_user: z.number(),
-  user: UserSchema.nullable().optional(),
+  id_sys_user: z.number(),
+  sys_user: SystemUserSchema.nullable().optional(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
 });
 
-export type IGroup = z.infer<typeof GroupSchema>;
+export type IWorkGroup = z.infer<typeof WorkGroupSchema>;
 export type IProductionUser = z.infer<typeof ProductionUserSchema>;
 
 export type IColor = z.infer<typeof ColorSchema>;
@@ -332,9 +332,9 @@ export type IFormulaDetail = z.infer<typeof FormulaDetailSchema>;
 export type IFormula = z.infer<typeof FormulaSchema>;
 export type IInventory = z.infer<typeof InventorySchema>;
 export type IMachine = z.infer<typeof MachineSchema>;
-export type IModel = z.infer<typeof ModelSchema>;
-export type IOrderDetail = z.infer<typeof OrderDetailSchema>;
-export type IOrder = z.infer<typeof OrderSchema>;
+export type IProductModel = z.infer<typeof ProductModelSchema>;
+export type IProductionOrderDetail = z.infer<typeof ProductionOrderDetailSchema>;
+export type IProductionOrder = z.infer<typeof ProductionOrderSchema>;
 export type IPermission = z.infer<typeof PermissionSchema>;
 export type IProcess = z.infer<typeof ProcessSchema>;
 export type IProduct = z.infer<typeof ProductSchema>;
@@ -344,20 +344,20 @@ export type IProduction = z.infer<typeof ProductionSchema>;
 export type ISector = z.infer<typeof SectorSchema>;
 
 export type IUnity = z.infer<typeof UnitySchema>;
-export type IUser = z.infer<typeof UserSchema>;
+export type ISystemUser = z.infer<typeof SystemUserSchema>;
 export type IWork = z.infer<typeof WorkSchema>;
 export type ISectorProcess = z.infer<typeof SectorProcessSchema>;
 
 export type IGeneral =
-  | IGroup
+  | IWorkGroup
   | IFormula
   | IColor
   | IFormulaDetail
   | IInventory
   | IMachine
-  | IModel
-  | IOrderDetail
-  | IOrder
+  | IProductModel
+  | IProductionOrderDetail
+  | IProductionOrder
   | IPermission
   | IProcess
   | IProduct
@@ -365,7 +365,7 @@ export type IGeneral =
   | IProduction
   | ISector
   | IUnity
-  | IUser
+  | ISystemUser
   | IWork
   | ISectorProcess
   | IProductionUser;

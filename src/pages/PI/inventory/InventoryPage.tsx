@@ -1,4 +1,4 @@
-import {IOrderDetail, IProduction, IMachine, IProductionUser} from "@/utils/interfaces";
+import {IProductionOrderDetail, IProduction, IMachine, IProductionUser} from "@/utils/interfaces";
 import {ColumnDef, Row} from "@tanstack/react-table";
 import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
@@ -93,9 +93,9 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
         cell: (info) => info.getValue(),
       },
       {
-        accessorKey: "order_detail",
+        accessorKey: "production_order_detail",
         header: "Producto",
-        cell: (info) => (info.getValue() as IOrderDetail).product?.name,
+        cell: (info) => (info.getValue() as IProductionOrderDetail).product?.name,
       },
       {
         accessorKey: "date",
@@ -189,7 +189,7 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
           const productionUsers = info.getValue() as IProductionUser[];
           return (
             <Badge variant={"secondary"} className="text-muted-foreground">
-              {productionUsers.map((productionUser) => productionUser.user?.name).join(" - ")}
+              {productionUsers.map((productionUser) => productionUser.sys_user?.name).join(" - ")}
             </Badge>
           );
         },

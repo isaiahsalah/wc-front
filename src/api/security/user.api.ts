@@ -1,5 +1,5 @@
 import {apiClient} from "../axiosConfig";
-import {IPermission, IUser} from "@/utils/interfaces"; // Asegúrate de tener una interfaz IUser definida
+import {IPermission, ISystemUser} from "@/utils/interfaces"; // Asegúrate de tener una interfaz IUser definida
 import {toast} from "sonner";
 
 // Obtener usuarios
@@ -46,7 +46,7 @@ export const getUserById = async ({
 };
 
 // Crear usuario
-export const createUser = async ({data}: {data: IUser}) => {
+export const createUser = async ({data}: {data: ISystemUser}) => {
   toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.post("/pr/user/", data);
@@ -59,7 +59,7 @@ export const createUser = async ({data}: {data: IUser}) => {
 };
 
 // Actualizar usuario
-export const updateUser = async ({data}: {data: IUser}) => {
+export const updateUser = async ({data}: {data: ISystemUser}) => {
   toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.put(`/pr/user/${data.id}`, data);

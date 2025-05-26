@@ -25,7 +25,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import LoadingCircle from "@/components/LoadingCircle";
-import {IGroup, IUser, UserSchema} from "@/utils/interfaces";
+import {IWorkGroup, ISystemUser, SystemUserSchema} from "@/utils/interfaces";
 import {
   createUser,
   deleteUser,
@@ -51,13 +51,13 @@ interface PropsCreate {
 export const CreateUserDialog: React.FC<PropsCreate> = ({children, updateView}) => {
   const [loadingSave, setLoadingSave] = useState(false); // Estado de carga
   const [loadingInit, setLoadingInit] = useState(false);
-  const [groups, setGroups] = useState<IGroup[]>();
+  const [groups, setGroups] = useState<IWorkGroup[]>();
 
-  const form = useForm<IUser>({
-    resolver: zodResolver(UserSchema),
+  const form = useForm<ISystemUser>({
+    resolver: zodResolver(SystemUserSchema),
   });
 
-  function onSubmit(values: IUser) {
+  function onSubmit(values: ISystemUser) {
     setLoadingSave(true); // Inicia la carga
     createUser({data: values})
       .then((updatedUser) => {
@@ -201,7 +201,7 @@ export const CreateUserDialog: React.FC<PropsCreate> = ({children, updateView}) 
                 />
                 <FormField
                   control={form.control}
-                  name="id_group"
+                  name="id_work_group"
                   render={({field}) => (
                     <FormItem className="col-span-6">
                       <FormDescription>Grupo</FormDescription>
@@ -213,7 +213,7 @@ export const CreateUserDialog: React.FC<PropsCreate> = ({children, updateView}) 
                             <SelectValue placeholder="Seleccionar Tipo" />
                           </SelectTrigger>
                           <SelectContent>
-                            {groups?.map((group: IGroup) => (
+                            {groups?.map((group: IWorkGroup) => (
                               <SelectItem key={group.id} value={(group.id ?? "").toString()}>
                                 {group.name}
                               </SelectItem>
@@ -259,13 +259,13 @@ export const EditUserDialog: React.FC<PropsEdit> = ({children, id, updateView, o
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
-  const [groups, setGroups] = useState<IGroup[]>();
+  const [groups, setGroups] = useState<IWorkGroup[]>();
 
-  const form = useForm<IUser>({
-    resolver: zodResolver(UserSchema),
+  const form = useForm<ISystemUser>({
+    resolver: zodResolver(SystemUserSchema),
   });
 
-  function onSubmit(values: IUser) {
+  function onSubmit(values: ISystemUser) {
     setLoadingSave(true);
     updateUser({data: values})
       .then((updatedUser) => {
@@ -421,7 +421,7 @@ export const EditUserDialog: React.FC<PropsEdit> = ({children, id, updateView, o
 
                 <FormField
                   control={form.control}
-                  name="id_group"
+                  name="id_work_group"
                   render={({field}) => (
                     <FormItem className="col-span-3">
                       <FormDescription>Grupo</FormDescription>
@@ -434,7 +434,7 @@ export const EditUserDialog: React.FC<PropsEdit> = ({children, id, updateView, o
                             <SelectValue placeholder="Seleccionar Tipo" />
                           </SelectTrigger>
                           <SelectContent>
-                            {groups?.map((group: IGroup) => (
+                            {groups?.map((group: IWorkGroup) => (
                               <SelectItem key={group.id} value={(group.id ?? "").toString()}>
                                 {group.name}
                               </SelectItem>

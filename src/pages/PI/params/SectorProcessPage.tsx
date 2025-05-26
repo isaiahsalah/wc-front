@@ -50,8 +50,9 @@ const SectorProcessPage: React.FC<Props> = ({degree}) => {
     try {
       const sectorProcessesData = await getSectorProcesses({
         all: true,
-        id_process: sectorProcess?.process?.id,
+        id_sector: sectorProcess?.sector?.id,
       });
+
       setSectorProcesses(sectorProcessesData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);

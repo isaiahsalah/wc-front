@@ -1,4 +1,4 @@
-import {IGroup} from "@/utils/interfaces";
+import {IWorkGroup} from "@/utils/interfaces";
 import {useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
 import {Button} from "@/components/ui/button";
@@ -44,7 +44,7 @@ interface Props {
 }
 
 const GroupPage: React.FC<Props> = ({degree}) => {
-  const [groups, setGroups] = useState<IGroup[] | null>(null);
+  const [groups, setGroups] = useState<IWorkGroup[] | null>(null);
 
   useEffect(() => {
     updateView();
@@ -60,7 +60,7 @@ const GroupPage: React.FC<Props> = ({degree}) => {
   };
 
   // Generar columnas dinámicamente
-  const columnsGroup: ColumnDef<IGroup>[] = useMemo(() => {
+  const columnsGroup: ColumnDef<IWorkGroup>[] = useMemo(() => {
     if (!groups) return [];
     return [
       {
@@ -117,7 +117,7 @@ const GroupPage: React.FC<Props> = ({degree}) => {
         id: "actions",
         header: "",
         enableHiding: false,
-        cell: ({row}: {row: Row<IGroup>}) => {
+        cell: ({row}: {row: Row<IWorkGroup>}) => {
           return (
             <div className="flex gap-2 justify-end">
               <DropdownMenu>

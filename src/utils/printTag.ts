@@ -84,7 +84,8 @@ export const printTag = ({
 
         return doc.text(`${formattedDate}`, col, line);
       }
-      if (key === "name") return doc.text(`${production.order_detail?.product?.name}`, col, line);
+      if (key === "name")
+        return doc.text(`${production.production_order_detail?.product?.name}`, col, line);
       if (key === "amount")
         return doc.text(
           `1${production.production_unit?.shortname} - ${production.equivalent_amount} ${production.production_equivalent_unit?.shortname}`,
@@ -101,9 +102,6 @@ export const printTag = ({
     doc.setFont("helvetica", "bold"); // Usamos Helvetica y negrita
     doc.setFontSize(8);
     doc.text(production.lote ?? "", 12, 27.5);
-
-    //if (production.order_detail?.product?.type_product === 1) doc.text(`PLÁSTICOS CARMEN`, 14, 27);
-    //else doc.text(`PRODUCTO EN PROCESO`, 12, 27);
 
     doc.roundedRect(1, 1, 48, 28, 2, 2); // Rectángulo con bordes redondeados, radio de 5
     doc.line(1, 24, 49, 24); // Rectángulo de 1mm de margen

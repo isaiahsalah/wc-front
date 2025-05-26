@@ -38,12 +38,12 @@ export function ProfileSidebar() {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={""} alt={sesion?.user.name} />
+                <AvatarImage src={""} alt={sesion?.sys_user.name} />
                 <AvatarFallback className="rounded-lg">PC</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{sesion?.user.name}</span>
-                <span className="truncate text-xs">{sesion?.user.user}</span>
+                <span className="truncate font-semibold">{sesion?.sys_user.name}</span>
+                <span className="truncate text-xs">{sesion?.sys_user.user}</span>
               </div>
               <Settings className="ml-auto size-4 opacity-80" />
             </SidebarMenuButton>
@@ -62,9 +62,11 @@ export function ProfileSidebar() {
 
                 <div className="grid  flex-1 text-left text-sm leading-tight">
                   <span className="truncate  font-semibold">
-                    {sesion?.user.name} {sesion?.user.lastname}
+                    {sesion?.sys_user.name} {sesion?.sys_user.lastname}
                   </span>
-                  <span className="truncate text-xs">{sesion?.user.group?.name}</span>
+                  <span className="truncate text-xs">
+                    Grupo {sesion?.sys_user.work_group?.name}
+                  </span>
                 </div>
               </div>
             </DropdownMenuLabel>

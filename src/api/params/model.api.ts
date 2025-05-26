@@ -1,5 +1,5 @@
 import {apiClient} from "../axiosConfig";
-import {IModel} from "@/utils/interfaces";
+import {IProductModel} from "@/utils/interfaces";
 import {toast} from "sonner";
 
 export const getModels = async ({
@@ -32,7 +32,7 @@ export const getModelById = async (id: number) => {
   }
 };
 
-export const createModel = async ({data}: {data: IModel}) => {
+export const createModel = async ({data}: {data: IProductModel}) => {
   toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.post("/pr/model/", data);
@@ -44,7 +44,7 @@ export const createModel = async ({data}: {data: IModel}) => {
   }
 };
 
-export const updateModel = async ({data}: {data: IModel}) => {
+export const updateModel = async ({data}: {data: IProductModel}) => {
   toast.info("Se está procesando la petición");
   try {
     const response = await apiClient.put(`/pr/model/${data.id}`, data);

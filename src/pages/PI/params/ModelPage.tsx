@@ -1,4 +1,4 @@
-import {IModel} from "@/utils/interfaces";
+import {IProductModel} from "@/utils/interfaces";
 import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
 import {Button} from "@/components/ui/button";
@@ -43,7 +43,7 @@ interface Props {
   degree: number;
 }
 const ModelPage: React.FC<Props> = ({degree}) => {
-  const [models, setModels] = useState<IModel[] | null>(null);
+  const [models, setModels] = useState<IProductModel[] | null>(null);
   const {sesion} = useContext(SesionContext);
   const {sectorProcess} = useContext(SectorProcessContext);
 
@@ -62,7 +62,7 @@ const ModelPage: React.FC<Props> = ({degree}) => {
     }
   };
 
-  const columnsModel: ColumnDef<IModel>[] = useMemo(() => {
+  const columnsModel: ColumnDef<IProductModel>[] = useMemo(() => {
     if (!models) return [];
     return [
       {
@@ -139,7 +139,7 @@ const ModelPage: React.FC<Props> = ({degree}) => {
         id: "actions",
         header: "",
         enableHiding: false,
-        cell: ({row}: {row: Row<IModel>}) => {
+        cell: ({row}: {row: Row<IProductModel>}) => {
           return (
             <div className="flex gap-2 justify-end">
               <DropdownMenu>

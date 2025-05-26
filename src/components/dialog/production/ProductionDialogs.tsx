@@ -6,12 +6,12 @@ import {
   ProductionSchema,
   IProduction,
   IMachine,
-  IOrderDetail,
+  IProductionOrderDetail,
   IUnity,
-  IUser,
+  ISystemUser,
   IProductionUser,
 } from "@/utils/interfaces";
-import {format} from "date-fns";
+import {addMinutes, format} from "date-fns";
 
 import {zodResolver} from "@hookform/resolvers/zod";
 
@@ -68,7 +68,7 @@ import {Badge} from "@/components/ui/badge";
 interface PropsCreates {
   children: React.ReactNode; // Define el tipo de children
   updateView: () => void; // Define the type as a function that returns void
-  orderDetail: IOrderDetail;
+  orderDetail: IProductionOrderDetail;
   type_screen: number;
 }
 
@@ -81,7 +81,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
   const [loadingInit, setLoadingInit] = useState(false);
   const [baseMachines, setBaseMachines] = useState<IMachine[]>();
   const [baseUnities, setBaseUnities] = useState<IUnity[]>();
-  const [baseUsers, setBaseUsers] = useState<IUser[]>();
+  const [baseUsers, setBaseUsers] = useState<ISystemUser[]>();
 
   //const [micronage, setMicronage] = useState<number>(orderDetail.product?.micronage ?? 0);
   //const [micronages, setMicronages] = useState<number[]>();
@@ -113,7 +113,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
         date: form.getValues().date,
         duration: form.getValues().duration,
         id_machine: form.getValues().id_machine,
-        id_order_detail: form.getValues().id_order_detail,
+        id_production_order_detail: form.getValues().id_production_order_detail,
         id_unit: form.getValues().id_unit,
         id_equivalent_unit: form.getValues().id_equivalent_unit,
         equivalent_amount: form.getValues().equivalent_amount,
@@ -123,6 +123,11 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
         production_users: form.getValues().production_users,
       },
     ]);
+
+    form.reset({
+      ...form.getValues(),
+      date: addMinutes(form.getValues().date, form.getValues().duration),
+    });
   }
 
   function onSubmit() {
@@ -156,7 +161,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
     try {
       const BaseMachinesData = await getMachines({});
       const BaseUnitiesData = await getUnities({});
-      const BaseUsersData: IUser[] = await getUsers({
+      const BaseUsersData: ISystemUser[] = await getUsers({
         //id_sector_process: sectorProcess?.id,
         //type_screen: type_screen,
         //type_module: getModuleBySesion({sesion: sesion as ISesion})?.id,
@@ -167,7 +172,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
 
       form.reset({
         date: new Date(),
-        id_order_detail: orderDetail.id as number,
+        id_production_order_detail: orderDetail.id as number,
         id_machine: orderDetail.id_machine as number,
         id_unit: orderDetail.product?.id_unit,
         id_equivalent_unit: orderDetail.product?.id_equivalent_unit,
@@ -175,8 +180,8 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
         weight: Number(orderDetail.product?.weight),
         production_users: [
           {
-            id_user: BaseUsersData.find((BaseUser) => (BaseUser.id = sesion?.user.id))?.id,
-            user: BaseUsersData.find((BaseUser) => (BaseUser.id = sesion?.user.id)),
+            id_sys_user: BaseUsersData.find((BaseUser) => (BaseUser.id = sesion?.sys_user.id))?.id,
+            sys_user: BaseUsersData.find((BaseUser) => (BaseUser.id = sesion?.sys_user.id)),
           },
         ] as IProductionUser[],
       });
@@ -570,19 +575,20 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                       <FormControl>
                         <>
                           <Select
+                            value={""}
                             onValueChange={(value) => {
                               const user = baseUsers?.find(
                                 (baseUser) =>
                                   baseUser.id === Number(value) &&
                                   !field.value?.some(
                                     (productionUser: IProductionUser) =>
-                                      productionUser.user?.id === Number(value)
+                                      productionUser.sys_user?.id === Number(value)
                                   )
                               );
                               if (user)
                                 field.onChange([
                                   ...(field.value ?? []),
-                                  {id_user: user.id, user: user},
+                                  {id_sys_user: user.id, user: user},
                                 ]);
                             }}
                           >
@@ -591,7 +597,11 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                             </SelectTrigger>
                             <SelectContent>
                               {baseUsers?.map((user) => (
-                                <SelectItem key={user.id} value={(user.id as number).toString()}>
+                                <SelectItem
+                                  key={user.id}
+                                  value={(user.id as number).toString()}
+                                  onClick={() => console.log("Selected user:", user)}
+                                >
                                   {user.name}
                                 </SelectItem>
                               ))}
@@ -611,7 +621,8 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                                   field.onChange(newValues);
                                 }}
                               >
-                                {productionUser.user?.name} {productionUser.user?.lastname} <X />
+                                {productionUser.sys_user?.name} {productionUser.sys_user?.lastname}{" "}
+                                <X />
                               </Button>
                             ))}
                           </div>
@@ -624,7 +635,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
 
                 <div className="w-full col-span-6 grid gap-2">
                   <Button
-                    disabled={!form.formState.isDirty || loadingSave}
+                    disabled={loadingSave}
                     type="submit"
                     variant={"outline"}
                     className="  bg-green-600/20 hover:bg-green-600/70  hover:text-white dark:bg-green-600/20 dark:hover:bg-green-600/70  dark:hover:text-black"
