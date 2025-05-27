@@ -12,7 +12,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import {useState} from "react";
+import {useContext, useState} from "react";
 
 import {
   Dialog,
@@ -42,6 +42,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {Trash2} from "lucide-react";
+import {SesionContext} from "@/providers/sesionProvider";
+import {checkToken} from "@/utils/funtions";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -99,7 +102,7 @@ export const CreateUserDialog: React.FC<PropsCreate> = ({children, updateView}) 
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-              className="grid   gap-4"
+              className="grid   gap-2"
             >
               <div className="grid   grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
@@ -260,7 +263,7 @@ export const EditUserDialog: React.FC<PropsEdit> = ({children, id, updateView, o
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
   const [groups, setGroups] = useState<IWorkGroup[]>();
-
+  const {sesion, setSesion} = useContext(SesionContext);
   const form = useForm<ISystemUser>({
     resolver: zodResolver(SystemUserSchema),
   });
@@ -270,6 +273,7 @@ export const EditUserDialog: React.FC<PropsEdit> = ({children, id, updateView, o
     updateUser({data: values})
       .then((updatedUser) => {
         console.log("Usuario actualizado:", updatedUser);
+        if (id === sesion?.sys_user.id) checkToken({setSesion: setSesion});
         updateView();
       })
       .catch((error) => {
@@ -426,21 +430,30 @@ export const EditUserDialog: React.FC<PropsEdit> = ({children, id, updateView, o
                     <FormItem className="col-span-3">
                       <FormDescription>Grupo</FormDescription>
                       <FormControl>
-                        <Select
-                          value={field.value?.toString() ?? ""} // Asegúrate de que el valor sea una cadena
-                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Seleccionar Tipo" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {groups?.map((group: IWorkGroup) => (
-                              <SelectItem key={group.id} value={(group.id ?? "").toString()}>
-                                {group.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <div className="flex gap-2">
+                          <Select
+                            value={field.value?.toString() ?? ""} // Asegúrate de que el valor sea una cadena
+                            onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Seleccionar Tipo" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {groups?.map((group: IWorkGroup) => (
+                                <SelectItem key={group.id} value={(group.id ?? "").toString()}>
+                                  {group.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <Button
+                            variant={"outline"}
+                            type="button"
+                            onClick={() => field.onChange(null)}
+                          >
+                            <Trash2 />
+                          </Button>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

@@ -103,14 +103,18 @@ const UserPage: React.FC<Props> = ({degree}) => {
         accessorFn: (row) => `${row.work_group?.name}`.trim(),
         accessorKey: "work_group",
         header: "Grupo",
-        cell: (info) => {
-          return (
+        cell: (info) =>
+          info.getValue() === "undefined" ? (
+            <Badge variant={"outline"} className="text-muted-foreground">
+              {"N/A"}
+            </Badge>
+          ) : (
             <Badge variant={"secondary"} className="text-muted-foreground">
               {info.getValue() as string}
             </Badge>
-          );
-        },
+          ),
       },
+
       {
         accessorFn: (row) => format(new Date(row.createdAt as Date), "dd/MM/yyyy HH:mm").trim(),
         accessorKey: "createdAt",

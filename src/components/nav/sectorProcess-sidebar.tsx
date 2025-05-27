@@ -24,8 +24,23 @@ import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 export function SectorProcessSidebar({sectorProcesses}: {sectorProcesses: ISectorProcess[]}) {
   const {sectorProcess, setSectorProcess} = useContext(SectorProcessContext);
   useEffect(() => {
+    const storedProcess = window.localStorage.getItem("process-app");
+    if (storedProcess) {
+      const parsedProcess = JSON.parse(storedProcess) as ISectorProcess;
+      const foundProcess = sectorProcesses.find((item) => item.id === parsedProcess.id);
+      if (foundProcess) {
+        setSectorProcess(foundProcess);
+        return;
+      }
+    }
     setSectorProcess(sectorProcesses[0]);
   }, []);
+
+  const onChangeSectorProcess = (item: ISectorProcess) => {
+    window.localStorage.setItem("process-app", JSON.stringify(item));
+
+    setSectorProcess(item);
+  };
 
   const icon = (id: number) => {
     return (
@@ -87,7 +102,7 @@ export function SectorProcessSidebar({sectorProcesses}: {sectorProcesses: ISecto
             {sectorProcesses.map((item, index) => (
               <DropdownMenuItem
                 key={index}
-                onClick={() => setSectorProcess(item)}
+                onClick={() => onChangeSectorProcess(item)}
                 className="gap-2 p-2"
               >
                 <div className="flex size-6 items-center justify-center rounded-sm border">

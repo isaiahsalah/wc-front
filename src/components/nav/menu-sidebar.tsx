@@ -23,7 +23,7 @@ const MenuSidebar = ({items, title}: {items: IMenuItem[]; title: string}) => {
               >
                 <Link to={item.url}>
                   <item.icon />
-                  {item.title}{" "}
+                  {item.name}{" "}
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

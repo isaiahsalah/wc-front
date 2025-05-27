@@ -77,7 +77,7 @@ export const CreateGroupDialog: React.FC<PropsCreate> = ({children, updateView})
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-            className="grid grid-cols-6 gap-4"
+            className="grid grid-cols-6 gap-2"
           >
             <FormField
               control={form.control}
@@ -100,7 +100,11 @@ export const CreateGroupDialog: React.FC<PropsCreate> = ({children, updateView})
                 <FormItem className="col-span-6">
                   <FormDescription>Descripción</FormDescription>
                   <FormControl>
-                    <Textarea placeholder="Notas adicionales" {...field} />
+                    <Textarea
+                      placeholder="Notas adicionales"
+                      {...field}
+                      value={field.value ?? ""}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -254,7 +258,11 @@ export const EditGroupDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                   <FormItem className="col-span-6">
                     <FormDescription>Descripción</FormDescription>
                     <FormControl>
-                      <Textarea placeholder="Notas adicionales" {...field} />
+                      <Textarea
+                        placeholder="Notas adicionales"
+                        {...field}
+                        value={field.value ?? ""}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

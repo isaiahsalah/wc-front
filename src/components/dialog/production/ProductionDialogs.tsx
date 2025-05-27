@@ -5,7 +5,6 @@ import {useForm} from "react-hook-form";
 import {
   ProductionSchema,
   IProduction,
-  IMachine,
   IProductionOrderDetail,
   IUnity,
   ISystemUser,
@@ -50,8 +49,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {getMachines} from "@/api/params/machine.api";
-import {typeQuality, typeTicket} from "@/utils/const";
+import {typeQuality, typeSize, typeTicket} from "@/utils/const";
 import {DateTimePicker} from "@/components/DateTimePicker";
 import {generateQR, printTag} from "@/utils/printTag";
 import {getUnities} from "@/api/product/unity.api";
@@ -79,7 +77,6 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
 }) => {
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
-  const [baseMachines, setBaseMachines] = useState<IMachine[]>();
   const [baseUnities, setBaseUnities] = useState<IUnity[]>();
   const [baseUsers, setBaseUsers] = useState<ISystemUser[]>();
 
@@ -105,7 +102,8 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
   function addProduction() {
     if (orderDetail.product?.micronage && (form.getValues().micronage ?? []).length === 0)
       return toast.error("El micronaje no puede estar vacío");
-
+    if (form.getValues().production_users?.length === 0)
+      return toast.error("Seleciona al menos un operario");
     setProductions([
       ...(productions ?? []),
       {
@@ -159,15 +157,16 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
   const fetchData = async () => {
     setLoadingInit(true);
     try {
-      const BaseMachinesData = await getMachines({});
       const BaseUnitiesData = await getUnities({});
       const BaseUsersData: ISystemUser[] = await getUsers({
+        id_work_group: orderDetail.production_order?.id_work_group,
         //id_sector_process: sectorProcess?.id,
         //type_screen: type_screen,
         //type_module: getModuleBySesion({sesion: sesion as ISesion})?.id,
       });
-      setBaseMachines(BaseMachinesData);
+
       setBaseUnities(BaseUnitiesData);
+
       setBaseUsers(BaseUsersData);
 
       form.reset({
@@ -180,8 +179,8 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
         weight: Number(orderDetail.product?.weight),
         production_users: [
           {
-            id_sys_user: BaseUsersData.find((BaseUser) => (BaseUser.id = sesion?.sys_user.id))?.id,
-            sys_user: BaseUsersData.find((BaseUser) => (BaseUser.id = sesion?.sys_user.id)),
+            id_sys_user: BaseUsersData.find((BaseUser) => BaseUser.id === sesion?.sys_user.id)?.id,
+            sys_user: BaseUsersData.find((BaseUser) => BaseUser.id === sesion?.sys_user.id),
           },
         ] as IProductionUser[],
       });
@@ -305,51 +304,9 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(addProduction, (e) => console.log(e))}
-              className=" grid   gap-4 "
+              className=" grid   gap-2"
             >
               <div className="grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm max-h-[60vh] overflow-scroll">
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({field}) => (
-                    <FormItem className="col-span-6">
-                      <FormDescription>Descripción</FormDescription>
-                      <FormControl>
-                        <Textarea placeholder="Notas adicionales" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="id_machine"
-                  render={({field}) => (
-                    <FormItem className="col-span-2 ">
-                      <FormDescription>Maquina</FormDescription>
-                      <FormControl>
-                        <Select
-                          disabled
-                          defaultValue={field.value.toString()}
-                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Seleccionar producto" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {baseMachines?.map((product: IMachine) => (
-                              <SelectItem key={product.id} value={(product.id ?? "").toString()}>
-                                {product.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
                 <FormField
                   control={form.control}
                   name="date"
@@ -461,8 +418,8 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                               <SelectValue placeholder="Seleccionar Unidad" />
                             </SelectTrigger>
                             <SelectContent>
-                              {baseUnities?.map((product: IUnity) => (
-                                <SelectItem key={product.id} value={(product.id ?? "").toString()}>
+                              {baseUnities?.map((product: IUnity, i) => (
+                                <SelectItem key={i} value={(product.id ?? "").toString()}>
                                   {product.name}
                                 </SelectItem>
                               ))}
@@ -491,6 +448,32 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                     )}
                   />
                 </div>
+                <FormField
+                  control={form.control}
+                  name="type_size"
+                  render={({field}) => (
+                    <FormItem className="col-span-2">
+                      <FormDescription>Tamaño</FormDescription>
+                      <FormControl>
+                        <Select
+                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Selecciona" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {typeSize.map((type) => (
+                              <SelectItem key={type.id} value={type.id.toString()}>
+                                {type.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <FormField
                   control={form.control}
@@ -518,6 +501,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                     </FormItem>
                   )}
                 />
+
                 {orderDetail.product?.micronage ? (
                   <FormField
                     control={form.control}
@@ -573,7 +557,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                     >
                       <FormDescription>Operadores</FormDescription>
                       <FormControl>
-                        <>
+                        <div>
                           <Select
                             value={""}
                             onValueChange={(value) => {
@@ -588,20 +572,16 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                               if (user)
                                 field.onChange([
                                   ...(field.value ?? []),
-                                  {id_sys_user: user.id, user: user},
-                                ]);
+                                  {id_sys_user: user.id, sys_user: user},
+                                ] as IProductionUser[]);
                             }}
                           >
                             <SelectTrigger className="w-full   ">
                               <SelectValue placeholder="Seleccionar Operador" />
                             </SelectTrigger>
                             <SelectContent>
-                              {baseUsers?.map((user) => (
-                                <SelectItem
-                                  key={user.id}
-                                  value={(user.id as number).toString()}
-                                  onClick={() => console.log("Selected user:", user)}
-                                >
+                              {baseUsers?.map((user, i) => (
+                                <SelectItem key={i} value={(user.id as number).toString()}>
                                   {user.name}
                                 </SelectItem>
                               ))}
@@ -618,6 +598,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                                 type="button"
                                 onClick={() => {
                                   const newValues = field.value?.filter((_, i) => i !== index);
+
                                   field.onChange(newValues);
                                 }}
                               >
@@ -626,33 +607,51 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                               </Button>
                             ))}
                           </div>
-                        </>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
-                <div className="w-full col-span-6 grid gap-2">
-                  <Button
-                    disabled={loadingSave}
-                    type="submit"
-                    variant={"outline"}
-                    className="  bg-green-600/20 hover:bg-green-600/70  hover:text-white dark:bg-green-600/20 dark:hover:bg-green-600/70  dark:hover:text-black"
-                  >
-                    <ChevronsDown />
-                  </Button>
-                </div>
-                <div className="w-full col-span-6 grid gap-2">
-                  <FormDescription>Productos Ordenados</FormDescription>
-                  <DataTable
-                    hasOptions={false}
-                    hasPaginated={false}
-                    actions={<></>}
-                    columns={columnsProductions}
-                    data={productions}
-                  />
-                </div>
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({field}) => (
+                    <FormItem className="col-span-6">
+                      <FormDescription>Descripción</FormDescription>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Notas adicionales"
+                          {...field}
+                          value={field.value ?? ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="w-full  grid gap-2">
+                <Button
+                  disabled={loadingSave}
+                  type="submit"
+                  variant={"outline"}
+                  className="  bg-green-600/20 hover:bg-green-600/70  hover:text-white dark:bg-green-600/20 dark:hover:bg-green-600/70  dark:hover:text-black"
+                >
+                  <ChevronsDown />
+                </Button>
+              </div>
+              <div className="w-full   grid gap-2">
+                <FormDescription>Productos Producidos</FormDescription>
+                <DataTable
+                  hasOptions={false}
+                  hasPaginated={false}
+                  actions={<></>}
+                  columns={columnsProductions}
+                  data={productions}
+                />
+              </div>
+              <div className="grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm max-h-[60vh] overflow-scroll">
                 <div className="col-span-6 grid gap-2">
                   <CardDescription>Formato de Ticket</CardDescription>
                   <Select
@@ -819,7 +818,11 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
                     <FormItem className="col-span-6">
                       <FormDescription>Descripción</FormDescription>
                       <FormControl>
-                        <Textarea placeholder="Notas adicionales" {...field} />
+                        <Textarea
+                          placeholder="Notas adicionales"
+                          {...field}
+                          value={field.value ?? ""}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

@@ -1,4 +1,4 @@
-import {IWorkGroup, IProductionOrder, ISystemUser} from "@/utils/interfaces";
+import {IProductionOrder, ISystemUser} from "@/utils/interfaces";
 import {ColumnDef, Row} from "@tanstack/react-table";
 import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
@@ -40,6 +40,7 @@ import {countCurrentMonth} from "@/utils/funtions";
 import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
 import {SectorProcessContext} from "@/providers/sectorProcessProvider";
+import {typeTurn} from "@/utils/const";
 interface Props {
   degree: number;
 }
@@ -68,15 +69,23 @@ const OrderPage: React.FC<Props> = ({degree}) => {
     if (!orders) return [];
     return [
       {
-        accessorFn: (row) => row.id?.toString().trim(),
-        accessorKey: "id",
-        header: "Id",
-        cell: (info) => info.getValue(),
+        accessorFn: (row) => ` ${row?.work_group?.name}`.trim(),
+        header: "Grupo",
+        cell: (info) => (
+          <Badge variant={"secondary"} className="text-muted-foreground">
+            {info.getValue() as string}
+          </Badge>
+        ),
       },
       {
-        accessorKey: "work_group",
-        header: "Grupo",
-        cell: (info) => (info.getValue() as IWorkGroup).name,
+        accessorFn: (row) => ` ${typeTurn.find((turn) => turn.id === row?.type_turn)?.name}`.trim(),
+
+        header: "Turno",
+        cell: (info) => (
+          <Badge variant={"secondary"} className="text-muted-foreground">
+            {info.getValue() as string}
+          </Badge>
+        ),
       },
       {
         accessorKey: "init_date",
@@ -90,8 +99,18 @@ const OrderPage: React.FC<Props> = ({degree}) => {
         cell: (info) => format(new Date(info.getValue() as Date), "dd/MM/yyyy HH:mm"),
       },
       {
+        accessorFn: (row) => ` ${row?.production_order_details?.length}`.trim(),
+        header: "Produciones",
+        cell: (info) => (
+          <Badge variant={"secondary"} className="text-muted-foreground">
+            {info.getValue() as string}
+          </Badge>
+        ),
+      },
+
+      {
         accessorKey: "sys_user",
-        header: "Usuario",
+        header: "Usuario Creador",
         cell: (info) => (
           <Badge variant={"secondary"} className="text-muted-foreground">
             {(info.getValue() as ISystemUser).name} {(info.getValue() as ISystemUser).lastname}

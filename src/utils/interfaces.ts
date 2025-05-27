@@ -46,7 +46,7 @@ export const GeneralSchema = z.object({
 export const ColorSchema = z.object({
   id: z.number().nullable().optional(),
   name: z.string(),
-  description: z.string(),
+  description: z.string().nullable().optional(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
@@ -66,7 +66,7 @@ export const UnitySchema = z.object({
 export const SectorSchema = z.object({
   id: z.number().nullable().optional(),
   name: z.string(),
-  description: z.string(),
+  description: z.string().nullable().optional(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
@@ -76,7 +76,7 @@ export const SectorSchema = z.object({
 export const ProcessSchema = z.object({
   id: z.number().nullable().optional(),
   name: z.string(),
-  description: z.string(),
+  description: z.string().nullable().optional(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
@@ -98,7 +98,7 @@ export const SectorProcessSchema = z.object({
 export const WorkGroupSchema = z.object({
   id: z.number().nullable().optional(),
   name: z.string(),
-  description: z.string(),
+  description: z.string().nullable().optional(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
@@ -113,7 +113,7 @@ export const SystemUserSchema = z.object({
   phone: z.string(),
   user: z.string(),
   pass: z.string(),
-  id_work_group: z.number(),
+  id_work_group: z.number().nullable().optional(),
   work_group: WorkGroupSchema.nullable().optional(),
   permissions: z.array(z.any()).nullable().optional(),
   createdAt: z.date().nullable().optional(),
@@ -125,7 +125,7 @@ export const SystemUserSchema = z.object({
 export const InventorySchema = z.object({
   id: z.number().nullable().optional(),
   name: z.string(),
-  description: z.string(),
+  description: z.string().nullable().optional(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
@@ -135,7 +135,7 @@ export const InventorySchema = z.object({
 export const ProductModelSchema = z.object({
   id: z.number().nullable().optional(),
   name: z.string(),
-  description: z.string(),
+  description: z.string().nullable().optional(),
   id_sector_process: z.number(),
   sector_process: SectorProcessSchema.nullable().optional(),
   createdAt: z.date().nullable().optional(),
@@ -147,7 +147,7 @@ export const ProductModelSchema = z.object({
 export const ProductSchema = z.object({
   id: z.number().nullable().optional(),
   name: z.string(),
-  description: z.string(),
+  description: z.string().nullable().optional(),
   type_product: z.number(),
   micronage: z.number().optional(),
   weight: z.number(),
@@ -194,7 +194,7 @@ export const FormulaDetailSchema = z.object({
 export const MachineSchema = z.object({
   id: z.number().nullable().optional(),
   name: z.string(),
-  description: z.string(),
+  description: z.string().nullable().optional(),
 
   id_sector_process: z.number(),
   sector_process: SectorProcessSchema.nullable().optional(),
@@ -256,12 +256,14 @@ export const PermissionSchema = z.object({
 // Tabla: Production
 export const ProductionSchema = z.object({
   id: z.number().nullable().optional(),
-  description: z.string(),
+  description: z.string().nullable().optional(),
   date: z.date(),
   duration: z.number(),
   micronage: z.array(z.number()).nullable().optional(),
   type_quality: z.number(),
+
   weight: z.number(),
+  type_size: z.number().nullable().optional(),
   equivalent_amount: z.number(),
   lote: z.string().nullable().optional(),
 

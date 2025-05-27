@@ -37,7 +37,7 @@ export const AppSidebar: React.FC<Props> = ({className}) => {
     const moduleSelected = typeModule.find(
       (mod) => mod.id === permisions[0].type_module
     ) as IModuleItem;
-    setTitle(moduleSelected.title);
+    setTitle(moduleSelected.name);
 
     const tempMenu: IMenuItem[] = moduleSelected.menu.map((men) => {
       const isActive = men.pages.some((page) =>

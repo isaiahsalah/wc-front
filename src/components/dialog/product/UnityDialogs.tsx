@@ -67,7 +67,7 @@ export const CreateUnityDialog: React.FC<PropsCreate> = ({children, updateView})
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-            className=" grid grid-cols-6 gap-4 "
+            className=" grid grid-cols-6 gap-2"
           >
             <FormField
               control={form.control}

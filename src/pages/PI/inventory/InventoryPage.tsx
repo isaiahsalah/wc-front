@@ -83,21 +83,6 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
     if (!productions) return [];
     return [
       {
-        accessorKey: "lote",
-        header: "Lote",
-        cell: (info) => info.getValue(),
-      },
-      {
-        accessorKey: "description",
-        header: "Descripción",
-        cell: (info) => info.getValue(),
-      },
-      {
-        accessorKey: "production_order_detail",
-        header: "Producto",
-        cell: (info) => (info.getValue() as IProductionOrderDetail).product?.name,
-      },
-      {
         accessorKey: "date",
         header: "Fecha",
         cell: (info) => (
@@ -107,13 +92,15 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
         ),
       },
       {
-        accessorKey: "type_quality",
-        header: "Calidad",
-        cell: (info) => (
-          <Badge variant={"secondary"} className="text-muted-foreground">
-            {typeQuality.find((item) => item.id === info.getValue())?.name}
-          </Badge>
-        ),
+        accessorKey: "lote",
+        header: "Lote",
+        cell: (info) => info.getValue(),
+      },
+
+      {
+        accessorKey: "production_order_detail",
+        header: "Producto",
+        cell: (info) => (info.getValue() as IProductionOrderDetail).product?.name,
       },
 
       {
@@ -154,6 +141,22 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
         },
       },
       {
+        accessorKey: "type_size",
+        header: "Tamaño",
+
+        cell: (info) =>
+          info.getValue() ? (
+            <Badge variant={"secondary"} className="text-muted-foreground">
+              {typeQuality.find((item) => item.id === info.getValue())?.name}
+            </Badge>
+          ) : (
+            <Badge variant={"outline"} className="text-muted-foreground">
+              {"N/A"}
+            </Badge>
+          ),
+      },
+
+      {
         accessorKey: "micronage",
         header: "Micronaje",
         cell: (info) => {
@@ -172,6 +175,17 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
             );
         },
       },
+
+      {
+        accessorKey: "type_quality",
+        header: "Calidad",
+        cell: (info) => (
+          <Badge variant={"secondary"} className="text-muted-foreground">
+            {typeQuality.find((item) => item.id === info.getValue())?.name}
+          </Badge>
+        ),
+      },
+
       {
         accessorKey: "machine",
         header: "Maquina",
@@ -193,6 +207,18 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
             </Badge>
           );
         },
+      },
+      {
+        accessorKey: "description",
+        header: "Descripción",
+        cell: (info) =>
+          info.getValue() ? (
+            info.getValue()
+          ) : (
+            <Badge variant={"outline"} className="text-muted-foreground">
+              {"Sin descripción"}
+            </Badge>
+          ),
       },
 
       {

@@ -15,7 +15,7 @@ import SectorProcessPage from "@/pages/PI/params/SectorProcessPage";
 
 export interface IPageItem {
   id: number;
-  title: string;
+  name: string;
   label: string;
   isActive?: boolean;
   link: string;
@@ -23,7 +23,7 @@ export interface IPageItem {
 }
 
 export interface IMenuItem {
-  title: string;
+  name: string;
   url: string;
   icon: React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>;
   isActive?: boolean;
@@ -32,41 +32,51 @@ export interface IMenuItem {
 
 export interface IModuleItem {
   id: number;
-  title: string;
+  name: string;
   isActive?: boolean;
   menu: IMenuItem[];
 }
 
+export interface ISizeItem {
+  id: number;
+  name: string;
+}
+
+export interface IPermissionItem {
+  id: number;
+  name: string;
+}
+
 const typeMenuPI: IMenuItem[] = [
   {
-    title: "Productos",
+    name: "Productos",
     url: "product",
     icon: Package,
     pages: [
       {
         id: 1,
-        title: "Producto",
+        name: "Producto",
         label: "Productos",
         link: "product",
         page: ProductPage,
       },
       {
         id: 2,
-        title: "Unidad de Medida",
+        name: "Unidad de Medida",
         label: "Unidad",
         link: "unit",
         page: UnityPage,
       },
       {
         id: 3,
-        title: "Colores",
+        name: "Colores",
         label: "Color",
         link: "color",
         page: ColorPage,
       },
       {
         id: 4,
-        title: "Fórmula",
+        name: "Fórmula",
         label: "Fórmula",
         link: "formula",
         page: FormulaPage,
@@ -74,20 +84,20 @@ const typeMenuPI: IMenuItem[] = [
     ],
   },
   {
-    title: "Producción",
+    name: "Producción",
     url: "production",
     icon: PackagePlus,
     pages: [
       {
         id: 11,
-        title: "Producción",
+        name: "Producción",
         label: "Producción",
         link: "production",
         page: ProductionPage,
       },
       {
         id: 12,
-        title: "Orden de Producción",
+        name: "Orden de Producción",
         label: "Orden",
         link: "production-order",
         page: OrderPage,
@@ -96,13 +106,13 @@ const typeMenuPI: IMenuItem[] = [
   },
 
   {
-    title: "Inventario",
+    name: "Inventario",
     url: "inventory",
     icon: PackageSearch,
     pages: [
       {
         id: 21,
-        title: "Inventario",
+        name: "Inventario",
         label: "Inventario",
         link: "inventory",
         page: InventoryPage,
@@ -110,27 +120,27 @@ const typeMenuPI: IMenuItem[] = [
     ],
   },
   {
-    title: "Parametros",
+    name: "Parametros",
     url: "params",
     icon: Blend,
     pages: [
       {
         id: 31,
-        title: "Modelo",
+        name: "Modelo",
         label: "Modelo",
         link: "model",
         page: ModelPage,
       },
       {
         id: 32,
-        title: "Maquina",
+        name: "Maquina",
         label: "Máquina",
         link: "machine",
         page: MachinePage,
       },
       {
         id: 33,
-        title: "Procesos del sector",
+        name: "Procesos del sector",
         label: "Procesos del sector",
         link: "process",
         page: SectorProcessPage,
@@ -138,20 +148,20 @@ const typeMenuPI: IMenuItem[] = [
     ],
   },
   {
-    title: "Seguridad",
+    name: "Seguridad",
     url: "security",
     icon: UserLockIcon,
     pages: [
       {
         id: 41,
-        title: "Usuario",
+        name: "Usuario",
         label: "Usuarios",
         link: "user",
         page: UserPage,
       },
       {
         id: 42,
-        title: "Grupo",
+        name: "Grupo",
         label: "Grupos",
         link: "group",
         page: GroupPage,
@@ -159,38 +169,38 @@ const typeMenuPI: IMenuItem[] = [
     ],
   },
 ];
-const typeMenuRA: IMenuItem[] = [{title: "Home", url: "home", icon: Package, pages: []}];
-const typeMenuSL: IMenuItem[] = [{title: "Home", url: "home", icon: Package, pages: []}];
-const typeMenuCQ: IMenuItem[] = [{title: "Home", url: "home", icon: Package, pages: []}];
-const typeMenuAU: IMenuItem[] = [{title: "Home", url: "home", icon: Package, pages: []}];
+const typeMenuRA: IMenuItem[] = [{name: "Home", url: "home", icon: Package, pages: []}];
+const typeMenuSL: IMenuItem[] = [{name: "Home", url: "home", icon: Package, pages: []}];
+const typeMenuCQ: IMenuItem[] = [{name: "Home", url: "home", icon: Package, pages: []}];
+const typeMenuAU: IMenuItem[] = [{name: "Home", url: "home", icon: Package, pages: []}];
 
 export const typeModule: IModuleItem[] = [
   {
-    title: "Producción e Inventarios",
+    name: "Producción e Inventarios",
     id: 1,
     isActive: true,
     menu: typeMenuPI,
   },
   {
-    title: "Ventas y Logística",
+    name: "Ventas y Logística",
     id: 2,
     isActive: false,
     menu: typeMenuSL,
   },
   {
-    title: "Costos y Calidad",
+    name: "Costos y Calidad",
     id: 3,
     isActive: false,
     menu: typeMenuCQ,
   },
   {
-    title: "Administración y Usuarios",
+    name: "Administración y Usuarios",
     id: 4,
     isActive: false,
     menu: typeMenuAU,
   },
   {
-    title: "Reportes y Análisis",
+    name: "Reportes y Análisis",
     id: 5,
     isActive: false,
     menu: typeMenuRA,
@@ -236,10 +246,17 @@ export const typeTicket = [
   },
 ];
 
-export const typePermission = [
+export const typePermission: IPermissionItem[] = [
   {id: 0, name: "Sin Acceso"},
   {id: 1, name: "Leer"},
   {id: 2, name: "Crear"},
   {id: 3, name: "Actualizar"},
   {id: 4, name: "Eliminar"},
+];
+
+export const typeSize: ISizeItem[] = [
+  {id: 1, name: "Pequeño"},
+  {id: 2, name: "Mediano"},
+  {id: 3, name: "Grande"},
+  {id: 4, name: "Extra Grande"},
 ];

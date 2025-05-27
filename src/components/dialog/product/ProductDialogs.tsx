@@ -121,7 +121,7 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-              className=" grid  gap-4 "
+              className=" grid  gap-2"
             >
               <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
                 <FormField
@@ -145,7 +145,11 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
                     <FormItem className="col-span-6">
                       <FormDescription>Descripción</FormDescription>
                       <FormControl>
-                        <Textarea placeholder="Notas adicionales" {...field} />
+                        <Textarea
+                          placeholder="Notas adicionales"
+                          {...field}
+                          value={field.value ?? ""}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -512,7 +516,11 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                     <FormItem className="col-span-6">
                       <FormDescription>Descripción</FormDescription>
                       <FormControl>
-                        <Textarea placeholder="Notas adicionales" {...field} />
+                        <Textarea
+                          placeholder="Notas adicionales"
+                          {...field}
+                          value={field.value ?? ""}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -562,8 +570,8 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                             <SelectValue placeholder="Seleccionar producto" />
                           </SelectTrigger>
                           <SelectContent>
-                            {models?.map((product: IProductModel) => (
-                              <SelectItem key={product.id} value={(product.id ?? "").toString()}>
+                            {models?.map((product: IProductModel, i) => (
+                              <SelectItem key={i} value={(product.id ?? "").toString()}>
                                 {product.name}
                               </SelectItem>
                             ))}
@@ -617,11 +625,8 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                             <SelectValue placeholder="Seleccionar Tipo" />
                           </SelectTrigger>
                           <SelectContent>
-                            {typeProduct?.map((type_prod) => (
-                              <SelectItem
-                                key={type_prod.id}
-                                value={(type_prod.id ?? "").toString()}
-                              >
+                            {typeProduct?.map((type_prod, i) => (
+                              <SelectItem key={i} value={(type_prod.id ?? "").toString()}>
                                 {type_prod.name}
                               </SelectItem>
                             ))}

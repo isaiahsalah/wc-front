@@ -79,7 +79,14 @@ const SectorProcessPage: React.FC<Props> = ({degree}) => {
         accessorFn: (row) => row.process?.description?.toString().trim(),
         accessorKey: "description",
         header: "Descripción",
-        cell: (info) => info.getValue(),
+        cell: (info) =>
+          info.getValue() ? (
+            info.getValue()
+          ) : (
+            <Badge variant={"outline"} className="text-muted-foreground">
+              {"Sin descripción"}
+            </Badge>
+          ),
       },
       {
         accessorFn: (row) => format(new Date(row.createdAt as Date), "dd/MM/yyyy HH:mm").trim(),

@@ -8,16 +8,19 @@ export const getUsers = async ({
   id_sector_process,
   type_screen,
   type_module,
+  id_work_group,
 }: {
   all?: boolean | null;
   id_sector_process?: number | null;
   type_module?: number | null;
   type_screen?: number | null;
+  id_work_group?: number | null;
 }) => {
   try {
-    const params = {all, id_sector_process, type_module, type_screen};
+    const params = {all, id_sector_process, type_module, type_screen, id_work_group};
 
     const response = await apiClient.get("/pr/user", {params}); // Cambia la URL según tu API
+
     return response.data; // Devuelve la lista de usuarios
   } catch (error) {
     console.error("Error al obtener los usuarios:", error);

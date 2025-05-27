@@ -211,7 +211,7 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-            className=" grid  gap-4 "
+            className=" grid  gap-2"
           >
             <div className=" grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm">
               <FormField

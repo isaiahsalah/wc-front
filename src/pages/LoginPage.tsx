@@ -18,9 +18,10 @@ import {Navigate, useNavigate} from "react-router-dom";
 import {Select} from "@radix-ui/react-select";
 import {SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import LoadingCircle from "@/components/LoadingCircle";
-import {Eye, EyeOff, SquareDashed} from "lucide-react";
+import {Eye, EyeOff} from "lucide-react";
 import {typeModule} from "@/utils/const";
 import {getSectors} from "@/api/params/sector.api";
+import PCLogoSVG from "@/components/pcLogo";
 
 const formSchema = z.object({
   type_module: z.number(),
@@ -86,8 +87,10 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
       >
         <div className="bg-accent   hidden md:flex xl:col-span-1  border-r   p-10  flex-col justify-between ">
           <TypographyH3 className="">Plásticos Carmen</TypographyH3>
+          <div className="   m-auto brightness-140 contrast-80 dark:contrast-90 dark:brightness-120 dark:opacity-80">
+            <PCLogoSVG size={250} />
+          </div>
 
-          <SquareDashed className="w-full   h-full px-15" />
           <TypographyP className="text-foreground/70 text-right">
             Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
             has been the industry's standard dummy text ever since the 1500s.
@@ -107,7 +110,7 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-                className="grid  gap-2  text-center"
+                className="grid  gap-2 text-center"
               >
                 <FormField
                   control={form.control}
@@ -129,7 +132,7 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
                                 key={index}
                                 disabled={!item.isActive}
                               >
-                                {item.title}
+                                {item.name}
                               </SelectItem>
                             ))}
                           </SelectContent>

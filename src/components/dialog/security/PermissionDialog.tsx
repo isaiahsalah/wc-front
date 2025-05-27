@@ -129,7 +129,7 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
                   return (
                     <div key={i} className="grid grid-cols-6 col-span-6 gap-2  ">
                       <CardDescription className="col-span-6  ">
-                        Paginas de {menu.title}
+                        Paginas de {menu.name}
                       </CardDescription>
                       <Separator className="col-span-6" />
                       {menu.pages.map((page, i) => {

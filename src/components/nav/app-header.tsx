@@ -15,7 +15,7 @@ const Header = () => {
     <header className="flex   shrink-0 items-center gap-2 border-b p-2">
       <SidebarTrigger className="-ml-1" />
       <div className=" mr-auto">
-        <TypographyH5>{page.title}</TypographyH5>
+        <TypographyH5>{page.name}</TypographyH5>
       </div>
 
       <ModeToggle />

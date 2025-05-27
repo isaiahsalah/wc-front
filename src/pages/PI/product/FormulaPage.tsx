@@ -105,7 +105,14 @@ const FormulaPage: React.FC<Props> = ({degree}) => {
       {
         accessorKey: "description",
         header: "Descripción",
-        cell: (info) => info.getValue(),
+        cell: (info) =>
+          info.getValue() ? (
+            info.getValue()
+          ) : (
+            <Badge variant={"outline"} className="text-muted-foreground">
+              {"Sin descripción"}
+            </Badge>
+          ),
       },
 
       {

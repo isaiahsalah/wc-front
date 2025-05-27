@@ -82,7 +82,7 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({children, updateView
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-            className=" grid  gap-4 "
+            className="grid gap-2 "
           >
             <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
               <FormField
@@ -106,7 +106,11 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({children, updateView
                   <FormItem className="col-span-6">
                     <FormDescription>Descripción</FormDescription>
                     <FormControl>
-                      <Textarea placeholder="Notas adicionales" {...field} />
+                      <Textarea
+                        placeholder="Notas adicionales"
+                        {...field}
+                        value={field.value ?? ""}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -262,7 +266,11 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
                     <FormItem className="col-span-6">
                       <FormDescription>Descripción</FormDescription>
                       <FormControl>
-                        <Textarea placeholder="Notas adicionales" {...field} />
+                        <Textarea
+                          placeholder="Notas adicionales"
+                          {...field}
+                          value={field.value ?? ""}
+                        />{" "}
                       </FormControl>
                       <FormMessage />
                     </FormItem>

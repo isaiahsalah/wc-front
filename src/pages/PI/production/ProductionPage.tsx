@@ -37,7 +37,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {format} from "date-fns";
-import {typeQuality} from "@/utils/const";
+import {typeQuality, typeTurn} from "@/utils/const";
 import {Badge} from "@/components/ui/badge";
 import {getMachines} from "@/api/params/machine.api";
 import {SectorProcessContext} from "@/providers/sectorProcessProvider";
@@ -70,6 +70,7 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
     try {
       const date = new Date().toISOString();
       const OrderDetailsData = await getOrderDetails({
+        id_work_group: sesion?.sys_user.id_work_group as number,
         date: date,
         id_sector_process: sectorProcess?.id ?? null,
         id_machine: idMachine ?? null,
@@ -82,6 +83,8 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
         id_machine: idMachine ?? null,
         all: true,
       });
+
+      console.log("ProductionsData", ProductionsData);
       setProductions(ProductionsData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
@@ -93,21 +96,6 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
     if (!productions) return [];
     return [
       {
-        accessorKey: "lote",
-        header: "Lote",
-        cell: (info) => info.getValue(),
-      },
-      {
-        accessorKey: "description",
-        header: "Descripción",
-        cell: (info) => info.getValue(),
-      },
-      {
-        accessorKey: "production_order_detail",
-        header: "Producto",
-        cell: (info) => (info.getValue() as IProductionOrderDetail).product?.name,
-      },
-      {
         accessorKey: "date",
         header: "Fecha",
         cell: (info) => (
@@ -117,14 +105,17 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
         ),
       },
       {
-        accessorKey: "type_quality",
-        header: "Calidad",
-        cell: (info) => (
-          <Badge variant={"secondary"} className="text-muted-foreground">
-            {typeQuality.find((item) => item.id === info.getValue())?.name}
-          </Badge>
-        ),
+        accessorKey: "lote",
+        header: "Lote",
+        cell: (info) => info.getValue(),
       },
+
+      {
+        accessorKey: "production_order_detail",
+        header: "Producto",
+        cell: (info) => (info.getValue() as IProductionOrderDetail).product?.name,
+      },
+
       {
         accessorFn: (row) => ` ${row.production_unit?.name}`.trim(),
         accessorKey: "production_unit",
@@ -164,6 +155,22 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
       },
 
       {
+        accessorKey: "type_size",
+        header: "Tamaño",
+
+        cell: (info) =>
+          info.getValue() ? (
+            <Badge variant={"secondary"} className="text-muted-foreground">
+              {typeQuality.find((item) => item.id === info.getValue())?.name}
+            </Badge>
+          ) : (
+            <Badge variant={"outline"} className="text-muted-foreground">
+              {"N/A"}
+            </Badge>
+          ),
+      },
+
+      {
         accessorKey: "micronage",
         header: "Micronaje",
         cell: (info) => {
@@ -183,14 +190,37 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
         },
       },
       {
-        accessorKey: "machine",
-        header: "Maquina",
+        accessorKey: "type_quality",
+        header: "Calidad",
         cell: (info) => (
           <Badge variant={"secondary"} className="text-muted-foreground">
-            {(info.getValue() as IMachine).name}
+            {typeQuality.find((item) => item.id === info.getValue())?.name}
           </Badge>
         ),
       },
+
+      {
+        accessorFn: (row) => ` ${row.production_order_detail?.production_order?.type_turn}`.trim(),
+        header: "Turno",
+        cell: (info) => {
+          return (
+            <Badge variant={"secondary"} className="text-muted-foreground">
+              {info.getValue() as string}
+            </Badge>
+          );
+        },
+      },
+      {
+        accessorFn: (row) =>
+          ` ${row.production_order_detail?.production_order?.work_group?.name}`.trim(),
+        header: "Grupo",
+        cell: (info) => (
+          <Badge variant={"secondary"} className="text-muted-foreground">
+            {info.getValue() as string}
+          </Badge>
+        ),
+      },
+
       {
         accessorKey: "production_users",
         header: "Operadores",
@@ -202,6 +232,18 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
             </Badge>
           );
         },
+      },
+      {
+        accessorKey: "description",
+        header: "Descripción",
+        cell: (info) =>
+          info.getValue() ? (
+            info.getValue()
+          ) : (
+            <Badge variant={"outline"} className="text-muted-foreground">
+              {"Sin descripción"}
+            </Badge>
+          ),
       },
 
       {
@@ -338,6 +380,34 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
       },
 
       {
+        accessorKey: "production_order",
+        header: "Fecha Límite",
+        cell: (info) => (
+          <Badge variant={"secondary"} className="text-muted-foreground">
+            {format((info.getValue() as IProductionOrder).end_date as Date, "dd/MM/yyyy HH:mm")}
+          </Badge>
+        ),
+      },
+      {
+        accessorFn: (row) => ` ${row.production_order?.work_group?.name}`.trim(),
+        header: "Grupo",
+        cell: (info) => (
+          <Badge variant={"secondary"} className="text-muted-foreground">
+            {info.getValue() as string}
+          </Badge>
+        ),
+      },
+      {
+        accessorFn: (row) =>
+          ` ${typeTurn.find((turn) => turn.id === row.production_order?.type_turn)?.name}`.trim(),
+        header: "Turno",
+        cell: (info) => (
+          <Badge variant={"secondary"} className="text-muted-foreground">
+            {info.getValue() as string}
+          </Badge>
+        ),
+      },
+      {
         accessorKey: "machine",
         header: "Maquina",
         cell: (info) => (
@@ -366,15 +436,7 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
           </Badge>
         ),
       },
-      {
-        accessorKey: "production_order",
-        header: "Fecha Límite",
-        cell: (info) => (
-          <Badge variant={"secondary"} className="text-muted-foreground">
-            {format((info.getValue() as IProductionOrder).end_date as Date, "dd/MM/yyyy HH:mm")}
-          </Badge>
-        ),
-      },
+
       {
         id: "actions",
         header: "",

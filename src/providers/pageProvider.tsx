@@ -15,7 +15,7 @@ interface props {
 export const PageProvider = ({children}: props) => {
   const [page, setPage] = React.useState<IPageItem>({
     id: 0,
-    title: "Plasticos Carmen",
+    name: "Plasticos Carmen",
     link: "",
     label: "",
     page: () => <></>,
