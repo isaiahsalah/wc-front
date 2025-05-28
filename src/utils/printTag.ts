@@ -97,6 +97,8 @@ export const printTag = ({
         return production.micronage
           ? doc.text(`${production.micronage?.join(" - ")}`, col, line)
           : "";
+      if (key === "weight")
+        return production.weight ? doc.text(`${production.weight} Kg.`, col, line) : "";
       if (key === "type_size")
         return production.type_size
           ? doc.text(
