@@ -1,4 +1,4 @@
-import {IProductionOrderDetail, IProduction, IMachine, IProductionUser} from "@/utils/interfaces";
+import {IProduction, IMachine, IProductionUser} from "@/utils/interfaces";
 import {ColumnDef, Row} from "@tanstack/react-table";
 import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
@@ -28,7 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {format} from "date-fns";
-import {typeQuality} from "@/utils/const";
+import {typeQuality, typeSize, typeTurn} from "@/utils/const";
 import {Badge} from "@/components/ui/badge";
 import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 import {getMachines} from "@/api/params/machine.api";
@@ -91,6 +91,33 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
           </Badge>
         ),
       },
+
+      {
+        accessorFn: (row) =>
+          ` ${
+            typeTurn.find(
+              (turn) => turn.id === row.production_order_detail?.production_order?.type_turn
+            )?.name
+          }`.trim(),
+        header: "Turno",
+        cell: (info) => {
+          return (
+            <Badge variant={"secondary"} className="text-muted-foreground">
+              {info.getValue() as string}
+            </Badge>
+          );
+        },
+      },
+      {
+        accessorFn: (row) =>
+          ` ${row.production_order_detail?.production_order?.work_group?.name}`.trim(),
+        header: "Grupo",
+        cell: (info) => (
+          <Badge variant={"secondary"} className="text-muted-foreground">
+            {info.getValue() as string}
+          </Badge>
+        ),
+      },
       {
         accessorKey: "lote",
         header: "Lote",
@@ -98,9 +125,9 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
       },
 
       {
-        accessorKey: "production_order_detail",
+        accessorFn: (row) => ` ${row.production_order_detail?.product?.name}`.trim(),
         header: "Producto",
-        cell: (info) => (info.getValue() as IProductionOrderDetail).product?.name,
+        cell: (info) => info.getValue() as string,
       },
 
       {
@@ -141,13 +168,18 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
         },
       },
       {
+        accessorFn: (row) =>
+          `${
+            row.type_size ? typeSize.find((item) => item.id === row.type_size)?.name : null
+          } `.trim(),
+
         accessorKey: "type_size",
         header: "Tamaño",
 
         cell: (info) =>
-          info.getValue() ? (
+          info.getValue() != "null" ? (
             <Badge variant={"secondary"} className="text-muted-foreground">
-              {typeQuality.find((item) => item.id === info.getValue())?.name}
+              {info.getValue() as string}
             </Badge>
           ) : (
             <Badge variant={"outline"} className="text-muted-foreground">

@@ -26,9 +26,12 @@ const PCLogoSVG: React.FC<DynamicSVGProps> = ({
       {/* Definir el filtro para la sombra */}
       <defs>
         <filter id="dropShadow" x="-50%" y="-50%" width="200%" height="200%">
-          <feOffset result="offOut" in="SourceAlpha" dx="4" dy="4" />
-          <feGaussianBlur result="blurOut" in="offOut" stdDeviation="10" />
-          <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+          <feOffset result="offOut" in="SourceAlpha" dx="10" dy="10" />
+          <feGaussianBlur result="blurOut" in="offOut" stdDeviation="6" />
+          <feComponentTransfer in="blurOut" result="translucentBlur">
+            <feFuncA type="linear" slope="0.5" />
+          </feComponentTransfer>
+          <feBlend in="SourceGraphic" in2="translucentBlur" mode="normal" />
         </filter>
       </defs>
       {/* Fondo del SVG 

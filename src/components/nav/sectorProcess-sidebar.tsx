@@ -33,6 +33,7 @@ export function SectorProcessSidebar({sectorProcesses}: {sectorProcesses: ISecto
         return;
       }
     }
+    window.localStorage.setItem("process-app", JSON.stringify(sectorProcesses[0]));
     setSectorProcess(sectorProcesses[0]);
   }, []);
 

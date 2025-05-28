@@ -229,8 +229,8 @@ export const typeTicket = [
   {
     id: 1,
     name: "QR 1",
-    example: ["Nombre de Producto", "Fecha de Producción", "Unidad de medida", "Micronage"],
-    colums: ["name", "date", "amount", "micronage"],
+    example: ["Id", "Nombre de Producto", "Fecha de Producción", "Unidad de medida", "Micronage"],
+    colums: ["id", "name", "date", "amount", "micronage"],
   },
   {
     id: 2,
@@ -243,6 +243,12 @@ export const typeTicket = [
     name: "QR 3",
     example: ["Nombre de Producto"],
     colums: ["name"],
+  },
+  {
+    id: 4,
+    name: "QR 4",
+    example: ["Nombre de Producto", "Fecha de Producción", "Tamaño"],
+    colums: ["name", "date", "type_size"],
   },
 ];
 

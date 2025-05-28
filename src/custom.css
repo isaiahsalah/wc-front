@@ -42,7 +42,26 @@ input[type="number"] {
   }
 }
 
+@keyframes floatMovement {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(5px, 0);
+  }
+  50% {
+    transform: translate(0, 5px);
+  }
+  75% {
+    transform: translate(-5px, 0);
+  }
+}
+
 @layer utilities {
+  .animate-float {
+    animation: floatMovement 2s infinite ease-in-out;
+  }
   .animate-dropDown {
     animation: dropDown 750ms ease forwards;
   }

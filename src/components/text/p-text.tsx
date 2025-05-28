@@ -7,7 +7,7 @@ interface Props {
 
 const TypographyP: React.FC<Props> = ({children, className}) => {
   return (
-    <h5 className={clsx("scroll-m-20 text-sm font-normal tracking-tight ", className)}>
+    <h5 className={clsx("scroll-m-20 text-sm font-normal tracking-tight    ", className)}>
       {children}
     </h5>
   );

@@ -22,6 +22,7 @@ import {Eye, EyeOff} from "lucide-react";
 import {typeModule} from "@/utils/const";
 import {getSectors} from "@/api/params/sector.api";
 import PCLogoSVG from "@/components/pcLogo";
+import pcImg from "../assets/pc.png";
 
 const formSchema = z.object({
   type_module: z.number(),
@@ -85,16 +86,27 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
         )}
         {...props}
       >
-        <div className="bg-accent   hidden md:flex xl:col-span-1  border-r   p-10  flex-col justify-between ">
-          <TypographyH3 className="">Plásticos Carmen</TypographyH3>
-          <div className="   m-auto brightness-140 contrast-80 dark:contrast-90 dark:brightness-120 dark:opacity-80">
-            <PCLogoSVG size={250} />
+        <div className="relative  bg-background  hidden md:flex xl:col-span-1  border-r   p-10  flex-col justify-between ">
+          <TypographyH3 className=" z-10  ">Plásticos Carmen</TypographyH3>
+          <div className="   z-10  m-auto brightness-140 contrast-80 dark:contrast-90 dark:brightness-120  ">
+            <PCLogoSVG
+              size={250}
+              fillColorCircle="#1a3385"
+              fillColorRect="#0f1a3d"
+              strokeColor="#991818"
+            />
           </div>
 
-          <TypographyP className="text-foreground/70 text-right">
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
-            has been the industry's standard dummy text ever since the 1500s.
+          <TypographyP className=" z-10 leading-tight text-foreground/70 text-right ">
+            "Empresa boliviana líder en producción y comercialización de plásticos, enfocada en la
+            modernización y expansión para diversificar su oferta y brindar un servicio de
+            excelencia"
           </TypographyP>
+
+          <img
+            className=" z-0 absolute top-0 right-0 h-[100%] object-cover opacity-50 contrast-80 grayscale-70 brightness-90"
+            src={pcImg}
+          />
         </div>
         <div className=" bg-background col-span-2 md:col-span-1   px-10 py-30 flex flex-col justify-center relative">
           <div className="ml-auto absolute top-10 right-10">

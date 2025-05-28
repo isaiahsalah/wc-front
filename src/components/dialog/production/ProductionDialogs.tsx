@@ -117,6 +117,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
         equivalent_amount: form.getValues().equivalent_amount,
         weight: form.getValues().weight,
         type_quality: form.getValues().type_quality,
+        type_size: form.getValues().type_size,
         micronage: form.getValues().micronage,
         production_users: form.getValues().production_users,
       },

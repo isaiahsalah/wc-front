@@ -37,7 +37,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {format} from "date-fns";
-import {typeQuality, typeTurn} from "@/utils/const";
+import {typeQuality, typeSize, typeTurn} from "@/utils/const";
 import {Badge} from "@/components/ui/badge";
 import {getMachines} from "@/api/params/machine.api";
 import {SectorProcessContext} from "@/providers/sectorProcessProvider";
@@ -161,7 +161,7 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
         cell: (info) =>
           info.getValue() ? (
             <Badge variant={"secondary"} className="text-muted-foreground">
-              {typeQuality.find((item) => item.id === info.getValue())?.name}
+              {typeSize.find((item) => item.id === info.getValue())?.name}
             </Badge>
           ) : (
             <Badge variant={"outline"} className="text-muted-foreground">
@@ -200,7 +200,12 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
       },
 
       {
-        accessorFn: (row) => ` ${row.production_order_detail?.production_order?.type_turn}`.trim(),
+        accessorFn: (row) =>
+          ` ${
+            typeTurn.find(
+              (turn) => turn.id === row.production_order_detail?.production_order?.type_turn
+            )?.name
+          }`.trim(),
         header: "Turno",
         cell: (info) => {
           return (

@@ -4,6 +4,7 @@ import {format} from "date-fns";
 import {es} from "date-fns/locale";
 
 import QRCode from "qrcode"; // Asegúrate de importar correctamente tu biblioteca
+import {typeSize} from "./const";
 
 export const generateQR = async ({
   productions,
@@ -95,6 +96,14 @@ export const printTag = ({
       if (key === "micronage")
         return production.micronage
           ? doc.text(`${production.micronage?.join(" - ")}`, col, line)
+          : "";
+      if (key === "type_size")
+        return production.type_size
+          ? doc.text(
+              `${typeSize.find((size) => size.id === production.type_size)?.name}`,
+              col,
+              line
+            )
           : "";
       return doc.text(`${production[key as keyof IProduction]}`, col, line);
     });

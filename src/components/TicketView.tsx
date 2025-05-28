@@ -9,8 +9,8 @@ const TicketView = ({ticketFormat}: {ticketFormat: string[]}) => {
             </div>
           </div>
           <div className="  flex-1   text-black text-[9px] m-auto ">
-            {ticketFormat.map((key) => {
-              return <div>{key}</div>;
+            {ticketFormat.map((key, i) => {
+              return <div key={i}>{key}</div>;
             })}
           </div>
         </div>
