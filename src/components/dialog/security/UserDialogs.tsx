@@ -209,20 +209,30 @@ export const CreateUserDialog: React.FC<PropsCreate> = ({children, updateView}) 
                     <FormItem className="col-span-6">
                       <FormDescription>Grupo</FormDescription>
                       <FormControl>
-                        <Select
-                          onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Seleccionar Tipo" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {groups?.map((group: IWorkGroup) => (
-                              <SelectItem key={group.id} value={(group.id ?? "").toString()}>
-                                {group.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <div className="flex gap-2">
+                          <Select
+                            value={field.value?.toString() ?? ""} // Asegúrate de que el valor sea una cadena
+                            onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Seleccionar Tipo" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {groups?.map((group: IWorkGroup) => (
+                                <SelectItem key={group.id} value={(group.id ?? "").toString()}>
+                                  {group.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <Button
+                            variant={"outline"}
+                            type="button"
+                            onClick={() => field.onChange(null)}
+                          >
+                            <Trash2 />
+                          </Button>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

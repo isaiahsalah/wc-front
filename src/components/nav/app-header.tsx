@@ -12,7 +12,7 @@ const Header = () => {
   const {page} = useContext(PageContext);
 
   return (
-    <header className="flex   shrink-0 items-center gap-2 border-b p-2">
+    <header className="  z-10 top-0 right-0 left-0  flex shrink-0 items-center gap-2 border-b p-2 ">
       <SidebarTrigger className="-ml-1" />
       <div className=" mr-auto">
         <TypographyH5>{page.name}</TypographyH5>

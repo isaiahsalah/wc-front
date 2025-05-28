@@ -45,6 +45,7 @@ function App() {
         <PageProvider>
           <SidebarProvider>
             <AppSidebar />
+
             <SidebarInset>
               <Header />
               <div className=" @container/main flex flex-1 flex-col gap-4 p-4 animate-fadeIn md:mx-4  ">

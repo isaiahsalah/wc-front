@@ -261,8 +261,8 @@ export const typePermission: IPermissionItem[] = [
 ];
 
 export const typeSize: ISizeItem[] = [
-  {id: 1, name: "Pequeño"},
-  {id: 2, name: "Mediano"},
-  {id: 3, name: "Grande"},
-  {id: 4, name: "Extra Grande"},
+  {id: 1, name: "S"},
+  {id: 2, name: "M"},
+  {id: 3, name: "L"},
+  {id: 4, name: "XL"},
 ];

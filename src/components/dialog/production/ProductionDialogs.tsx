@@ -177,7 +177,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
         id_unit: orderDetail.product?.id_unit,
         id_equivalent_unit: orderDetail.product?.id_equivalent_unit,
         equivalent_amount: Number(orderDetail.product?.equivalent_amount),
-        weight: Number(orderDetail.product?.weight),
+        weight: parseFloat(orderDetail.product?.weight.toString() ?? "0"),
         production_users: [
           {
             id_sys_user: BaseUsersData.find((BaseUser) => BaseUser.id === sesion?.sys_user.id)?.id,
@@ -362,7 +362,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                       <FormDescription>Peso(kg)</FormDescription>
                       <FormControl>
                         <Input
-                          placeholder="Cantidad"
+                          placeholder="Peso"
                           type="number"
                           {...field}
                           onChange={(event) => field.onChange(Number(event.target.value))}
@@ -879,7 +879,7 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
                       <FormDescription>Peso(kg)</FormDescription>
                       <FormControl>
                         <Input
-                          placeholder="Cantidad"
+                          placeholder="Peso"
                           type="number"
                           {...field}
                           onChange={(event) => field.onChange(Number(event.target.value))}

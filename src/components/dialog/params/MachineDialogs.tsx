@@ -270,7 +270,7 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
                           placeholder="Notas adicionales"
                           {...field}
                           value={field.value ?? ""}
-                        />{" "}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
