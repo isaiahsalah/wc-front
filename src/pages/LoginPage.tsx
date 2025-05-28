@@ -91,8 +91,8 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
           <div className="   z-10  m-auto brightness-140 contrast-80 dark:contrast-90 dark:brightness-120  ">
             <PCLogoSVG
               size={250}
-              fillColorCircle="#1a3385"
-              fillColorRect="#0f1a3d"
+              fillColorCircle="#1c3997"
+              fillColorRect="#142252"
               strokeColor="#991818"
             />
           </div>

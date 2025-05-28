@@ -52,6 +52,7 @@ export const updateOrder = async ({order}: {order: IProductionOrder}) => {
     return toast.warning("La fecha de inicio debe ser menor a la fecha de fin");
   }
   toast.info("Se está procesando la petición");
+
   try {
     const response = await apiClient.put(`/pr/order/${order.id}`, order);
     toast.success("La orden se editó correctamente.");

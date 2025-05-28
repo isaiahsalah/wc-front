@@ -43,7 +43,7 @@ import LoadingCircle from "@/components/LoadingCircle";
 import {DateTimePicker} from "@/components/DateTimePicker";
 import {getProducts} from "@/api/product/product.api";
 import {ColumnDef, Row} from "@tanstack/react-table";
-import {ChevronsDown, Trash2} from "lucide-react";
+import {ChevronsDown, Edit, Trash2} from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -433,11 +433,13 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
-
+  /*
   const [productSelected, setProductSelected] = useState<IProduct>();
   const [machineSelected, setMachineSelected] = useState<IMachine>();
+  const [amount, setAmount] = useState<number>();*/
 
-  const [amount, setAmount] = useState<number>();
+  const [orderDetailSelected, setOrderDetailSelected] = useState<IProductionOrderDetail>();
+
   const [products, setProducts] = useState<IProduct[]>([]);
   const [machines, setMachines] = useState<IMachine[]>([]);
   const [groups, setGroups] = useState<IWorkGroup[]>([]);
@@ -525,24 +527,41 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
   }
 
   const addProductSelected = () => {
-    if (productSelected && productSelected.id && amount && amount > 0) {
-      const orderDetailTemp = form.getValues().production_order_details;
+    if (
+      orderDetailSelected &&
+      orderDetailSelected.id_machine &&
+      orderDetailSelected.id_product &&
+      orderDetailSelected.amount > 0
+    ) {
+      const orderDetailTemp: IProductionOrderDetail[] = form.getValues()
+        .production_order_details as unknown as IProductionOrderDetail[];
+      let newOrderDetails: IProductionOrderDetail[];
+      if (orderDetailSelected.id) {
+        newOrderDetails =
+          orderDetailTemp.map((pod: IProductionOrderDetail) =>
+            pod.id === orderDetailSelected.id ? orderDetailSelected : pod
+          ) || [];
+      } else {
+        newOrderDetails = [
+          {
+            amount: orderDetailSelected.amount,
+            id_product: orderDetailSelected.id_product,
+            id_machine: orderDetailSelected.id_machine,
+            machine: orderDetailSelected.machine,
+            product: orderDetailSelected.product,
+            id_production_order: id,
+          },
+          ...(orderDetailTemp ?? []),
+        ];
+      }
 
       form.reset({
         ...form.getValues(),
-        production_order_details: [
-          {
-            amount: amount,
-            id_product: productSelected.id,
-            product: productSelected,
-            id_machine: machineSelected?.id,
-            machine: machineSelected,
-            id_production_order: 0,
-          },
-          ...(orderDetailTemp ?? []),
-        ],
+        production_order_details: newOrderDetails,
       });
     } else toast.warning("Selcciona el producto, máquina y cantidad");
+
+    setOrderDetailSelected(undefined);
   };
 
   const deleteProductSelected = (index: number) => {
@@ -604,6 +623,15 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
           return (
             <div className="flex gap-2  justify-end  ">
               <Button
+                variant={"outline"}
+                type="button"
+                onClick={() => {
+                  setOrderDetailSelected(row.original);
+                }}
+              >
+                <Edit />
+              </Button>
+              <Button
                 disabled={
                   row.original.productions && row.original.productions.length > 0 ? true : false
                 }
@@ -626,7 +654,7 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
       <DialogTrigger asChild onClick={fetchOrder}>
         {children}
       </DialogTrigger>
-      <DialogContent className="md:max-w-2xl">
+      <DialogContent className="md:max-w-2xl ">
         <DialogHeader>
           <DialogTitle>Editar orden</DialogTitle>
           <DialogDescription>Mostrando datos relacionados con la orden.</DialogDescription>
@@ -752,11 +780,30 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                 <div className="w-full col-span-3 grid gap-2">
                   <FormDescription>Producto a ordear</FormDescription>
                   <Select
+                    value={orderDetailSelected?.id_product.toString()}
                     onValueChange={(value) => {
                       const selectedProduct = products?.find(
                         (product: IProduct) => product.id?.toString() === value
                       );
-                      setProductSelected(selectedProduct); // Guarda el objeto completo
+                      //setProductSelected(selectedProduct); // Guarda el objeto completo
+                      setOrderDetailSelected(
+                        orderDetailSelected
+                          ? {
+                              ...orderDetailSelected,
+                              product: selectedProduct,
+                              id_product: selectedProduct?.id ?? 0,
+                            }
+                          : selectedProduct
+                          ? {
+                              amount: 1,
+                              id_product: selectedProduct.id ?? 0,
+                              id_production_order: id,
+                              id_machine: machines[0].id ?? 0,
+                              machine: machines[0],
+                              product: selectedProduct,
+                            }
+                          : undefined
+                      );
                     }} // Convertir el valor a número
                   >
                     <SelectTrigger className="w-full  ">
@@ -775,11 +822,30 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                 <div className="w-full col-span-2 grid gap-2">
                   <FormDescription>Máquina</FormDescription>
                   <Select
+                    value={orderDetailSelected?.id_machine.toString()}
                     onValueChange={(value) => {
                       const selectedMachine = machines?.find(
                         (machine: IMachine) => machine.id?.toString() === value
                       );
-                      setMachineSelected(selectedMachine); // Guarda el objeto completo
+                      //setMachineSelected(selectedMachine); // Guarda el objeto completo
+                      setOrderDetailSelected(
+                        orderDetailSelected
+                          ? {
+                              ...orderDetailSelected,
+                              machine: selectedMachine,
+                              id_machine: selectedMachine?.id ?? 0,
+                            }
+                          : selectedMachine
+                          ? {
+                              amount: 1,
+                              id_machine: selectedMachine.id ?? 0,
+                              id_production_order: id,
+                              id_product: products[0].id ?? 0,
+                              product: products[0],
+                              machine: selectedMachine,
+                            }
+                          : undefined
+                      );
                     }} // Convertir el valor a número
                   >
                     <SelectTrigger className="w-full  ">
@@ -800,7 +866,17 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                   <Input
                     placeholder="Cantidad"
                     type="number"
-                    onChange={(event) => setAmount(Number(event.target.value))}
+                    value={orderDetailSelected?.amount}
+                    onChange={(event) =>
+                      setOrderDetailSelected(
+                        orderDetailSelected
+                          ? {
+                              ...orderDetailSelected,
+                              amount: Number(event.target.value),
+                            }
+                          : undefined
+                      )
+                    }
                   />
                 </div>
                 <div className="w-full col-span-6 grid gap-2">
