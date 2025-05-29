@@ -254,6 +254,21 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
           );
         },
       },
+      {
+        accessorFn: (row) => `${typeSize.find((size) => size.id === row.type_size)?.name}`.trim(),
+        header: "Peso",
+        cell: (info) => {
+          return info.getValue() != "undefined" ? (
+            <Badge variant={"secondary"} className="text-muted-foreground">
+              {info.getValue() as string}
+            </Badge>
+          ) : (
+            <Badge variant={"outline"} className="text-muted-foreground">
+              {"N/A"}
+            </Badge>
+          );
+        },
+      },
       orderDetail.product?.micronage
         ? {
             accessorKey: "micronage",
@@ -347,7 +362,10 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                           placeholder="min."
                           type="number"
                           {...field}
-                          onChange={(event) => field.onChange(Number(event.target.value))}
+                          onChange={(event) => {
+                            const value = event.target.value;
+                            field.onChange(value === "" ? null : Number(value));
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -365,7 +383,10 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                           placeholder="Peso"
                           type="number"
                           {...field}
-                          onChange={(event) => field.onChange(Number(event.target.value))}
+                          onChange={(event) => {
+                            const value = event.target.value;
+                            field.onChange(value === "" ? null : Number(value));
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -441,7 +462,10 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                             placeholder="Cantidad"
                             type="number"
                             {...field}
-                            onChange={(event) => field.onChange(Number(event.target.value))}
+                            onChange={(event) => {
+                              const value = event.target.value;
+                              field.onChange(value === "" ? null : Number(value));
+                            }}
                           />
                         </FormControl>
                         <FormMessage />
@@ -864,7 +888,10 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
                           placeholder="Cantidad"
                           type="number"
                           {...field}
-                          onChange={(event) => field.onChange(Number(event.target.value))}
+                          onChange={(event) => {
+                            const value = event.target.value;
+                            field.onChange(value === "" ? null : Number(value));
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -882,7 +909,10 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
                           placeholder="Peso"
                           type="number"
                           {...field}
-                          onChange={(event) => field.onChange(Number(event.target.value))}
+                          onChange={(event) => {
+                            const value = event.target.value;
+                            field.onChange(value === "" ? null : Number(value));
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -958,7 +988,10 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
                             placeholder="Cantidad"
                             type="number"
                             {...field}
-                            onChange={(event) => field.onChange(Number(event.target.value))}
+                            onChange={(event) => {
+                              const value = event.target.value;
+                              field.onChange(value === "" ? null : Number(value));
+                            }}
                           />
                         </FormControl>
                         <FormMessage />

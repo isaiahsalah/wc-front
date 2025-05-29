@@ -375,7 +375,10 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
                   <Input
                     placeholder="Cantidad"
                     type="number"
-                    onChange={(event) => setAmount(Number(event.target.value))}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      setAmount(value === "" ? undefined : Number(value));
+                    }}
                   />
                 </div>
                 <div className="w-full col-span-6 grid gap-2">

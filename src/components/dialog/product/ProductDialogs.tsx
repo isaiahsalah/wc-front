@@ -302,7 +302,10 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
                           placeholder="Cantidad"
                           type="number"
                           {...field}
-                          onChange={(event) => field.onChange(Number(event.target.value))}
+                          onChange={(event) => {
+                            const value = event.target.value;
+                            field.onChange(value === "" ? null : Number(value));
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -320,7 +323,10 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
                           placeholder="Peso"
                           type="number"
                           {...field}
-                          onChange={(event) => field.onChange(Number(event.target.value))}
+                          onChange={(event) => {
+                            const value = event.target.value;
+                            field.onChange(value === "" ? null : Number(value));
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -339,7 +345,10 @@ export const CreateProductDialog: React.FC<PropsCreate> = ({children, updateView
                           placeholder="Micronaje"
                           type="number"
                           {...field}
-                          onChange={(event) => field.onChange(Number(event.target.value))}
+                          onChange={(event) => {
+                            const value = event.target.value;
+                            field.onChange(value === "" ? null : Number(value));
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -675,7 +684,10 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                           placeholder="Cantidad"
                           type="number"
                           {...field}
-                          onChange={(event) => field.onChange(Number(event.target.value))}
+                          onChange={(event) => {
+                            const value = event.target.value;
+                            field.onChange(value === "" ? null : Number(value));
+                          }}
                           defaultValue={field.value ?? ""}
                         />
                       </FormControl>
@@ -694,7 +706,10 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                           placeholder="peso"
                           type="number"
                           {...field}
-                          onChange={(event) => field.onChange(Number(event.target.value))}
+                          onChange={(event) => {
+                            const value = event.target.value;
+                            field.onChange(value === "" ? null : Number(value));
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -712,7 +727,10 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                           placeholder="Micronaje"
                           type="number"
                           {...field}
-                          onChange={(event) => field.onChange(Number(event.target.value))}
+                          onChange={(event) => {
+                            const value = event.target.value;
+                            field.onChange(value === "" ? null : Number(value));
+                          }}
                           defaultValue={field.value ?? ""}
                         />
                       </FormControl>
