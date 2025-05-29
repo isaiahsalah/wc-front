@@ -16,9 +16,10 @@ import {
 import {useContext, useState} from "react";
 import {
   createFormula,
-  deleteFormula,
+  hardDeleteFormula,
   getFormulaById,
   recoverFormula,
+  softDeleteFormula,
   updateFormula,
 } from "@/api/product/formula.api";
 import {
@@ -257,7 +258,7 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
 
   function onDelete(id: number): void {
     setLoadingDelete(true);
-    deleteFormula(id)
+    softDeleteFormula(id)
       .then((deletedFormula) => {
         console.log("Fórmula eliminada:", deletedFormula);
 
@@ -404,7 +405,7 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
   );
 };
 
-interface PropsDelete {
+interface SoftPropsDelete {
   children: React.ReactNode; // Define el tipo de children
   id: number; // Clase personalizada opcional
   updateView: () => void; // Define the type as a function that returns void
@@ -412,7 +413,7 @@ interface PropsDelete {
 }
 
 // Componente para eliminar una fórmula
-export const DeleteFormulaDialog: React.FC<PropsDelete> = ({
+export const SoftDeleteFormulaDialog: React.FC<SoftPropsDelete> = ({
   children,
   id,
   updateView,
@@ -422,7 +423,68 @@ export const DeleteFormulaDialog: React.FC<PropsDelete> = ({
 
   function onDelete(): void {
     setLoadingDelete(true); // Inicia la carga
-    deleteFormula(id)
+    softDeleteFormula(id)
+      .then((deletedFormula) => {
+        console.log("Fórmula eliminada:", deletedFormula);
+        updateView();
+      })
+      .catch((error) => {
+        console.error("Error al eliminar la fórmula:", error);
+      })
+      .finally(() => {
+        setLoadingDelete(false); // Finaliza la carga
+      });
+  }
+
+  return (
+    <Dialog onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Eliminar fórmula</DialogTitle>
+          <DialogDescription>¿Está seguro de eliminar esta fórmula?</DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter className="grid grid-cols-6 col-span-6">
+          <Button
+            type="submit"
+            disabled={loadingDelete}
+            className="col-span-3"
+            variant={"destructive"}
+            onClick={onDelete}
+          >
+            {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+          </Button>
+          <DialogClose className="col-span-3" asChild>
+            <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
+              Cerrar
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+interface PropsHardDelete {
+  children: React.ReactNode; // Define el tipo de children
+  id: number; // Clase personalizada opcional
+  updateView: () => void; // Define the type as a function that returns void
+  onOpenChange?: (open: boolean) => void;
+}
+
+// Componente para eliminar una fórmula
+export const HardDeleteFormulaDialog: React.FC<PropsHardDelete> = ({
+  children,
+  id,
+  updateView,
+  onOpenChange,
+}) => {
+  const [loadingDelete, setLoadingDelete] = useState(false); // Estado de carga
+
+  function onDelete(): void {
+    setLoadingDelete(true); // Inicia la carga
+    softDeleteFormula(id)
       .then((deletedFormula) => {
         console.log("Fórmula eliminada:", deletedFormula);
         updateView();

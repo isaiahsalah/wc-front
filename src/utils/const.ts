@@ -24,7 +24,6 @@ export interface IPageItem {
 
 export interface IMenuItem {
   name: string;
-  url: string;
   icon: React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>;
   isActive?: boolean;
   pages: IPageItem[];
@@ -50,7 +49,6 @@ export interface IPermissionItem {
 const typeMenuPI: IMenuItem[] = [
   {
     name: "Productos",
-    url: "product",
     icon: Package,
     pages: [
       {
@@ -85,7 +83,6 @@ const typeMenuPI: IMenuItem[] = [
   },
   {
     name: "Producción",
-    url: "production",
     icon: PackagePlus,
     pages: [
       {
@@ -107,7 +104,6 @@ const typeMenuPI: IMenuItem[] = [
 
   {
     name: "Inventario",
-    url: "inventory",
     icon: PackageSearch,
     pages: [
       {
@@ -121,7 +117,6 @@ const typeMenuPI: IMenuItem[] = [
   },
   {
     name: "Parametros",
-    url: "params",
     icon: Blend,
     pages: [
       {
@@ -149,7 +144,6 @@ const typeMenuPI: IMenuItem[] = [
   },
   {
     name: "Seguridad",
-    url: "security",
     icon: UserLockIcon,
     pages: [
       {
@@ -169,10 +163,10 @@ const typeMenuPI: IMenuItem[] = [
     ],
   },
 ];
-const typeMenuRA: IMenuItem[] = [{name: "Home", url: "home", icon: Package, pages: []}];
-const typeMenuSL: IMenuItem[] = [{name: "Home", url: "home", icon: Package, pages: []}];
-const typeMenuCQ: IMenuItem[] = [{name: "Home", url: "home", icon: Package, pages: []}];
-const typeMenuAU: IMenuItem[] = [{name: "Home", url: "home", icon: Package, pages: []}];
+const typeMenuRA: IMenuItem[] = [{name: "Home", icon: Package, pages: []}];
+const typeMenuSL: IMenuItem[] = [{name: "Home", icon: Package, pages: []}];
+const typeMenuCQ: IMenuItem[] = [{name: "Home", icon: Package, pages: []}];
+const typeMenuAU: IMenuItem[] = [{name: "Home", icon: Package, pages: []}];
 
 export const typeModule: IModuleItem[] = [
   {

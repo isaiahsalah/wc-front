@@ -48,7 +48,7 @@ function App() {
 
             <SidebarInset>
               <Header />
-              <div className=" @container/main flex flex-1 flex-col gap-4 p-4 animate-fadeIn md:mx-4  ">
+              <div className=" @container/main bg-accent  dark:bg-background flex flex-1 flex-col gap-4 p-4 animate-fadeIn md:px-6  ">
                 <main className="h-full  ">
                   <Outlet />
                 </main>

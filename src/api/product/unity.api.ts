@@ -47,10 +47,22 @@ export const updateUnity = async ({data}: {data: IUnity}) => {
   }
 };
 
-export const deleteUnity = async (id: number) => {
+export const softDeleteUnit = async (id: number) => {
   toast.info("Se está procesando la petición");
   try {
-    const response = await apiClient.delete(`/pr/unity/${id}`);
+    const response = await apiClient.delete(`/pr/unity/soft/${id}`);
+    toast.success("La unidad se desactivó correctamente.");
+    return response.data; // Devuelve el mensaje de éxito
+  } catch (error) {
+    toast.error(`Error al desactivar la unidad con ID ${id}: ${error}`);
+    throw error;
+  }
+};
+
+export const hardDeleteUnit = async (id: number) => {
+  toast.info("Se está procesando la petición");
+  try {
+    const response = await apiClient.delete(`/pr/unity/hard/${id}`);
     toast.success("La unidad se eliminó correctamente.");
     return response.data; // Devuelve el mensaje de éxito
   } catch (error) {

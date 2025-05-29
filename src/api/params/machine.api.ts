@@ -56,10 +56,21 @@ export const updateMachine = async ({data}: {data: IMachine}) => {
   }
 };
 
-export const deleteMachine = async (id: number) => {
+export const softDeleteMachine = async (id: number) => {
   toast.info("Se está procesando la petición");
   try {
-    const response = await apiClient.delete(`/pr/machine/${id}`);
+    const response = await apiClient.delete(`/pr/machine/soft/${id}`);
+    toast.success("La máquina se desactivó correctamente.");
+    return response.data; // Devuelve el mensaje de éxito
+  } catch (error) {
+    toast.error(`Error al desactivar la máquina con ID ${id}: ${error}`);
+    throw error;
+  }
+};
+export const hardDeleteMachine = async (id: number) => {
+  toast.info("Se está procesando la petición");
+  try {
+    const response = await apiClient.delete(`/pr/machine/hard/${id}`);
     toast.success("La máquina se eliminó correctamente.");
     return response.data; // Devuelve el mensaje de éxito
   } catch (error) {

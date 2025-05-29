@@ -78,7 +78,7 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
   return window.localStorage.getItem("token-app") ? (
     <Navigate to="/" />
   ) : (
-    <div className=" bg-muted   p-10 flex flex-col w-full min-h-svh  items-center justify-center ">
+    <div className=" bg-accent dark:bg-background   p-10 flex flex-col w-full min-h-svh  items-center justify-center ">
       <div
         className={cn(
           "max-w-md md:max-w-3xl grid grid-cols-2 rounded-md border overflow-hidden    w-full ",
@@ -86,7 +86,7 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
         )}
         {...props}
       >
-        <div className="relative  bg-background  hidden md:flex xl:col-span-1  border-r   p-10  flex-col justify-between ">
+        <div className="relative  bg-background   hidden md:flex xl:col-span-1  border-r   p-10  flex-col justify-between ">
           <TypographyH3 className=" z-10  ">Plásticos Carmen</TypographyH3>
           <div className="   z-10  m-auto brightness-140 contrast-80 dark:contrast-90 dark:brightness-120  ">
             <PCLogoSVG
@@ -108,7 +108,7 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
             src={pcImg}
           />
         </div>
-        <div className=" bg-background col-span-2 md:col-span-1   px-10 py-30 flex flex-col justify-center relative">
+        <div className=" bg-card col-span-2 md:col-span-1   px-10 py-30 flex flex-col justify-center relative">
           <div className="ml-auto absolute top-10 right-10">
             <ModeToggle />
           </div>

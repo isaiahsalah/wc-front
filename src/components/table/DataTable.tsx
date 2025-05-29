@@ -10,7 +10,7 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -38,6 +38,7 @@ interface Props<T extends IGeneral> {
   columns: ColumnDef<T>[];
   hasOptions?: boolean;
   hasPaginated?: boolean;
+  pageSize?: number;
 }
 
 const DataTable = <T extends IGeneral>({
@@ -46,6 +47,7 @@ const DataTable = <T extends IGeneral>({
   columns,
   hasOptions = true,
   hasPaginated = true,
+  pageSize,
 }: Props<T>) => {
   const [rowSelection, setRowSelection] = useState({});
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
@@ -57,8 +59,12 @@ const DataTable = <T extends IGeneral>({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: hasPaginated ? 5 : 100,
+    pageSize: hasPaginated ? pageSize ?? 5 : pageSize ?? 100,
   });
+
+  useEffect(() => {
+    console.log(pageSize);
+  }, []);
 
   const table = useReactTable({
     data: data ?? [],
@@ -142,14 +148,14 @@ const DataTable = <T extends IGeneral>({
       )}
       <div className="overflow-hidden rounded-lg border">
         <Table>
-          <TableHeader className="bg-muted">
+          <TableHeader className="bg-muted-foreground  ">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead
                       key={header.id}
-                      className="text-left capitalize text-sm font-medium text-muted-foreground"
+                      className="text-left h-8  capitalize text-sm font-medium text-background"
                     >
                       {!header.column.columnDef.header
                         ? null
@@ -166,11 +172,15 @@ const DataTable = <T extends IGeneral>({
                 <TableRow
                   key={i}
                   data-state={row.getIsSelected() && "selected"}
-                  className={row.original.deletedAt ? "bg-red-500/30 hover:bg-red-500/50" : ""}
+                  className={
+                    row.original.deletedAt
+                      ? "bg-red-500/30 hover:bg-red-500/50 border-0 "
+                      : "odd:bg-background/50 even:bg-muted/50   border-0"
+                  }
                 >
                   {row.getVisibleCells().map((cell) => {
                     return (
-                      <TableCell key={cell.id} className=" py-1.5">
+                      <TableCell key={cell.id} className=" py-0 my-0   ">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     );

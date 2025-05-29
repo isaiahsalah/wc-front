@@ -47,10 +47,22 @@ export const updateGroup = async ({data}: {data: IWorkGroup}) => {
   }
 };
 
-export const deleteGroup = async (id: number) => {
+export const softDeleteGroup = async (id: number) => {
   toast.info("Se está procesando la petición");
   try {
-    const response = await apiClient.delete(`/pr/group/${id}`);
+    const response = await apiClient.delete(`/pr/group/soft/${id}`);
+    toast.success("El grupo se desactivó correctamente.");
+    return response.data; // Devuelve el mensaje de éxito
+  } catch (error) {
+    toast.error(`Error al desactivar el grupo con ID ${id}: ${error}`);
+    throw error;
+  }
+};
+
+export const hardDeleteGroup = async (id: number) => {
+  toast.info("Se está procesando la petición");
+  try {
+    const response = await apiClient.delete(`/pr/group/hard/${id}`);
     toast.success("El grupo se eliminó correctamente.");
     return response.data; // Devuelve el mensaje de éxito
   } catch (error) {

@@ -59,10 +59,22 @@ export const updateFormula = async ({data}: {data: IFormula}) => {
   }
 };
 
-export const deleteFormula = async (id: number) => {
+export const softDeleteFormula = async (id: number) => {
   toast.info("Se está procesando la petición");
   try {
-    const response = await apiClient.delete(`/pr/formula/${id}`);
+    const response = await apiClient.delete(`/pr/formula/soft/${id}`);
+    toast.success("La fórmula se desactivó correctamente.");
+    return response.data; // Devuelve el mensaje de éxito
+  } catch (error) {
+    toast.error(`Error al desactivar la fórmula con ID ${id}: ${error}`);
+    throw error;
+  }
+};
+
+export const hardDeleteFormula = async (id: number) => {
+  toast.info("Se está procesando la petición");
+  try {
+    const response = await apiClient.delete(`/pr/formula/hard/${id}`);
     toast.success("La fórmula se eliminó correctamente.");
     return response.data; // Devuelve el mensaje de éxito
   } catch (error) {

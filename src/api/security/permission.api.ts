@@ -49,7 +49,7 @@ export const updatePermission = async ({data}: {data: IPermission}) => {
     throw error;
   }
 };
-
+/*
 // Eliminar permiso
 export const deletePermission = async (id: number) => {
   toast.info("Se está procesando la petición");
@@ -79,3 +79,4 @@ export const recoverPermission = async (id: number) => {
     throw error;
   }
 };
+*/

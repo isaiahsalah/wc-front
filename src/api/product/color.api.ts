@@ -47,10 +47,22 @@ export const updateColor = async ({data}: {data: IColor}) => {
   }
 };
 
-export const deleteColor = async (id: number) => {
+export const softDeleteColor = async (id: number) => {
   toast.info("Se está procesando la petición");
   try {
-    const response = await apiClient.delete(`/pr/color/${id}`);
+    const response = await apiClient.delete(`/pr/color/soft/${id}`);
+    toast.success("El color se desactivó correctamente.");
+    return response.data; // Devuelve el mensaje de éxito
+  } catch (error) {
+    toast.error(`Error al desactivar el color con ID ${id}: ${error}`);
+    throw error;
+  }
+};
+
+export const hardDeleteColor = async (id: number) => {
+  toast.info("Se está procesando la petición");
+  try {
+    const response = await apiClient.delete(`/pr/color/hard/${id}`);
     toast.success("El color se eliminó correctamente.");
     return response.data; // Devuelve el mensaje de éxito
   } catch (error) {

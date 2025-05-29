@@ -28,9 +28,10 @@ import LoadingCircle from "@/components/LoadingCircle";
 import {IWorkGroup, ISystemUser, SystemUserSchema} from "@/utils/interfaces";
 import {
   createUser,
-  deleteUser,
+  hardDeleteUser,
   getUserById,
   recoverUser,
+  softDeleteUser,
   updateUser,
 } from "@/api/security/user.api";
 import {getGroups} from "@/api/security/group.api";
@@ -318,7 +319,7 @@ export const EditUserDialog: React.FC<PropsEdit> = ({children, id, updateView, o
 
   function onDelete(id: number): void {
     setLoadingDelete(true);
-    deleteUser(id)
+    softDeleteUser(id)
       .then((deletedUser) => {
         console.log("Usuario eliminado:", deletedUser);
         updateView();
@@ -506,6 +507,65 @@ export const EditUserDialog: React.FC<PropsEdit> = ({children, id, updateView, o
   );
 };
 
+interface SoftPropsDelete {
+  children: React.ReactNode;
+  id: number;
+  updateView: () => void;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export const SoftDeleteUserDialog: React.FC<SoftPropsDelete> = ({
+  children,
+  id,
+  updateView,
+  onOpenChange,
+}) => {
+  const [loadingDelete, setLoadingDelete] = useState(false);
+
+  function onDelete(): void {
+    setLoadingDelete(true);
+    softDeleteUser(id)
+      .then((deletedUser) => {
+        console.log("Usuario eliminado:", deletedUser);
+        updateView();
+      })
+      .catch((error) => {
+        console.error("Error al eliminar el usuario:", error);
+      })
+      .finally(() => {
+        setLoadingDelete(false);
+      });
+  }
+
+  return (
+    <Dialog onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Eliminar usuario</DialogTitle>
+          <DialogDescription>¿Está seguro de eliminar este usuario?</DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="grid grid-cols-6 col-span-6">
+          <Button
+            type="button"
+            disabled={loadingDelete}
+            className="col-span-3"
+            variant={"destructive"}
+            onClick={onDelete}
+          >
+            {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+          </Button>
+          <DialogClose className="col-span-3" asChild>
+            <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
+              Cerrar
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 interface PropsDelete {
   children: React.ReactNode;
   id: number;
@@ -523,7 +583,7 @@ export const DeleteUserDialog: React.FC<PropsDelete> = ({
 
   function onDelete(): void {
     setLoadingDelete(true);
-    deleteUser(id)
+    softDeleteUser(id)
       .then((deletedUser) => {
         console.log("Usuario eliminado:", deletedUser);
         updateView();

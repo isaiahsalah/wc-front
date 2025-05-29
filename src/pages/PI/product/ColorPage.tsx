@@ -2,20 +2,13 @@ import {IColor} from "@/utils/interfaces";
 import {useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
 import {Button} from "@/components/ui/button";
-import {
-  ArchiveRestore,
-  Edit,
-  MoreVerticalIcon,
-  PlusIcon,
-  Tally5,
-  Trash2,
-  TrendingUpIcon,
-} from "lucide-react";
+import {ArchiveRestore, Edit, List, PlusIcon, Trash2} from "lucide-react";
 import {
   CreateColorDialog,
-  DeleteColorDialog,
+  SoftDeleteColorDialog,
   EditColorDialog,
   RecoverColorDialog,
+  HardDeleteColorDialog,
 } from "@/components/dialog/product/ColorDialogs";
 import {ColumnDef, Row} from "@tanstack/react-table";
 import {
@@ -25,16 +18,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
-import {countCurrentMonth} from "@/utils/funtions";
 import {format} from "date-fns";
 import {getColors} from "@/api/product/color.api";
 
@@ -129,12 +114,12 @@ const ColorPage: React.FC<Props> = ({degree}) => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    variant="ghost"
-                    className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
+                    variant="link"
+                    className="flex size-8 text-muted-foreground data-[state=open]:text-accent-foreground cursor-pointer hover:text-accent-foreground   "
                     size="icon"
                   >
                     {" "}
-                    <MoreVerticalIcon />
+                    <List />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-32">
@@ -149,24 +134,34 @@ const ColorPage: React.FC<Props> = ({degree}) => {
                         </DropdownMenuItem>
                       </EditColorDialog>
                       <DropdownMenuSeparator />
-                      <DeleteColorDialog id={row.original.id ?? 0} updateView={updateView}>
+                      <SoftDeleteColorDialog id={row.original.id ?? 0} updateView={updateView}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <Trash2 /> Desactivar{" "}
+                        </DropdownMenuItem>
+                      </SoftDeleteColorDialog>
+                    </>
+                  ) : (
+                    <>
+                      <RecoverColorDialog id={row.original.id ?? 0} updateView={updateView}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <ArchiveRestore /> Recuperar{" "}
+                        </DropdownMenuItem>
+                      </RecoverColorDialog>
+                      <HardDeleteColorDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem
                           disabled={degree < 4 ? true : false}
                           onSelect={(e) => e.preventDefault()}
                         >
                           <Trash2 /> Eliminar{" "}
                         </DropdownMenuItem>
-                      </DeleteColorDialog>
+                      </HardDeleteColorDialog>
                     </>
-                  ) : (
-                    <RecoverColorDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem
-                        disabled={degree < 4 ? true : false}
-                        onSelect={(e) => e.preventDefault()}
-                      >
-                        <ArchiveRestore /> Recuperar{" "}
-                      </DropdownMenuItem>
-                    </RecoverColorDialog>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -179,30 +174,6 @@ const ColorPage: React.FC<Props> = ({degree}) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <Card className="@container/card col-span-6 lg:col-span-6">
-        <CardHeader className="relative">
-          <CardDescription>Colores registrados</CardDescription>
-          <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            {colors ? colors.length : 0} Colores
-          </CardTitle>
-          <div className="absolute right-4 top-4">
-            <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-              <TrendingUpIcon className="size-3" />+{countCurrentMonth(colors ? colors : [])} este
-              mes
-            </Badge>
-          </div>
-        </CardHeader>
-        <CardFooter className="flex-col items-start gap-1 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Total acumulado en el sistema
-            <Tally5 className="size-4" />
-          </div>
-          <div className="text-muted-foreground">
-            Mantén actualizada esta cantidad para un registro preciso.
-          </div>
-        </CardFooter>
-      </Card>
-
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader>
           <CardTitle>Colores</CardTitle>

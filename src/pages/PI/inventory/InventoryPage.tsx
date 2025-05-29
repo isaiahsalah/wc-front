@@ -3,7 +3,7 @@ import {ColumnDef, Row} from "@tanstack/react-table";
 import {useContext, useEffect, useMemo, useState} from "react";
 import DataTable from "@/components/table/DataTable";
 import {Button} from "@/components/ui/button";
-import {ArchiveRestore, Edit, MoreVerticalIcon, Printer, Trash2} from "lucide-react";
+import {ArchiveRestore, Edit, List, Printer, Trash2} from "lucide-react";
 import {
   DeleteProductionDialog,
   EditProductionDialog,
@@ -295,12 +295,12 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    variant="ghost"
-                    className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
+                    variant="link"
+                    className="flex size-8 text-muted-foreground data-[state=open]:text-accent-foreground cursor-pointer hover:text-accent-foreground   "
                     size="icon"
                   >
                     {" "}
-                    <MoreVerticalIcon />
+                    <List />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-32">
@@ -354,7 +354,7 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
   }, [productions]);
 
   return (
-    <div className="grid grid-cols-6 gap-4">
+    <div className="grid grid-cols-6 gap-2">
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardContent className=" flex flex-col gap-2">
           <CardDescription>Selecciona la máquina</CardDescription>
@@ -397,7 +397,7 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
           <CardDescription>Producción registrada por el usuario activo</CardDescription>
         </CardHeader>
         <CardContent>
-          <DataTable actions={<></>} columns={columnsProduction} data={productions} />
+          <DataTable actions={<></>} columns={columnsProduction} data={productions} pageSize={10} />
         </CardContent>
       </Card>
     </div>

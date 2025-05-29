@@ -65,10 +65,22 @@ export const updateProduction = async ({data}: {data: IProduction}) => {
   }
 };
 
-export const deleteProduction = async (id: number) => {
+export const softDeleteProduction = async (id: number) => {
   toast.info("Se está procesando la petición");
   try {
-    const response = await apiClient.delete(`/pr/production/${id}`);
+    const response = await apiClient.delete(`/pr/production/soft/${id}`);
+    toast.success("La producción se desactivó correctamente.");
+    return response.data; // Devuelve el mensaje de éxito
+  } catch (error) {
+    toast.error(`Error al desactivar la producción con ID ${id}: ${error}`);
+    throw error;
+  }
+};
+
+export const hardDeleteProduction = async (id: number) => {
+  toast.info("Se está procesando la petición");
+  try {
+    const response = await apiClient.delete(`/pr/production/hard/${id}`);
     toast.success("La producción se eliminó correctamente.");
     return response.data; // Devuelve el mensaje de éxito
   } catch (error) {

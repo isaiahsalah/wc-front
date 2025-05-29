@@ -63,10 +63,22 @@ export const updateOrder = async ({order}: {order: IProductionOrder}) => {
   }
 };
 
-export const deleteOrder = async (id: number) => {
+export const softDeleteOrder = async (id: number) => {
   toast.info("Se está procesando la petición");
   try {
-    const response = await apiClient.delete(`/pr/order/${id}`);
+    const response = await apiClient.delete(`/pr/order/soft/${id}`);
+    toast.success("La orden se desactivó correctamente.");
+    return response.data; // Devuelve el mensaje de éxito
+  } catch (error) {
+    toast.error(`Error al desactivar la orden con ID ${id}: ${error}`);
+    throw error;
+  }
+};
+
+export const hardDeleteOrder = async (id: number) => {
+  toast.info("Se está procesando la petición");
+  try {
+    const response = await apiClient.delete(`/pr/order/hard/${id}`);
     toast.success("La orden se eliminó correctamente.");
     return response.data; // Devuelve el mensaje de éxito
   } catch (error) {

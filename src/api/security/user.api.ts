@@ -75,10 +75,22 @@ export const updateUser = async ({data}: {data: ISystemUser}) => {
 };
 
 // Eliminar usuario
-export const deleteUser = async (id: number) => {
+export const softDeleteUser = async (id: number) => {
   toast.info("Se está procesando la petición");
   try {
-    const response = await apiClient.delete(`/pr/user/${id}`);
+    const response = await apiClient.delete(`/pr/user/soft/${id}`);
+    toast.success("El usuario se desactivó correctamente.");
+    return response.data; // Devuelve el mensaje de éxito
+  } catch (error) {
+    toast.error(`Error al desactivar el usuario con ID ${id}: ${error}`);
+    throw error;
+  }
+};
+
+export const hardDeleteUser = async (id: number) => {
+  toast.info("Se está procesando la petición");
+  try {
+    const response = await apiClient.delete(`/pr/user/hard/${id}`);
     toast.success("El usuario se eliminó correctamente.");
     return response.data; // Devuelve el mensaje de éxito
   } catch (error) {

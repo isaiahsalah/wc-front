@@ -15,9 +15,10 @@ import {Textarea} from "@/components/ui/textarea";
 import {useContext, useEffect, useState} from "react";
 import {
   createMachine,
-  deleteMachine,
+  hardDeleteMachine,
   getMachineById,
   recoverMachine,
+  softDeleteMachine,
   updateMachine,
 } from "@/api/params/machine.api";
 import {
@@ -195,7 +196,7 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
 
   function onDelete(id: number): void {
     setLoadingDelete(true);
-    deleteMachine(id)
+    softDeleteMachine(id)
       .then((deletedMachine) => {
         console.log("Machineo eliminado:", deletedMachine);
 
@@ -314,7 +315,7 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
   );
 };
 
-interface PropsDelete {
+interface SoftPropsDelete {
   children: React.ReactNode; // Define el tipo de children
   id: number; // Clase personalizada opcional
   updateView: () => void; // Define el tipo como una función que retorna void
@@ -322,7 +323,7 @@ interface PropsDelete {
 }
 
 // Componente para eliminar un Machineo
-export const DeleteMachineDialog: React.FC<PropsDelete> = ({
+export const SoftDeleteMachineDialog: React.FC<SoftPropsDelete> = ({
   children,
   id,
   updateView,
@@ -332,7 +333,68 @@ export const DeleteMachineDialog: React.FC<PropsDelete> = ({
 
   function onDelete(): void {
     setLoadingDelete(true); // Inicia la carga
-    deleteMachine(id)
+    softDeleteMachine(id)
+      .then((deletedMachine) => {
+        console.log("Machineo eliminado:", deletedMachine);
+        updateView();
+      })
+      .catch((error) => {
+        console.error("Error al eliminar el Machineo:", error);
+      })
+      .finally(() => {
+        setLoadingDelete(false); // Finaliza la carga
+      });
+  }
+
+  return (
+    <Dialog onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Eliminar Machineo</DialogTitle>
+          <DialogDescription>¿Está seguro de eliminar este Machineo?</DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter className="grid grid-cols-6 col-span-6">
+          <Button
+            type="submit"
+            disabled={loadingDelete}
+            className="col-span-3"
+            variant={"destructive"}
+            onClick={onDelete}
+          >
+            {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+          </Button>
+          <DialogClose className="col-span-3" asChild>
+            <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
+              Cerrar
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+interface HardPropsDelete {
+  children: React.ReactNode; // Define el tipo de children
+  id: number; // Clase personalizada opcional
+  updateView: () => void; // Define el tipo como una función que retorna void
+  onOpenChange?: (open: boolean) => void;
+}
+
+// Componente para eliminar un Machineo
+export const HardDeleteMachineDialog: React.FC<HardPropsDelete> = ({
+  children,
+  id,
+  updateView,
+  onOpenChange,
+}) => {
+  const [loadingDelete, setLoadingDelete] = useState(false); // Estado de carga
+
+  function onDelete(): void {
+    setLoadingDelete(true); // Inicia la carga
+    softDeleteMachine(id)
       .then((deletedMachine) => {
         console.log("Machineo eliminado:", deletedMachine);
         updateView();

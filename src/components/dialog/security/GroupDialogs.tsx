@@ -28,9 +28,10 @@ import LoadingCircle from "@/components/LoadingCircle";
 import {IWorkGroup, WorkGroupSchema} from "@/utils/interfaces";
 import {
   createGroup,
-  deleteGroup,
+  hardDeleteGroup,
   getGroupById,
   recoverGroup,
+  softDeleteGroup,
   updateGroup,
 } from "@/api/security/group.api";
 
@@ -188,7 +189,7 @@ export const EditGroupDialog: React.FC<PropsEdit> = ({children, id, updateView, 
 
   function onDelete(id: number): void {
     setLoadingDelete(true); // Inicia la carga
-    deleteGroup(id)
+    softDeleteGroup(id)
       .then((deletedGroup) => {
         console.log("Grupo eliminado:", deletedGroup);
 
@@ -305,6 +306,66 @@ export const EditGroupDialog: React.FC<PropsEdit> = ({children, id, updateView, 
   );
 };
 
+interface SoftPropsDelete {
+  children: React.ReactNode; // Define el tipo de children
+  id: number; // Clase personalizada opcional
+  updateView: () => void; // Define el tipo como una función que no retorna nada
+  onOpenChange?: (open: boolean) => void;
+}
+
+export const SoftDeleteGroupDialog: React.FC<SoftPropsDelete> = ({
+  children,
+  id,
+  updateView,
+  onOpenChange,
+}) => {
+  const [loadingDelete, setLoadingDelete] = useState(false); // Estado de carga
+
+  function onDelete(): void {
+    setLoadingDelete(true); // Inicia la carga
+    softDeleteGroup(id) // Llamada a la función de eliminación para grupos
+      .then((deleteGroup) => {
+        console.log("Grupo eliminado:", deleteGroup);
+        updateView();
+      })
+      .catch((error) => {
+        console.error("Error al eliminar el grupo:", error);
+      })
+      .finally(() => {
+        setLoadingDelete(false); // Finaliza la carga
+      });
+  }
+
+  return (
+    <Dialog onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Eliminar grupo</DialogTitle>
+          <DialogDescription>¿Está seguro de eliminar este grupo?</DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter className="grid grid-cols-6 col-span-6">
+          <Button
+            type="submit"
+            disabled={loadingDelete}
+            className="col-span-3"
+            variant={"destructive"}
+            onClick={onDelete}
+          >
+            {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+          </Button>
+          <DialogClose className="col-span-3" asChild>
+            <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
+              Cerrar
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 interface PropsDelete {
   children: React.ReactNode; // Define el tipo de children
   id: number; // Clase personalizada opcional
@@ -322,7 +383,7 @@ export const DeleteGroupDialog: React.FC<PropsDelete> = ({
 
   function onDelete(): void {
     setLoadingDelete(true); // Inicia la carga
-    deleteGroup(id) // Llamada a la función de eliminación para grupos
+    softDeleteGroup(id) // Llamada a la función de eliminación para grupos
       .then((deleteGroup) => {
         console.log("Grupo eliminado:", deleteGroup);
         updateView();

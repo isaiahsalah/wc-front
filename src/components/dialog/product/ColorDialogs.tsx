@@ -16,9 +16,10 @@ import {Textarea} from "@/components/ui/textarea";
 import {useState} from "react";
 import {
   createColor,
-  deleteColor,
   getColorById,
+  hardDeleteColor,
   recoverColor,
+  softDeleteColor,
   updateColor,
 } from "@/api/product/color.api";
 import {
@@ -193,7 +194,7 @@ export const EditColorDialog: React.FC<PropsEdit> = ({children, id, updateView, 
   function onDelete(id: number): void {
     console.log("Color eliminado:");
     setLoadingDelete(true); // Inicia la carga
-    deleteColor(id)
+    softDeleteColor(id)
       .then((deleteColor) => {
         console.log("Color eliminado:", deleteColor);
 
@@ -310,14 +311,14 @@ export const EditColorDialog: React.FC<PropsEdit> = ({children, id, updateView, 
   );
 };
 
-interface PropsDelete {
+interface SoftPropsDelete {
   children: React.ReactNode; // Define el tipo de children
   id: number; // Clase personalizada opcional
   updateView: () => void; // Define the type as a function that returns void
   onOpenChange?: (open: boolean) => void;
 }
 
-export const DeleteColorDialog: React.FC<PropsDelete> = ({
+export const SoftDeleteColorDialog: React.FC<SoftPropsDelete> = ({
   children,
   id,
   updateView,
@@ -328,7 +329,68 @@ export const DeleteColorDialog: React.FC<PropsDelete> = ({
 
   function onDelete(): void {
     setLoadingDelete(true); // Inicia la carga
-    deleteColor(id)
+    softDeleteColor(id)
+      .then((deleteColor) => {
+        console.log("Color eliminado:", deleteColor);
+        updateView();
+      })
+      .catch((error) => {
+        console.error("Error al eliminar el color:", error);
+      })
+      .finally(() => {
+        setLoadingDelete(false); // Finaliza la carga
+      });
+  }
+
+  return (
+    <Dialog onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Eliminar color</DialogTitle>
+          <DialogDescription>¿Está seguro de eliminar este color?</DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter className=" grid grid-cols-6 col-span-6">
+          <Button
+            type="submit"
+            disabled={loadingDelete}
+            className="col-span-3"
+            variant={"destructive"}
+            onClick={onDelete}
+          >
+            {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+          </Button>
+          <DialogClose className="col-span-3" asChild>
+            <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
+              Cerrar
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+interface HardPropsDelete {
+  children: React.ReactNode; // Define el tipo de children
+  id: number; // Clase personalizada opcional
+  updateView: () => void; // Define the type as a function that returns void
+  onOpenChange?: (open: boolean) => void;
+}
+
+export const HardDeleteColorDialog: React.FC<HardPropsDelete> = ({
+  children,
+  id,
+  updateView,
+  onOpenChange,
+}) => {
+  //const [data, setData] = useState<IGeneral | never>();
+  const [loadingDelete, setLoadingDelete] = useState(false); // Estado de carga
+
+  function onDelete(): void {
+    setLoadingDelete(true); // Inicia la carga
+    hardDeleteColor(id)
       .then((deleteColor) => {
         console.log("Color eliminado:", deleteColor);
         updateView();

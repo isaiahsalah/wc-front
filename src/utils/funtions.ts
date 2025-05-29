@@ -48,6 +48,7 @@ export const checkToken = async ({
         // Actualiza la sesión en el estado
         console.log("Permisos del usuario:", response);
 
+        console.log("holaaa", response);
         setSesion(response as ISesion);
         return true;
         //setIsAuthenticated(true);

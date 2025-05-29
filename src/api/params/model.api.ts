@@ -56,10 +56,22 @@ export const updateModel = async ({data}: {data: IProductModel}) => {
   }
 };
 
-export const deleteModel = async (id: number) => {
+export const softDeleteModel = async (id: number) => {
   toast.info("Se está procesando la petición");
   try {
-    const response = await apiClient.delete(`/pr/model/${id}`);
+    const response = await apiClient.delete(`/pr/model/soft/${id}`);
+    toast.success("El modelo se desactivó correctamente.");
+    return response.data; // Devuelve el mensaje de éxito
+  } catch (error) {
+    toast.error(`Error al desactivar el modelo con ID ${id}: ${error}`);
+    throw error;
+  }
+};
+
+export const hardDeleteModel = async (id: number) => {
+  toast.info("Se está procesando la petición");
+  try {
+    const response = await apiClient.delete(`/pr/model/hard/${id}`);
     toast.success("El modelo se eliminó correctamente.");
     return response.data; // Devuelve el mensaje de éxito
   } catch (error) {

@@ -53,14 +53,26 @@ export const updateSectorProcess = async ({data}: {data: ISectorProcess}) => {
   }
 };
 
-export const deleteSectorProcess = async (id: number) => {
+export const softDeleteSectorProcess = async (id: number) => {
   toast.info("Se está procesando la petición");
   try {
-    const response = await apiClient.delete(`/pr/sector_process/${id}`);
-    toast.success("El sector se eliminó correctamente.");
+    const response = await apiClient.delete(`/pr/sector_process/soft/${id}`);
+    toast.success("El proceso del sector se desactivó correctamente.");
     return response.data; // Devuelve el mensaje de éxito
   } catch (error) {
-    toast.error(`Error al eliminar el sector con ID ${id}: ${error}`);
+    toast.error(`Error al desactivar el proceso del sector con ID ${id}: ${error}`);
+    throw error;
+  }
+};
+
+export const hardDeleteSectorProcess = async (id: number) => {
+  toast.info("Se está procesando la petición");
+  try {
+    const response = await apiClient.delete(`/pr/sector_process/hard/${id}`);
+    toast.success("El proceso del sector se eliminó correctamente.");
+    return response.data; // Devuelve el mensaje de éxito
+  } catch (error) {
+    toast.error(`Error al eliminar el proceso del sector con ID ${id}: ${error}`);
     throw error;
   }
 };

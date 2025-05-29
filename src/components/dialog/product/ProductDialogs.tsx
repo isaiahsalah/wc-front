@@ -17,9 +17,10 @@ import {Textarea} from "@/components/ui/textarea";
 import {useContext, useState} from "react";
 import {
   createProduct,
-  deleteProduct,
+  hardDeleteProduct,
   getProductById,
   recoverProduct,
+  softDeleteProduct,
   updateProduct,
 } from "@/api/product/product.api";
 import {toast} from "sonner";
@@ -455,7 +456,7 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
 
   function onDelete(id: number): void {
     setLoadingDelete(true);
-    deleteProduct(id)
+    softDeleteProduct(id)
       .then((deletedProduct) => {
         console.log("Producto eliminado:", deletedProduct);
 
@@ -776,15 +777,14 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
   );
 };
 
-interface PropsDelete {
+interface SoftPropsDelete {
   children: React.ReactNode; // Define el tipo de children
   id: number; // Clase personalizada opcional
   updateView: () => void; // Define el tipo como una función que retorna void
   onOpenChange?: (open: boolean) => void;
 }
 
-// Componente para eliminar un producto
-export const DeleteProductDialog: React.FC<PropsDelete> = ({
+export const SoftDeleteProductDialog: React.FC<SoftPropsDelete> = ({
   children,
   id,
   updateView,
@@ -794,7 +794,68 @@ export const DeleteProductDialog: React.FC<PropsDelete> = ({
 
   function onDelete(): void {
     setLoadingDelete(true); // Inicia la carga
-    deleteProduct(id)
+    softDeleteProduct(id)
+      .then((deletedProduct) => {
+        console.log("Producto eliminado:", deletedProduct);
+
+        updateView();
+      })
+      .catch((error) => {
+        console.error("Error al eliminar el producto:", error);
+      })
+      .finally(() => {
+        setLoadingDelete(false); // Finaliza la carga
+      });
+  }
+
+  return (
+    <Dialog onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Eliminar producto</DialogTitle>
+          <DialogDescription>¿Está seguro de eliminar este producto?</DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter className="grid grid-cols-6 col-span-6">
+          <Button
+            type="submit"
+            disabled={loadingDelete}
+            className="col-span-3"
+            variant={"destructive"}
+            onClick={onDelete}
+          >
+            {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+          </Button>
+          <DialogClose className="col-span-3" asChild>
+            <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
+              Cerrar
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+interface PropsHardDelete {
+  children: React.ReactNode; // Define el tipo de children
+  id: number; // Clase personalizada opcional
+  updateView: () => void; // Define el tipo como una función que retorna void
+  onOpenChange?: (open: boolean) => void;
+}
+
+export const HardDeleteProductDialog: React.FC<PropsHardDelete> = ({
+  children,
+  id,
+  updateView,
+  onOpenChange,
+}) => {
+  const [loadingDelete, setLoadingDelete] = useState(false); // Estado de carga
+
+  function onDelete(): void {
+    setLoadingDelete(true); // Inicia la carga
+    softDeleteProduct(id)
       .then((deletedProduct) => {
         console.log("Producto eliminado:", deletedProduct);
 

@@ -10,9 +10,10 @@ import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/
 import {useState} from "react";
 import {
   createUnity,
-  deleteUnity,
+  hardDeleteUnit,
   getUnityById,
   recoverUnity,
+  softDeleteUnit,
   updateUnity,
 } from "@/api/product/unity.api";
 import {
@@ -173,7 +174,7 @@ export const EditUnityDialog: React.FC<PropsEdit> = ({children, id, updateView, 
 
   function onDelete(id: number): void {
     setLoadingDelete(true);
-    deleteUnity(id)
+    softDeleteUnit(id)
       .then((deletedUnity) => {
         console.log("Unidad eliminada:", deletedUnity);
 
@@ -286,15 +287,14 @@ export const EditUnityDialog: React.FC<PropsEdit> = ({children, id, updateView, 
   );
 };
 
-interface PropsDelete {
+interface SoftPropsDelete {
   children: React.ReactNode; // Define el tipo de children
   id: number; // Clase personalizada opcional
   updateView: () => void; // Define el tipo como una función que retorna void
   onOpenChange?: (open: boolean) => void;
 }
 
-// Componente para eliminar una unidad
-export const DeleteUnityDialog: React.FC<PropsDelete> = ({
+export const SoftDeleteUnityDialog: React.FC<SoftPropsDelete> = ({
   children,
   id,
   updateView,
@@ -304,7 +304,68 @@ export const DeleteUnityDialog: React.FC<PropsDelete> = ({
 
   function onDelete(): void {
     setLoadingDelete(true); // Inicia la carga
-    deleteUnity(id)
+    softDeleteUnit(id)
+      .then((deletedUnity) => {
+        console.log("Unidad eliminada:", deletedUnity);
+
+        updateView();
+      })
+      .catch((error) => {
+        console.error("Error al eliminar la unidad:", error);
+      })
+      .finally(() => {
+        setLoadingDelete(false); // Finaliza la carga
+      });
+  }
+
+  return (
+    <Dialog onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Eliminar unidad</DialogTitle>
+          <DialogDescription>¿Está seguro de eliminar esta unidad?</DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter className="grid grid-cols-6 col-span-6">
+          <Button
+            type="submit"
+            disabled={loadingDelete}
+            className="col-span-3"
+            variant={"destructive"}
+            onClick={onDelete}
+          >
+            {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+          </Button>
+          <DialogClose className="col-span-3" asChild>
+            <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
+              Cerrar
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+interface PropsHardDelete {
+  children: React.ReactNode; // Define el tipo de children
+  id: number; // Clase personalizada opcional
+  updateView: () => void; // Define el tipo como una función que retorna void
+  onOpenChange?: (open: boolean) => void;
+}
+
+export const HardDeleteUnityDialog: React.FC<PropsHardDelete> = ({
+  children,
+  id,
+  updateView,
+  onOpenChange,
+}) => {
+  const [loadingDelete, setLoadingDelete] = useState(false); // Estado de carga
+
+  function onDelete(): void {
+    setLoadingDelete(true); // Inicia la carga
+    softDeleteUnit(id)
       .then((deletedUnity) => {
         console.log("Unidad eliminada:", deletedUnity);
 
