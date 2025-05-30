@@ -1,9 +1,10 @@
 import {IFormula, IProduct} from "@/utils/interfaces";
 import {
   CreateFormulaDialog,
-  DeleteFormulaDialog,
   EditFormulaDialog,
+  HardDeleteFormulaDialog,
   RecoverFormulaDialog,
+  SoftDeleteFormulaDialog,
 } from "@/components/dialog/product/FormulaDialogs";
 import {Button} from "@/components/ui/button";
 import {ArchiveRestore, Check, Edit, List, PlusIcon, Trash2, X} from "lucide-react";
@@ -184,24 +185,34 @@ const FormulaPage: React.FC<Props> = ({degree}) => {
                         </DropdownMenuItem>
                       </EditFormulaDialog>
                       <DropdownMenuSeparator />
-                      <DeleteFormulaDialog id={row.original.id ?? 0} updateView={updateView}>
+                      <SoftDeleteFormulaDialog id={row.original.id ?? 0} updateView={updateView}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <Trash2 /> Desactivar{" "}
+                        </DropdownMenuItem>
+                      </SoftDeleteFormulaDialog>
+                    </>
+                  ) : (
+                    <>
+                      <RecoverFormulaDialog id={row.original.id ?? 0} updateView={updateView}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <ArchiveRestore /> Recuperar{" "}
+                        </DropdownMenuItem>
+                      </RecoverFormulaDialog>
+                      <HardDeleteFormulaDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem
                           disabled={degree < 4 ? true : false}
                           onSelect={(e) => e.preventDefault()}
                         >
                           <Trash2 /> Eliminar{" "}
                         </DropdownMenuItem>
-                      </DeleteFormulaDialog>
+                      </HardDeleteFormulaDialog>
                     </>
-                  ) : (
-                    <RecoverFormulaDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem
-                        disabled={degree < 4 ? true : false}
-                        onSelect={(e) => e.preventDefault()}
-                      >
-                        <ArchiveRestore /> Recuperar{" "}
-                      </DropdownMenuItem>
-                    </RecoverFormulaDialog>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -248,14 +259,12 @@ const FormulaPage: React.FC<Props> = ({degree}) => {
                 children={
                   <Button
                     disabled={degree < 2 ? true : false}
-                    variant="outline"
                     size="sm"
                     onSelect={(event) => {
-                      event.preventDefault(); // Evita el cierre automático
+                      event.preventDefault();
                     }}
                   >
                     <PlusIcon />
-                    <span className="ml-2 hidden lg:inline">Agregar</span>
                   </Button>
                 }
               />

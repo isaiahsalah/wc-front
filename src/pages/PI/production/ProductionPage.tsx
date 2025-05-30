@@ -13,10 +13,11 @@ import {Button} from "@/components/ui/button";
 import {ArchiveRestore, Edit, List, Printer, Trash2} from "lucide-react";
 import {
   CreateProductionsDialog,
-  DeleteProductionDialog,
   EditProductionDialog,
+  HardDeleteProductionDialog,
   PrintQRDialog,
   RecoverProductionDialog,
+  SoftDeleteProductionDialog,
 } from "@/components/dialog/production/ProductionDialogs";
 import {
   DropdownMenu,
@@ -323,24 +324,34 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
                           <Edit /> Editar{" "}
                         </DropdownMenuItem>
                       </EditProductionDialog>
-                      <DeleteProductionDialog id={row.original.id ?? 0} updateView={updateView}>
+                      <SoftDeleteProductionDialog id={row.original.id ?? 0} updateView={updateView}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <Trash2 /> Desactivar{" "}
+                        </DropdownMenuItem>
+                      </SoftDeleteProductionDialog>
+                    </>
+                  ) : (
+                    <>
+                      <RecoverProductionDialog id={row.original.id ?? 0} updateView={updateView}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <ArchiveRestore /> Recuperar{" "}
+                        </DropdownMenuItem>
+                      </RecoverProductionDialog>
+                      <HardDeleteProductionDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem
                           disabled={degree < 4 ? true : false}
                           onSelect={(e) => e.preventDefault()}
                         >
                           <Trash2 /> Eliminar{" "}
                         </DropdownMenuItem>
-                      </DeleteProductionDialog>
+                      </HardDeleteProductionDialog>
                     </>
-                  ) : (
-                    <RecoverProductionDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem
-                        disabled={degree < 4 ? true : false}
-                        onSelect={(e) => e.preventDefault()}
-                      >
-                        <ArchiveRestore /> Recuperar{" "}
-                      </DropdownMenuItem>
-                    </RecoverProductionDialog>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>

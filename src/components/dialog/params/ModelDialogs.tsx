@@ -149,7 +149,6 @@ interface PropsEdit {
 
 export const EditModelDialog: React.FC<PropsEdit> = ({children, id, updateView, onOpenChange}) => {
   const [loadingSave, setLoadingSave] = useState(false);
-  const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
 
   const form = useForm<IProductModel>({
@@ -189,22 +188,6 @@ export const EditModelDialog: React.FC<PropsEdit> = ({children, id, updateView, 
       setLoadingInit(false);
     }
   };
-
-  function onDelete(id: number): void {
-    setLoadingDelete(true);
-    softDeleteModel(id)
-      .then((deletedModel) => {
-        console.log("Modelo eliminado:", deletedModel);
-
-        updateView();
-      })
-      .catch((error) => {
-        console.error("Error al eliminar el modelo:", error);
-      })
-      .finally(() => {
-        setLoadingDelete(false);
-      });
-  }
 
   return (
     <Dialog onOpenChange={onOpenChange}>
@@ -283,22 +266,9 @@ export const EditModelDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                 >
                   {loadingSave ? <LoadingCircle /> : "Guardar"}
                 </Button>
-                <Button
-                  type="button"
-                  disabled={loadingDelete}
-                  className="col-span-3"
-                  variant={"destructive"}
-                  onClick={() => onDelete(form.getValues().id ?? 0)}
-                >
-                  {loadingDelete ? <LoadingCircle /> : "Eliminar"}
-                </Button>
+
                 <DialogClose className="col-span-6" asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    disabled={loadingDelete || loadingSave}
-                  >
+                  <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                     Cerrar
                   </Button>
                 </DialogClose>
@@ -347,8 +317,8 @@ export const SoftDeleteModelDialog: React.FC<SoftPropsDelete> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Eliminar modelo</DialogTitle>
-          <DialogDescription>¿Está seguro de eliminar este modelo?</DialogDescription>
+          <DialogTitle>Desactivar modelo</DialogTitle>
+          <DialogDescription>¿Está seguro de desactivar este modelo?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -359,7 +329,7 @@ export const SoftDeleteModelDialog: React.FC<SoftPropsDelete> = ({
             variant={"destructive"}
             onClick={onDelete}
           >
-            {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+            {loadingDelete ? <LoadingCircle /> : "Desactivar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
             <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
@@ -372,7 +342,7 @@ export const SoftDeleteModelDialog: React.FC<SoftPropsDelete> = ({
   );
 };
 
-interface PropsDelete {
+interface PropsHardDelete {
   children: React.ReactNode; // Define el tipo de children
   id: number; // Clase personalizada opcional
   updateView: () => void; // Define el tipo como una función que retorna void
@@ -380,7 +350,7 @@ interface PropsDelete {
 }
 
 // Componente para eliminar un modelo
-export const DeleteModelDialog: React.FC<PropsDelete> = ({
+export const HardDeleteModelDialog: React.FC<PropsHardDelete> = ({
   children,
   id,
   updateView,
@@ -390,7 +360,7 @@ export const DeleteModelDialog: React.FC<PropsDelete> = ({
 
   function onDelete(): void {
     setLoadingDelete(true); // Inicia la carga
-    softDeleteModel(id)
+    hardDeleteModel(id)
       .then((deletedModel) => {
         console.log("Modelo eliminado:", deletedModel);
         updateView();

@@ -435,7 +435,6 @@ interface PropsEdit {
 
 export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, onOpenChange}) => {
   const [loadingSave, setLoadingSave] = useState(false);
-  const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
   /*
   const [productSelected, setProductSelected] = useState<IProduct>();
@@ -513,22 +512,6 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
       setLoadingInit(false);
     }
   };
-
-  function onDelete(id: number): void {
-    setLoadingDelete(true);
-    softDeleteOrder(id)
-      .then((deletedOrder) => {
-        console.log("Orden eliminada:", deletedOrder);
-
-        updateView();
-      })
-      .catch((error) => {
-        console.error("Error al eliminar la orden:", error);
-      })
-      .finally(() => {
-        setLoadingDelete(false);
-      });
-  }
 
   const addProductSelected = () => {
     if (
@@ -910,21 +893,13 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
               <Button type="submit" className="col-span-3" disabled={loadingSave || loadingInit}>
                 {loadingSave ? <LoadingCircle /> : "Guardar"}
               </Button>
-              <Button
-                type="button"
-                disabled={loadingDelete || loadingInit}
-                className="col-span-3"
-                variant={"destructive"}
-                onClick={() => onDelete(form.getValues().id ?? 0)}
-              >
-                {loadingDelete ? <LoadingCircle /> : "Eliminar"}
-              </Button>
+
               <DialogClose className="col-span-6" asChild>
                 <Button
                   type="button"
                   variant="outline"
                   className="w-full"
-                  disabled={loadingDelete || loadingSave || loadingInit}
+                  disabled={loadingSave || loadingInit}
                 >
                   Cerrar
                 </Button>
@@ -973,8 +948,8 @@ export const SoftDeleteOrderDialog: React.FC<SoftPropsDelete> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Eliminar orden</DialogTitle>
-          <DialogDescription>¿Está seguro de eliminar esta orden?</DialogDescription>
+          <DialogTitle>Desactivar Orden</DialogTitle>
+          <DialogDescription>¿Está seguro de desactivar esta Orden?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -985,7 +960,7 @@ export const SoftDeleteOrderDialog: React.FC<SoftPropsDelete> = ({
             variant={"destructive"}
             onClick={onDelete}
           >
-            {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+            {loadingDelete ? <LoadingCircle /> : "Desactivar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
             <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
@@ -1015,7 +990,7 @@ export const HardDeleteOrderDialog: React.FC<PropsHardDelete> = ({
 
   function onDelete(): void {
     setLoadingDelete(true); // Inicia la carga
-    softDeleteOrder(id)
+    hardDeleteOrder(id)
       .then((deletedOrder) => {
         console.log("Orden eliminada:", deletedOrder);
 

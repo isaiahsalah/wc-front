@@ -118,7 +118,6 @@ const ColorPage: React.FC<Props> = ({degree}) => {
                     className="flex size-8 text-muted-foreground data-[state=open]:text-accent-foreground cursor-pointer hover:text-accent-foreground   "
                     size="icon"
                   >
-                    {" "}
                     <List />
                   </Button>
                 </DropdownMenuTrigger>
@@ -150,7 +149,7 @@ const ColorPage: React.FC<Props> = ({degree}) => {
                           disabled={degree < 4 ? true : false}
                           onSelect={(e) => e.preventDefault()}
                         >
-                          <ArchiveRestore /> Recuperar{" "}
+                          <ArchiveRestore /> Recuperar
                         </DropdownMenuItem>
                       </RecoverColorDialog>
                       <HardDeleteColorDialog id={row.original.id ?? 0} updateView={updateView}>
@@ -187,14 +186,12 @@ const ColorPage: React.FC<Props> = ({degree}) => {
                 children={
                   <Button
                     disabled={degree < 2 ? true : false}
-                    variant="outline"
                     size="sm"
                     onSelect={(event) => {
-                      event.preventDefault(); // Evita el cierre automático
+                      event.preventDefault();
                     }}
                   >
                     <PlusIcon />
-                    <span className="ml-2 hidden lg:inline">Agregar</span>
                   </Button>
                 }
               />

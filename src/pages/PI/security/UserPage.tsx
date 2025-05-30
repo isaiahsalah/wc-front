@@ -17,9 +17,10 @@ import {Badge} from "@/components/ui/badge";
 import {format} from "date-fns";
 import {
   CreateUserDialog,
-  DeleteUserDialog,
   EditUserDialog,
+  HardDeleteUserDialog,
   RecoverUserDialog,
+  SoftDeleteUserDialog,
 } from "@/components/dialog/security/UserDialogs";
 import {getUsers} from "@/api/security/user.api";
 import {EditPermissionUserDialog} from "@/components/dialog/security/PermissionDialog";
@@ -167,24 +168,34 @@ const UserPage: React.FC<Props> = ({degree}) => {
                         </DropdownMenuItem>
                       </EditPermissionUserDialog>
                       <DropdownMenuSeparator />
-                      <DeleteUserDialog id={row.original.id ?? 0} updateView={updateView}>
+                      <SoftDeleteUserDialog id={row.original.id ?? 0} updateView={updateView}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <Trash2 /> Desactivar
+                        </DropdownMenuItem>
+                      </SoftDeleteUserDialog>
+                    </>
+                  ) : (
+                    <>
+                      <RecoverUserDialog id={row.original.id ?? 0} updateView={updateView}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <ArchiveRestore /> Recuperar
+                        </DropdownMenuItem>
+                      </RecoverUserDialog>
+                      <HardDeleteUserDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem
                           disabled={degree < 4 ? true : false}
                           onSelect={(e) => e.preventDefault()}
                         >
                           <Trash2 /> Eliminar
                         </DropdownMenuItem>
-                      </DeleteUserDialog>
+                      </HardDeleteUserDialog>
                     </>
-                  ) : (
-                    <RecoverUserDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem
-                        disabled={degree < 4 ? true : false}
-                        onSelect={(e) => e.preventDefault()}
-                      >
-                        <ArchiveRestore /> Recuperar
-                      </DropdownMenuItem>
-                    </RecoverUserDialog>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -209,14 +220,13 @@ const UserPage: React.FC<Props> = ({degree}) => {
                 updateView={updateView}
                 children={
                   <Button
-                    variant="outline"
+                    disabled={degree < 2 ? true : false}
                     size="sm"
                     onSelect={(event) => {
                       event.preventDefault();
                     }}
                   >
                     <PlusIcon />
-                    <span className="ml-2 hidden lg:inline">Agregar</span>
                   </Button>
                 }
               />

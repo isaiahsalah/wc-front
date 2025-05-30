@@ -18,9 +18,10 @@ import {format} from "date-fns";
 import {getGroups} from "@/api/security/group.api";
 import {
   CreateGroupDialog,
-  DeleteGroupDialog,
   EditGroupDialog,
+  HardDeleteGroupDialog,
   RecoverGroupDialog,
+  SoftDeleteGroupDialog,
 } from "@/components/dialog/security/GroupDialogs";
 
 interface Props {
@@ -134,24 +135,34 @@ const GroupPage: React.FC<Props> = ({degree}) => {
                         </DropdownMenuItem>
                       </EditGroupDialog>
                       <DropdownMenuSeparator />
-                      <DeleteGroupDialog id={row.original.id ?? 0} updateView={updateView}>
+                      <SoftDeleteGroupDialog id={row.original.id ?? 0} updateView={updateView}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <Trash2 /> Desactivar{" "}
+                        </DropdownMenuItem>
+                      </SoftDeleteGroupDialog>
+                    </>
+                  ) : (
+                    <>
+                      <RecoverGroupDialog id={row.original.id ?? 0} updateView={updateView}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <ArchiveRestore /> Recuperar{" "}
+                        </DropdownMenuItem>
+                      </RecoverGroupDialog>
+                      <HardDeleteGroupDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem
                           disabled={degree < 4 ? true : false}
                           onSelect={(e) => e.preventDefault()}
                         >
                           <Trash2 /> Eliminar{" "}
                         </DropdownMenuItem>
-                      </DeleteGroupDialog>
+                      </HardDeleteGroupDialog>
                     </>
-                  ) : (
-                    <RecoverGroupDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem
-                        disabled={degree < 4 ? true : false}
-                        onSelect={(e) => e.preventDefault()}
-                      >
-                        <ArchiveRestore /> Recuperar{" "}
-                      </DropdownMenuItem>
-                    </RecoverGroupDialog>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -177,14 +188,12 @@ const GroupPage: React.FC<Props> = ({degree}) => {
                 children={
                   <Button
                     disabled={degree < 2 ? true : false}
-                    variant="outline"
                     size="sm"
                     onSelect={(event) => {
-                      event.preventDefault(); // Evita el cierre automático
+                      event.preventDefault();
                     }}
                   >
                     <PlusIcon />
-                    <span className="ml-2 hidden lg:inline">Agregar</span>
                   </Button>
                 }
               />

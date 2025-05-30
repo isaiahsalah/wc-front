@@ -204,7 +204,6 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
   onOpenChange,
 }) => {
   const [loadingSave, setLoadingSave] = useState(false);
-  const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
   const [products, setProducts] = useState<IProduct[]>();
 
@@ -255,22 +254,6 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
       setLoadingInit(false);
     }
   };
-
-  function onDelete(id: number): void {
-    setLoadingDelete(true);
-    softDeleteFormula(id)
-      .then((deletedFormula) => {
-        console.log("Fórmula eliminada:", deletedFormula);
-
-        updateView();
-      })
-      .catch((error) => {
-        console.error("Error al eliminar la fórmula:", error);
-      })
-      .finally(() => {
-        setLoadingDelete(false);
-      });
-  }
 
   return (
     <Dialog onOpenChange={onOpenChange}>
@@ -377,22 +360,9 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
                 >
                   {loadingSave ? <LoadingCircle /> : "Guardar"}
                 </Button>
-                <Button
-                  type="button"
-                  disabled={loadingDelete}
-                  className="col-span-3"
-                  variant={"destructive"}
-                  onClick={() => onDelete(form.getValues().id ?? 0)}
-                >
-                  {loadingDelete ? <LoadingCircle /> : "Eliminar"}
-                </Button>
-                <DialogClose className="col-span-6" asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    disabled={loadingDelete || loadingSave}
-                  >
+
+                <DialogClose className="col-span-3" asChild>
+                  <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                     Cerrar
                   </Button>
                 </DialogClose>
@@ -441,8 +411,8 @@ export const SoftDeleteFormulaDialog: React.FC<SoftPropsDelete> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Eliminar fórmula</DialogTitle>
-          <DialogDescription>¿Está seguro de eliminar esta fórmula?</DialogDescription>
+          <DialogTitle>Desactivar Fórmula</DialogTitle>
+          <DialogDescription>¿Está seguro de desactivar esta Fórmula?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -453,7 +423,7 @@ export const SoftDeleteFormulaDialog: React.FC<SoftPropsDelete> = ({
             variant={"destructive"}
             onClick={onDelete}
           >
-            {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+            {loadingDelete ? <LoadingCircle /> : "Desactivar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
             <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
@@ -484,7 +454,7 @@ export const HardDeleteFormulaDialog: React.FC<PropsHardDelete> = ({
 
   function onDelete(): void {
     setLoadingDelete(true); // Inicia la carga
-    softDeleteFormula(id)
+    hardDeleteFormula(id)
       .then((deletedFormula) => {
         console.log("Fórmula eliminada:", deletedFormula);
         updateView();

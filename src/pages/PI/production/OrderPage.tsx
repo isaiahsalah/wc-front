@@ -6,9 +6,10 @@ import {Button} from "@/components/ui/button";
 import {ArchiveRestore, Edit, List, PlusIcon, Trash2} from "lucide-react";
 import {
   CreateOrderDialog,
-  DeleteOrderDialog,
   EditOrderDialog,
+  HardDeleteOrderDialog,
   RecoverOrderDialog,
+  SoftDeleteOrderDialog,
 } from "@/components/dialog/production/OrderDialogs";
 import {
   DropdownMenu,
@@ -163,24 +164,34 @@ const OrderPage: React.FC<Props> = ({degree}) => {
                         </DropdownMenuItem>
                       </EditOrderDialog>
                       <DropdownMenuSeparator />
-                      <DeleteOrderDialog id={row.original.id ?? 0} updateView={updateView}>
+                      <SoftDeleteOrderDialog id={row.original.id ?? 0} updateView={updateView}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <Trash2 /> Desactivar{" "}
+                        </DropdownMenuItem>
+                      </SoftDeleteOrderDialog>
+                    </>
+                  ) : (
+                    <>
+                      <RecoverOrderDialog id={row.original.id ?? 0} updateView={updateView}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <ArchiveRestore /> Recuperar{" "}
+                        </DropdownMenuItem>
+                      </RecoverOrderDialog>
+                      <HardDeleteOrderDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem
                           disabled={degree < 4 ? true : false}
                           onSelect={(e) => e.preventDefault()}
                         >
                           <Trash2 /> Eliminar{" "}
                         </DropdownMenuItem>
-                      </DeleteOrderDialog>
+                      </HardDeleteOrderDialog>
                     </>
-                  ) : (
-                    <RecoverOrderDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem
-                        disabled={degree < 4 ? true : false}
-                        onSelect={(e) => e.preventDefault()}
-                      >
-                        <ArchiveRestore /> Recuperar{" "}
-                      </DropdownMenuItem>
-                    </RecoverOrderDialog>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -205,14 +216,12 @@ const OrderPage: React.FC<Props> = ({degree}) => {
                 children={
                   <Button
                     disabled={degree < 2 ? true : false}
-                    variant="outline"
                     size="sm"
                     onSelect={(event) => {
-                      event.preventDefault(); // Evita el cierre automático
+                      event.preventDefault();
                     }}
                   >
                     <PlusIcon />
-                    <span className="ml-2 hidden lg:inline">Agregar</span>
                   </Button>
                 }
               />

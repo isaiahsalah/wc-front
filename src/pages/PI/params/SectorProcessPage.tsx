@@ -5,8 +5,9 @@ import {Button} from "@/components/ui/button";
 import {ArchiveRestore, List, PlusIcon, Trash2} from "lucide-react";
 import {
   CreateSectorProcessDialog,
-  DeleteSectorProcessDialog,
+  HardDeleteSectorProcessDialog,
   RecoverSectorProcessDialog,
+  SoftDeleteSectorProcessDialog,
 } from "@/components/dialog/params/SectorProcessDialogs";
 import {ColumnDef, Row} from "@tanstack/react-table";
 import {
@@ -126,24 +127,40 @@ const SectorProcessPage: React.FC<Props> = ({degree}) => {
                 <DropdownMenuContent align="end" className="w-32">
                   {!row.original.deletedAt ? (
                     <>
-                      <DeleteSectorProcessDialog id={row.original.id ?? 0} updateView={updateView}>
+                      <SoftDeleteSectorProcessDialog
+                        id={row.original.id ?? 0}
+                        updateView={updateView}
+                      >
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <Trash2 /> Desactivar
+                        </DropdownMenuItem>
+                      </SoftDeleteSectorProcessDialog>
+                    </>
+                  ) : (
+                    <>
+                      <RecoverSectorProcessDialog id={row.original.id ?? 0} updateView={updateView}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <ArchiveRestore /> Recuperar
+                        </DropdownMenuItem>
+                      </RecoverSectorProcessDialog>
+                      <HardDeleteSectorProcessDialog
+                        id={row.original.id ?? 0}
+                        updateView={updateView}
+                      >
                         <DropdownMenuItem
                           disabled={degree < 4 ? true : false}
                           onSelect={(e) => e.preventDefault()}
                         >
                           <Trash2 /> Eliminar
                         </DropdownMenuItem>
-                      </DeleteSectorProcessDialog>
+                      </HardDeleteSectorProcessDialog>
                     </>
-                  ) : (
-                    <RecoverSectorProcessDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem
-                        disabled={degree < 4 ? true : false}
-                        onSelect={(e) => e.preventDefault()}
-                      >
-                        <ArchiveRestore /> Recuperar
-                      </DropdownMenuItem>
-                    </RecoverSectorProcessDialog>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -169,14 +186,12 @@ const SectorProcessPage: React.FC<Props> = ({degree}) => {
                 children={
                   <Button
                     disabled={degree < 2 ? true : false}
-                    variant="outline"
                     size="sm"
                     onSelect={(event) => {
                       event.preventDefault();
                     }}
                   >
                     <PlusIcon />
-                    <span className="ml-2 hidden lg:inline">Agregar</span>
                   </Button>
                 }
               />

@@ -2,9 +2,10 @@ import {IProduct} from "@/utils/interfaces";
 import DataTable from "@/components/table/DataTable";
 import {
   CreateProductDialog,
-  DeleteProductDialog,
   EditProductDialog,
+  HardDeleteProductDialog,
   RecoverProductDialog,
+  SoftDeleteProductDialog,
 } from "@/components/dialog/product/ProductDialogs";
 import {ArchiveRestore, Edit, List, PlusIcon, Trash2} from "lucide-react";
 import {ColumnDef, Row} from "@tanstack/react-table";
@@ -230,24 +231,34 @@ const ProductPage: React.FC<Props> = ({degree}) => {
                         </DropdownMenuItem>
                       </EditProductDialog>
                       <DropdownMenuSeparator />
-                      <DeleteProductDialog id={row.original.id ?? 0} updateView={updateView}>
+                      <SoftDeleteProductDialog id={row.original.id ?? 0} updateView={updateView}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <Trash2 /> Desactivar{" "}
+                        </DropdownMenuItem>
+                      </SoftDeleteProductDialog>
+                    </>
+                  ) : (
+                    <>
+                      <RecoverProductDialog id={row.original.id ?? 0} updateView={updateView}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <ArchiveRestore /> Recuperar{" "}
+                        </DropdownMenuItem>
+                      </RecoverProductDialog>
+                      <HardDeleteProductDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem
                           disabled={degree < 4 ? true : false}
                           onSelect={(e) => e.preventDefault()}
                         >
                           <Trash2 /> Eliminar{" "}
                         </DropdownMenuItem>
-                      </DeleteProductDialog>
+                      </HardDeleteProductDialog>
                     </>
-                  ) : (
-                    <RecoverProductDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem
-                        disabled={degree < 4 ? true : false}
-                        onSelect={(e) => e.preventDefault()}
-                      >
-                        <ArchiveRestore /> Recuperar{" "}
-                      </DropdownMenuItem>
-                    </RecoverProductDialog>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -272,14 +283,12 @@ const ProductPage: React.FC<Props> = ({degree}) => {
                 children={
                   <Button
                     disabled={degree < 2 ? true : false}
-                    variant="outline"
                     size="sm"
                     onSelect={(event) => {
-                      event.preventDefault(); // Evita el cierre automático
+                      event.preventDefault();
                     }}
                   >
                     <PlusIcon />
-                    <span className="ml-2 hidden lg:inline">Agregar</span>
                   </Button>
                 }
               />

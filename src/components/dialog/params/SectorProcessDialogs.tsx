@@ -205,8 +205,8 @@ export const SoftDeleteSectorProcessDialog: React.FC<PropsSoftDelete> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Eliminar Processo</DialogTitle>
-          <DialogDescription>¿Está seguro de eliminar este Processo?</DialogDescription>
+          <DialogTitle>Desactivar Proceso del Sector</DialogTitle>
+          <DialogDescription>¿Está seguro de desactivar este Proceso del Sector?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -217,7 +217,7 @@ export const SoftDeleteSectorProcessDialog: React.FC<PropsSoftDelete> = ({
             variant={"destructive"}
             onClick={onDelete}
           >
-            {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+            {loadingDelete ? <LoadingCircle /> : "Desactivar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
             <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
@@ -248,7 +248,7 @@ export const HardDeleteSectorProcessDialog: React.FC<PropsHardDelete> = ({
 
   function onDelete(): void {
     setLoadingDelete(true); // Inicia la carga
-    softDeleteSectorProcess(id)
+    hardDeleteSectorProcess(id)
       .then((deletedProcess) => {
         console.log("Processo eliminado:", deletedProcess);
         updateView();
@@ -266,8 +266,8 @@ export const HardDeleteSectorProcessDialog: React.FC<PropsHardDelete> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Eliminar Processo</DialogTitle>
-          <DialogDescription>¿Está seguro de eliminar este Processo?</DialogDescription>
+          <DialogTitle>Eliminar Proceso del Sector</DialogTitle>
+          <DialogDescription>¿Está seguro de eliminar este Proceso del Sector?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">

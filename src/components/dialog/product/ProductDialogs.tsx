@@ -394,7 +394,6 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
   onOpenChange,
 }) => {
   const [loadingSave, setLoadingSave] = useState(false);
-  const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
   const [colors, setColors] = useState<IColor[]>();
   const [models, setModels] = useState<IProductModel[]>();
@@ -453,22 +452,6 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
       setLoadingInit(false);
     }
   };
-
-  function onDelete(id: number): void {
-    setLoadingDelete(true);
-    softDeleteProduct(id)
-      .then((deletedProduct) => {
-        console.log("Producto eliminado:", deletedProduct);
-
-        updateView();
-      })
-      .catch((error) => {
-        console.error("Error al eliminar el producto:", error);
-      })
-      .finally(() => {
-        setLoadingDelete(false);
-      });
-  }
 
   return (
     <Dialog onOpenChange={onOpenChange}>
@@ -749,22 +732,9 @@ export const EditProductDialog: React.FC<PropsEdit> = ({
                 >
                   {loadingSave ? <LoadingCircle /> : "Guardar"}
                 </Button>
-                <Button
-                  type="button"
-                  disabled={loadingDelete}
-                  className="col-span-3"
-                  variant={"destructive"}
-                  onClick={() => onDelete(form.getValues().id ?? 0)}
-                >
-                  {loadingDelete ? <LoadingCircle /> : "Eliminar"}
-                </Button>
+
                 <DialogClose className="col-span-6" asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    disabled={loadingDelete || loadingSave}
-                  >
+                  <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                     Cerrar
                   </Button>
                 </DialogClose>
@@ -813,8 +783,8 @@ export const SoftDeleteProductDialog: React.FC<SoftPropsDelete> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Eliminar producto</DialogTitle>
-          <DialogDescription>¿Está seguro de eliminar este producto?</DialogDescription>
+          <DialogTitle>Desactivar Producto</DialogTitle>
+          <DialogDescription>¿Está seguro de desactivar este Producto?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -825,7 +795,7 @@ export const SoftDeleteProductDialog: React.FC<SoftPropsDelete> = ({
             variant={"destructive"}
             onClick={onDelete}
           >
-            {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+            {loadingDelete ? <LoadingCircle /> : "Desactivar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
             <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
@@ -855,7 +825,7 @@ export const HardDeleteProductDialog: React.FC<PropsHardDelete> = ({
 
   function onDelete(): void {
     setLoadingDelete(true); // Inicia la carga
-    softDeleteProduct(id)
+    hardDeleteProduct(id)
       .then((deletedProduct) => {
         console.log("Producto eliminado:", deletedProduct);
 

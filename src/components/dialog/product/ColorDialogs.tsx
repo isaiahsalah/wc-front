@@ -144,7 +144,6 @@ interface PropsEdit {
 export const EditColorDialog: React.FC<PropsEdit> = ({children, id, updateView, onOpenChange}) => {
   //const [data, setData] = useState<IGeneral | never>();
   const [loadingSave, setLoadingSave] = useState(false); // Estado de carga
-  const [loadingDelete, setLoadingDelete] = useState(false); // Estado de carga
 
   const [loadingInit, setLoadingInit] = useState(false); // Estado de carga
 
@@ -190,23 +189,6 @@ export const EditColorDialog: React.FC<PropsEdit> = ({children, id, updateView, 
       setLoadingInit(false); // Finaliza la carga
     }
   };
-
-  function onDelete(id: number): void {
-    console.log("Color eliminado:");
-    setLoadingDelete(true); // Inicia la carga
-    softDeleteColor(id)
-      .then((deleteColor) => {
-        console.log("Color eliminado:", deleteColor);
-
-        updateView();
-      })
-      .catch((error) => {
-        console.error("Error al eliminar el color:", error);
-      })
-      .finally(() => {
-        setLoadingDelete(false); // Finaliza la carga
-      });
-  }
 
   return (
     <Dialog onOpenChange={onOpenChange}>
@@ -283,22 +265,9 @@ export const EditColorDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                 >
                   {loadingSave ? <LoadingCircle /> : "Guardar"}
                 </Button>
-                <Button
-                  type="button"
-                  disabled={loadingDelete}
-                  className="col-span-3"
-                  variant={"destructive"}
-                  onClick={() => onDelete(form.getValues().id ?? 0)}
-                >
-                  {loadingDelete ? <LoadingCircle /> : "Eliminar"}
-                </Button>
-                <DialogClose className="col-span-6" asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    disabled={loadingDelete || loadingSave}
-                  >
+
+                <DialogClose className="col-span-3" asChild>
+                  <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                     Cerrar
                   </Button>
                 </DialogClose>
@@ -347,8 +316,8 @@ export const SoftDeleteColorDialog: React.FC<SoftPropsDelete> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Eliminar color</DialogTitle>
-          <DialogDescription>¿Está seguro de eliminar este color?</DialogDescription>
+          <DialogTitle>Desactivar Color</DialogTitle>
+          <DialogDescription>¿Está seguro de desactivar este Color?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className=" grid grid-cols-6 col-span-6">
@@ -359,7 +328,7 @@ export const SoftDeleteColorDialog: React.FC<SoftPropsDelete> = ({
             variant={"destructive"}
             onClick={onDelete}
           >
-            {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+            {loadingDelete ? <LoadingCircle /> : "Desactivar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
             <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
@@ -408,8 +377,8 @@ export const HardDeleteColorDialog: React.FC<HardPropsDelete> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Eliminar color</DialogTitle>
-          <DialogDescription>¿Está seguro de eliminar este color?</DialogDescription>
+          <DialogTitle>Eliminar Color</DialogTitle>
+          <DialogDescription>¿Está seguro de eliminar este Color?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className=" grid grid-cols-6 col-span-6">

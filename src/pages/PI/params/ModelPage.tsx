@@ -5,9 +5,10 @@ import {Button} from "@/components/ui/button";
 import {ArchiveRestore, Edit, List, PlusIcon, Trash2} from "lucide-react";
 import {
   CreateModelDialog,
-  DeleteModelDialog,
   EditModelDialog,
+  HardDeleteModelDialog,
   RecoverModelDialog,
+  SoftDeleteModelDialog,
 } from "@/components/dialog/params/ModelDialogs";
 import {ColumnDef, Row} from "@tanstack/react-table";
 import {
@@ -156,24 +157,34 @@ const ModelPage: React.FC<Props> = ({degree}) => {
                         </DropdownMenuItem>
                       </EditModelDialog>
                       <DropdownMenuSeparator />
-                      <DeleteModelDialog id={row.original.id ?? 0} updateView={updateView}>
+                      <SoftDeleteModelDialog id={row.original.id ?? 0} updateView={updateView}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <Trash2 /> Desactivar
+                        </DropdownMenuItem>
+                      </SoftDeleteModelDialog>
+                    </>
+                  ) : (
+                    <>
+                      <RecoverModelDialog id={row.original.id ?? 0} updateView={updateView}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <ArchiveRestore /> Recuperar
+                        </DropdownMenuItem>
+                      </RecoverModelDialog>
+                      <HardDeleteModelDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem
                           disabled={degree < 4 ? true : false}
                           onSelect={(e) => e.preventDefault()}
                         >
                           <Trash2 /> Eliminar
                         </DropdownMenuItem>
-                      </DeleteModelDialog>
+                      </HardDeleteModelDialog>
                     </>
-                  ) : (
-                    <RecoverModelDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem
-                        disabled={degree < 4 ? true : false}
-                        onSelect={(e) => e.preventDefault()}
-                      >
-                        <ArchiveRestore /> Recuperar
-                      </DropdownMenuItem>
-                    </RecoverModelDialog>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -199,14 +210,12 @@ const ModelPage: React.FC<Props> = ({degree}) => {
                 children={
                   <Button
                     disabled={degree < 2 ? true : false}
-                    variant="outline"
                     size="sm"
                     onSelect={(event) => {
                       event.preventDefault();
                     }}
                   >
                     <PlusIcon />
-                    <span className="ml-2 hidden lg:inline">Agregar</span>
                   </Button>
                 }
               />

@@ -101,7 +101,7 @@ const DataTable = <T extends IGeneral>({
     <div className="flex flex-col gap-2 overflow-auto">
       {/* Barra superior con filtros y opciones */}
       {!hasOptions ? null : (
-        <div className="flex items-center justify-between gap-1">
+        <div className="flex items-center justify-between gap-2">
           {/*<Filter
             placeholder="Busqueda General"
             column={{
@@ -113,12 +113,12 @@ const DataTable = <T extends IGeneral>({
             }}
           />*/}
           <ColumnFilter table={table} placeholder="Filtrar..." />
-          <div className="flex gap-1">
+          <div className="flex gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm">
                   <ColumnsIcon />
-                  <span className="ml-2 hidden lg:inline">Personalizar Columnas</span>
+                  {/* <span className="ml-2 hidden lg:inline">Personalizar Columnas</span>*/}
                   <ChevronDownIcon className="ml-1" />
                 </Button>
               </DropdownMenuTrigger>
@@ -146,16 +146,16 @@ const DataTable = <T extends IGeneral>({
           </div>
         </div>
       )}
-      <div className="overflow-hidden rounded-lg border">
+      <div className="overflow-hidden rounded-lg border   ">
         <Table>
-          <TableHeader className="bg-muted-foreground  ">
+          <TableHeader className="bg-muted  border-b-2  ">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead
                       key={header.id}
-                      className="text-left h-8  capitalize text-sm font-medium text-background"
+                      className="text-left h-8  capitalize text-sm font-medium  "
                     >
                       {!header.column.columnDef.header
                         ? null
@@ -174,7 +174,7 @@ const DataTable = <T extends IGeneral>({
                   data-state={row.getIsSelected() && "selected"}
                   className={
                     row.original.deletedAt
-                      ? "bg-red-500/30 hover:bg-red-500/50 border-0 "
+                      ? "bg-destructive/25 hover:bg-destructive/50 border-0 "
                       : "odd:bg-background/50 even:bg-muted/50   border-0"
                   }
                 >

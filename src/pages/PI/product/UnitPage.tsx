@@ -5,9 +5,10 @@ import {Button} from "@/components/ui/button";
 import {ArchiveRestore, Edit, List, PlusIcon, Trash2} from "lucide-react";
 import {
   CreateUnityDialog,
-  DeleteUnityDialog,
   EditUnityDialog,
+  HardDeleteUnityDialog,
   RecoverUnityDialog,
+  SoftDeleteUnityDialog,
 } from "@/components/dialog/product/UnityDialogs";
 import {ColumnDef, Row} from "@tanstack/react-table";
 import {
@@ -124,24 +125,34 @@ const UnitPage: React.FC<Props> = ({degree}) => {
                         </DropdownMenuItem>
                       </EditUnityDialog>
                       <DropdownMenuSeparator />
-                      <DeleteUnityDialog id={row.original.id ?? 0} updateView={updateView}>
+                      <SoftDeleteUnityDialog id={row.original.id ?? 0} updateView={updateView}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <Trash2 /> Desactivar{" "}
+                        </DropdownMenuItem>
+                      </SoftDeleteUnityDialog>
+                    </>
+                  ) : (
+                    <>
+                      <RecoverUnityDialog id={row.original.id ?? 0} updateView={updateView}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <ArchiveRestore /> Recuperar{" "}
+                        </DropdownMenuItem>
+                      </RecoverUnityDialog>
+                      <HardDeleteUnityDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem
                           disabled={degree < 4 ? true : false}
                           onSelect={(e) => e.preventDefault()}
                         >
                           <Trash2 /> Eliminar{" "}
                         </DropdownMenuItem>
-                      </DeleteUnityDialog>
+                      </HardDeleteUnityDialog>
                     </>
-                  ) : (
-                    <RecoverUnityDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem
-                        disabled={degree < 4 ? true : false}
-                        onSelect={(e) => e.preventDefault()}
-                      >
-                        <ArchiveRestore /> Recuperar{" "}
-                      </DropdownMenuItem>
-                    </RecoverUnityDialog>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -167,14 +178,12 @@ const UnitPage: React.FC<Props> = ({degree}) => {
                 children={
                   <Button
                     disabled={degree < 2 ? true : false}
-                    variant="outline"
                     size="sm"
                     onSelect={(event) => {
-                      event.preventDefault(); // Evita el cierre automático
+                      event.preventDefault();
                     }}
                   >
                     <PlusIcon />
-                    <span className="ml-2 hidden lg:inline">Agregar</span>
                   </Button>
                 }
               />

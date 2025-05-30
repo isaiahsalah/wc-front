@@ -140,7 +140,6 @@ interface PropsEdit {
 
 export const EditSectorDialog: React.FC<PropsEdit> = ({children, id, updateView, onOpenChange}) => {
   const [loadingSave, setLoadingSave] = useState(false);
-  const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
 
   const form = useForm<ISector>({
@@ -180,22 +179,6 @@ export const EditSectorDialog: React.FC<PropsEdit> = ({children, id, updateView,
       setLoadingInit(false);
     }
   };
-
-  function onDelete(id: number): void {
-    setLoadingDelete(true);
-    deleteSector(id)
-      .then((deletedSector) => {
-        console.log("Sectoro eliminado:", deletedSector);
-
-        updateView();
-      })
-      .catch((error) => {
-        console.error("Error al eliminar el Sectoro:", error);
-      })
-      .finally(() => {
-        setLoadingDelete(false);
-      });
-  }
 
   return (
     <Dialog onOpenChange={onOpenChange}>
@@ -274,22 +257,9 @@ export const EditSectorDialog: React.FC<PropsEdit> = ({children, id, updateView,
                 >
                   {loadingSave ? <LoadingCircle /> : "Guardar"}
                 </Button>
-                <Button
-                  type="button"
-                  disabled={loadingDelete}
-                  className="col-span-3"
-                  variant={"destructive"}
-                  onClick={() => onDelete(form.getValues().id ?? 0)}
-                >
-                  {loadingDelete ? <LoadingCircle /> : "Eliminar"}
-                </Button>
+
                 <DialogClose className="col-span-6" asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    disabled={loadingDelete || loadingSave}
-                  >
+                  <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                     Cerrar
                   </Button>
                 </DialogClose>

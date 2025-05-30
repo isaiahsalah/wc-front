@@ -271,7 +271,6 @@ interface PropsEdit {
 
 export const EditUserDialog: React.FC<PropsEdit> = ({children, id, updateView, onOpenChange}) => {
   const [loadingSave, setLoadingSave] = useState(false);
-  const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
   const [groups, setGroups] = useState<IWorkGroup[]>();
   const {sesion, setSesion} = useContext(SesionContext);
@@ -316,21 +315,6 @@ export const EditUserDialog: React.FC<PropsEdit> = ({children, id, updateView, o
       setLoadingInit(false);
     }
   };
-
-  function onDelete(id: number): void {
-    setLoadingDelete(true);
-    softDeleteUser(id)
-      .then((deletedUser) => {
-        console.log("Usuario eliminado:", deletedUser);
-        updateView();
-      })
-      .catch((error) => {
-        console.error("Error al eliminar el usuario:", error);
-      })
-      .finally(() => {
-        setLoadingDelete(false);
-      });
-  }
 
   return (
     <Dialog onOpenChange={onOpenChange}>
@@ -479,22 +463,8 @@ export const EditUserDialog: React.FC<PropsEdit> = ({children, id, updateView, o
                 >
                   {loadingSave ? <LoadingCircle /> : "Guardar"}
                 </Button>
-                <Button
-                  type="button"
-                  disabled={loadingDelete}
-                  className="col-span-3"
-                  variant={"destructive"}
-                  onClick={() => onDelete(form.getValues().id ?? 0)}
-                >
-                  {loadingDelete ? <LoadingCircle /> : "Eliminar"}
-                </Button>
                 <DialogClose className="col-span-6" asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    disabled={loadingDelete || loadingSave}
-                  >
+                  <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                     Cerrar
                   </Button>
                 </DialogClose>
@@ -542,8 +512,8 @@ export const SoftDeleteUserDialog: React.FC<SoftPropsDelete> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Eliminar usuario</DialogTitle>
-          <DialogDescription>¿Está seguro de eliminar este usuario?</DialogDescription>
+          <DialogTitle>Desactivar Usuario</DialogTitle>
+          <DialogDescription>¿Está seguro de desactivar este Usuario?</DialogDescription>
         </DialogHeader>
         <DialogFooter className="grid grid-cols-6 col-span-6">
           <Button
@@ -553,7 +523,7 @@ export const SoftDeleteUserDialog: React.FC<SoftPropsDelete> = ({
             variant={"destructive"}
             onClick={onDelete}
           >
-            {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+            {loadingDelete ? <LoadingCircle /> : "Desactivar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
             <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
@@ -566,14 +536,14 @@ export const SoftDeleteUserDialog: React.FC<SoftPropsDelete> = ({
   );
 };
 
-interface PropsDelete {
+interface PropsHardDelete {
   children: React.ReactNode;
   id: number;
   updateView: () => void;
   onOpenChange?: (open: boolean) => void;
 }
 
-export const DeleteUserDialog: React.FC<PropsDelete> = ({
+export const HardDeleteUserDialog: React.FC<PropsHardDelete> = ({
   children,
   id,
   updateView,
@@ -583,7 +553,7 @@ export const DeleteUserDialog: React.FC<PropsDelete> = ({
 
   function onDelete(): void {
     setLoadingDelete(true);
-    softDeleteUser(id)
+    hardDeleteUser(id)
       .then((deletedUser) => {
         console.log("Usuario eliminado:", deletedUser);
         updateView();
@@ -601,8 +571,8 @@ export const DeleteUserDialog: React.FC<PropsDelete> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Eliminar usuario</DialogTitle>
-          <DialogDescription>¿Está seguro de eliminar este usuario?</DialogDescription>
+          <DialogTitle>Eliminar Usuario</DialogTitle>
+          <DialogDescription>¿Está seguro de eliminar este Usuario?</DialogDescription>
         </DialogHeader>
         <DialogFooter className="grid grid-cols-6 col-span-6">
           <Button

@@ -5,9 +5,10 @@ import {Button} from "@/components/ui/button";
 import {ArchiveRestore, Edit, List, PlusIcon, Trash2} from "lucide-react";
 import {
   CreateMachineDialog,
-  DeleteMachineDialog,
   EditMachineDialog,
+  HardDeleteMachineDialog,
   RecoverMachineDialog,
+  SoftDeleteMachineDialog,
 } from "@/components/dialog/params/MachineDialogs";
 import {ColumnDef, Row} from "@tanstack/react-table";
 import {
@@ -162,24 +163,34 @@ const MachinePage: React.FC<Props> = ({degree}) => {
                         </DropdownMenuItem>
                       </EditMachineDialog>
                       <DropdownMenuSeparator />
-                      <DeleteMachineDialog id={row.original.id ?? 0} updateView={updateView}>
+                      <SoftDeleteMachineDialog id={row.original.id ?? 0} updateView={updateView}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <Trash2 /> Desactivar
+                        </DropdownMenuItem>
+                      </SoftDeleteMachineDialog>
+                    </>
+                  ) : (
+                    <>
+                      <RecoverMachineDialog id={row.original.id ?? 0} updateView={updateView}>
+                        <DropdownMenuItem
+                          disabled={degree < 4 ? true : false}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <ArchiveRestore /> Recuperar
+                        </DropdownMenuItem>
+                      </RecoverMachineDialog>
+                      <HardDeleteMachineDialog id={row.original.id ?? 0} updateView={updateView}>
                         <DropdownMenuItem
                           disabled={degree < 4 ? true : false}
                           onSelect={(e) => e.preventDefault()}
                         >
                           <Trash2 /> Eliminar
                         </DropdownMenuItem>
-                      </DeleteMachineDialog>
+                      </HardDeleteMachineDialog>
                     </>
-                  ) : (
-                    <RecoverMachineDialog id={row.original.id ?? 0} updateView={updateView}>
-                      <DropdownMenuItem
-                        disabled={degree < 4 ? true : false}
-                        onSelect={(e) => e.preventDefault()}
-                      >
-                        <ArchiveRestore /> Recuperar
-                      </DropdownMenuItem>
-                    </RecoverMachineDialog>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -205,14 +216,12 @@ const MachinePage: React.FC<Props> = ({degree}) => {
                 children={
                   <Button
                     disabled={degree < 2 ? true : false}
-                    variant="outline"
                     size="sm"
                     onSelect={(event) => {
                       event.preventDefault();
                     }}
                   >
                     <PlusIcon />
-                    <span className="ml-2 hidden lg:inline">Agregar</span>
                   </Button>
                 }
               />

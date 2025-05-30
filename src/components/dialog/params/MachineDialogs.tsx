@@ -153,7 +153,6 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
   onOpenChange,
 }) => {
   const [loadingSave, setLoadingSave] = useState(false);
-  const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
 
   const form = useForm<IMachine>({
@@ -193,22 +192,6 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
       setLoadingInit(false);
     }
   };
-
-  function onDelete(id: number): void {
-    setLoadingDelete(true);
-    softDeleteMachine(id)
-      .then((deletedMachine) => {
-        console.log("Machineo eliminado:", deletedMachine);
-
-        updateView();
-      })
-      .catch((error) => {
-        console.error("Error al eliminar el Machineo:", error);
-      })
-      .finally(() => {
-        setLoadingDelete(false);
-      });
-  }
 
   return (
     <Dialog onOpenChange={onOpenChange}>
@@ -287,22 +270,9 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
                 >
                   {loadingSave ? <LoadingCircle /> : "Guardar"}
                 </Button>
-                <Button
-                  type="button"
-                  disabled={loadingDelete}
-                  className="col-span-3"
-                  variant={"destructive"}
-                  onClick={() => onDelete(form.getValues().id ?? 0)}
-                >
-                  {loadingDelete ? <LoadingCircle /> : "Eliminar"}
-                </Button>
-                <DialogClose className="col-span-6" asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    disabled={loadingDelete || loadingSave}
-                  >
+
+                <DialogClose className="col-span-3" asChild>
+                  <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                     Cerrar
                   </Button>
                 </DialogClose>
@@ -351,8 +321,8 @@ export const SoftDeleteMachineDialog: React.FC<SoftPropsDelete> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Eliminar Machineo</DialogTitle>
-          <DialogDescription>¿Está seguro de eliminar este Machineo?</DialogDescription>
+          <DialogTitle>Desactivar Máquina</DialogTitle>
+          <DialogDescription>¿Está seguro de desactivar esta Máquina?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -363,7 +333,7 @@ export const SoftDeleteMachineDialog: React.FC<SoftPropsDelete> = ({
             variant={"destructive"}
             onClick={onDelete}
           >
-            {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+            {loadingDelete ? <LoadingCircle /> : "Desactivar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
             <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
@@ -394,7 +364,7 @@ export const HardDeleteMachineDialog: React.FC<HardPropsDelete> = ({
 
   function onDelete(): void {
     setLoadingDelete(true); // Inicia la carga
-    softDeleteMachine(id)
+    hardDeleteMachine(id)
       .then((deletedMachine) => {
         console.log("Machineo eliminado:", deletedMachine);
         updateView();
@@ -412,8 +382,8 @@ export const HardDeleteMachineDialog: React.FC<HardPropsDelete> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Eliminar Machineo</DialogTitle>
-          <DialogDescription>¿Está seguro de eliminar este Machineo?</DialogDescription>
+          <DialogTitle>Eliminar Máquina</DialogTitle>
+          <DialogDescription>¿Está seguro de eliminar esta Máquina?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">

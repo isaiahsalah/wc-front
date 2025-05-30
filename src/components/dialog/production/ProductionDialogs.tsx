@@ -743,7 +743,6 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
   onOpenChange,
 }) => {
   const [loadingSave, setLoadingSave] = useState(false);
-  const [loadingDelete, setLoadingDelete] = useState(false);
   const [loadingInit, setLoadingInit] = useState(false);
   const [baseUnities, setBaseUnities] = useState<IUnity[]>();
 
@@ -789,22 +788,6 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
       setLoadingInit(false);
     }
   };
-
-  function onDelete(id: number): void {
-    setLoadingDelete(true);
-    deleteProduction(id)
-      .then((deletedProduction) => {
-        console.log("Producción eliminada:", deletedProduction);
-
-        updateView();
-      })
-      .catch((error) => {
-        console.error("Error al eliminar la producción:", error);
-      })
-      .finally(() => {
-        setLoadingDelete(false);
-      });
-  }
 
   return (
     <Dialog onOpenChange={onOpenChange}>
@@ -1038,22 +1021,8 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
                 >
                   {loadingSave ? <LoadingCircle /> : "Guardar"}
                 </Button>
-                <Button
-                  type="button"
-                  disabled={loadingDelete}
-                  className="col-span-3"
-                  variant={"destructive"}
-                  onClick={() => onDelete(form.getValues().id ?? 0)}
-                >
-                  {loadingDelete ? <LoadingCircle /> : "Eliminar"}
-                </Button>
                 <DialogClose className="col-span-6" asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    disabled={loadingDelete || loadingSave}
-                  >
+                  <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                     Cerrar
                   </Button>
                 </DialogClose>
@@ -1103,8 +1072,8 @@ export const SoftDeleteProductionDialog: React.FC<SoftPropsDelete> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Eliminar producción</DialogTitle>
-          <DialogDescription>¿Está seguro de eliminar esta producción?</DialogDescription>
+          <DialogTitle>Desactivar Producción</DialogTitle>
+          <DialogDescription>¿Está seguro de desactivar esta Producción?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -1115,7 +1084,7 @@ export const SoftDeleteProductionDialog: React.FC<SoftPropsDelete> = ({
             variant={"destructive"}
             onClick={onDelete}
           >
-            {loadingDelete ? <LoadingCircle /> : "Eliminar"}
+            {loadingDelete ? <LoadingCircle /> : "Desactivar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
             <Button type="button" variant="outline" className="w-full" disabled={loadingDelete}>
@@ -1128,7 +1097,7 @@ export const SoftDeleteProductionDialog: React.FC<SoftPropsDelete> = ({
   );
 };
 
-interface PropsDelete {
+interface PropsHardDelete {
   children: React.ReactNode; // Define el tipo de children
   id: number; // Clase personalizada opcional
   updateView: () => void; // Define el tipo como una función que retorna void
@@ -1136,7 +1105,7 @@ interface PropsDelete {
 }
 
 // Componente para eliminar una producción
-export const DeleteProductionDialog: React.FC<PropsDelete> = ({
+export const HardDeleteProductionDialog: React.FC<PropsHardDelete> = ({
   children,
   id,
   updateView,
@@ -1146,7 +1115,7 @@ export const DeleteProductionDialog: React.FC<PropsDelete> = ({
 
   function onDelete(): void {
     setLoadingDelete(true); // Inicia la carga
-    softDeleteProduction(id)
+    hardDeleteProduction(id)
       .then((deletedProduction) => {
         console.log("Producción eliminada:", deletedProduction);
 
@@ -1165,8 +1134,8 @@ export const DeleteProductionDialog: React.FC<PropsDelete> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Eliminar producción</DialogTitle>
-          <DialogDescription>¿Está seguro de eliminar esta producción?</DialogDescription>
+          <DialogTitle>Eliminar Producción</DialogTitle>
+          <DialogDescription>¿Está seguro de eliminar esta Producción?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className="grid grid-cols-6 col-span-6">
