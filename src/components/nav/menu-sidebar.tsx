@@ -36,7 +36,10 @@ const MenuSidebar = ({items, title}: {items: IMenuItem[]; title: string}) => {
             <Collapsible key={i} asChild defaultOpen={false} className="group/collapsible">
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
-                  <SidebarMenuButton tooltip={item.name}>
+                  <SidebarMenuButton
+                    tooltip={item.name}
+                    className="text-sidebar-foreground/70 group-data-[state=open]/collapsible:text-foreground"
+                  >
                     {item.icon && <item.icon />}
                     <span>{item.name}</span>
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
@@ -51,7 +54,7 @@ const MenuSidebar = ({items, title}: {items: IMenuItem[]; title: string}) => {
                       if (existPermission)
                         return (
                           <SidebarMenuSubItem key={subItem.name}>
-                            <SidebarMenuSubButton asChild>
+                            <SidebarMenuSubButton asChild className="text-muted-foreground/80">
                               <Link to={subItem.link} onClick={() => setPage(subItem)}>
                                 <span>{subItem.name}</span>
                               </Link>

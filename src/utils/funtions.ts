@@ -1,6 +1,7 @@
 import {getCheckToken} from "@/api/login.api";
 import {IGeneral, IPermission, ISesion} from "./interfaces";
 import {typeModule} from "./const";
+import {endOfWeek, setHours, setMinutes, setSeconds, startOfWeek} from "date-fns";
 
 export function countCurrentMonth(data: IGeneral[]): number {
   const now = new Date();
@@ -65,4 +66,22 @@ export const checkToken = async ({
 export const getModuleBySesion = ({sesion}: {sesion: ISesion}) => {
   const moduleId = (sesion?.sys_user.permissions as IPermission[])[0].type_module;
   return typeModule.find((module) => module.id === moduleId);
+};
+
+// Función para obtener el rango de la semana
+export const getWeekRange = (date: Date = new Date()): {start: Date; end: Date} => {
+  // Configuración regional: el lunes como inicio de semana
+  const weekStartsOn = 1; // 0 = Domingo, 1 = Lunes
+
+  // Obtener el inicio y el fin de la semana
+  const startOfTheWeek = startOfWeek(date, {weekStartsOn});
+  const endOfTheWeek = endOfWeek(date, {weekStartsOn});
+
+  // Ajustar el inicio de la semana a las 00:00:00
+  const start = setHours(setMinutes(setSeconds(startOfTheWeek, 0), 0), 0);
+
+  // Ajustar el final de la semana a las 23:59:59
+  const end = setHours(setMinutes(setSeconds(endOfTheWeek, 59), 59), 23);
+
+  return {start, end};
 };

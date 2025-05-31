@@ -228,7 +228,7 @@ const DataTable = <T extends IGeneral>({
               </Select>
             </div>
             <div className="flex w-fit items-center justify-center text-sm   text-muted-foreground ">
-              Página {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+              Página {table.getState().pagination.pageIndex + 1} de {table.getPageCount()}
             </div>
             <div className="ml-auto flex items-center gap-1 lg:ml-0">
               <Button
@@ -237,7 +237,6 @@ const DataTable = <T extends IGeneral>({
                 onClick={() => table.setPageIndex(0)}
                 disabled={!table.getCanPreviousPage()}
               >
-                <span className="sr-only">Go to first page</span>
                 <ChevronsLeftIcon />
               </Button>
               <Button
@@ -247,7 +246,6 @@ const DataTable = <T extends IGeneral>({
                 onClick={() => table.previousPage()}
                 disabled={!table.getCanPreviousPage()}
               >
-                <span className="sr-only">Go to previous page</span>
                 <ChevronLeftIcon />
               </Button>
               <Button
@@ -257,7 +255,6 @@ const DataTable = <T extends IGeneral>({
                 onClick={() => table.nextPage()}
                 disabled={!table.getCanNextPage()}
               >
-                <span className="sr-only">Go to next page</span>
                 <ChevronRightIcon />
               </Button>
               <Button
@@ -267,7 +264,6 @@ const DataTable = <T extends IGeneral>({
                 onClick={() => table.setPageIndex(table.getPageCount() - 1)}
                 disabled={!table.getCanNextPage()}
               >
-                <span className="sr-only">Go to last page</span>
                 <ChevronsRightIcon />
               </Button>
             </div>

@@ -43,6 +43,9 @@ import {Badge} from "@/components/ui/badge";
 import {getMachines} from "@/api/params/machine.api";
 import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 import {SesionContext} from "@/providers/sesionProvider";
+import {getWeekRange} from "@/utils/funtions";
+import {ToggleGroup, ToggleGroupItem} from "@/components/ui/toggle-group";
+import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 interface Props {
   type_screen: number;
   degree: number;
@@ -56,6 +59,7 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
   const [idMachine, setIdMachine] = useState<number>();
 
   const [machines, setMachines] = useState<IMachine[]>();
+  const weekRange = getWeekRange();
 
   useEffect(() => {
     getMachines({id_sector_process: sectorProcess?.id}).then((MachinesData) =>
@@ -82,6 +86,8 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
       const ProductionsData = await getProductions({
         id_sector_process: sectorProcess?.id,
         id_machine: idMachine ?? null,
+        init_date: weekRange.start.toISOString(),
+        end_date: weekRange.end.toISOString(),
         all: true,
       });
 
@@ -511,6 +517,26 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
 
   return (
     <div className="grid grid-cols-6 gap-2">
+      <RadioGroup className="col-span-6 grid grid-cols-6 gap-2">
+        {machines?.map((machine: IMachine, i) => (
+          <div className="col-span-1">
+            <label
+              key={machine.name}
+              htmlFor={machine.name}
+              className="block cursor-pointer rounded-lg border   p-4 shadow-sm transition-all hover:shadow-md   "
+            >
+              <RadioGroupItem id={machine.name} value={machine.name} />
+              <div className="flex flex-col">
+                <span className="text-lg font-medium">{machine.id}</span>
+                {machine.description && (
+                  <span className="text-sm text-gray-500">{machine.description}</span>
+                )}
+              </div>
+            </label>
+          </div>
+        ))}
+      </RadioGroup>
+
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardContent className=" flex flex-col gap-2">
           <CardDescription>Selecciona la máquina</CardDescription>

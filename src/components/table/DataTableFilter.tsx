@@ -15,7 +15,7 @@ function DynamicColumnFilter<TData>({table, placeholder}: DynamicColumnFilterPro
   const selectedColumn = selectedColumnId ? table.getColumn(selectedColumnId) : undefined;
 
   return (
-    <div className="flex gap-1   w-full">
+    <div className="flex gap-2   w-full">
       {/* Select para elegir columna */}
       <Select onValueChange={(value) => setSelectedColumnId(value)} value={selectedColumnId}>
         <SelectTrigger size="sm">
