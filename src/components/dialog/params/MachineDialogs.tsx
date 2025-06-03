@@ -3,14 +3,7 @@ import {Input} from "@/components/ui/input";
 import {useForm} from "react-hook-form";
 import {IMachine, MachineSchema} from "@/utils/interfaces";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
+import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
 import {Textarea} from "@/components/ui/textarea";
 import {useContext, useEffect, useState} from "react";
 import {
@@ -77,23 +70,21 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({children, updateView
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Registro de Machineo</DialogTitle>
-          <DialogDescription>Mostrando datos relacionados con el Machineo.</DialogDescription>
+          <DialogTitle>Registrar Máquina</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-            className="grid gap-2 "
+            className="grid gap-2"
           >
-            <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
+            <div className="grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm">
               <FormField
                 control={form.control}
                 name="name"
                 render={({field}) => (
                   <FormItem className="col-span-6">
-                    <FormDescription>Nombre</FormDescription>
                     <FormControl>
-                      <Input placeholder="Nombre" {...field} />
+                      <Input placeholder="Nombre de Máquina" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -105,7 +96,6 @@ export const CreateMachineDialog: React.FC<PropsCreate> = ({children, updateView
                 name="description"
                 render={({field}) => (
                   <FormItem className="col-span-6">
-                    <FormDescription>Descripción</FormDescription>
                     <FormControl>
                       <Textarea
                         placeholder="Notas adicionales"
@@ -200,43 +190,22 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Gestión de Machineo</DialogTitle>
-          <DialogDescription>Mostrando datos relacionados con el Machineo.</DialogDescription>
+          <DialogTitle>Editar Machineo</DialogTitle>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-              className=" grid   gap-4 "
+              className=" grid   gap-2 "
             >
-              <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
-                <FormField
-                  control={form.control}
-                  name="id"
-                  render={({field}) => (
-                    <FormItem className={"col-span-2"}>
-                      <FormDescription>Id</FormDescription>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          placeholder="Id"
-                          disabled
-                          onChange={(event) => field.onChange(Number(event.target.value))}
-                          defaultValue={field.value ?? ""}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <div className="grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
                   name="name"
                   render={({field}) => (
-                    <FormItem className="col-span-4">
-                      <FormDescription>Nombre</FormDescription>
+                    <FormItem className="col-span-6">
                       <FormControl>
-                        <Input placeholder="Nombre" {...field} />
+                        <Input placeholder="Nombre de Máquina" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -248,7 +217,6 @@ export const EditMachineDialog: React.FC<PropsEdit> = ({
                   name="description"
                   render={({field}) => (
                     <FormItem className="col-span-6">
-                      <FormDescription>Descripción</FormDescription>
                       <FormControl>
                         <Textarea
                           placeholder="Notas adicionales"
@@ -443,7 +411,7 @@ export const RecoverMachineDialog: React.FC<PropsRecover> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Recuperar Machineo</DialogTitle>
+          <DialogTitle>Reactivar Machineo</DialogTitle>
           <DialogDescription>¿Está seguro de recuperar este Machineo?</DialogDescription>
         </DialogHeader>
 
@@ -454,7 +422,7 @@ export const RecoverMachineDialog: React.FC<PropsRecover> = ({
             className="col-span-3"
             onClick={onRecover}
           >
-            {loadingRecover ? <LoadingCircle /> : "Recuperar"}
+            {loadingRecover ? <LoadingCircle /> : "Reactivar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
             <Button type="button" variant="outline" className="w-full" disabled={loadingRecover}>

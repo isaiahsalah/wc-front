@@ -1,6 +1,6 @@
 const TicketView = ({ticketFormat}: {ticketFormat: string[]}) => {
   return (
-    <div className="bg-white w-[50mm] h-[30mm] rounded-xl  flex  m-auto">
+    <div className="bg-white w-[50mm] h-[30mm] rounded-xl  flex  m-auto  ">
       <div className=" bg-transparent w-[48mm] h-[28mm] rounded-xl border-black border-2 m-auto flex flex-col ">
         <div className="flex bg-transparent w-[48mm] h-[22mm] ">
           <div className="  flex-1  flex  ">

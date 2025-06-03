@@ -180,7 +180,7 @@ const OrderPage: React.FC<Props> = ({degree}) => {
                           disabled={degree < 4 ? true : false}
                           onSelect={(e) => e.preventDefault()}
                         >
-                          <ArchiveRestore /> Recuperar{" "}
+                          <ArchiveRestore /> Reactivar{" "}
                         </DropdownMenuItem>
                       </RecoverOrderDialog>
                       <HardDeleteOrderDialog id={row.original.id ?? 0} updateView={updateView}>

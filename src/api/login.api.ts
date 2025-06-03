@@ -38,8 +38,11 @@ export const getCheckToken = async ({token}: {token: string}) => {
     const response = await apiClient.get("/auth/token", {
       headers: {Authorization: `Bearer ${token}`},
     });
+    // Agrega un retraso de 2 segundos
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
-    return response.data; // Devuelve los datos obtenidos de la API
+    // Devuelve los datos después del retraso
+    return response.data;
   } catch (error) {
     window.localStorage.removeItem("token-app");
     toast.error("Sesión caducada", {

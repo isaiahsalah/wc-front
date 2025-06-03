@@ -4,14 +4,7 @@ import {Input} from "@/components/ui/input";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
+import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
 import {useContext, useState} from "react";
 
 import {
@@ -43,7 +36,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {Trash2} from "lucide-react";
+import {Eye, EyeOff, Trash2} from "lucide-react";
 import {SesionContext} from "@/providers/sesionProvider";
 import {checkToken} from "@/utils/funtions";
 
@@ -56,6 +49,7 @@ export const CreateUserDialog: React.FC<PropsCreate> = ({children, updateView}) 
   const [loadingSave, setLoadingSave] = useState(false); // Estado de carga
   const [loadingInit, setLoadingInit] = useState(false);
   const [groups, setGroups] = useState<IWorkGroup[]>();
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<ISystemUser>({
     resolver: zodResolver(SystemUserSchema),
@@ -96,24 +90,19 @@ export const CreateUserDialog: React.FC<PropsCreate> = ({children, updateView}) 
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Gestión de Usuario</DialogTitle>
-          <DialogDescription>Complete la información del nuevo usuario.</DialogDescription>
+          <DialogTitle>Registrar Usuario</DialogTitle>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-              className="grid   gap-2"
-            >
-              <div className="grid   grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
+            <form onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))} className="grid   ">
+              <div className="grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
                   name="name"
                   render={({field}) => (
                     <FormItem className="col-span-2">
-                      <FormDescription>Nombre</FormDescription>
                       <FormControl>
-                        <Input placeholder="Nombre" {...field} />
+                        <Input placeholder="Nombre de Usuario" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -125,9 +114,8 @@ export const CreateUserDialog: React.FC<PropsCreate> = ({children, updateView}) 
                   name="lastname"
                   render={({field}) => (
                     <FormItem className="col-span-4">
-                      <FormDescription>Apellidos</FormDescription>
                       <FormControl>
-                        <Input placeholder="Apellidos" {...field} />
+                        <Input placeholder="Apellidos del Usuario" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -139,7 +127,6 @@ export const CreateUserDialog: React.FC<PropsCreate> = ({children, updateView}) 
                   name="birthday"
                   render={({field}) => (
                     <FormItem className="col-span-3">
-                      <FormDescription>Fecha de nacimiento</FormDescription>
                       <FormControl>
                         <DatePicker
                           className="w-full"
@@ -155,7 +142,7 @@ export const CreateUserDialog: React.FC<PropsCreate> = ({children, updateView}) 
                               field.onChange(null);
                             }
                           }}
-                          placeholder="Selecciona una fecha"
+                          placeholder="Fecha de Nacimiento"
                         />
                       </FormControl>
                       <FormMessage />
@@ -168,7 +155,6 @@ export const CreateUserDialog: React.FC<PropsCreate> = ({children, updateView}) 
                   name="phone"
                   render={({field}) => (
                     <FormItem className="col-span-3">
-                      <FormDescription>Telefono</FormDescription>
                       <FormControl>
                         <Input placeholder="Telefono" {...field} />
                       </FormControl>
@@ -182,7 +168,6 @@ export const CreateUserDialog: React.FC<PropsCreate> = ({children, updateView}) 
                   name="user"
                   render={({field}) => (
                     <FormItem className="col-span-3">
-                      <FormDescription>Usuario</FormDescription>
                       <FormControl>
                         <Input placeholder="Usuario" {...field} />
                       </FormControl>
@@ -195,9 +180,31 @@ export const CreateUserDialog: React.FC<PropsCreate> = ({children, updateView}) 
                   name="pass"
                   render={({field}) => (
                     <FormItem className="col-span-3">
-                      <FormDescription>Contraseña</FormDescription>
                       <FormControl>
-                        <Input type="password" placeholder="Contraseña" {...field} />
+                        <div className="relative">
+                          <Input
+                            className="text-center"
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Contraseña"
+                            autoComplete="current-password"
+                            {...field}
+                          />
+                          <Button
+                            type="button"
+                            variant={"link"}
+                            className="absolute right-0 top-1/2  -translate-y-1/2"
+                            onMouseDown={() => setShowPassword(true)}
+                            onMouseUp={() => setShowPassword(false)}
+                            onTouchStart={() => setShowPassword(true)}
+                            onTouchEnd={() => setShowPassword(false)}
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4 opacity-50" />
+                            ) : (
+                              <Eye className="h-4 w-4 opacity-50" />
+                            )}
+                          </Button>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -208,7 +215,6 @@ export const CreateUserDialog: React.FC<PropsCreate> = ({children, updateView}) 
                   name="id_work_group"
                   render={({field}) => (
                     <FormItem className="col-span-6">
-                      <FormDescription>Grupo</FormDescription>
                       <FormControl>
                         <div className="flex gap-2">
                           <Select
@@ -216,7 +222,7 @@ export const CreateUserDialog: React.FC<PropsCreate> = ({children, updateView}) 
                             onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                           >
                             <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Seleccionar Tipo" />
+                              <SelectValue placeholder="Grupo de Trabajo" />
                             </SelectTrigger>
                             <SelectContent>
                               {groups?.map((group: IWorkGroup) => (
@@ -324,23 +330,18 @@ export const EditUserDialog: React.FC<PropsEdit> = ({children, id, updateView, o
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Editar Usuario</DialogTitle>
-          <DialogDescription>Edite los datos del usuario.</DialogDescription>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-              className="grid  gap-4"
-            >
-              <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
+            <form onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))} className="grid  ">
+              <div className="grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
                   name="name"
                   render={({field}) => (
                     <FormItem className="col-span-2">
-                      <FormDescription>Nombre</FormDescription>
                       <FormControl>
-                        <Input placeholder="Nombre" {...field} />
+                        <Input placeholder="Nombre de Usuario" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -352,9 +353,8 @@ export const EditUserDialog: React.FC<PropsEdit> = ({children, id, updateView, o
                   name="lastname"
                   render={({field}) => (
                     <FormItem className="col-span-4">
-                      <FormDescription>Apellidos</FormDescription>
                       <FormControl>
-                        <Input placeholder="Apellidos" {...field} />
+                        <Input placeholder="Apellidos del Usuario" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -366,7 +366,6 @@ export const EditUserDialog: React.FC<PropsEdit> = ({children, id, updateView, o
                   name="birthday"
                   render={({field}) => (
                     <FormItem className="col-span-3">
-                      <FormDescription>Fecha de nacimiento</FormDescription>
                       <FormControl>
                         <DatePicker
                           className="w-full"
@@ -382,7 +381,7 @@ export const EditUserDialog: React.FC<PropsEdit> = ({children, id, updateView, o
                               field.onChange(null);
                             }
                           }}
-                          placeholder="Selecciona una fecha"
+                          placeholder="Fecha de Nacimiento"
                         />
                       </FormControl>
                       <FormMessage />
@@ -395,7 +394,6 @@ export const EditUserDialog: React.FC<PropsEdit> = ({children, id, updateView, o
                   name="phone"
                   render={({field}) => (
                     <FormItem className="col-span-3">
-                      <FormDescription>Telefono</FormDescription>
                       <FormControl>
                         <Input placeholder="Telefono" {...field} />
                       </FormControl>
@@ -409,7 +407,6 @@ export const EditUserDialog: React.FC<PropsEdit> = ({children, id, updateView, o
                   name="user"
                   render={({field}) => (
                     <FormItem className="col-span-3">
-                      <FormDescription>Usuario</FormDescription>
                       <FormControl>
                         <Input placeholder="Usuario" {...field} />
                       </FormControl>
@@ -423,7 +420,6 @@ export const EditUserDialog: React.FC<PropsEdit> = ({children, id, updateView, o
                   name="id_work_group"
                   render={({field}) => (
                     <FormItem className="col-span-3">
-                      <FormDescription>Grupo</FormDescription>
                       <FormControl>
                         <div className="flex gap-2">
                           <Select
@@ -431,7 +427,7 @@ export const EditUserDialog: React.FC<PropsEdit> = ({children, id, updateView, o
                             onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                           >
                             <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Seleccionar Tipo" />
+                              <SelectValue placeholder="Grupo de Trabajo" />
                             </SelectTrigger>
                             <SelectContent>
                               {groups?.map((group: IWorkGroup) => (
@@ -463,7 +459,7 @@ export const EditUserDialog: React.FC<PropsEdit> = ({children, id, updateView, o
                 >
                   {loadingSave ? <LoadingCircle /> : "Guardar"}
                 </Button>
-                <DialogClose className="col-span-6" asChild>
+                <DialogClose className="col-span-3" asChild>
                   <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                     Cerrar
                   </Button>
@@ -630,7 +626,7 @@ export const RecoverUserDialog: React.FC<PropsRecover> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Recuperar usuario</DialogTitle>
+          <DialogTitle>Reactivar usuario</DialogTitle>
           <DialogDescription>¿Está seguro de recuperar este usuario?</DialogDescription>
         </DialogHeader>
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -640,7 +636,7 @@ export const RecoverUserDialog: React.FC<PropsRecover> = ({
             className="col-span-3"
             onClick={onRecover}
           >
-            {loadingRecover ? <LoadingCircle /> : "Recuperar"}
+            {loadingRecover ? <LoadingCircle /> : "Reactivar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
             <Button type="button" variant="outline" className="w-full" disabled={loadingRecover}>

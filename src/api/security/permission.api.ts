@@ -63,7 +63,7 @@ export const deletePermission = async (id: number) => {
   }
 };
 
-// Recuperar permiso
+// Reactivar permiso
 export const recoverPermission = async (id: number) => {
   toast.info("Se está procesando la petición");
   try {

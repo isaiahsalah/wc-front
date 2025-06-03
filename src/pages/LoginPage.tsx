@@ -122,7 +122,7 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-                className="grid  gap-2 text-center"
+                className="grid gap-2 text-center"
               >
                 <FormField
                   control={form.control}
@@ -240,13 +240,6 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
                 <Button type="submit" className="w-full bg-primary mt-4 " disabled={loadingLogin}>
                   {loadingLogin ? <LoadingCircle /> : "Login"}
                 </Button>
-
-                <div className="mt-4 text-center text-sm">
-                  Problemas con el inicio de sesión?{" "}
-                  <a href="#" className="underline underline-offset-4">
-                    Contacto
-                  </a>
-                </div>
               </form>
             </Form>
           </div>

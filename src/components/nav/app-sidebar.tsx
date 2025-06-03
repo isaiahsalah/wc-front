@@ -4,7 +4,6 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 
@@ -62,7 +61,7 @@ export const AppSidebar: React.FC<Props> = ({className}) => {
   }
 
   return (
-    <Sidebar className={clsx("animate-fadeIn", className)}>
+    <Sidebar className={clsx("animate-fadeIn ", className)}>
       {/*<SidebarHeader>
         <SidebarMenu className="flex ">
           <SidebarMenuItem></SidebarMenuItem>
@@ -70,16 +69,13 @@ export const AppSidebar: React.FC<Props> = ({className}) => {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarSeparator className=" m-0" />*/}
-      <SidebarHeader>
+      <SidebarHeader className="   m-0 p-0">
         <SidebarMenu className="flex ">
-          <SidebarMenuItem></SidebarMenuItem>
-
           <SectorProcessSidebar sectorProcesses={sectorProcesses} />
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarSeparator className=" m-0" />
 
-      <SidebarContent className="scrollbar-thin">
+      <SidebarContent className="scrollbar-thin ">
         <MenuSidebar title={title} items={menu} />
       </SidebarContent>
       <SidebarSeparator className=" m-0" />

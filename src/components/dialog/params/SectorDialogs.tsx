@@ -75,9 +75,9 @@ export const CreateSectorDialog: React.FC<PropsCreate> = ({children, updateView}
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-            className=" grid  gap-2 "
+            className="grid gap-2"
           >
-            <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
+            <div className="grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm">
               <FormField
                 control={form.control}
                 name="name"
@@ -192,11 +192,8 @@ export const EditSectorDialog: React.FC<PropsEdit> = ({children, id, updateView,
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-              className=" grid   gap-4 "
-            >
-              <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
+            <form onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))} className=" grid  ">
+              <div className="grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
                   name="id"
@@ -369,7 +366,7 @@ export const RecoverSectorDialog: React.FC<PropsRecover> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Recuperar Sectoro</DialogTitle>
+          <DialogTitle>Reactivar Sectoro</DialogTitle>
           <DialogDescription>¿Está seguro de recuperar este Sectoro?</DialogDescription>
         </DialogHeader>
 
@@ -380,7 +377,7 @@ export const RecoverSectorDialog: React.FC<PropsRecover> = ({
             className="col-span-3"
             onClick={onRecover}
           >
-            {loadingRecover ? <LoadingCircle /> : "Recuperar"}
+            {loadingRecover ? <LoadingCircle /> : "Reactivar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
             <Button type="button" variant="outline" className="w-full" disabled={loadingRecover}>

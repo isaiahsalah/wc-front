@@ -106,9 +106,9 @@ export const CreateFormulaDialog: React.FC<PropsCreate> = ({children, updateView
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-              className=" grid  gap-2"
+              className="grid gap-2"
             >
-              <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
+              <div className="grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
                   name="name"
@@ -151,7 +151,7 @@ export const CreateFormulaDialog: React.FC<PropsCreate> = ({children, updateView
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                           defaultValue={field.value.toString()}
                         >
-                          <SelectTrigger className="w-full">
+                          <SelectTrigger className="w-full" size="sm">
                             <SelectValue placeholder="Seleccionar producto" />
                           </SelectTrigger>
                           <SelectContent>
@@ -267,11 +267,8 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-              className=" grid  gap-4 "
-            >
-              <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
+            <form onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))} className=" grid  ">
+              <div className="grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
                   name="id"
@@ -334,7 +331,7 @@ export const EditFormulaDialog: React.FC<PropsEdit> = ({
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                           defaultValue={field.value.toString()}
                         >
-                          <SelectTrigger className="w-full">
+                          <SelectTrigger className="w-full" size="sm">
                             <SelectValue placeholder="Seleccionar producto" />
                           </SelectTrigger>
                           <SelectContent>
@@ -533,7 +530,7 @@ export const RecoverFormulaDialog: React.FC<PropsRecover> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Recuperar fórmula</DialogTitle>
+          <DialogTitle>Reactivar fórmula</DialogTitle>
           <DialogDescription>¿Está seguro de recuperar esta fórmula?</DialogDescription>
         </DialogHeader>
 
@@ -544,7 +541,7 @@ export const RecoverFormulaDialog: React.FC<PropsRecover> = ({
             className="col-span-3"
             onClick={onRecover}
           >
-            {loadingRecover ? <LoadingCircle /> : "Recuperar"}
+            {loadingRecover ? <LoadingCircle /> : "Reactivar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
             <Button type="button" variant="outline" className="w-full" disabled={loadingRecover}>

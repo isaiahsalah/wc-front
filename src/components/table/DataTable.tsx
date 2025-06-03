@@ -59,7 +59,7 @@ const DataTable = <T extends IGeneral>({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: hasPaginated ? pageSize ?? 5 : pageSize ?? 100,
+    pageSize: hasPaginated ? pageSize ?? 10 : pageSize ?? 100,
   });
 
   useEffect(() => {
@@ -94,7 +94,12 @@ const DataTable = <T extends IGeneral>({
 
   if (!data) {
     return (
-      <TableSkeleton colums={5} rows={5} hasOptions={hasOptions} hasPaginated={hasPaginated} />
+      <TableSkeleton
+        colums={5}
+        rows={pageSize ? pageSize : 10}
+        hasOptions={hasOptions}
+        hasPaginated={hasPaginated}
+      />
     );
   }
   return (
@@ -148,7 +153,7 @@ const DataTable = <T extends IGeneral>({
       )}
       <div className="overflow-hidden rounded-lg border   ">
         <Table>
-          <TableHeader className="bg-muted  border-b-2  ">
+          <TableHeader className="bg-foreground/20 border-b-1  ">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -175,12 +180,12 @@ const DataTable = <T extends IGeneral>({
                   className={
                     row.original.deletedAt
                       ? "bg-destructive/25 hover:bg-destructive/50 border-0 "
-                      : "odd:bg-background/50 even:bg-muted/50   border-0"
+                      : "odd:bg-accent/75 even:bg-muted/25    border-0"
                   }
                 >
                   {row.getVisibleCells().map((cell) => {
                     return (
-                      <TableCell key={cell.id} className=" py-0 my-0   ">
+                      <TableCell key={cell.id} className="py-0 my-0">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     );

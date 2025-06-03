@@ -14,14 +14,7 @@ import {addMinutes, format} from "date-fns";
 
 import {zodResolver} from "@hookform/resolvers/zod";
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormDescription,
-  FormMessage,
-} from "@/components/ui/form";
+import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
 import {Textarea} from "@/components/ui/textarea";
 import {useContext, useMemo, useState} from "react";
 import {
@@ -54,7 +47,7 @@ import {typeQuality, typeSize, typeTicket} from "@/utils/const";
 import {DateTimePicker} from "@/components/DateTimePicker";
 import {generateQR, printTag} from "@/utils/printTag";
 import {getUnities} from "@/api/product/unity.api";
-import {ChevronsDown, Trash2, X} from "lucide-react";
+import {ChevronsDown, Trash2} from "lucide-react";
 import TicketView from "@/components/TicketView";
 import {toast} from "sonner";
 import {getUsers} from "@/api/security/user.api";
@@ -63,6 +56,8 @@ import DataTable from "@/components/table/DataTable";
 import {ColumnDef, Row} from "@tanstack/react-table";
 import {CardDescription} from "@/components/ui/card";
 import {Badge} from "@/components/ui/badge";
+import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
+import {Separator} from "@/components/ui/separator";
 
 interface PropsCreates {
   children: React.ReactNode; // Define el tipo de children
@@ -290,12 +285,13 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
             <div className="flex gap-2  justify-end  ">
               <Button
                 variant={"outline"}
+                size={"sm"}
                 type="button"
                 onClick={() => {
                   const newValues = productions?.filter((_, i) => i !== row.index);
                   setProductions(newValues);
                 }}
-                className="bg-red-500/20 hover:bg-red-500/70 hover:text-white dark:bg-red-500/20 dark:hover:bg-red-500/70 dark:hover:text-black"
+                className="my-0.5 h-6 bg-red-500/20 hover:bg-red-500/70 hover:text-white dark:bg-red-500/20 dark:hover:bg-red-500/70 dark:hover:text-black"
               >
                 <Trash2 />
               </Button>
@@ -312,16 +308,15 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
       <DialogTrigger asChild onClick={fetchData}>
         {children}
       </DialogTrigger>
-      <DialogContent className="md:max-w-2xl">
+      <DialogContent className="max-w-3xl w-1000">
         <DialogHeader>
-          <DialogTitle>Registro de producción</DialogTitle>
-          <DialogDescription>Mostrando datos relacionados con la producción.</DialogDescription>
+          <DialogTitle>Registrar Producción</DialogTitle>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(addProduction, (e) => console.log(e))}
-              className=" grid   gap-2"
+              className="grid gap-2"
             >
               <div className="grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm max-h-[60vh] overflow-scroll">
                 <FormField
@@ -329,7 +324,6 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                   name="date"
                   render={({field}) => (
                     <FormItem className="col-span-2">
-                      <FormDescription>Fecha</FormDescription>
                       <FormControl>
                         <DateTimePicker
                           className="w-full"
@@ -345,7 +339,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                               field.onChange(null);
                             }
                           }}
-                          placeholder="Selecciona"
+                          placeholder="Fecha"
                         />
                       </FormControl>
                       <FormMessage />
@@ -357,17 +351,23 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                   name="duration"
                   render={({field}) => (
                     <FormItem className="col-span-1">
-                      <FormDescription>Duración</FormDescription>
                       <FormControl>
-                        <Input
-                          placeholder="min."
-                          type="number"
-                          {...field}
-                          onChange={(event) => {
-                            const value = event.target.value;
-                            field.onChange(value === "" ? null : Number(value));
-                          }}
-                        />
+                        <div className="flex gap-1   relative">
+                          <Input
+                            placeholder="Duración"
+                            type="number"
+                            className="pr-8"
+                            {...field}
+                            onChange={(event) => {
+                              const value = event.target.value;
+                              field.onChange(value === "" ? null : Number(value));
+                            }}
+                          />
+
+                          <CardDescription className="m-auto absolute right-2 bottom-2">
+                            m.
+                          </CardDescription>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -378,17 +378,22 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                   name="weight"
                   render={({field}) => (
                     <FormItem className="col-span-1">
-                      <FormDescription>Peso(kg)</FormDescription>
                       <FormControl>
-                        <Input
-                          placeholder="Peso"
-                          type="number"
-                          {...field}
-                          onChange={(event) => {
-                            const value = event.target.value;
-                            field.onChange(value === "" ? null : Number(value));
-                          }}
-                        />
+                        <div className="flex gap-1   relative">
+                          <Input
+                            placeholder="Peso"
+                            type="number"
+                            className="pr-8"
+                            {...field}
+                            onChange={(event) => {
+                              const value = event.target.value;
+                              field.onChange(value === "" ? null : Number(value));
+                            }}
+                          />
+                          <CardDescription className="m-auto absolute right-2 bottom-2">
+                            kg
+                          </CardDescription>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -400,7 +405,6 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                   name="id_unit"
                   render={({field}) => (
                     <FormItem className="col-span-2">
-                      <FormDescription>Unidad</FormDescription>
                       <FormControl>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
@@ -408,7 +412,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                           disabled
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Seleccionar Unidad" />
+                            <SelectValue placeholder="Unidad" />
                           </SelectTrigger>
                           <SelectContent>
                             {baseUnities?.map((product: IUnity) => (
@@ -424,8 +428,6 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                   )}
                 />
                 <div className="col-span-2 grid grid-cols-3 gap-2">
-                  <FormDescription className="col-span-3">Cantidad Equivalente</FormDescription>
-
                   <FormField
                     control={form.control}
                     name="id_equivalent_unit"
@@ -438,7 +440,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                             disabled
                           >
                             <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Seleccionar Unidad" />
+                              <SelectValue placeholder="Unidad Equivalente" />
                             </SelectTrigger>
                             <SelectContent>
                               {baseUnities?.map((product: IUnity, i) => (
@@ -460,7 +462,7 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                       <FormItem className="col-span-1">
                         <FormControl>
                           <Input
-                            placeholder="Cantidad"
+                            placeholder="Cantidad Equivalente"
                             type="number"
                             {...field}
                             onChange={(event) => {
@@ -479,13 +481,12 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                   name="type_size"
                   render={({field}) => (
                     <FormItem className="col-span-2">
-                      <FormDescription>Tamaño</FormDescription>
                       <FormControl>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Selecciona" />
+                            <SelectValue placeholder="Tamaño" />
                           </SelectTrigger>
                           <SelectContent>
                             {typeSize.map((type) => (
@@ -506,13 +507,12 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                   name="type_quality"
                   render={({field}) => (
                     <FormItem className="col-span-2">
-                      <FormDescription>Calidad</FormDescription>
                       <FormControl>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Selecciona" />
+                            <SelectValue placeholder="Calidad" />
                           </SelectTrigger>
                           <SelectContent>
                             {typeQuality.map((type) => (
@@ -534,8 +534,6 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                     name="micronage"
                     render={({field}) => (
                       <FormItem className="col-span-3 flex flex-col gap-2">
-                        <FormDescription className="col-span-3">Micronaje</FormDescription>
-
                         <Input
                           disabled={orderDetail.product?.micronage ? false : true}
                           type="number"
@@ -553,21 +551,27 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                           }}
                         />
 
-                        <div className="grid grid-cols-3 gap-1  rounded-lg border p-3 ">
-                          {field.value?.map((micro, index) => (
-                            <Button
-                              className="col-span-1"
-                              size={"sm"}
-                              variant={"destructive"}
-                              type="submit"
-                              onClick={() => {
-                                const newValues = field.value?.filter((_, i) => i !== index);
-                                field.onChange(newValues);
-                              }}
-                            >
-                              {micro}
-                            </Button>
-                          ))}
+                        <div className="grid grid-cols-3 gap-1  rounded-lg border px-3 py-1 ">
+                          {field.value?.length ? (
+                            field.value?.map((micro, index) => (
+                              <Button
+                                className="col-span-1 h-6"
+                                size={"sm"}
+                                variant={"destructive"}
+                                type="submit"
+                                onClick={() => {
+                                  const newValues = field.value?.filter((_, i) => i !== index);
+                                  field.onChange(newValues);
+                                }}
+                              >
+                                {micro}
+                              </Button>
+                            ))
+                          ) : (
+                            <CardDescription className="col-span-3">
+                              Introduce micronaje
+                            </CardDescription>
+                          )}
                         </div>
                       </FormItem>
                     )}
@@ -579,11 +583,14 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                   name="production_users"
                   render={({field}) => (
                     <FormItem
-                      className={`${orderDetail.product?.micronage ? "col-span-3" : "col-span-6"}`}
+                      className={`${
+                        orderDetail.product?.micronage
+                          ? "col-span-3 h-full   items-start "
+                          : "col-span-6"
+                      }`}
                     >
-                      <FormDescription>Operadores</FormDescription>
                       <FormControl>
-                        <div>
+                        <div className="grid   gap-2  ">
                           <Select
                             value={""}
                             onValueChange={(value) => {
@@ -613,25 +620,34 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                               ))}
                             </SelectContent>
                           </Select>
-                          <div className="grid grid-cols-2 gap-1  rounded-lg border p-3">
-                            {field.value?.map((productionUser: IProductionUser, index) => (
-                              <Button
-                                className={`${
-                                  orderDetail.product?.micronage ? "col-span-2" : "col-span-1 "
-                                }`}
-                                size={"sm"}
-                                variant={"secondary"}
-                                type="button"
-                                onClick={() => {
-                                  const newValues = field.value?.filter((_, i) => i !== index);
 
-                                  field.onChange(newValues);
-                                }}
-                              >
-                                {productionUser.sys_user?.name} {productionUser.sys_user?.lastname}{" "}
-                                <X />
-                              </Button>
-                            ))}
+                          <div className="grid grid-cols-2 gap-1  rounded-lg border px-3 py-1 ">
+                            {field.value?.length ? (
+                              field.value?.map((productionUser: IProductionUser, index) => (
+                                <Button
+                                  className={`${
+                                    orderDetail.product?.micronage
+                                      ? "col-span-2  h-6"
+                                      : "col-span-1  h-6 "
+                                  }`}
+                                  size={"sm"}
+                                  variant={"destructive"}
+                                  type="button"
+                                  onClick={() => {
+                                    const newValues = field.value?.filter((_, i) => i !== index);
+
+                                    field.onChange(newValues);
+                                  }}
+                                >
+                                  {productionUser.sys_user?.name}{" "}
+                                  {productionUser.sys_user?.lastname}{" "}
+                                </Button>
+                              ))
+                            ) : (
+                              <CardDescription className="col-span-3">
+                                Introduce operadores
+                              </CardDescription>
+                            )}
                           </div>
                         </div>
                       </FormControl>
@@ -644,7 +660,6 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                   name="description"
                   render={({field}) => (
                     <FormItem className="col-span-6">
-                      <FormDescription>Descripción</FormDescription>
                       <FormControl>
                         <Textarea
                           placeholder="Notas adicionales"
@@ -661,14 +676,16 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                 <Button
                   disabled={loadingSave}
                   type="submit"
-                  variant={"outline"}
-                  className="  bg-green-600/20 hover:bg-green-600/70  hover:text-white dark:bg-green-600/20 dark:hover:bg-green-600/70  dark:hover:text-black"
+                  variant={"default"}
+                  size={"sm"}
+                  //className="  bg-green-600/20 hover:bg-green-600/70  hover:text-white dark:bg-green-600/20 dark:hover:bg-green-600/70  dark:hover:text-black"
                 >
+                  <ChevronsDown />
+                  Añadir Producción
                   <ChevronsDown />
                 </Button>
               </div>
               <div className="w-full   grid gap-2">
-                <FormDescription>Productos Producidos</FormDescription>
                 <DataTable
                   hasOptions={false}
                   hasPaginated={false}
@@ -677,35 +694,34 @@ export const CreateProductionsDialog: React.FC<PropsCreates> = ({
                   data={productions}
                 />
               </div>
-              <div className="grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm max-h-[60vh] overflow-scroll">
-                <div className="col-span-6 grid gap-2">
-                  <CardDescription>Formato de Ticket</CardDescription>
-                  <Select
-                    onValueChange={(value) => setSelectTicket(Number(value))} // Convertir el valor a número
-                    value={selectTicket.toString()}
+              <Separator />
+
+              <RadioGroup
+                className="   flex   gap-2   overflow-auto"
+                onValueChange={(value) => setSelectTicket(Number(value))} // Convertir el valor a número
+                value={selectTicket.toString()}
+              >
+                {typeTicket?.map((type, i) => (
+                  <label
+                    key={i}
+                    htmlFor={type.name}
+                    className="flex relative    cursor-pointer transition-all    opacity-25  has-[[data-state=checked]]:border-ring has-[[data-state=checked]]:opacity-100 "
                   >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Seleccionar Calidad" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {typeTicket.map((type) => (
-                        <SelectItem key={type.id} value={type.id.toString()}>
-                          {type.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="col-span-6">
-                  <div className="flex rounded-lg border p-3 shadow-sm">
-                    <TicketView
-                      ticketFormat={
-                        typeTicket.find((ticket) => ticket.id === selectTicket)?.example as string[]
-                      }
+                    <RadioGroupItem
+                      className="absolute  opacity-0 "
+                      id={type.name}
+                      value={type.id?.toString() as string}
                     />
-                  </div>
-                </div>
-              </div>
+                    <div>
+                      <TicketView
+                        ticketFormat={
+                          typeTicket.find((ticket) => ticket.id === type.id)?.example as string[]
+                        }
+                      />
+                    </div>
+                  </label>
+                ))}
+              </RadioGroup>
             </form>
           </Form>
         )}
@@ -803,7 +819,7 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-              className=" grid   gap-4 "
+              className=" grid   gap-2 "
             >
               <div className="grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm">
                 <FormField
@@ -811,7 +827,6 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
                   name="lote"
                   render={({field}) => (
                     <FormItem className={"col-span-6"}>
-                      <FormDescription>Lote</FormDescription>
                       <FormControl>
                         <Input disabled defaultValue={field.value ?? ""} />
                       </FormControl>
@@ -822,27 +837,9 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
 
                 <FormField
                   control={form.control}
-                  name="description"
-                  render={({field}) => (
-                    <FormItem className="col-span-6">
-                      <FormDescription>Descripción</FormDescription>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Notas adicionales"
-                          {...field}
-                          value={field.value ?? ""}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
                   name="date"
                   render={({field}) => (
                     <FormItem className="col-span-2">
-                      <FormDescription>Fecha</FormDescription>
                       <FormControl>
                         <DateTimePicker
                           className="w-full"
@@ -854,7 +851,7 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
                               field.onChange(null);
                             }
                           }}
-                          placeholder="Selecciona una fecha"
+                          placeholder="Fecha"
                         />
                       </FormControl>
                       <FormMessage />
@@ -866,17 +863,22 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
                   name="duration"
                   render={({field}) => (
                     <FormItem className="col-span-2">
-                      <FormDescription>Duración(m)</FormDescription>
                       <FormControl>
-                        <Input
-                          placeholder="Cantidad"
-                          type="number"
-                          {...field}
-                          onChange={(event) => {
-                            const value = event.target.value;
-                            field.onChange(value === "" ? null : Number(value));
-                          }}
-                        />
+                        <div className="flex gap-1   relative">
+                          <Input
+                            placeholder="Cantidad"
+                            type="number"
+                            className="pr-8"
+                            {...field}
+                            onChange={(event) => {
+                              const value = event.target.value;
+                              field.onChange(value === "" ? null : Number(value));
+                            }}
+                          />
+                          <CardDescription className="m-auto absolute right-2 bottom-2">
+                            m.
+                          </CardDescription>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -887,17 +889,22 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
                   name="weight"
                   render={({field}) => (
                     <FormItem className="col-span-2">
-                      <FormDescription>Peso(kg)</FormDescription>
                       <FormControl>
-                        <Input
-                          placeholder="Peso"
-                          type="number"
-                          {...field}
-                          onChange={(event) => {
-                            const value = event.target.value;
-                            field.onChange(value === "" ? null : Number(value));
-                          }}
-                        />
+                        <div className="flex gap-1   relative">
+                          <Input
+                            placeholder="Peso"
+                            type="number"
+                            className="pr-8"
+                            {...field}
+                            onChange={(event) => {
+                              const value = event.target.value;
+                              field.onChange(value === "" ? null : Number(value));
+                            }}
+                          />
+                          <CardDescription className="m-auto absolute right-2 bottom-2">
+                            kg
+                          </CardDescription>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -909,7 +916,6 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
                   name="id_unit"
                   render={({field}) => (
                     <FormItem className="col-span-2">
-                      <FormDescription>Unidad</FormDescription>
                       <FormControl>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
@@ -917,7 +923,7 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
                           disabled
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Seleccionar Unidad" />
+                            <SelectValue placeholder="Unidad" />
                           </SelectTrigger>
                           <SelectContent>
                             {baseUnities?.map((product: IUnity) => (
@@ -933,8 +939,6 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
                   )}
                 />
                 <div className="col-span-2 grid grid-cols-3 gap-2">
-                  <FormDescription className="col-span-3">Cantidad Equivalente</FormDescription>
-
                   <FormField
                     control={form.control}
                     name="id_equivalent_unit"
@@ -947,7 +951,7 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
                             disabled
                           >
                             <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Seleccionar Unidad" />
+                              <SelectValue placeholder="Unidad Equivalente" />
                             </SelectTrigger>
                             <SelectContent>
                               {baseUnities?.map((product: IUnity) => (
@@ -969,7 +973,7 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
                       <FormItem className="col-span-1">
                         <FormControl>
                           <Input
-                            placeholder="Cantidad"
+                            placeholder="Cantidad Equivalente"
                             type="number"
                             {...field}
                             onChange={(event) => {
@@ -989,14 +993,13 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
                   name="type_quality"
                   render={({field}) => (
                     <FormItem className="col-span-2 ">
-                      <FormDescription>Calidad</FormDescription>
                       <FormControl>
                         <Select
                           value={field.value.toString()}
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Seleccionar Tipo" />
+                            <SelectValue placeholder="Calidad" />
                           </SelectTrigger>
                           <SelectContent>
                             {typeQuality.map((type) => (
@@ -1006,6 +1009,22 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
                             ))}
                           </SelectContent>
                         </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({field}) => (
+                    <FormItem className="col-span-6">
+                      <FormControl>
+                        <Textarea
+                          placeholder="Notas adicionales"
+                          {...field}
+                          value={field.value ?? ""}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -1021,7 +1040,7 @@ export const EditProductionDialog: React.FC<PropsEdit> = ({
                 >
                   {loadingSave ? <LoadingCircle /> : "Guardar"}
                 </Button>
-                <DialogClose className="col-span-6" asChild>
+                <DialogClose className="col-span-3" asChild>
                   <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                     Cerrar
                   </Button>
@@ -1196,7 +1215,7 @@ export const RecoverProductionDialog: React.FC<PropsRecover> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Recuperar producción</DialogTitle>
+          <DialogTitle>Reactivar producción</DialogTitle>
           <DialogDescription>¿Está seguro de recuperar esta producción?</DialogDescription>
         </DialogHeader>
         <DialogFooter className="grid grid-cols-6 col-span-6">
@@ -1206,7 +1225,7 @@ export const RecoverProductionDialog: React.FC<PropsRecover> = ({
             className="col-span-3"
             onClick={onRecover}
           >
-            {loadingRecover ? <LoadingCircle /> : "Recuperar"}
+            {loadingRecover ? <LoadingCircle /> : "Reactivar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
             <Button type="button" variant="outline" className="w-full" disabled={loadingRecover}>
@@ -1250,38 +1269,33 @@ export const PrintQRDialog: React.FC<PropsPrintQR> = ({children, production}) =>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>QR de producción</DialogTitle>
-          <DialogDescription>Mostrando datos relacionados con la producción.</DialogDescription>
         </DialogHeader>
-
-        <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
-          <div className="col-span-3">
-            <div>Formato de Ticket</div>
-            <Select
-              onValueChange={(value) => setSelectTicket(Number(value))} // Convertir el valor a número
-              value={selectTicket.toString()}
+        <RadioGroup
+          className="flex flex-wrap justify-center gap-2 overflow-auto"
+          onValueChange={(value) => setSelectTicket(Number(value))} // Convertir el valor a número
+          value={selectTicket.toString()}
+        >
+          {typeTicket?.map((type, i) => (
+            <label
+              key={i}
+              htmlFor={type.name}
+              className="flex relative cursor-pointer transition-all opacity-25 has-[[data-state=checked]]:border-ring has-[[data-state=checked]]:opacity-100"
             >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Seleccionar Calidad" />
-              </SelectTrigger>
-              <SelectContent>
-                {typeTicket.map((type) => (
-                  <SelectItem key={type.id} value={type.id.toString()}>
-                    {type.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="col-span-6">
-            <div className="flex rounded-lg border p-3 shadow-sm">
-              <TicketView
-                ticketFormat={
-                  typeTicket.find((ticket) => ticket.id === selectTicket)?.example as string[]
-                }
+              <RadioGroupItem
+                className="absolute  opacity-0 "
+                id={type.name}
+                value={type.id?.toString() as string}
               />
-            </div>
-          </div>
-        </div>
+              <div>
+                <TicketView
+                  ticketFormat={
+                    typeTicket.find((ticket) => ticket.id === type.id)?.example as string[]
+                  }
+                />
+              </div>
+            </label>
+          ))}
+        </RadioGroup>
         <DialogFooter className=" grid grid-cols-6  ">
           <Button onClick={onPrint} className="col-span-3">
             {loadingSave ? <LoadingCircle /> : "Imprimir"}

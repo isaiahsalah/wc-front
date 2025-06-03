@@ -4,21 +4,13 @@ import {Input} from "@/components/ui/input";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
+import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
 import {useContext, useState} from "react";
 
 import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -29,8 +21,8 @@ import {ISystemUser, SystemUserSchema} from "@/utils/interfaces";
 import {SesionContext} from "@/providers/sesionProvider";
 import {updatePassword, updateProfile} from "@/api/profile/profile.api";
 import {DatePicker} from "@/components/date-picker";
-import {CardDescription} from "@/components/ui/card";
 import {toast} from "sonner";
+import {Eye, EyeOff} from "lucide-react";
 
 interface PropsEditProfile {
   children: React.ReactNode; // Define el tipo de children
@@ -90,22 +82,20 @@ export const EditProfileDialog: React.FC<PropsEditProfile> = ({children, updateV
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Gestión de Perfil</DialogTitle>
-          <DialogDescription>Mostrando datos relacionados con el perfil.</DialogDescription>
+          <DialogTitle>Editar Perfil</DialogTitle>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-              className=" grid  gap-2"
+              className="grid gap-2"
             >
-              <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
+              <div className="grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
                   name="name"
                   render={({field}) => (
                     <FormItem className="col-span-2">
-                      <FormDescription>Nombre</FormDescription>
                       <FormControl>
                         <Input placeholder="Nombre" {...field} />
                       </FormControl>
@@ -119,7 +109,6 @@ export const EditProfileDialog: React.FC<PropsEditProfile> = ({children, updateV
                   name="lastname"
                   render={({field}) => (
                     <FormItem className="col-span-4">
-                      <FormDescription>Apellidos</FormDescription>
                       <FormControl>
                         <Input placeholder="Apellidos" {...field} />
                       </FormControl>
@@ -132,7 +121,6 @@ export const EditProfileDialog: React.FC<PropsEditProfile> = ({children, updateV
                   name="phone"
                   render={({field}) => (
                     <FormItem className="col-span-3">
-                      <FormDescription>Telefono</FormDescription>
                       <FormControl>
                         <Input placeholder="Telefono" {...field} />
                       </FormControl>
@@ -145,7 +133,6 @@ export const EditProfileDialog: React.FC<PropsEditProfile> = ({children, updateV
                   name="birthday"
                   render={({field}) => (
                     <FormItem className="col-span-3">
-                      <FormDescription>Nacimiento</FormDescription>
                       <FormControl>
                         <DatePicker
                           className="w-full"
@@ -163,7 +150,7 @@ export const EditProfileDialog: React.FC<PropsEditProfile> = ({children, updateV
                               field.onChange(null);
                             }
                           }}
-                          placeholder="Selecciona una fecha"
+                          placeholder="Fecha de Nacimiento"
                         />
                       </FormControl>
                       <FormMessage />
@@ -208,6 +195,7 @@ export const EditPassDialog: React.FC<PropsEditPass> = ({children, updateView}) 
   const [newPass, setNewPass] = useState<string>();
 
   const [loadingSave, setLoadingSave] = useState(false); // Estado de carga
+  const [showPassword, setShowPassword] = useState(false);
 
   function onSubmit() {
     if (!newPass || !oldPass) return toast.warning("Introduce los datos");
@@ -237,34 +225,84 @@ export const EditPassDialog: React.FC<PropsEditPass> = ({children, updateView}) 
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Gestión de Contraseña</DialogTitle>
-          <DialogDescription>Edite su contraseña.</DialogDescription>
+          <DialogTitle>Editar Contraseña</DialogTitle>
         </DialogHeader>
 
-        <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
-          <div className="col-span-6 grid gap-2">
-            <CardDescription>Contraseña Antigüa</CardDescription>
-            <Input
-              type="password"
-              placeholder="****"
-              onChange={(e) => setOldPass(e.target.value)}
-            />
+        <div className="grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm">
+          <div className="col-span-2 grid gap-2">
+            <div className="relative">
+              <Input
+                type={showPassword ? "text" : "password"}
+                placeholder="Antigüa"
+                autoComplete="current-password"
+                onChange={(e) => setOldPass(e.target.value)}
+              />
+              <Button
+                type="button"
+                variant={"link"}
+                className="absolute right-0 top-1/2  -translate-y-1/2"
+                onMouseDown={() => setShowPassword(true)}
+                onMouseUp={() => setShowPassword(false)}
+                onTouchStart={() => setShowPassword(true)}
+                onTouchEnd={() => setShowPassword(false)}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4 opacity-50" />
+                ) : (
+                  <Eye className="h-4 w-4 opacity-50" />
+                )}
+              </Button>
+            </div>
           </div>
-          <div className="col-span-3 grid gap-2">
-            <CardDescription>Contraseña Nueva</CardDescription>
-            <Input
-              type="password"
-              placeholder="****"
-              onChange={(e) => setNewPass(e.target.value)}
-            />
+          <div className="col-span-2 grid gap-2">
+            <div className="relative">
+              <Input
+                type={showPassword ? "text" : "password"}
+                placeholder="Nueva"
+                autoComplete="current-password"
+                onChange={(e) => setNewPass(e.target.value)}
+              />
+              <Button
+                type="button"
+                variant={"link"}
+                className="absolute right-0 top-1/2  -translate-y-1/2"
+                onMouseDown={() => setShowPassword(true)}
+                onMouseUp={() => setShowPassword(false)}
+                onTouchStart={() => setShowPassword(true)}
+                onTouchEnd={() => setShowPassword(false)}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4 opacity-50" />
+                ) : (
+                  <Eye className="h-4 w-4 opacity-50" />
+                )}
+              </Button>
+            </div>
           </div>
-          <div className="col-span-3 grid gap-2">
-            <CardDescription> Repita la Contraseña Nueva</CardDescription>
-            <Input
-              type="password"
-              placeholder="****"
-              onChange={(e) => setNewPass2(e.target.value)}
-            />
+          <div className="col-span-2 grid gap-2">
+            <div className="relative">
+              <Input
+                type={showPassword ? "text" : "password"}
+                placeholder="Repita la Nueva"
+                autoComplete="current-password"
+                onChange={(e) => setNewPass2(e.target.value)}
+              />
+              <Button
+                type="button"
+                variant={"link"}
+                className="absolute right-0 top-1/2  -translate-y-1/2"
+                onMouseDown={() => setShowPassword(true)}
+                onMouseUp={() => setShowPassword(false)}
+                onTouchStart={() => setShowPassword(true)}
+                onTouchEnd={() => setShowPassword(false)}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4 opacity-50" />
+                ) : (
+                  <Eye className="h-4 w-4 opacity-50" />
+                )}
+              </Button>
+            </div>
           </div>
         </div>
 

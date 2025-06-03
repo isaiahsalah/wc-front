@@ -28,9 +28,9 @@ const MenuSidebar = ({items, title}: {items: IMenuItem[]; title: string}) => {
   );
 
   return (
-    <SidebarGroup>
+    <SidebarGroup className="">
       <SidebarGroupLabel>{title}</SidebarGroupLabel>
-      <SidebarMenu className=" box-border">
+      <SidebarMenu className=" box-border ">
         {items.map((item, i) =>
           !item.isActive ? null : (
             <Collapsible key={i} asChild defaultOpen={false} className="group/collapsible">

@@ -6,7 +6,7 @@ import {z} from "zod";
 import {UnitySchema} from "@/utils/interfaces";
 import {zodResolver} from "@hookform/resolvers/zod";
 
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
+import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
 import {useState} from "react";
 import {
   createUnity,
@@ -62,22 +62,20 @@ export const CreateUnityDialog: React.FC<PropsCreate> = ({children, updateView})
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Gestión de unidad</DialogTitle>
-          <DialogDescription>Mostrando datos relacionados con la unidad.</DialogDescription>
+          <DialogTitle>Registrar Unidad</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-            className=" grid grid-cols-6 gap-2"
+            className="grid grid-cols-6 gap-2"
           >
             <FormField
               control={form.control}
               name="name"
               render={({field}) => (
                 <FormItem className="col-span-3">
-                  <FormLabel>Nombre</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nombre" {...field} />
+                    <Input placeholder="Nombre de Unidad" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -88,7 +86,6 @@ export const CreateUnityDialog: React.FC<PropsCreate> = ({children, updateView})
               name="shortname"
               render={({field}) => (
                 <FormItem className="col-span-3">
-                  <FormLabel>Abreviación</FormLabel>
                   <FormControl>
                     <Input placeholder="Abreviación" {...field} />
                   </FormControl>
@@ -178,42 +175,21 @@ export const EditUnityDialog: React.FC<PropsEdit> = ({children, id, updateView, 
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Gestión de unidad</DialogTitle>
-          <DialogDescription>Mostrando datos relacionados con la unidad.</DialogDescription>
+          <DialogTitle>Editar Unidad</DialogTitle>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-              className=" grid grid-cols-6 gap-4 "
+              className=" grid grid-cols-6 gap-2 "
             >
-              <FormField
-                control={form.control}
-                name="id"
-                render={({field}) => (
-                  <FormItem className={"col-span-6"}>
-                    <FormLabel>Id</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="Id"
-                        disabled
-                        onChange={(event) => field.onChange(Number(event.target.value))}
-                        defaultValue={field.value ?? ""}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               <FormField
                 control={form.control}
                 name="name"
                 render={({field}) => (
                   <FormItem className="col-span-3">
-                    <FormLabel>Nombre</FormLabel>
                     <FormControl>
-                      <Input placeholder="Nombre" {...field} />
+                      <Input placeholder="Nombre de Unidad" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -225,7 +201,6 @@ export const EditUnityDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                 name="shortname"
                 render={({field}) => (
                   <FormItem className="col-span-3">
-                    <FormLabel>Abreviación</FormLabel>
                     <FormControl>
                       <Input placeholder="Abreviación" {...field} />
                     </FormControl>
@@ -243,7 +218,7 @@ export const EditUnityDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                   {loadingSave ? <LoadingCircle /> : "Guardar"}
                 </Button>
 
-                <DialogClose className="col-span-6" asChild>
+                <DialogClose className="col-span-3" asChild>
                   <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                     Cerrar
                   </Button>
@@ -415,7 +390,7 @@ export const RecoverUnityDialog: React.FC<PropsRecover> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Recuperar unidad</DialogTitle>
+          <DialogTitle>Reactivar unidad</DialogTitle>
           <DialogDescription>¿Está seguro de recuperar esta unidad?</DialogDescription>
         </DialogHeader>
 
@@ -426,7 +401,7 @@ export const RecoverUnityDialog: React.FC<PropsRecover> = ({
             className="col-span-3"
             onClick={onRecover}
           >
-            {loadingRecover ? <LoadingCircle /> : "Recuperar"}
+            {loadingRecover ? <LoadingCircle /> : "Reactivar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
             <Button type="button" variant="outline" className="w-full" disabled={loadingRecover}>

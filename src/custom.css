@@ -63,7 +63,7 @@ input[type="number"] {
     animation: floatMovement 2s infinite ease-in-out;
   }
   .animate-dropDown {
-    animation: dropDown 750ms ease forwards;
+    animation: dropDown 250ms ease forwards;
   }
   .animate-fadeOutInfinite {
     animation: fadeOutInfinite 2s ease-in 0.5s infinite;

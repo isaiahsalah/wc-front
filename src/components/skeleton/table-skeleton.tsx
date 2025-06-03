@@ -21,12 +21,12 @@ const TableSkeleton: React.FC<Props> = ({rows, colums, hasOptions, hasPaginated}
       )}
       <div className="overflow-hidden rounded-lg border">
         <Table>
-          <TableHeader className="bg-muted">
+          <TableHeader className="bg-muted border-b-2 ">
             <TableRow>
               {Array.from({length: colums}).map((_, i) => (
-                <TableHead key={i}>
+                <TableHead key={i} className="h-8">
                   <Skeleton
-                    className="h-3 my-2  bg-muted-foreground"
+                    className="h-3 my-0 p-0  bg-muted-foreground"
                     style={{width: `${randomNumber(20, 100)}%`}}
                   />
                 </TableHead>
@@ -35,11 +35,14 @@ const TableSkeleton: React.FC<Props> = ({rows, colums, hasOptions, hasPaginated}
           </TableHeader>
           <TableBody>
             {Array.from({length: rows}).map((_, i) => (
-              <TableRow key={i}>
+              <TableRow
+                key={i}
+                className="odd:bg-foreground/10 even:bg-muted/50 dark:odd:bg-background/25  border-0"
+              >
                 {Array.from({length: colums}).map((_, i) => (
                   <TableCell key={i}>
                     <Skeleton
-                      className={`h-3 my-2 `}
+                      className={`h-3 my-0 `}
                       style={{width: `${randomNumber(20, 100)}%`}}
                     />
                   </TableCell>

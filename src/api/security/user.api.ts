@@ -99,7 +99,7 @@ export const hardDeleteUser = async (id: number) => {
   }
 };
 
-// Recuperar usuario
+// Reactivar usuario
 export const recoverUser = async (id: number) => {
   toast.info("Se está procesando la petición");
   try {

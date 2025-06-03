@@ -13,14 +13,7 @@ import {
 } from "@/utils/interfaces";
 import {zodResolver} from "@hookform/resolvers/zod";
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormDescription,
-  FormMessage,
-} from "@/components/ui/form";
+import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
 import {useContext, useEffect, useMemo, useState} from "react";
 import {
   createOrderWithDetails,
@@ -59,6 +52,7 @@ import {getGroups} from "@/api/security/group.api";
 import {typeTurn} from "@/utils/const";
 import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 import {toast} from "sonner";
+import {Separator} from "@/components/ui/separator";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -186,9 +180,10 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
             <div className="flex gap-2  justify-end  ">
               <Button
                 variant={"outline"}
+                size={"sm"}
                 type="button"
                 onClick={() => deleteProductSelected(row.index)}
-                className="bg-red-500/20 hover:bg-red-500/70 hover:text-white dark:bg-red-500/20 dark:hover:bg-red-500/70 dark:hover:text-black"
+                className=" h-6 my-0.5 bg-red-500/20 hover:bg-red-500/70 hover:text-white dark:bg-red-500/20 dark:hover:bg-red-500/70 dark:hover:text-black"
               >
                 <Trash2 />
               </Button>
@@ -207,12 +202,11 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
       <DialogContent className="md:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Registrar orden</DialogTitle>
-          <DialogDescription>Mostrando datos relacionados con la orden.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-            className=" grid  gap-2"
+            className="grid gap-2"
           >
             <div className=" grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm">
               <FormField
@@ -220,13 +214,12 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
                 name="id_work_group"
                 render={({field}) => (
                   <FormItem className="col-span-3">
-                    <FormDescription>Grupo de trabajo</FormDescription>
                     <FormControl>
                       <Select
                         onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                       >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Seleccionar Grupo" />
+                        <SelectTrigger className="w-full" size="sm">
+                          <SelectValue placeholder="Grupo de trabajo" />
                         </SelectTrigger>
                         <SelectContent>
                           {groups?.map((group: IWorkGroup) => (
@@ -246,13 +239,12 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
                 name="type_turn"
                 render={({field}) => (
                   <FormItem className="col-span-3">
-                    <FormDescription>Turno de trabajo</FormDescription>
                     <FormControl>
                       <Select
                         onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                       >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Seleccionar Turno" />
+                        <SelectTrigger className="w-full" size="sm">
+                          <SelectValue placeholder="Turno de trabajo" />
                         </SelectTrigger>
                         <SelectContent>
                           {typeTurn?.map((turn) => (
@@ -272,7 +264,6 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
                 name="init_date"
                 render={({field}) => (
                   <FormItem className="col-span-3">
-                    <FormDescription>Inicio</FormDescription>
                     <FormControl>
                       <DateTimePicker
                         className="w-full"
@@ -288,7 +279,7 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
                             field.onChange(null);
                           }
                         }}
-                        placeholder="Selecciona una fecha"
+                        placeholder="Fecha de Inicio"
                       />
                     </FormControl>
                     <FormMessage />
@@ -300,7 +291,6 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
                 name="end_date"
                 render={({field}) => (
                   <FormItem className="col-span-3">
-                    <FormDescription>fin</FormDescription>
                     <FormControl>
                       <DateTimePicker
                         className="w-full"
@@ -316,85 +306,83 @@ export const CreateOrderDialog: React.FC<PropsCreate> = ({children, updateView})
                             field.onChange(null);
                           }
                         }}
-                        placeholder="Selecciona una fecha"
+                        placeholder="Fecha de fin"
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              <Separator className="col-span-6" />
 
-              <div className="w-full col-span-6 grid grid-cols-6 gap-2 rounded-lg border shadow-sm p-4 bg-muted/30">
-                <div className="w-full col-span-3 grid gap-2">
-                  <FormDescription>Producto a ordear</FormDescription>
-                  <Select
-                    onValueChange={(value) => {
-                      const selectedProduct = products?.find(
-                        (product: IProduct) => product.id?.toString() === value
-                      );
-                      setProductSelected(selectedProduct); // Guarda el objeto completo
-                    }} // Convertir el valor a número
-                  >
-                    <SelectTrigger className="w-full  ">
-                      <SelectValue placeholder="Selecciona" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {products?.map((product: IProduct) => (
-                        <SelectItem key={product.id} value={(product.id ?? "").toString()}>
-                          {product.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="w-full col-span-3 grid gap-2">
+                <Select
+                  onValueChange={(value) => {
+                    const selectedProduct = products?.find(
+                      (product: IProduct) => product.id?.toString() === value
+                    );
+                    setProductSelected(selectedProduct); // Guarda el objeto completo
+                  }} // Convertir el valor a número
+                >
+                  <SelectTrigger className="w-full  " size="sm">
+                    <SelectValue placeholder="Producto a ordear" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {products?.map((product: IProduct) => (
+                      <SelectItem key={product.id} value={(product.id ?? "").toString()}>
+                        {product.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-                <div className="w-full col-span-2 grid gap-2">
-                  <FormDescription>Máquina</FormDescription>
-                  <Select
-                    onValueChange={(value) => {
-                      const selectedMachine = machines?.find(
-                        (machine: IMachine) => machine.id?.toString() === value
-                      );
-                      setMachineSelected(selectedMachine); // Guarda el objeto completo
-                    }} // Convertir el valor a número
-                  >
-                    <SelectTrigger className="w-full  ">
-                      <SelectValue placeholder="Selecciona" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {machines?.map((machine: IMachine) => (
-                        <SelectItem key={machine.id} value={(machine.id ?? "").toString()}>
-                          {machine.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="w-full col-span-2 grid gap-2">
+                <Select
+                  onValueChange={(value) => {
+                    const selectedMachine = machines?.find(
+                      (machine: IMachine) => machine.id?.toString() === value
+                    );
+                    setMachineSelected(selectedMachine); // Guarda el objeto completo
+                  }} // Convertir el valor a número
+                >
+                  <SelectTrigger className="w-full  " size="sm">
+                    <SelectValue placeholder="Máquina" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {machines?.map((machine: IMachine) => (
+                      <SelectItem key={machine.id} value={(machine.id ?? "").toString()}>
+                        {machine.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-                <div className="w-full col-span-1 grid gap-2">
-                  <FormDescription>Cant.</FormDescription>
-                  <Input
-                    placeholder="Cantidad"
-                    type="number"
-                    onChange={(event) => {
-                      const value = event.target.value;
-                      setAmount(value === "" ? undefined : Number(value));
-                    }}
-                  />
-                </div>
-                <div className="w-full col-span-6 grid gap-2">
-                  <Button
-                    type="button"
-                    variant={"outline"}
-                    className="  bg-green-600/20 hover:bg-green-600/70  hover:text-white dark:bg-green-600/20 dark:hover:bg-green-600/70  dark:hover:text-black"
-                    onClick={addProductSelected}
-                  >
-                    <ChevronsDown />
-                  </Button>
-                </div>
+              <div className="w-full col-span-1 grid gap-2">
+                <Input
+                  placeholder="Cantidad"
+                  type="number"
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    setAmount(value === "" ? undefined : Number(value));
+                  }}
+                />
               </div>
               <div className="w-full col-span-6 grid gap-2">
-                <FormDescription>Productos Ordenados</FormDescription>
+                <Button
+                  type="button"
+                  variant={"default"}
+                  size={"sm"}
+                  //className="  bg-green-600/20 hover:bg-green-600/70  hover:text-white dark:bg-green-600/20 dark:hover:bg-green-600/70  dark:hover:text-black"
+                  onClick={addProductSelected}
+                >
+                  <ChevronsDown />
+                  Añadir Orden
+                  <ChevronsDown />
+                </Button>
+              </div>
+              <div className="w-full col-span-6 grid gap-2">
                 <DataTable
                   hasOptions={false}
                   hasPaginated={false}
@@ -611,7 +599,9 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
             <div className="flex gap-2  justify-end  ">
               <Button
                 variant={"outline"}
+                size={"sm"}
                 type="button"
+                className=" h-6 my-0.5"
                 onClick={() => {
                   setOrderDetailSelected(row.original);
                 }}
@@ -622,10 +612,11 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                 disabled={
                   row.original.productions && row.original.productions.length > 0 ? true : false
                 }
+                size={"sm"}
                 variant={"outline"}
                 type="button"
                 onClick={() => deleteProductSelected(row.index)}
-                className="bg-red-500/20 hover:bg-red-500/70 hover:text-white dark:bg-red-500/20 dark:hover:bg-red-500/70 dark:hover:text-black"
+                className="h-6 my-0.5 bg-red-500/20 hover:bg-red-500/70 hover:text-white dark:bg-red-500/20 dark:hover:bg-red-500/70 dark:hover:text-black"
               >
                 <Trash2 />
               </Button>
@@ -649,22 +640,21 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-            className=" grid   gap-4 "
+            className=" grid   gap-2 "
           >
-            <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
+            <div className="grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm">
               <FormField
                 control={form.control}
                 name="id_work_group"
                 render={({field}) => (
                   <FormItem className="col-span-3">
-                    <FormDescription>Grupo de trabajo</FormDescription>
                     <FormControl>
                       <Select
                         onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                         defaultValue={field.value.toString()}
                       >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Seleccionar Grupo" />
+                        <SelectTrigger className="w-full" size="sm">
+                          <SelectValue placeholder="Grupo de Trabajo" />
                         </SelectTrigger>
                         <SelectContent>
                           {groups?.map((group: IWorkGroup) => (
@@ -684,14 +674,13 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                 name="type_turn"
                 render={({field}) => (
                   <FormItem className="col-span-3">
-                    <FormDescription>Turno de trabajo</FormDescription>
                     <FormControl>
                       <Select
                         onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                         defaultValue={field.value.toString()}
                       >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Seleccionar Turno" />
+                        <SelectTrigger className="w-full" size="sm">
+                          <SelectValue placeholder="Turno de Trabajo" />
                         </SelectTrigger>
                         <SelectContent>
                           {typeTurn?.map((turn) => (
@@ -711,7 +700,6 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                 name="init_date"
                 render={({field}) => (
                   <FormItem className="col-span-3">
-                    <FormDescription>Inicio</FormDescription>
                     <FormControl>
                       <DateTimePicker
                         className="w-full"
@@ -727,7 +715,7 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                             field.onChange(null);
                           }
                         }}
-                        placeholder="Selecciona una fecha"
+                        placeholder="Fecha de Inicio"
                       />
                     </FormControl>
                     <FormMessage />
@@ -739,7 +727,6 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                 name="end_date"
                 render={({field}) => (
                   <FormItem className="col-span-3">
-                    <FormDescription>fin</FormDescription>
                     <FormControl>
                       <DateTimePicker
                         className="w-full"
@@ -755,131 +742,129 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                             field.onChange(null);
                           }
                         }}
-                        placeholder="Selecciona una fecha"
+                        placeholder="Fecha de Fin"
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              <Separator className="col-span-6" />
 
-              <div className="w-full col-span-6 grid grid-cols-6 gap-2 rounded-lg border shadow-sm p-4 bg-muted/30">
-                <div className="w-full col-span-3 grid gap-2">
-                  <FormDescription>Producto a ordear</FormDescription>
-                  <Select
-                    value={orderDetailSelected?.id_product.toString()}
-                    onValueChange={(value) => {
-                      const selectedProduct = products?.find(
-                        (product: IProduct) => product.id?.toString() === value
-                      );
-                      //setProductSelected(selectedProduct); // Guarda el objeto completo
-                      setOrderDetailSelected(
-                        orderDetailSelected
-                          ? {
-                              ...orderDetailSelected,
-                              product: selectedProduct,
-                              id_product: selectedProduct?.id ?? 0,
-                            }
-                          : selectedProduct
-                          ? {
-                              amount: 1,
-                              id_product: selectedProduct.id ?? 0,
-                              id_production_order: id,
-                              id_machine: machines[0].id ?? 0,
-                              machine: machines[0],
-                              product: selectedProduct,
-                            }
-                          : undefined
-                      );
-                    }} // Convertir el valor a número
-                  >
-                    <SelectTrigger className="w-full  ">
-                      <SelectValue placeholder="Selecciona" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {products?.map((product: IProduct) => (
-                        <SelectItem key={product.id} value={(product.id ?? "").toString()}>
-                          {product.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="w-full col-span-3 grid gap-2">
+                <Select
+                  value={orderDetailSelected?.id_product.toString()}
+                  onValueChange={(value) => {
+                    const selectedProduct = products?.find(
+                      (product: IProduct) => product.id?.toString() === value
+                    );
+                    //setProductSelected(selectedProduct); // Guarda el objeto completo
+                    setOrderDetailSelected(
+                      orderDetailSelected
+                        ? {
+                            ...orderDetailSelected,
+                            product: selectedProduct,
+                            id_product: selectedProduct?.id ?? 0,
+                          }
+                        : selectedProduct
+                        ? {
+                            amount: 1,
+                            id_product: selectedProduct.id ?? 0,
+                            id_production_order: id,
+                            id_machine: machines[0].id ?? 0,
+                            machine: machines[0],
+                            product: selectedProduct,
+                          }
+                        : undefined
+                    );
+                  }} // Convertir el valor a número
+                >
+                  <SelectTrigger className="w-full  " size="sm">
+                    <SelectValue placeholder="Producto a Ordear" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {products?.map((product: IProduct) => (
+                      <SelectItem key={product.id} value={(product.id ?? "").toString()}>
+                        {product.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-                <div className="w-full col-span-2 grid gap-2">
-                  <FormDescription>Máquina</FormDescription>
-                  <Select
-                    value={orderDetailSelected?.id_machine.toString()}
-                    onValueChange={(value) => {
-                      const selectedMachine = machines?.find(
-                        (machine: IMachine) => machine.id?.toString() === value
-                      );
-                      //setMachineSelected(selectedMachine); // Guarda el objeto completo
-                      setOrderDetailSelected(
-                        orderDetailSelected
-                          ? {
-                              ...orderDetailSelected,
-                              machine: selectedMachine,
-                              id_machine: selectedMachine?.id ?? 0,
-                            }
-                          : selectedMachine
-                          ? {
-                              amount: 1,
-                              id_machine: selectedMachine.id ?? 0,
-                              id_production_order: id,
-                              id_product: products[0].id ?? 0,
-                              product: products[0],
-                              machine: selectedMachine,
-                            }
-                          : undefined
-                      );
-                    }} // Convertir el valor a número
-                  >
-                    <SelectTrigger className="w-full  ">
-                      <SelectValue placeholder="Selecciona" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {machines?.map((machine: IMachine) => (
-                        <SelectItem key={machine.id} value={(machine.id ?? "").toString()}>
-                          {machine.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div className="w-full col-span-2 grid gap-2">
+                <Select
+                  value={orderDetailSelected?.id_machine.toString()}
+                  onValueChange={(value) => {
+                    const selectedMachine = machines?.find(
+                      (machine: IMachine) => machine.id?.toString() === value
+                    );
+                    //setMachineSelected(selectedMachine); // Guarda el objeto completo
+                    setOrderDetailSelected(
+                      orderDetailSelected
+                        ? {
+                            ...orderDetailSelected,
+                            machine: selectedMachine,
+                            id_machine: selectedMachine?.id ?? 0,
+                          }
+                        : selectedMachine
+                        ? {
+                            amount: 1,
+                            id_machine: selectedMachine.id ?? 0,
+                            id_production_order: id,
+                            id_product: products[0].id ?? 0,
+                            product: products[0],
+                            machine: selectedMachine,
+                          }
+                        : undefined
+                    );
+                  }} // Convertir el valor a número
+                >
+                  <SelectTrigger className="w-full  ">
+                    <SelectValue placeholder="Máquina" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {machines?.map((machine: IMachine) => (
+                      <SelectItem key={machine.id} value={(machine.id ?? "").toString()}>
+                        {machine.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-                <div className="w-full col-span-1 grid gap-2">
-                  <FormDescription>Cant.</FormDescription>
-                  <Input
-                    placeholder="Cantidad"
-                    type="number"
-                    value={orderDetailSelected?.amount}
-                    onChange={(event) =>
-                      setOrderDetailSelected(
-                        orderDetailSelected
-                          ? {
-                              ...orderDetailSelected,
-                              amount: Number(event.target.value),
-                            }
-                          : undefined
-                      )
-                    }
-                  />
-                </div>
-                <div className="w-full col-span-6 grid gap-2">
-                  <Button
-                    type="button"
-                    variant={"outline"}
-                    className="  bg-green-600/20 hover:bg-green-600/70  hover:text-white dark:bg-green-600/20 dark:hover:bg-green-600/70  dark:hover:text-black"
-                    onClick={addProductSelected}
-                  >
-                    <ChevronsDown />
-                  </Button>
-                </div>
+              <div className="w-full col-span-1 grid gap-2">
+                <Input
+                  placeholder="Cantidad"
+                  type="number"
+                  value={orderDetailSelected?.amount}
+                  onChange={(event) =>
+                    setOrderDetailSelected(
+                      orderDetailSelected
+                        ? {
+                            ...orderDetailSelected,
+                            amount: Number(event.target.value),
+                          }
+                        : undefined
+                    )
+                  }
+                />
+              </div>
+              <div className="w-full col-span-6 grid gap-2">
+                <Button
+                  type="button"
+                  variant={"default"}
+                  size={"sm"}
+                  //className="  bg-green-600/20 hover:bg-green-600/70  hover:text-white dark:bg-green-600/20 dark:hover:bg-green-600/70  dark:hover:text-black"
+                  onClick={addProductSelected}
+                >
+                  <ChevronsDown />
+                  Añadir Orden
+                  <ChevronsDown />
+                </Button>
               </div>
 
               <div className="w-full col-span-6 grid gap-2   ">
-                <FormDescription>Orden Detalle</FormDescription>
                 <DataTable
                   hasOptions={false}
                   hasPaginated={false}
@@ -894,7 +879,7 @@ export const EditOrderDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                 {loadingSave ? <LoadingCircle /> : "Guardar"}
               </Button>
 
-              <DialogClose className="col-span-6" asChild>
+              <DialogClose className="col-span-3" asChild>
                 <Button
                   type="button"
                   variant="outline"
@@ -1071,7 +1056,7 @@ export const RecoverOrderDialog: React.FC<PropsRecover> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Recuperar orden</DialogTitle>
+          <DialogTitle>Reactivar orden</DialogTitle>
           <DialogDescription>¿Está seguro de recuperar esta orden?</DialogDescription>
         </DialogHeader>
 
@@ -1082,7 +1067,7 @@ export const RecoverOrderDialog: React.FC<PropsRecover> = ({
             className="col-span-3"
             onClick={onRecover}
           >
-            {loadingRecover ? <LoadingCircle /> : "Recuperar"}
+            {loadingRecover ? <LoadingCircle /> : "Reactivar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
             <Button type="button" variant="outline" className="w-full" disabled={loadingRecover}>

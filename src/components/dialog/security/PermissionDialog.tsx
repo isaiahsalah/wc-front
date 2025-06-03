@@ -6,7 +6,6 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -118,24 +117,28 @@ export const EditPermissionUserDialog: React.FC<PropsPermissionEdit> = ({
       <DialogContent className="md:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Editar Permisos de Usuario</DialogTitle>
-          <DialogDescription>Edite los datos del usuario.</DialogDescription>
         </DialogHeader>
         {loadingInit ? null : (
-          <div className="grid  gap-4">
-            <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
+          <div className="grid  gap-2">
+            <div className="grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm">
               {typeModule
                 .find((mod) => mod.id === module?.id)
                 ?.menu.map((menu, i) => {
                   return (
-                    <div key={i} className="grid grid-cols-6 col-span-6 gap-2  ">
-                      <CardDescription className="col-span-6  ">
-                        Paginas de {menu.name}
-                      </CardDescription>
-                      <Separator className="col-span-6" />
+                    <div key={i} className="grid grid-cols-8 col-span-6 gap-2  ">
+                      <div className="col-span-8 ">
+                        <CardDescription className="  text-foreground/70 ">
+                          Paginas de {menu.name}
+                        </CardDescription>
+                        <Separator className=" " />
+                      </div>
+
                       {menu.pages.map((page, i) => {
                         return (
                           <div key={i} className="col-span-2 gap-2">
-                            <CardDescription>{page.label}</CardDescription>
+                            <CardDescription className="text-foreground/35">
+                              {page.label}
+                            </CardDescription>
                             <Select
                               value={memoizedSelectedValues[page.id] || "0"}
                               onValueChange={(value) => {

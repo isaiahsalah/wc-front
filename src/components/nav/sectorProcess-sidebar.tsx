@@ -68,23 +68,23 @@ export function SectorProcessSidebar({sectorProcesses}: {sectorProcesses: ISecto
   }
 
   return (
-    <SidebarMenu className=" ">
+    <SidebarMenu className="  ">
       <SidebarMenuItem>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton size="default" asChild>
+          <DropdownMenuTrigger asChild className="  rounded-none">
+            <SidebarMenuButton className="h-12 border-b-1" size="lg" asChild>
               <a href="#">
                 <div className="flex aspect-square size-6 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
                   {icon(sectorProcess?.process?.id as number)}
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold"> {sectorProcess?.process?.name}</span>
+                  <span className="truncate text-xs text-foreground/50">
+                    {sectorProcess?.sector?.name}
+                  </span>
                 </div>
                 <div className="ml-auto">
-                  <span
-                    onClick={(e) => e.stopPropagation()}
-                    onFocus={(e) => e.stopPropagation()} // Detenemos la propagación del foco
-                  >
+                  <span onClick={(e) => e.stopPropagation()} onFocus={(e) => e.stopPropagation()}>
                     <Settings2 className="opacity-80 size-4" />
                   </span>
                 </div>

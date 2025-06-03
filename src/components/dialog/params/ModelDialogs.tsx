@@ -5,14 +5,7 @@ import {useForm} from "react-hook-form";
 import {IProductModel, ProductModelSchema} from "@/utils/interfaces";
 import {zodResolver} from "@hookform/resolvers/zod";
 
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
+import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
 import {Textarea} from "@/components/ui/textarea";
 import {useContext, useEffect, useState} from "react";
 import {
@@ -78,23 +71,21 @@ export const CreateModelDialog: React.FC<PropsCreate> = ({children, updateView})
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Registro de modelo</DialogTitle>
-          <DialogDescription>Mostrando datos relacionados con el modelo.</DialogDescription>
+          <DialogTitle>Registrar Modelo</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-            className=" grid  gap-2 "
+            className=" grid  gap-2"
           >
-            <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
+            <div className="grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm">
               <FormField
                 control={form.control}
                 name="name"
                 render={({field}) => (
                   <FormItem className="col-span-6">
-                    <FormDescription>Nombre</FormDescription>
                     <FormControl>
-                      <Input placeholder="Nombre" {...field} />
+                      <Input placeholder="Nombre de Modelo" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -106,7 +97,6 @@ export const CreateModelDialog: React.FC<PropsCreate> = ({children, updateView})
                 name="description"
                 render={({field}) => (
                   <FormItem className="col-span-6">
-                    <FormDescription>Descripción</FormDescription>
                     <FormControl>
                       <Textarea
                         placeholder="Notas adicionales"
@@ -201,38 +191,15 @@ export const EditModelDialog: React.FC<PropsEdit> = ({children, id, updateView, 
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-              className=" grid   gap-4 "
-            >
-              <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
-                <FormField
-                  control={form.control}
-                  name="id"
-                  render={({field}) => (
-                    <FormItem className={"col-span-2"}>
-                      <FormDescription>Id</FormDescription>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          placeholder="Id"
-                          disabled
-                          onChange={(event) => field.onChange(Number(event.target.value))}
-                          defaultValue={field.value ?? ""}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            <form onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))} className=" grid  ">
+              <div className="grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
                   name="name"
                   render={({field}) => (
-                    <FormItem className="col-span-4">
-                      <FormDescription>Nombre</FormDescription>
+                    <FormItem className="col-span-6">
                       <FormControl>
-                        <Input placeholder="Nombre" {...field} />
+                        <Input placeholder="Nombre de Modelo" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -244,7 +211,6 @@ export const EditModelDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                   name="description"
                   render={({field}) => (
                     <FormItem className="col-span-6">
-                      <FormDescription>Descripción</FormDescription>
                       <FormControl>
                         <Textarea
                           placeholder="Notas adicionales"
@@ -267,7 +233,7 @@ export const EditModelDialog: React.FC<PropsEdit> = ({children, id, updateView, 
                   {loadingSave ? <LoadingCircle /> : "Guardar"}
                 </Button>
 
-                <DialogClose className="col-span-6" asChild>
+                <DialogClose className="col-span-3" asChild>
                   <Button type="button" variant="outline" className="w-full" disabled={loadingSave}>
                     Cerrar
                   </Button>
@@ -439,7 +405,7 @@ export const RecoverModelDialog: React.FC<PropsRecover> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Recuperar modelo</DialogTitle>
+          <DialogTitle>Reactivar modelo</DialogTitle>
           <DialogDescription>¿Está seguro de recuperar este modelo?</DialogDescription>
         </DialogHeader>
 
@@ -450,7 +416,7 @@ export const RecoverModelDialog: React.FC<PropsRecover> = ({
             className="col-span-3"
             onClick={onRecover}
           >
-            {loadingRecover ? <LoadingCircle /> : "Recuperar"}
+            {loadingRecover ? <LoadingCircle /> : "Reactivar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
             <Button type="button" variant="outline" className="w-full" disabled={loadingRecover}>

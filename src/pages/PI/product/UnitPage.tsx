@@ -141,7 +141,7 @@ const UnitPage: React.FC<Props> = ({degree}) => {
                           disabled={degree < 4 ? true : false}
                           onSelect={(e) => e.preventDefault()}
                         >
-                          <ArchiveRestore /> Recuperar{" "}
+                          <ArchiveRestore /> Reactivar{" "}
                         </DropdownMenuItem>
                       </RecoverUnityDialog>
                       <HardDeleteUnityDialog id={row.original.id ?? 0} updateView={updateView}>

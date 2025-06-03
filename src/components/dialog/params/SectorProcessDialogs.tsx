@@ -10,14 +10,7 @@ import {
 } from "@/utils/interfaces";
 import {zodResolver} from "@hookform/resolvers/zod";
 
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
+import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/ui/form";
 import {useContext, useState} from "react";
 
 import {
@@ -109,29 +102,27 @@ export const CreateSectorProcessDialog: React.FC<PropsCreate> = ({children, upda
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Añade un nuevo Proceso al sector</DialogTitle>
-          <DialogDescription>Mostrando datos relacionados con el proceso.</DialogDescription>
+          <DialogTitle>Añadir Nuevo Proceso al Sector</DialogTitle>
         </DialogHeader>
         {loadingInit ? null : (
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit, (e) => console.log(e))}
-              className=" grid  gap-2"
+              className="grid gap-2"
             >
-              <div className="grid grid-cols-6 gap-4 rounded-lg border p-3 shadow-sm">
+              <div className="grid grid-cols-6 gap-2 rounded-lg border p-3 shadow-sm">
                 <FormField
                   control={form.control}
                   name="id_process"
                   render={({field}) => (
                     <FormItem className="col-span-6 ">
-                      <FormDescription>Sector</FormDescription>
                       <FormControl>
                         <Select
                           onValueChange={(value) => field.onChange(Number(value))} // Convertir el valor a número
                           //defaultValue={field.value.toString()}
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Seleccionar Modelo" />
+                            <SelectValue placeholder="Proceso del Sector" />
                           </SelectTrigger>
                           <SelectContent>
                             {processes?.map((sector: IProcess) => (
@@ -327,7 +318,7 @@ export const RecoverSectorProcessDialog: React.FC<PropsRecover> = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Recuperar Processo</DialogTitle>
+          <DialogTitle>Reactivar Processo</DialogTitle>
           <DialogDescription>¿Está seguro de recuperar este Processo?</DialogDescription>
         </DialogHeader>
 
@@ -338,7 +329,7 @@ export const RecoverSectorProcessDialog: React.FC<PropsRecover> = ({
             className="col-span-3"
             onClick={onRecover}
           >
-            {loadingRecover ? <LoadingCircle /> : "Recuperar"}
+            {loadingRecover ? <LoadingCircle /> : "Reactivar"}
           </Button>
           <DialogClose className="col-span-3" asChild>
             <Button type="button" variant="outline" className="w-full" disabled={loadingRecover}>

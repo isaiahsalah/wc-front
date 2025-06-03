@@ -30,13 +30,6 @@ import {getOrderDetails} from "@/api/production/orderDetail.api";
 import {getProductions} from "@/api/production/production.api";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {format} from "date-fns";
 import {typeQuality, typeSize, typeTurn} from "@/utils/const";
 import {Badge} from "@/components/ui/badge";
@@ -44,8 +37,8 @@ import {getMachines} from "@/api/params/machine.api";
 import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 import {SesionContext} from "@/providers/sesionProvider";
 import {getWeekRange} from "@/utils/funtions";
-import {ToggleGroup, ToggleGroupItem} from "@/components/ui/toggle-group";
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
+import {Separator} from "@/components/ui/separator";
 interface Props {
   type_screen: number;
   degree: number;
@@ -62,6 +55,7 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
   const weekRange = getWeekRange();
 
   useEffect(() => {
+    updateView();
     getMachines({id_sector_process: sectorProcess?.id}).then((MachinesData) =>
       setMachines(MachinesData)
     );
@@ -346,7 +340,7 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
                           disabled={degree < 4 ? true : false}
                           onSelect={(e) => e.preventDefault()}
                         >
-                          <ArchiveRestore /> Recuperar{" "}
+                          <ArchiveRestore /> Reactivar{" "}
                         </DropdownMenuItem>
                       </RecoverProductionDialog>
                       <HardDeleteProductionDialog id={row.original.id ?? 0} updateView={updateView}>
@@ -517,48 +511,28 @@ const ProductionPage: React.FC<Props> = ({degree, type_screen}) => {
 
   return (
     <div className="grid grid-cols-6 gap-2">
-      <RadioGroup className="col-span-6 grid grid-cols-6 gap-2">
+      <RadioGroup
+        className="col-span-6   flex    gap-2  overflow-auto"
+        onValueChange={(value) => setIdMachine(Number(value))}
+      >
         {machines?.map((machine: IMachine, i) => (
-          <div className="col-span-1">
-            <label
-              key={machine.name}
-              htmlFor={machine.name}
-              className="block cursor-pointer rounded-lg border   p-4 shadow-sm transition-all hover:shadow-md   "
-            >
-              <RadioGroupItem id={machine.name} value={machine.name} />
-              <div className="flex flex-col">
-                <span className="text-lg font-medium">{machine.id}</span>
-                {machine.description && (
-                  <span className="text-sm text-gray-500">{machine.description}</span>
-                )}
-              </div>
-            </label>
-          </div>
+          <label
+            key={i}
+            htmlFor={machine.name}
+            className="flex flex-1 flex-grow min-w-[180px] gap-4 cursor-pointer rounded-lg border p-4 shadow-sm transition-all   h-full   bg-card/50   has-[[data-state=checked]]:border-ring has-[[data-state=checked]]:bg-card dark:has-[[data-state=checked]]:bg-secondary"
+          >
+            <RadioGroupItem id={machine.name} value={machine.id?.toString() as string} />
+            <div className="flex flex-col gap-2">
+              <CardTitle>{machine.name}</CardTitle>
+              {machine.description && (
+                <CardDescription className="  leading-tight">{machine.description}</CardDescription>
+              )}
+            </div>
+          </label>
         ))}
       </RadioGroup>
+      <Separator className="col-span-6" />
 
-      <Card className="@container/card col-span-6 lg:col-span-6">
-        <CardContent className=" flex flex-col gap-2">
-          <CardDescription>Selecciona la máquina</CardDescription>
-
-          <div className="grid grid-cols-6 gap-2">
-            <Select
-              onValueChange={(value) => setIdMachine(Number(value))} // Convertir el valor a número
-            >
-              <SelectTrigger className="w-full col-span-6">
-                <SelectValue placeholder="Máquina" />
-              </SelectTrigger>
-              <SelectContent>
-                {machines?.map((machine: IMachine) => (
-                  <SelectItem key={machine.id} value={(machine.id ?? "").toString()}>
-                    {machine.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
       {idMachine ? (
         <>
           <Card className="@container/card col-span-6 lg:col-span-6">

@@ -65,7 +65,9 @@ export function ProfileSidebar() {
                     {sesion?.sys_user.name} {sesion?.sys_user.lastname}
                   </span>
                   <span className="truncate text-xs">
-                    Grupo {sesion?.sys_user.work_group?.name}
+                    {sesion?.sys_user.work_group?.name
+                      ? "Grupo " + sesion?.sys_user.work_group?.name
+                      : null}
                   </span>
                 </div>
               </div>

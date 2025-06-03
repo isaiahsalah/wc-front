@@ -342,7 +342,7 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
                           disabled={degree < 4 ? true : false}
                           onSelect={(e) => e.preventDefault()}
                         >
-                          <ArchiveRestore /> Recuperar{" "}
+                          <ArchiveRestore /> Reactivar{" "}
                         </DropdownMenuItem>
                       </RecoverProductionDialog>
                       <HardDeleteProductionDialog id={row.original.id ?? 0} updateView={updateView}>
@@ -404,8 +404,7 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
 
       <Card className="@container/card col-span-6 lg:col-span-6">
         <CardHeader>
-          <CardTitle>Producción</CardTitle>
-          <CardDescription>Producción registrada por el usuario activo</CardDescription>
+          <CardTitle>Inventario</CardTitle>
         </CardHeader>
         <CardContent>
           <DataTable actions={<></>} columns={columnsProduction} data={productions} pageSize={10} />

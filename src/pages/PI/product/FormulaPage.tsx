@@ -201,7 +201,7 @@ const FormulaPage: React.FC<Props> = ({degree}) => {
                           disabled={degree < 4 ? true : false}
                           onSelect={(e) => e.preventDefault()}
                         >
-                          <ArchiveRestore /> Recuperar{" "}
+                          <ArchiveRestore /> Reactivar{" "}
                         </DropdownMenuItem>
                       </RecoverFormulaDialog>
                       <HardDeleteFormulaDialog id={row.original.id ?? 0} updateView={updateView}>

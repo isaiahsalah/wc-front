@@ -202,7 +202,7 @@ export const typeModule: IModuleItem[] = [
 ];
 
 export const typeTurn = [
-  {id: 1, name: "Dia"},
+  {id: 1, name: "Día"},
   {id: 2, name: "Noche"},
   {id: 3, name: "Mixto"},
 ];
