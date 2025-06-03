@@ -174,7 +174,6 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
             row.type_size ? typeSize.find((item) => item.id === row.type_size)?.name : null
           } `.trim(),
 
-        accessorKey: "type_size",
         header: "Tamaño",
 
         cell: (info) =>
@@ -220,13 +219,18 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
       },
 
       {
-        accessorKey: "machine",
+        accessorFn: (row) => `${row.machine != null ? row.machine.name : "-"} `.trim(),
         header: "Maquina",
-        cell: (info) => (
-          <Badge variant={"secondary"} className="text-muted-foreground">
-            {(info.getValue() as IMachine).name}
-          </Badge>
-        ),
+        cell: (info) =>
+          info.getValue() != "-" ? (
+            <Badge variant={"secondary"} className="text-muted-foreground">
+              {info.getValue() as string}
+            </Badge>
+          ) : (
+            <Badge variant={"outline"} className="text-muted-foreground">
+              {"N/A"}
+            </Badge>
+          ),
       },
 
       {
