@@ -221,31 +221,31 @@ export const typeProduct = [
 
 export const typeTicket = [
   {
-    id: 2,
+    id: 1,
     name: "QR 2",
     example: ["Id", "Nombre de Producto", "Fecha de Producción", "Peso", "Micronage"],
     colums: ["id", "name", "date", "weight", "micronage"],
   },
   {
-    id: 3,
+    id: 2,
     name: "QR 3",
     example: ["Id", "Nombre de Producto", "Fecha de Producción", "Peso"],
     colums: ["id", "name", "date", "weight"],
   },
   {
-    id: 4,
+    id: 3,
     name: "QR 4",
     example: ["Nombre de Producto", "Fecha de Producción"],
     colums: ["name", "date"],
   },
   {
-    id: 5,
+    id: 4,
     name: "QR 5",
     example: ["Nombre de Producto"],
     colums: ["name"],
   },
   {
-    id: 6,
+    id: 5,
     name: "QR 6",
     example: ["Nombre de Producto", "Fecha de Producción", "Tamaño"],
     colums: ["name", "date", "type_size"],
