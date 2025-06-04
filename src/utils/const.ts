@@ -221,12 +221,6 @@ export const typeProduct = [
 
 export const typeTicket = [
   {
-    id: 1,
-    name: "QR 1",
-    example: ["Id", "Nombre de Producto", "Fecha de Producción", "Unidad de medida", "Micronage"],
-    colums: ["id", "name", "date", "amount", "micronage"],
-  },
-  {
     id: 2,
     name: "QR 2",
     example: ["Id", "Nombre de Producto", "Fecha de Producción", "Peso", "Micronage"],
