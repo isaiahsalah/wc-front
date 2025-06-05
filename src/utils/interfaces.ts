@@ -258,6 +258,7 @@ export const ProductionSchema = z.object({
   id: z.number().nullable().optional(),
   description: z.string().nullable().optional(),
   date: z.date(),
+  threshold_date: z.date().nullable().optional(),
   duration: z.number(),
   micronage: z.array(z.number()).nullable().optional(),
   type_quality: z.number(),

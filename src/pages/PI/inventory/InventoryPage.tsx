@@ -101,6 +101,18 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
           </Badge>
         ),
       },
+      {
+        accessorKey: "threshold_date",
+        header: "Fecha Umbral",
+        cell: (info) => {
+          console.log("📍", info.getValue());
+          return (
+            <Badge variant={"secondary"} className="text-muted-foreground">
+              {format(new Date((info.getValue() as string) + "T00:00:00"), "dd/MM/yyyy")}
+            </Badge>
+          );
+        },
+      },
 
       {
         accessorFn: (row) =>
