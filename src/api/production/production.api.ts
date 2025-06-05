@@ -8,12 +8,16 @@ export const getProductions = async ({
   id_sector_process,
   id_machine,
   all,
+  page = 1,
+  pageSize = 50,
 }: {
   init_date?: string | null;
   end_date?: string | null;
   id_sector_process?: number | null;
   id_machine?: number | null;
   all?: boolean;
+  page?: number | null;
+  pageSize?: number | null;
 }) => {
   try {
     const params = {
@@ -22,6 +26,8 @@ export const getProductions = async ({
       id_sector_process,
       id_machine,
       all,
+      page,
+      pageSize,
     };
     const response = await apiClient.get("/pr/production", {params}); // Cambia la URL según tu API
     return response.data; // Devuelve la lista de producciones

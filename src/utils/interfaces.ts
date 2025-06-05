@@ -371,3 +371,11 @@ export type IGeneral =
   | IWork
   | ISectorProcess
   | IProductionUser;
+
+export type IResponse = {
+  data: IGeneral[];
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  totalRecords: number;
+};

@@ -84,6 +84,15 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
     if (!productions) return [];
     return [
       {
+        accessorKey: "id",
+        header: "ID",
+        cell: (info) => (
+          <Badge variant={"secondary"} className="text-muted-foreground">
+            {info.getValue() as string}
+          </Badge>
+        ),
+      },
+      {
         accessorKey: "date",
         header: "Fecha",
         cell: (info) => (
