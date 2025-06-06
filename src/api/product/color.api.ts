@@ -79,7 +79,7 @@ export const recoverColor = async (id: number) => {
       deletedAt: null, // Cambia el campo `deletedAt` a null para recuperar el dato
     });
 
-    toast.success("El color se recuperó correctamente.");
+    toast.success("El color se reactivó correctamente.");
     return response.data; // Devuelve el dato actualizado o el mensaje de éxito
   } catch (error) {
     toast.error(`Error al recuperar el color con ID ${id}: ${error}`);

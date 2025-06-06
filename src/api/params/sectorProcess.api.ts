@@ -85,7 +85,7 @@ export const recoverSectorProcess = async (id: number) => {
       deletedAt: null, // Cambia el campo `deletedAt` a null para recuperar el dato
     });
 
-    toast.success("El sector se recuperó correctamente.");
+    toast.success("El sector se reactivó correctamente.");
     return response.data; // Devuelve el dato actualizado o el mensaje de éxito
   } catch (error) {
     toast.error(`Error al recuperar el sector con ID ${id}: ${error}`);

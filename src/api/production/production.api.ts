@@ -103,7 +103,7 @@ export const recoverProduction = async (id: number) => {
       deletedAt: null, // Cambia el campo `deletedAt` a null para recuperar el dato
     });
 
-    toast.success("La producción se recuperó correctamente.");
+    toast.success("La producción se reactivó correctamente.");
     return response.data; // Devuelve el dato actualizado o el mensaje de éxito
   } catch (error) {
     toast.error(`Error al recuperar la producción con ID ${id}: ${error}`);

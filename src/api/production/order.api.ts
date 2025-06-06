@@ -95,7 +95,7 @@ export const recoverOrder = async (id: number) => {
       deletedAt: null, // Cambia el campo `deletedAt` a null para recuperar el dato
     });
 
-    toast.success("La orden se recuperó correctamente.");
+    toast.success("La orden se reactivó correctamente.");
     return response.data; // Devuelve el dato actualizado o el mensaje de éxito
   } catch (error) {
     toast.error(`Error al recuperar la orden con ID ${id}: ${error}`);

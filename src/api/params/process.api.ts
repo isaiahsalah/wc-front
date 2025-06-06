@@ -67,7 +67,7 @@ export const recoverProcess = async (id: number) => {
       deletedAt: null, // Cambia el campo `deletedAt` a null para recuperar el dato
     });
 
-    toast.success("El proceso se recuperó correctamente.");
+    toast.success("El proceso se reactivó correctamente.");
     return response.data; // Devuelve el dato actualizado o el mensaje de éxito
   } catch (error) {
     toast.error(`Error al recuperar el proceso con ID ${id}: ${error}`);

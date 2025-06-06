@@ -88,7 +88,7 @@ export const recoverModel = async (id: number) => {
       deletedAt: null, // Cambia el campo `deletedAt` a null para recuperar el dato
     });
 
-    toast.success("El modelo se recuperó correctamente.");
+    toast.success("El modelo se reactivó correctamente.");
     return response.data; // Devuelve el dato actualizado o el mensaje de éxito
   } catch (error) {
     toast.error(`Error al recuperar el modelo con ID ${id}: ${error}`);

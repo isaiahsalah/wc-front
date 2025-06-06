@@ -89,7 +89,7 @@ export const recoverProduct = async (id: number) => {
       deletedAt: null, // Cambia el campo `deletedAt` a null para recuperar el dato
     });
 
-    toast.success("El producto se recuperó correctamente.");
+    toast.success("El producto se reactivó correctamente.");
     return response.data; // Devuelve el dato actualizado o el mensaje de éxito
   } catch (error) {
     toast.error(`Error al recuperar el producto con ID ${id}: ${error}`);

@@ -1,5 +1,6 @@
 import {apiClient} from "../axiosConfig";
 import {IPermission, ISystemUser} from "@/utils/interfaces"; // Asegúrate de tener una interfaz IUser definida
+import {isAxiosError} from "axios";
 import {toast} from "sonner";
 
 // Obtener usuarios
@@ -82,7 +83,14 @@ export const softDeleteUser = async (id: number) => {
     toast.success("El usuario se desactivó correctamente.");
     return response.data; // Devuelve el mensaje de éxito
   } catch (error) {
-    toast.error(`Error al desactivar el usuario con ID ${id}: ${error}`);
+    let errorMessage = `Error al desactivar el usuario con ID ${id}.`;
+
+    // Verificar si el error es un AxiosError
+    if (isAxiosError(error)) {
+      errorMessage = error.response?.data?.error || errorMessage;
+    }
+
+    toast.error(`${errorMessage}`);
     throw error;
   }
 };
@@ -94,7 +102,14 @@ export const hardDeleteUser = async (id: number) => {
     toast.success("El usuario se eliminó correctamente.");
     return response.data; // Devuelve el mensaje de éxito
   } catch (error) {
-    toast.error(`Error al eliminar el usuario con ID ${id}: ${error}`);
+    let errorMessage = `Error desconocido al eliminar el usuario con ID ${id}.`;
+
+    // Verificar si el error es un AxiosError
+    if (isAxiosError(error)) {
+      errorMessage = error.response?.data?.error || errorMessage;
+    }
+
+    toast.error(`${errorMessage}`);
     throw error;
   }
 };
@@ -108,7 +123,7 @@ export const recoverUser = async (id: number) => {
       deletedAt: null, // Cambia el campo `deletedAt` a null para recuperar el dato
     });
 
-    toast.success("El usuario se recuperó correctamente.");
+    toast.success("El usuario se reactivó correctamente.");
     return response.data; // Devuelve el dato actualizado o el mensaje de éxito
   } catch (error) {
     toast.error(`Error al recuperar el usuario con ID ${id}: ${error}`);

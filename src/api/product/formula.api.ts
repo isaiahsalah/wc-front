@@ -91,7 +91,7 @@ export const recoverFormula = async (id: number) => {
       deletedAt: null, // Cambia el campo `deletedAt` a null para recuperar el dato
     });
 
-    toast.success("La fórmula se recuperó correctamente.");
+    toast.success("La fórmula se reactivó correctamente.");
     return response.data; // Devuelve el dato actualizado o el mensaje de éxito
   } catch (error) {
     toast.error(`Error al recuperar la fórmula con ID ${id}: ${error}`);

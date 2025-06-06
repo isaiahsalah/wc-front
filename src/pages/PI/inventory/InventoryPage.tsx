@@ -55,7 +55,7 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
 
   useEffect(() => {
     updateView();
-  }, [idMachine, initDate, endDate]);
+  }, [idMachine, initDate, endDate, sectorProcess]);
 
   const updateView = async () => {
     try {
@@ -84,7 +84,8 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
     if (!productions) return [];
     return [
       {
-        accessorKey: "id",
+        accessorFn: (row) => `${row.id}`.trim(),
+
         header: "ID",
         cell: (info) => (
           <Badge variant={"secondary"} className="text-muted-foreground">
@@ -93,22 +94,24 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
         ),
       },
       {
-        accessorKey: "date",
+        accessorFn: (row) => `${format(row.date as Date, "dd/MM/yyyy HH:mm")}`.trim(),
+
         header: "Fecha",
         cell: (info) => (
           <Badge variant={"secondary"} className="text-muted-foreground">
-            {format(info.getValue() as Date, "dd/MM/yyyy HH:mm")}
+            {info.getValue() as string}
           </Badge>
         ),
       },
       {
-        accessorKey: "threshold_date",
+        accessorFn: (row) =>
+          `${format(new Date(row.threshold_date + "T00:00:00"), "dd/MM/yyyy")}`.trim(),
+
         header: "Fecha Umbral",
         cell: (info) => {
-          console.log("📍", info.getValue());
           return (
             <Badge variant={"secondary"} className="text-muted-foreground">
-              {format(new Date((info.getValue() as string) + "T00:00:00"), "dd/MM/yyyy")}
+              {info.getValue() as string}
             </Badge>
           );
         },
@@ -154,7 +157,6 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
 
       {
         accessorFn: (row) => ` ${row.production_unit?.name}`.trim(),
-        accessorKey: "production_unit",
         header: "Unidad",
         cell: (info) => {
           return (
@@ -167,7 +169,6 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
       {
         accessorFn: (row) =>
           `${row.equivalent_amount} ${row.production_equivalent_unit?.shortname}`.trim(),
-        accessorKey: "production_equivalent_unit",
         header: "Equivalente",
         cell: (info) => {
           return (
@@ -179,7 +180,6 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
       },
       {
         accessorFn: (row) => `${row.weight} kg`.trim(),
-        accessorKey: "weight",
         header: "Peso",
         cell: (info) => {
           return (
@@ -210,14 +210,15 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
       },
 
       {
+        accessorFn: (row) => `${row.micronage ? row.micronage.join(" - ") : null} `.trim(),
+
         accessorKey: "micronage",
         header: "Micronaje",
         cell: (info) => {
-          const micronaje = info.getValue() as [];
-          if (micronaje)
+          if (info.getValue() != "null")
             return (
               <Badge variant={"secondary"} className="text-muted-foreground">
-                {micronaje.join(" - ")}
+                {info.getValue() as string}
               </Badge>
             );
           else

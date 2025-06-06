@@ -79,7 +79,7 @@ export const recoverUnity = async (id: number) => {
       deletedAt: null, // Cambia el campo `deletedAt` a null para recuperar el dato
     });
 
-    toast.success("La unidad se recuperó correctamente.");
+    toast.success("La unidad se reactivó correctamente.");
     return response.data; // Devuelve el dato actualizado o el mensaje de éxito
   } catch (error) {
     toast.error(`Error al recuperar la unidad con ID ${id}: ${error}`);
