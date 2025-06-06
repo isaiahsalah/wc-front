@@ -57,7 +57,14 @@ export const createUser = async ({data}: {data: ISystemUser}) => {
     toast.success("El usuario se creó correctamente.");
     return response.data; // Devuelve el usuario creado
   } catch (error) {
-    toast.error(`Error al crear el usuario: ${error}`);
+    let errorMessage = `Error al crear el usuario`;
+
+    // Verificar si el error es un AxiosError
+    if (isAxiosError(error)) {
+      errorMessage = error.response?.data?.error || errorMessage;
+    }
+
+    toast.error(`${errorMessage}`);
     throw error;
   }
 };

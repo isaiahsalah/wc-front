@@ -39,6 +39,7 @@ import {
 import {Eye, EyeOff, Trash2} from "lucide-react";
 import {SesionContext} from "@/providers/sesionProvider";
 import {checkToken} from "@/utils/funtions";
+import {toast} from "sonner";
 
 interface PropsCreate {
   children: React.ReactNode; // Define el tipo de children
@@ -50,12 +51,14 @@ export const CreateUserDialog: React.FC<PropsCreate> = ({children, updateView}) 
   const [loadingInit, setLoadingInit] = useState(false);
   const [groups, setGroups] = useState<IWorkGroup[]>();
   const [showPassword, setShowPassword] = useState(false);
+  const [repeatPassword, setRepeatPassword] = useState<string>("");
 
   const form = useForm<ISystemUser>({
     resolver: zodResolver(SystemUserSchema),
   });
 
   function onSubmit(values: ISystemUser) {
+    if (repeatPassword != form.getValues().pass) return toast.warning("Contraseñas diferentes");
     setLoadingSave(true); // Inicia la carga
     createUser({data: values})
       .then((updatedUser) => {
@@ -167,7 +170,7 @@ export const CreateUserDialog: React.FC<PropsCreate> = ({children, updateView}) 
                   control={form.control}
                   name="user"
                   render={({field}) => (
-                    <FormItem className="col-span-3">
+                    <FormItem className="col-span-2">
                       <FormControl>
                         <Input placeholder="Usuario" {...field} />
                       </FormControl>
@@ -179,7 +182,7 @@ export const CreateUserDialog: React.FC<PropsCreate> = ({children, updateView}) 
                   control={form.control}
                   name="pass"
                   render={({field}) => (
-                    <FormItem className="col-span-3">
+                    <FormItem className="col-span-2">
                       <FormControl>
                         <div className="relative">
                           <Input
@@ -210,6 +213,37 @@ export const CreateUserDialog: React.FC<PropsCreate> = ({children, updateView}) 
                     </FormItem>
                   )}
                 />
+
+                <FormItem className="col-span-2">
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        className="text-center"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Repita Contraseña"
+                        autoComplete="current-password"
+                        value={repeatPassword}
+                        onChange={(e) => setRepeatPassword(e.target.value)}
+                      />
+                      <Button
+                        type="button"
+                        variant={"link"}
+                        className="absolute right-0 top-1/2  -translate-y-1/2"
+                        onMouseDown={() => setShowPassword(true)}
+                        onMouseUp={() => setShowPassword(false)}
+                        onTouchStart={() => setShowPassword(true)}
+                        onTouchEnd={() => setShowPassword(false)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4 opacity-50" />
+                        ) : (
+                          <Eye className="h-4 w-4 opacity-50" />
+                        )}
+                      </Button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
                 <FormField
                   control={form.control}
                   name="id_work_group"
