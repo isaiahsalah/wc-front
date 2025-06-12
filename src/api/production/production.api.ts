@@ -1,5 +1,5 @@
 import {apiClient} from "../axiosConfig";
-import {IProduction} from "@/utils/interfaces";
+import {IProduction, IResponse} from "@/utils/interfaces";
 import {toast} from "sonner";
 
 export const getProductions = async ({
@@ -9,7 +9,7 @@ export const getProductions = async ({
   id_machine,
   all,
   page = 1,
-  pageSize = 50,
+  page_size = 50,
 }: {
   init_date?: string | null;
   end_date?: string | null;
@@ -17,7 +17,7 @@ export const getProductions = async ({
   id_machine?: number | null;
   all?: boolean;
   page?: number | null;
-  pageSize?: number | null;
+  page_size?: number | null;
 }) => {
   try {
     const params = {
@@ -27,10 +27,13 @@ export const getProductions = async ({
       id_machine,
       all,
       page,
-      pageSize,
+      page_size,
     };
     const response = await apiClient.get("/pr/production", {params}); // Cambia la URL según tu API
-    return response.data; // Devuelve la lista de producciones
+    const responsePaginated: IResponse = response.data;
+    //console.log("production", response.data as IResponse);
+
+    return responsePaginated; // Devuelve la lista de producciones
   } catch (error) {
     console.error("Error al obtener las producciones:", error);
     throw error;

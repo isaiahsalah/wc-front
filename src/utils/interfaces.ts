@@ -376,7 +376,7 @@ export type IGeneral =
 export type IResponse = {
   data: IGeneral[];
   page: number;
-  pageSize: number;
-  totalPages: number;
-  totalRecords: number;
+  page_size: number;
+  total_pages: number;
+  total_records: number;
 };

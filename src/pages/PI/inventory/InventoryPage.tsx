@@ -1,7 +1,6 @@
-import {IProduction, IMachine, IProductionUser} from "@/utils/interfaces";
+import {IProduction, IMachine, IProductionUser, IResponse} from "@/utils/interfaces";
 import {ColumnDef, Row} from "@tanstack/react-table";
 import {useContext, useEffect, useMemo, useState} from "react";
-import DataTable from "@/components/table/DataTable";
 import {Button} from "@/components/ui/button";
 import {ArchiveRestore, Edit, List, Printer, Trash2} from "lucide-react";
 import {
@@ -34,6 +33,7 @@ import {Badge} from "@/components/ui/badge";
 import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 import {getMachines} from "@/api/params/machine.api";
 import {DateTimePicker} from "@/components/DateTimePicker";
+import DataTable from "@/components/table/DataTablePaginated";
 interface Props {
   degree: number;
 }
@@ -47,6 +47,8 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
   const [machines, setMachines] = useState<IMachine[]>();
   const [idMachine, setIdMachine] = useState<number>();
 
+  const [response, setResponse] = useState<IResponse>();
+
   useEffect(() => {
     getMachines({id_sector_process: sectorProcess?.id}).then((MachinesData) =>
       setMachines(MachinesData)
@@ -59,21 +61,37 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
 
   const updateView = async () => {
     try {
-      const ProductionsData = await getProductions({
+      const responseData = await getProductions({
         init_date: initDate?.toISOString() ?? null,
         end_date: endDate?.toISOString() ?? null,
         id_sector_process: sectorProcess?.id ?? null,
         id_machine: idMachine ?? null,
+        page: 1,
+        page_size: 15,
         all: true,
       });
-      console.log({
+      console.log(responseData);
+      setProductions(responseData.data as IProduction[]);
+      setResponse(responseData);
+    } catch (error) {
+      console.error("Error al cargar los datos:", error);
+    }
+  };
+
+  const changePage = async ({page, page_size}: {page?: number; page_size?: number}) => {
+    try {
+      const responseData = await getProductions({
         init_date: initDate?.toISOString() ?? null,
         end_date: endDate?.toISOString() ?? null,
         id_sector_process: sectorProcess?.id ?? null,
         id_machine: idMachine ?? null,
+        page: page ?? 1,
+        page_size: page_size ?? 15,
         all: true,
       });
-      setProductions(ProductionsData);
+      console.log(responseData);
+      setProductions(responseData.data as IProduction[]);
+      setResponse(responseData);
     } catch (error) {
       console.error("Error al cargar los datos:", error);
     }
@@ -433,7 +451,15 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
           <CardTitle>Inventario</CardTitle>
         </CardHeader>
         <CardContent>
-          <DataTable actions={<></>} columns={columnsProduction} data={productions} pageSize={10} />
+          <DataTable
+            actions={<></>}
+            page={response?.page ?? 1}
+            page_size={response?.page_size ?? 1}
+            changePage={changePage}
+            columns={columnsProduction}
+            data={productions}
+            total_pages={response?.total_pages ?? 1}
+          />
         </CardContent>
       </Card>
     </div>
