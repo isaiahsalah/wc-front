@@ -46,7 +46,7 @@ export interface IPermissionItem {
   name: string;
 }
 
-const typeMenuPI: IMenuItem[] = [
+const typeMenuPR: IMenuItem[] = [
   {
     name: "Productos",
     icon: Package,
@@ -60,22 +60,22 @@ const typeMenuPI: IMenuItem[] = [
       },
       {
         id: 2,
-        name: "Unidad de Medida",
-        label: "Unidad",
+        name: "Unidades de Medida",
+        label: "Unidades de Medida",
         link: "unit",
         page: UnityPage,
       },
       {
         id: 3,
         name: "Colores",
-        label: "Color",
+        label: "Colores",
         link: "color",
         page: ColorPage,
       },
       {
         id: 4,
-        name: "Fórmula",
-        label: "Fórmula",
+        name: "Fórmulas",
+        label: "Fórmulas",
         link: "formula",
         page: FormulaPage,
       },
@@ -87,23 +87,30 @@ const typeMenuPI: IMenuItem[] = [
     pages: [
       {
         id: 11,
-        name: "Producción",
-        label: "Producción",
+        name: "Producción Actual",
+        label: "Producción Actual",
         link: "production",
         page: ProductionPage,
       },
       {
         id: 12,
-        name: "Orden de Producción",
-        label: "Orden",
+        name: "Órdenes de Producción",
+        label: "Órdenes de Producción",
         link: "production-order",
+        page: OrderPage,
+      },
+      {
+        id: 13,
+        name: "Seguimiento de Producción",
+        label: "Seguimiento de Producción",
+        link: "production-tracking",
         page: OrderPage,
       },
     ],
   },
 
   {
-    name: "Inventario",
+    name: "Inventarios",
     icon: PackageSearch,
     pages: [
       {
@@ -116,20 +123,20 @@ const typeMenuPI: IMenuItem[] = [
     ],
   },
   {
-    name: "Parametros",
+    name: "Parámetros de Config.",
     icon: Blend,
     pages: [
       {
         id: 31,
-        name: "Modelo",
-        label: "Modelo",
+        name: "Modelos de Productos",
+        label: "Modelos de Productos",
         link: "model",
         page: ModelPage,
       },
       {
         id: 32,
-        name: "Maquina",
-        label: "Máquina",
+        name: "Máquinas y Equipos",
+        label: "Máquinas y Equipos",
         link: "machine",
         page: MachinePage,
       },
@@ -143,61 +150,137 @@ const typeMenuPI: IMenuItem[] = [
     ],
   },
   {
-    name: "Seguridad",
+    name: "Seguridad y Usuarios",
     icon: UserLockIcon,
     pages: [
       {
         id: 41,
-        name: "Usuario",
-        label: "Usuarios",
+        name: "Gestión de Usuarios",
+        label: "Gestión de Usuarios",
         link: "user",
         page: UserPage,
       },
       {
         id: 42,
-        name: "Grupo",
-        label: "Grupos",
+        name: "Gestión de Grupos",
+        label: "Gestión de Grupos",
         link: "group",
+        page: GroupPage,
+      },
+      {
+        id: 53,
+        name: "Permisos de Acceso",
+        label: "Permisos de Acceso",
+        link: "permissions",
         page: GroupPage,
       },
     ],
   },
 ];
-const typeMenuRA: IMenuItem[] = [{name: "Home", icon: Package, pages: []}];
-const typeMenuSL: IMenuItem[] = [{name: "Home", icon: Package, pages: []}];
-const typeMenuCQ: IMenuItem[] = [{name: "Home", icon: Package, pages: []}];
-const typeMenuAU: IMenuItem[] = [{name: "Home", icon: Package, pages: []}];
+const typeMenuIA: IMenuItem[] = [{name: "Home", icon: Package, pages: []}];
+const typeMenuLD: IMenuItem[] = [{name: "Home", icon: Package, pages: []}];
+const typeMenuVCRM: IMenuItem[] = [{name: "Home", icon: Package, pages: []}];
+const typeMenuPC: IMenuItem[] = [{name: "Home", icon: Package, pages: []}];
+const typeMenuFC: IMenuItem[] = [{name: "Home", icon: Package, pages: []}];
+const typeMenuRH: IMenuItem[] = [{name: "Home", icon: Package, pages: []}];
+const typeMenuSA: IMenuItem[] = [
+  {
+    name: "Usuarios y Roles",
+    icon: PackagePlus,
+    pages: [
+      {
+        id: 1,
+        name: "Usuarios",
+        label: "Usuarios",
+        link: "user",
+        page: UnityPage,
+      },
+      {
+        id: 2,
+        name: "Roles y Permisos",
+        label: "Roles y Permisos",
+        link: "rol-permision",
+        page: UnityPage,
+      },
+    ],
+  },
+  {
+    name: "Bitácora y Seguridad",
+    icon: PackagePlus,
+    pages: [
+      {
+        id: 11,
+        name: "Bitácora",
+        label: "Bitácora",
+        link: "binnacle",
+        page: UnityPage,
+      },
+      {
+        id: 12,
+        name: "Respaldos",
+        label: "Respaldos",
+        link: "backup",
+        page: UnityPage,
+      },
+    ],
+  },
+];
+const typeMenuAR: IMenuItem[] = [{name: "Home", icon: Package, pages: []}];
 
 export const typeModule: IModuleItem[] = [
   {
-    name: "Producción e Inventarios",
+    name: "Producción y Reciclaje",
     id: 1,
     isActive: true,
-    menu: typeMenuPI,
+    menu: typeMenuPR,
   },
   {
-    name: "Ventas y Logística",
+    name: "Inventarios y Almacenes",
     id: 2,
-    isActive: false,
-    menu: typeMenuSL,
+    isActive: true,
+    menu: typeMenuIA,
   },
   {
-    name: "Costos y Calidad",
+    name: "Logística y Distribución",
     id: 3,
     isActive: false,
-    menu: typeMenuCQ,
+    menu: typeMenuLD,
   },
   {
-    name: "Administración y Usuarios",
+    name: "Ventas y CRM",
     id: 4,
     isActive: false,
-    menu: typeMenuAU,
+    menu: typeMenuVCRM,
   },
   {
-    name: "Reportes y Análisis",
+    name: "Proveedores y Compras",
     id: 5,
     isActive: false,
-    menu: typeMenuRA,
+    menu: typeMenuPC,
+  },
+  {
+    name: "Finanzas y Contabilidad",
+    id: 6,
+    isActive: false,
+    menu: typeMenuFC,
+  },
+  {
+    name: "Recursos Humanos",
+    id: 7,
+    isActive: false,
+    menu: typeMenuRH,
+  },
+  {
+    name: "Seguridad y Administración",
+    id: 8,
+    isActive: true,
+    menu: typeMenuSA,
+  },
+  {
+    name: "Análisis y Reportes",
+    id: 9,
+    isActive: false,
+    menu: typeMenuAR,
   },
 ];
 

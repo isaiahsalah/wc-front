@@ -5,7 +5,7 @@ import {
   Bubbles,
   Command,
   CupSoda,
-  Settings2,
+  ListOrdered,
 } from "lucide-react";
 
 import {
@@ -85,7 +85,7 @@ export function SectorProcessSidebar({sectorProcesses}: {sectorProcesses: ISecto
                 </div>
                 <div className="ml-auto">
                   <span onClick={(e) => e.stopPropagation()} onFocus={(e) => e.stopPropagation()}>
-                    <Settings2 className="opacity-80 size-4" />
+                    <ListOrdered className="opacity-80 size-5" />
                   </span>
                 </div>
               </a>

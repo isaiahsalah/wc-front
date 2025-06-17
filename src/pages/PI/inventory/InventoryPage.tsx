@@ -92,8 +92,10 @@ const InventoryPage: React.FC<Props> = ({degree}) => {
       console.log(responseData);
       setProductions(responseData.data as IProduction[]);
       setResponse(responseData);
+      return true;
     } catch (error) {
       console.error("Error al cargar los datos:", error);
+      return false;
     }
   };
 
