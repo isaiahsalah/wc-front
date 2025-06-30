@@ -173,6 +173,7 @@ export const FormulaSchema = z.object({
   active: z.boolean().optional(),
   id_product: z.number(),
   product: ProductSchema.nullable().optional(),
+  formula_costs: z.array(z.any()).nullable().optional(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),
@@ -181,10 +182,11 @@ export const FormulaSchema = z.object({
 // Tabla: FormulaDetail
 export const FormulaDetailSchema = z.object({
   id: z.number().nullable().optional(),
-  name: z.string(),
   amount: z.number(),
-  id_product_material: z.number(),
-  product_material: ProductSchema.nullable().optional(),
+  id_formula: z.number(),
+  formula: FormulaSchema.nullable().optional(),
+  id_product: z.number(),
+  product: ProductSchema.nullable().optional(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
   deletedAt: z.date().nullable().optional(),

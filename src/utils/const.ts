@@ -1,17 +1,26 @@
-import InventoryPage from "@/pages/PI/inventory/InventoryPage";
-import MachinePage from "@/pages/PI/params/MachinePage";
-import ModelPage from "@/pages/PI/params/ModelPage";
-import ColorPage from "@/pages/PI/product/ColorPage";
-import FormulaPage from "@/pages/PI/product/FormulaPage";
-import ProductPage from "@/pages/PI/product/ProductPage";
-import UnityPage from "@/pages/PI/product/UnitPage";
-import OrderPage from "@/pages/PI/production/OrderPage";
-import ProductionPage from "@/pages/PI/production/ProductionPage";
-import GroupPage from "@/pages/PI/security/GroupPage";
-import UserPage from "@/pages/PI/security/UserPage";
-import {Blend, LucideProps, Package, PackagePlus, PackageSearch, UserLockIcon} from "lucide-react";
+import InventoryPage from "@/pages/production-and-recycling/inventory/InventoryPage";
+import MachinePage from "@/pages/production-and-recycling/params/MachinePage";
+import ModelPage from "@/pages/production-and-recycling/params/ModelPage";
+import ColorPage from "@/pages/production-and-recycling/product/ColorPage";
+import FormulaPage from "@/pages/production-and-recycling/product/FormulaPage";
+import ProductPage from "@/pages/production-and-recycling/product/ProductPage";
+import UnityPage from "@/pages/production-and-recycling/product/UnitPage";
+import OrderPage from "@/pages/production-and-recycling/production/OrderPage";
+import ProductionPage from "@/pages/production-and-recycling/production/ProductionPage";
+import GroupPage from "@/pages/production-and-recycling/security/GroupPage";
+import UserPage from "@/pages/production-and-recycling/security/UserPage";
+import {
+  Blend,
+  LucideProps,
+  Package,
+  PackagePlus,
+  PackageSearch,
+  ShieldUser,
+  UserLockIcon,
+  Users,
+} from "lucide-react";
 import {RefAttributes} from "react";
-import SectorProcessPage from "@/pages/PI/params/SectorProcessPage";
+import SectorProcessPage from "@/pages/production-and-recycling/params/SectorProcessPage";
 
 export interface IPageItem {
   id: number;
@@ -185,8 +194,8 @@ const typeMenuFC: IMenuItem[] = [{name: "Home", icon: Package, pages: []}];
 const typeMenuRH: IMenuItem[] = [{name: "Home", icon: Package, pages: []}];
 const typeMenuSA: IMenuItem[] = [
   {
-    name: "Usuarios y Roles",
-    icon: PackagePlus,
+    name: "Usuarios y Grupos",
+    icon: Users,
     pages: [
       {
         id: 1,
@@ -197,16 +206,16 @@ const typeMenuSA: IMenuItem[] = [
       },
       {
         id: 2,
-        name: "Roles y Permisos",
-        label: "Roles y Permisos",
-        link: "rol-permision",
+        name: "Grupos de Trabajo",
+        label: "Grupos de Trabajo",
+        link: "work-group",
         page: UnityPage,
       },
     ],
   },
   {
     name: "Bitácora y Seguridad",
-    icon: PackagePlus,
+    icon: ShieldUser,
     pages: [
       {
         id: 11,

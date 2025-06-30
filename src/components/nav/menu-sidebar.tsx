@@ -17,6 +17,8 @@ import {SesionContext} from "@/providers/sesionProvider";
 import {SectorProcessContext} from "@/providers/sectorProcessProvider";
 import {IPermission} from "@/utils/interfaces";
 import {PageContext} from "@/providers/pageProvider";
+import {motion} from "framer-motion";
+
 const MenuSidebar = ({items, title}: {items: IMenuItem[]; title: string}) => {
   const {sesion} = useContext(SesionContext);
 
@@ -45,25 +47,35 @@ const MenuSidebar = ({items, title}: {items: IMenuItem[]; title: string}) => {
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                   </SidebarMenuButton>
                 </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <SidebarMenuSub className="ml-3.5">
-                    {item.pages?.map((subItem) => {
-                      const existPermission = permissions.find(
-                        (per) => per.type_screen === subItem.id
-                      );
-                      if (existPermission)
-                        return (
-                          <SidebarMenuSubItem key={subItem.name}>
-                            <SidebarMenuSubButton asChild className="text-muted-foreground/80">
-                              <Link to={subItem.link} onClick={() => setPage(subItem)}>
-                                <span>{subItem.name}</span>
-                              </Link>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
+                <CollapsibleContent asChild>
+                  <motion.div
+                    initial={{height: 0, opacity: 0}} // Estado inicial (cerrado).
+                    animate={{height: "auto", opacity: 1}} // Al abrir (expandir).
+                    exit={{height: 0, opacity: 0}} // Al cerrar (colapsar).
+                    transition={{
+                      height: {duration: 0.15, ease: "easeInOut"}, // Suavidad en altura.
+                      opacity: {duration: 0.15, ease: "easeInOut"}, // Desvanecimiento rápido.
+                    }}
+                  >
+                    <SidebarMenuSub className="ml-3.5">
+                      {item.pages?.map((subItem) => {
+                        const existPermission = permissions.find(
+                          (per) => per.type_screen === subItem.id
                         );
-                      else return null;
-                    })}
-                  </SidebarMenuSub>
+                        if (existPermission)
+                          return (
+                            <SidebarMenuSubItem key={subItem.name}>
+                              <SidebarMenuSubButton asChild className="text-muted-foreground/80">
+                                <Link to={subItem.link} onClick={() => setPage(subItem)}>
+                                  <span>{subItem.name}</span>
+                                </Link>
+                              </SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                          );
+                        else return null;
+                      })}
+                    </SidebarMenuSub>
+                  </motion.div>
                 </CollapsibleContent>
               </SidebarMenuItem>
             </Collapsible>

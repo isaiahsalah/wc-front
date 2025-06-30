@@ -17,12 +17,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {SidebarMenu, SidebarMenuButton, SidebarMenuItem} from "@/components/ui/sidebar";
-import {ISectorProcess} from "@/utils/interfaces";
+import {IPermission, ISectorProcess} from "@/utils/interfaces";
 import {useContext, useEffect} from "react";
 import {SectorProcessContext} from "@/providers/sectorProcessProvider";
+import {SesionContext} from "@/providers/sesionProvider";
 
 export function SectorProcessSidebar({sectorProcesses}: {sectorProcesses: ISectorProcess[]}) {
   const {sectorProcess, setSectorProcess} = useContext(SectorProcessContext);
+  const {sesion} = useContext(SesionContext);
+
   useEffect(() => {
     const storedProcess = window.localStorage.getItem("process-app");
     if (storedProcess) {
@@ -63,6 +66,24 @@ export function SectorProcessSidebar({sectorProcesses}: {sectorProcesses: ISecto
     );
   };
 
+  if (sectorProcess?.id === 0) {
+    return (
+      <SidebarMenu className="  ">
+        <SidebarMenuItem className=" ">
+          <SidebarMenuButton size="lg" className="  ">
+            <div className="flex aspect-square size-7 items-center justify-center rounded-md bg-gray-200 ">
+              <img src="/pc_trans.svg" className="" />
+            </div>
+            <div className="grid flex-1 text-left text-sm leading-tight  ">
+              <span className="truncate font-semibold"> PlastSYS</span>
+              <span className="truncate text-xs text-foreground/50">PLÁSTICOS CARMEN</span>
+            </div>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    );
+  }
+
   if (!sectorProcess) {
     return null;
   }
@@ -71,10 +92,14 @@ export function SectorProcessSidebar({sectorProcesses}: {sectorProcesses: ISecto
     <SidebarMenu className="  ">
       <SidebarMenuItem>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild className="  rounded-none">
-            <SidebarMenuButton className="h-12 border-b-1" size="lg" asChild>
+          <DropdownMenuTrigger asChild>
+            <SidebarMenuButton
+              size="lg"
+              className="  data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              asChild
+            >
               <a href="#">
-                <div className="flex aspect-square size-6 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
+                <div className="flex aspect-square size-7 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
                   {icon(sectorProcess?.process?.id as number)}
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">

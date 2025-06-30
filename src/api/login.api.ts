@@ -10,7 +10,7 @@ export const getLogin = async ({
   user: string;
   pass: string;
   type_module: number;
-  id_sector: number;
+  id_sector?: number;
 }) => {
   try {
     const response = await apiClient.post("/auth/login", {

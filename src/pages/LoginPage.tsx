@@ -20,9 +20,10 @@ import {SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/component
 import LoadingCircle from "@/components/LoadingCircle";
 import {Eye, EyeOff} from "lucide-react";
 import {typeModule} from "@/utils/const";
-import {getSectors} from "@/api/params/sector.api";
 import PCLogoSVG from "@/components/pcLogo";
 import pcImg from "../assets/pc.png";
+import {AnimatePresence, motion} from "framer-motion";
+import {getSectors} from "@/api/production-and-recycling/params/sector.api";
 
 const formSchema = z.object({
   type_module: z.number(),
@@ -32,7 +33,7 @@ const formSchema = z.object({
   pass: z.string().nonempty({
     message: "El campo de contraseña es obligatorio.",
   }),
-  id_sector: z.number(),
+  id_sector: z.number().optional(),
 });
 
 export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<"div">) => {
@@ -53,13 +54,13 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoadingLogin(true);
-
+    console.log("Valores del formulario:", values);
     // Realiza la solicitud al API para iniciar sesión
     getLogin({
       user: values.user.toLowerCase(),
       pass: values.pass,
       type_module: values.type_module,
-      id_sector: values.id_sector,
+      id_sector: values.id_sector ?? 0,
     })
       .then((response) => {
         if (response.token) {
@@ -154,35 +155,52 @@ export const LoginPage = ({className, ...props}: React.ComponentPropsWithoutRef<
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="id_sector"
-                  render={({field}) => (
-                    <FormItem>
-                      <FormControl>
-                        <Select onValueChange={(value) => field.onChange(Number(value))}>
-                          <SelectTrigger className="w-full">
-                            <div className="w-full ml-5">
-                              <SelectValue placeholder="Sector" className="w-full ml-7 " />
-                            </div>
-                          </SelectTrigger>
-                          <SelectContent>
-                            {sectors?.map((item, index) => (
-                              <SelectItem
-                                value={item.id?.toString() ?? ""}
-                                className=" justify-center"
-                                key={index}
-                              >
-                                {item.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <AnimatePresence>
+                  {form.watch("type_module") < 4 ? (
+                    <motion.div
+                      initial={{height: 0, opacity: 0}}
+                      animate={{height: "auto", opacity: 1}}
+                      exit={{height: 0, opacity: 0}}
+                      transition={{duration: 0.15}}
+                      className="overflow-hidden"
+                      onAnimationComplete={() => {
+                        if (form.watch("type_module") > 6) {
+                          form.setValue("id_sector", 0);
+                        }
+                      }}
+                    >
+                      <FormField
+                        control={form.control}
+                        name="id_sector"
+                        render={({field}) => (
+                          <FormItem>
+                            <FormControl>
+                              <Select onValueChange={(value) => field.onChange(Number(value))}>
+                                <SelectTrigger className="w-full">
+                                  <div className="w-full ml-5">
+                                    <SelectValue placeholder="Sector" className="w-full ml-7 " />
+                                  </div>
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {sectors?.map((item, index) => (
+                                    <SelectItem
+                                      value={item.id?.toString() ?? ""}
+                                      className=" justify-center"
+                                      key={index}
+                                    >
+                                      {item.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </motion.div>
+                  ) : null}
+                </AnimatePresence>
                 <FormField
                   control={form.control}
                   name="user"
