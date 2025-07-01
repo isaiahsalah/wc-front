@@ -45,7 +45,7 @@ const FormulaPage: React.FC<Props> = ({degree}) => {
   useEffect(() => {
     updateView();
     fetchFilter();
-  }, []);
+  }, [idProduct]);
 
   const fetchFilter = async () => {
     try {
@@ -58,6 +58,7 @@ const FormulaPage: React.FC<Props> = ({degree}) => {
   };
 
   const updateView = async () => {
+    if (!idProduct) return setFormulas([]);
     try {
       const FormulasData = await getFormulas({
         id_sector: sectorProcess?.sector?.id,
